@@ -1,13 +1,20 @@
 import { useState } from "react";
-import { products as initialProducts, Product } from "@/data/products";
+import { Product } from "@/types/product";
+import { useProducts, useUpdateProduct } from "@/hooks/useProducts";
+import Navigation from "@/components/Navigation";
+import Hero from "@/components/Hero";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
-import AdminPanel from "@/components/AdminPanel";
+import { Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 const Index = () => {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const { data: products = [], isLoading } = useProducts();
+  const updateProduct = useUpdateProduct();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   const handleBuyClick = (product: Product) => {
     setSelectedProduct(product);
@@ -21,20 +28,45 @@ const Index = () => {
     window.open(`https://wa.me/?text=${message}`, "_blank");
   };
 
+  const handleProductUpdate = async (product: Product) => {
+    try {
+      await updateProduct.mutateAsync(product);
+      toast({
+        title: "Product updated",
+        description: "Changes saved successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save changes. Make sure you're logged in as admin.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-sm border-b">
-        <div className="px-4 py-3">
-          <h1 className="text-xl font-bold tracking-tight">Wall Art Gallery</h1>
-        </div>
-      </header>
+      <Navigation isOverHero />
+
+      <Hero
+        title="Your Hero Title Here"
+        subtitle="Your inspiring subtitle goes here"
+      />
 
       <main className="p-1">
-        <MasonryGrid
-          products={products}
-          onBuyClick={handleBuyClick}
-          onCustomOrder={handleCustomOrder}
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <p className="text-muted-foreground">Loading products...</p>
+          </div>
+        ) : (
+          <MasonryGrid
+            products={products}
+            onBuyClick={handleBuyClick}
+            onCustomOrder={handleCustomOrder}
+            editMode={editMode}
+            onProductUpdate={handleProductUpdate}
+          />
+        )}
       </main>
 
       <BuyDialog
@@ -43,7 +75,15 @@ const Index = () => {
         onOpenChange={setIsBuyDialogOpen}
       />
 
-      <AdminPanel products={products} onProductsChange={setProducts} />
+      {/* Admin Edit Toggle */}
+      <Button
+        variant={editMode ? "default" : "outline"}
+        size="icon"
+        className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg"
+        onClick={() => setEditMode(!editMode)}
+      >
+        <Settings className={`h-5 w-5 ${editMode ? "animate-spin" : ""}`} />
+      </Button>
     </div>
   );
 };
