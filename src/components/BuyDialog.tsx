@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Product, ProductSize } from "@/data/products";
+import { Product, ProductSize } from "@/types/product";
 import {
   Dialog,
   DialogContent,
@@ -45,7 +45,7 @@ const BuyDialog = ({ product, open, onOpenChange }: BuyDialogProps) => {
         </DialogHeader>
         <div className="space-y-4">
           <img
-            src={product.image}
+            src={product.image_url}
             alt={product.name}
             className="w-full h-48 object-cover rounded-md"
           />
