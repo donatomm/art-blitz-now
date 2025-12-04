@@ -3,7 +3,6 @@ import { Product } from "@/types/product";
 import { useProducts, useUpdateProduct } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
-import TrustBar from "@/components/TrustBar";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
 import { Settings } from "lucide-react";
@@ -62,8 +61,6 @@ const Index = () => {
         ctaText="Trova il Regalo Perfetto"
         onCtaClick={scrollToGallery}
       />
-
-      <TrustBar />
 
       <main ref={galleryRef} className="p-1">
         {isLoading ? (
