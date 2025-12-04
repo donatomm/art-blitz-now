@@ -40,7 +40,7 @@ const Hero = ({
             {ctaText && (
               <button
                 onClick={onCtaClick}
-                className="mt-6 px-8 py-3 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-full transition-colors text-lg"
+                className="mt-6 px-8 py-3 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-full transition-all duration-200 hover:scale-105 text-lg"
               >
                 {ctaText}
               </button>
