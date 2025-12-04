@@ -51,7 +51,7 @@ const Index = () => {
 
       <Hero
         imageUrl={heroImage}
-        title="Accendi Quella Stanza"
+        title={"Accendi Quella Stanza\nFalla Vibrare"}
         subtitle="Regalo di Natale Fatto. Ansia Zero. Risultato Memorabile."
       />
 
