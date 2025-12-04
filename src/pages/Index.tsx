@@ -8,6 +8,7 @@ import BuyDialog from "@/components/BuyDialog";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import heroImage from "@/assets/hero-image.jpg";
 
 const Index = () => {
   const { data: products = [], isLoading } = useProducts();
@@ -49,6 +50,7 @@ const Index = () => {
       <Navigation isOverHero />
 
       <Hero
+        imageUrl={heroImage}
         title="Your Hero Title Here"
         subtitle="Your inspiring subtitle goes here"
       />
