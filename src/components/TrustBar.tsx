@@ -7,7 +7,7 @@ const trustPoints = [
 
 const TrustBar = () => {
   return (
-    <section className="py-6 px-4 bg-background">
+    <div className="py-6 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-wrap justify-center gap-3">
           {trustPoints.map((point, index) => (
@@ -20,7 +20,7 @@ const TrustBar = () => {
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
