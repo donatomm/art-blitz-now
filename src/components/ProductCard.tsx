@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,7 +85,7 @@ const ProductCard = ({
 
   return (
     <div className="group overflow-hidden bg-card rounded-sm break-inside-avoid mb-1">
-      <div className="relative overflow-hidden">
+      <Link to={`/product/${product.id}`} className="relative overflow-hidden block">
         <img
           src={product.image_url}
           alt={product.name}
@@ -97,7 +98,7 @@ const ProductCard = ({
             </span>
           </div>
         )}
-      </div>
+      </Link>
       <div className="px-2 py-2 bg-card/95 backdrop-blur-sm">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
           {renderEditableField("name", product.name, "font-semibold text-foreground")}
