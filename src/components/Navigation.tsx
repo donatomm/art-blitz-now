@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/logo.png";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -41,25 +42,17 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
         <div className="flex items-center justify-between h-16">
           {/* Logo and Company Name */}
           <Link to="/" className="flex items-center gap-3">
-            <div
-              className={`w-10 h-10 rounded-full bg-primary flex items-center justify-center ${
-                showTransparent ? "bg-white/20" : ""
-              }`}
-            >
-              <span
-                className={`text-lg font-bold ${
-                  showTransparent ? "text-white" : "text-primary-foreground"
-                }`}
-              >
-                L
-              </span>
-            </div>
+            <img
+              src={logo}
+              alt="OctoWonders Logo"
+              className={`w-10 h-10 ${showTransparent ? "invert" : ""}`}
+            />
             <span
               className={`text-xl font-semibold ${
                 showTransparent ? "text-white" : "text-foreground"
               }`}
             >
-              Your Company
+              OctoWonders
             </span>
           </Link>
 
