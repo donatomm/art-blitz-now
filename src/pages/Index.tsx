@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Product } from "@/types/product";
 import { useProducts, useUpdateProduct } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
+import TrustBar from "@/components/TrustBar";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
 import { Settings } from "lucide-react";
@@ -16,6 +17,11 @@ const Index = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const galleryRef = useRef<HTMLDivElement>(null);
+
+  const scrollToGallery = () => {
+    galleryRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleBuyClick = (product: Product) => {
     setSelectedProduct(product);
@@ -53,9 +59,13 @@ const Index = () => {
         imageUrl={heroImage}
         title={"Accendi Quella Stanza\nFalla Vibrare"}
         subtitle="Regalo di Natale Fatto. Ansia Zero. Risultato Memorabile."
+        ctaText="Trova il Regalo Perfetto"
+        onCtaClick={scrollToGallery}
       />
 
-      <main className="p-1">
+      <TrustBar />
+
+      <main ref={galleryRef} className="p-1">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <p className="text-muted-foreground">Loading products...</p>

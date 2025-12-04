@@ -2,12 +2,16 @@ interface HeroProps {
   imageUrl?: string;
   title?: string;
   subtitle?: string;
+  ctaText?: string;
+  onCtaClick?: () => void;
 }
 
 const Hero = ({
   imageUrl = "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=1920&q=80",
   title = "Your Hero Title Here",
   subtitle = "Your inspiring subtitle goes here",
+  ctaText,
+  onCtaClick,
 }: HeroProps) => {
   return (
     <section className="relative h-[70vh] min-h-[500px] w-full overflow-hidden">
@@ -29,6 +33,14 @@ const Hero = ({
           <p className="max-w-2xl mx-auto text-center text-lg italic text-gold sm:text-xl md:text-2xl">
             {subtitle}
           </p>
+          {ctaText && (
+            <button
+              onClick={onCtaClick}
+              className="mt-6 px-8 py-3 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-full transition-colors text-lg"
+            >
+              {ctaText}
+            </button>
+          )}
         </div>
       </div>
     </section>
