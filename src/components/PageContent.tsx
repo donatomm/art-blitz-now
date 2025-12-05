@@ -2,7 +2,6 @@ import Navigation from "@/components/Navigation";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
 import { marked } from "marked";
-import contentBg from "@/assets/content-bg.jpg";
 
 interface PageContentProps {
   slug: string;
@@ -55,7 +54,7 @@ const PageContent = ({ slug, children }: PageContentProps) => {
   return (
     <div 
       className="min-h-screen bg-cover bg-center bg-fixed"
-      style={{ backgroundImage: `url(${contentBg})` }}
+      style={{ backgroundImage: `url('/content-bg.jpg')` }}
     >
       <div className="min-h-screen bg-black/30">
         <Navigation />
