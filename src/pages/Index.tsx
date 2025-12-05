@@ -1,21 +1,20 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { Product } from "@/types/product";
 import { useProducts, useUpdateProduct } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
-import { Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import AdminPanel from "@/components/AdminPanel";
 import { toast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-image.jpg";
+import { useState } from "react";
 
 const Index = () => {
-  const { data: products = [], isLoading } = useProducts();
+  const { data: products = [], isLoading, refetch } = useProducts();
   const updateProduct = useUpdateProduct();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
 
   const scrollToGallery = () => {
@@ -34,17 +33,20 @@ const Index = () => {
     window.open(`https://wa.me/?text=${message}`, "_blank");
   };
 
-  const handleProductUpdate = async (product: Product) => {
+  const handleProductsChange = async (updatedProducts: Product[]) => {
     try {
-      await updateProduct.mutateAsync(product);
+      for (const product of updatedProducts) {
+        await updateProduct.mutateAsync(product);
+      }
+      refetch();
       toast({
-        title: "Product updated",
-        description: "Changes saved successfully.",
+        title: "Prodotti aggiornati",
+        description: "Modifiche salvate con successo.",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to save changes. Make sure you're logged in as admin.",
+        title: "Errore",
+        description: "Impossibile salvare. Verifica di essere admin.",
         variant: "destructive",
       });
     }
@@ -72,8 +74,6 @@ const Index = () => {
             products={products}
             onBuyClick={handleBuyClick}
             onCustomOrder={handleCustomOrder}
-            editMode={editMode}
-            onProductUpdate={handleProductUpdate}
           />
         )}
       </main>
@@ -84,15 +84,8 @@ const Index = () => {
         onOpenChange={setIsBuyDialogOpen}
       />
 
-      {/* Admin Edit Toggle */}
-      <Button
-        variant={editMode ? "default" : "outline"}
-        size="icon"
-        className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg"
-        onClick={() => setEditMode(!editMode)}
-      >
-        <Settings className={`h-5 w-5 ${editMode ? "animate-spin" : ""}`} />
-      </Button>
+      {/* Admin Panel */}
+      <AdminPanel products={products} onProductsChange={handleProductsChange} />
     </div>
   );
 };
