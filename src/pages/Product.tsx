@@ -4,49 +4,62 @@ import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-
 const Product = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data: products, isLoading } = useProducts();
+  const {
+    id
+  } = useParams<{
+    id: string;
+  }>();
+  const {
+    data: products,
+    isLoading
+  } = useProducts();
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const product = products?.find(p => p.id === id);
 
-  const product = products?.find((p) => p.id === id);
-  
   // Mock room images per product
-  const mockRoomsByProduct: Record<string, { id: number; image: string; dimensions: string; note?: string }[]> = {
-    "octoheaded": [
-      { id: 1, image: "/mockrooms/octoheaded-room1.jpg", dimensions: "80x80", note: "Disponibile Su Lastra di Alluminio" },
-      { id: 2, image: "/mockrooms/octoheaded-room2.jpg", dimensions: "60x60", note: "Con Cornice" },
-      { id: 3, image: "/mockrooms/octoheaded-room3.jpg", dimensions: "40x40", note: "" },
-    ],
+  const mockRoomsByProduct: Record<string, {
+    id: number;
+    image: string;
+    dimensions: string;
+    note?: string;
+  }[]> = {
+    "octoheaded": [{
+      id: 1,
+      image: "/mockrooms/octoheaded-room1.jpg",
+      dimensions: "80x80",
+      note: "Disponibile Su Lastra di Alluminio"
+    }, {
+      id: 2,
+      image: "/mockrooms/octoheaded-room2.jpg",
+      dimensions: "60x60",
+      note: "Con Cornice"
+    }, {
+      id: 3,
+      image: "/mockrooms/octoheaded-room3.jpg",
+      dimensions: "40x40",
+      note: ""
+    }]
   };
-  
+
   // Get mock rooms for current product or use empty array
   const productKey = product?.name?.toLowerCase().replace(/\s+/g, '') || '';
   const mockRooms = mockRoomsByProduct[productKey] || [];
-  
   const maxIndex = Math.max(0, mockRooms.length - 2);
-  
   const handlePrev = () => {
-    setCarouselIndex((prev) => Math.max(0, prev - 1));
+    setCarouselIndex(prev => Math.max(0, prev - 1));
   };
-  
   const handleNext = () => {
-    setCarouselIndex((prev) => Math.min(maxIndex, prev + 1));
+    setCarouselIndex(prev => Math.min(maxIndex, prev + 1));
   };
-
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+    return <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Caricamento...</div>
-      </div>
-    );
+      </div>;
   }
-
   if (!product) {
-    return (
-      <div className="min-h-screen bg-background">
+    return <div className="min-h-screen bg-background">
         <Navigation />
         <div className="container mx-auto px-4 pt-24 text-center">
           <h1 className="text-2xl font-bold mb-4">Prodotto non trovato</h1>
@@ -57,36 +70,28 @@ const Product = () => {
             </Button>
           </Link>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   const selectedSizeData = product.sizes[selectedSize];
-
   const getWhatsAppLink = () => {
     const message = `Ciao! Sono interessato a "${product.name}" - ${selectedSizeData.dimensions}cm a €${selectedSizeData.price}`;
     return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
   };
-
   const getEmailLink = () => {
     const subject = `Richiesta per ${product.name}`;
     const body = `Ciao!\n\nSono interessato a:\n- Opera: ${product.name}\n- Dimensione: ${selectedSizeData.dimensions}cm\n- Prezzo: €${selectedSizeData.price}\n\nGrazie!`;
     return `mailto:info@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
-
   const getCustomWhatsAppLink = () => {
     const message = `Ciao! Vorrei richiedere un FORMATO PERSONALIZZATO per "${product.name}" (${product.medium}). Per favore contattatemi per discutere dimensioni e preventivo.`;
     return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
   };
-
   const getCustomEmailLink = () => {
     const subject = `Formato Personalizzato - ${product.name}`;
     const body = `Ciao!\n\nVorrei richiedere un FORMATO PERSONALIZZATO per:\n- Opera: ${product.name}\n- Tecnica: ${product.medium}\n\nPer favore contattatemi per discutere dimensioni e preventivo.\n\nGrazie!`;
     return `mailto:info@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navigation />
       
       <div className="container mx-auto px-4 pt-24 pb-12">
@@ -97,88 +102,57 @@ const Product = () => {
 
         {/* Product Description - Full width */}
         <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
-          <p className="text-muted-foreground text-base leading-relaxed">
-            Descrizione del prodotto da inserire qui. Puoi modificare questo testo per aggiungere dettagli sull'opera, la tecnica utilizzata, l'ispirazione artistica o qualsiasi altra informazione rilevante per i clienti.
-          </p>
+          <p className="text-muted-foreground text-base leading-relaxed">Descrizione del prodoserire qui. Puoi modificare questo testo per aggiungere dettagli sull'opera, la tecnica utilizzata, l'ispirazione artistica o qualsiasi altra informazione rilevante per i clienti.</p>
         </div>
 
         {/* Mock Room Carousel - Full width at top */}
-        {mockRooms.length > 0 && (
-          <div className="relative mb-8">
+        {mockRooms.length > 0 && <div className="relative mb-8">
             <div className="flex items-center gap-3">
               {/* Left Arrow */}
-              <button
-                onClick={handlePrev}
-                disabled={carouselIndex === 0}
-                className="flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed"
-              >
+              <button onClick={handlePrev} disabled={carouselIndex === 0} className="flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
                 <ChevronLeft className="h-8 w-8 stroke-[3]" />
               </button>
               
               {/* Carousel Container */}
               <div className="flex-1 overflow-hidden">
-                <div 
-                  className="flex gap-4 transition-transform duration-300 ease-out"
-                  style={{ transform: `translateX(-${carouselIndex * (50 + 8)}%)` }}
-                >
-                  {mockRooms.map((room) => {
-                    const matchingSize = product?.sizes.find(s => s.dimensions === room.dimensions);
-                    const price = matchingSize?.price;
-                    
-                    return (
-                      <div 
-                        key={room.id}
-                        className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col"
-                      >
+                <div className="flex gap-4 transition-transform duration-300 ease-out" style={{
+              transform: `translateX(-${carouselIndex * (50 + 8)}%)`
+            }}>
+                  {mockRooms.map(room => {
+                const matchingSize = product?.sizes.find(s => s.dimensions === room.dimensions);
+                const price = matchingSize?.price;
+                return <div key={room.id} className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col">
                         <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
-                          <img 
-                            src={room.image} 
-                            alt={`${product?.name} in ambiente`}
-                            className="w-full h-full object-contain"
-                          />
+                          <img src={room.image} alt={`${product?.name} in ambiente`} className="w-full h-full object-contain" />
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
                           <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded">
                             {room.dimensions}cm
                           </span>
-                          {price && (
-                            <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
+                          {price && <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
                               €{price}
-                            </span>
-                          )}
-                          {room.note && (
-                            <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
+                            </span>}
+                          {room.note && <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
                               {room.note}
-                            </span>
-                          )}
+                            </span>}
                         </div>
-                      </div>
-                    );
-                  })}
+                      </div>;
+              })}
                 </div>
               </div>
               
               {/* Right Arrow */}
-              <button
-                onClick={handleNext}
-                disabled={carouselIndex >= maxIndex}
-                className="flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed"
-              >
+              <button onClick={handleNext} disabled={carouselIndex >= maxIndex} className="flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
                 <ChevronRight className="h-8 w-8 stroke-[3]" />
               </button>
             </div>
-          </div>
-        )}
+          </div>}
 
         {/* Product Info Row - Artwork left, Info right */}
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-start">
           {/* Artwork - Small preview */}
           <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[200px] mx-auto md:mx-0 flex-shrink-0">
-            <img
-              src={product.image_url}
-              alt={product.name}
-              className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
-            />
+            <img src={product.image_url} alt={product.name} className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105" />
           </div>
 
           {/* Right Column - Info */}
@@ -195,20 +169,10 @@ const Product = () => {
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size, index) => (
-                  <button
-                    key={size.dimensions}
-                    onClick={() => setSelectedSize(index)}
-                    className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                      selectedSize === index
-                        ? "border-gold bg-gold/10 text-foreground"
-                        : "border-border hover:border-gold/50 text-muted-foreground"
-                    }`}
-                  >
+                {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
                     <div className="text-sm font-medium">{size.dimensions}cm</div>
                     <div className="text-lg font-bold">€{size.price}</div>
-                  </button>
-                ))}
+                  </button>)}
               </div>
             </div>
 
@@ -262,8 +226,6 @@ const Product = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Product;
