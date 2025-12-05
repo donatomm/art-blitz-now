@@ -103,30 +103,41 @@ const Product = () => {
                   className="flex gap-4 transition-transform duration-300 ease-out"
                   style={{ transform: `translateX(-${carouselIndex * (50 + 8)}%)` }}
                 >
-                  {mockRooms.map((room) => (
-                    <div 
-                      key={room.id}
-                      className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col"
-                    >
-                      <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
-                        <img 
-                          src={room.image} 
-                          alt={`${product?.name} in ambiente`}
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                      <div className="flex gap-2 mt-2">
-                        <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded">
-                          {room.dimensions}
-                        </span>
-                        {room.note !== undefined && (
-                          <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border min-w-[80px]">
-                            {room.note || "\u00A0"}
+                  {mockRooms.map((room) => {
+                    // Find matching price from product sizes
+                    const matchingSize = product?.sizes.find(s => s.dimensions === room.dimensions);
+                    const price = matchingSize?.price;
+                    
+                    return (
+                      <div 
+                        key={room.id}
+                        className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col"
+                      >
+                        <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
+                          <img 
+                            src={room.image} 
+                            alt={`${product?.name} in ambiente`}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div className="flex gap-2 mt-2">
+                          <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded">
+                            {room.dimensions}cm
                           </span>
-                        )}
+                          {price && (
+                            <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
+                              €{price}
+                            </span>
+                          )}
+                          {room.note && (
+                            <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
+                              {room.note}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
               
