@@ -126,8 +126,8 @@ const Product = () => {
                           <img src={room.image} alt={`${product?.name} in ambiente`} className="w-full h-full object-contain" />
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
-                          <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded">
-                            {room.dimensions}cm
+                          <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded tracking-wider">
+                            {room.dimensions}
                           </span>
                           {price && <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
                               €{price}
@@ -170,7 +170,7 @@ const Product = () => {
               <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
               <div className="flex flex-wrap gap-2">
                 {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
-                    <div className="text-sm font-medium">{size.dimensions}cm</div>
+                    <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
                     <div className="text-lg font-bold">€{size.price}</div>
                   </button>)}
               </div>
