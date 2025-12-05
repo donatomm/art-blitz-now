@@ -95,6 +95,74 @@ const Product = () => {
           Torna alla Galleria
         </Link>
 
+        {/* Mock Room Carousel - Full width at top */}
+        {mockRooms.length > 0 && (
+          <div className="relative mb-8">
+            <div className="flex items-center gap-3">
+              {/* Left Arrow */}
+              <button
+                onClick={handlePrev}
+                disabled={carouselIndex === 0}
+                className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              
+              {/* Carousel Container */}
+              <div className="flex-1 overflow-hidden">
+                <div 
+                  className="flex gap-4 transition-transform duration-300 ease-out"
+                  style={{ transform: `translateX(-${carouselIndex * (50 + 8)}%)` }}
+                >
+                  {mockRooms.map((room) => {
+                    const matchingSize = product?.sizes.find(s => s.dimensions === room.dimensions);
+                    const price = matchingSize?.price;
+                    
+                    return (
+                      <div 
+                        key={room.id}
+                        className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col"
+                      >
+                        <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
+                          <img 
+                            src={room.image} 
+                            alt={`${product?.name} in ambiente`}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded">
+                            {room.dimensions}cm
+                          </span>
+                          {price && (
+                            <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
+                              €{price}
+                            </span>
+                          )}
+                          {room.note && (
+                            <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
+                              {room.note}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Right Arrow */}
+              <button
+                onClick={handleNext}
+                disabled={carouselIndex >= maxIndex}
+                className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Product Info Row - Artwork left, Info right */}
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-start">
           {/* Artwork - Small preview */}
@@ -106,7 +174,7 @@ const Product = () => {
             />
           </div>
 
-          {/* Right Column - Info + Carousel */}
+          {/* Right Column - Info */}
           <div className="space-y-6">
             {/* Product Name and Medium */}
             <div>
@@ -115,74 +183,6 @@ const Product = () => {
               </h1>
               <p className="text-base text-muted-foreground">{product.medium}</p>
             </div>
-
-            {/* Mock Room Carousel - Netflix style */}
-            {mockRooms.length > 0 && (
-              <div className="relative">
-                <div className="flex items-center gap-3">
-                  {/* Left Arrow */}
-                  <button
-                    onClick={handlePrev}
-                    disabled={carouselIndex === 0}
-                    className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  
-                  {/* Carousel Container */}
-                  <div className="flex-1 overflow-hidden">
-                    <div 
-                      className="flex gap-3 transition-transform duration-300 ease-out"
-                      style={{ transform: `translateX(-${carouselIndex * (50 + 6)}%)` }}
-                    >
-                      {mockRooms.map((room) => {
-                        const matchingSize = product?.sizes.find(s => s.dimensions === room.dimensions);
-                        const price = matchingSize?.price;
-                        
-                        return (
-                          <div 
-                            key={room.id}
-                            className="flex-shrink-0 w-[calc(50%-6px)] flex flex-col"
-                          >
-                            <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
-                              <img 
-                                src={room.image} 
-                                alt={`${product?.name} in ambiente`}
-                                className="w-full h-full object-contain"
-                              />
-                            </div>
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              <span className="bg-black text-white text-xs font-medium px-2 py-0.5 rounded">
-                                {room.dimensions}cm
-                              </span>
-                              {price && (
-                                <span className="bg-gold text-black text-xs font-bold px-2 py-0.5 rounded">
-                                  €{price}
-                                </span>
-                              )}
-                              {room.note && (
-                                <span className="bg-muted text-foreground text-xs px-2 py-0.5 rounded border border-border">
-                                  {room.note}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  
-                  {/* Right Arrow */}
-                  <button
-                    onClick={handleNext}
-                    disabled={carouselIndex >= maxIndex}
-                    className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            )}
 
             {/* Size Selection */}
             <div className="space-y-3">
