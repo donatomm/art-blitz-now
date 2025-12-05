@@ -103,9 +103,9 @@ const Product = () => {
               <button
                 onClick={handlePrev}
                 disabled={carouselIndex === 0}
-                className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-8 w-8 stroke-[3]" />
               </button>
               
               {/* Carousel Container */}
@@ -155,9 +155,9 @@ const Product = () => {
               <button
                 onClick={handleNext}
                 disabled={carouselIndex >= maxIndex}
-                className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-8 w-8 stroke-[3]" />
               </button>
             </div>
           </div>
