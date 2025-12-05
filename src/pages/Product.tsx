@@ -220,8 +220,8 @@ const Product = () => {
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>40x40
-SOLD<div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
+                {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
+                    <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
                     <div className="text-lg font-bold">€{size.price}</div>
                   </button>)}
               </div>
