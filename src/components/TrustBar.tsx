@@ -13,7 +13,7 @@ const TrustBar = () => {
           {trustPoints.map((point, index) => (
             <div
               key={index}
-              className="px-5 py-2.5 rounded-full bg-gray-900/90 border border-gold text-white text-sm font-light tracking-wide whitespace-nowrap transition-all duration-200 hover:scale-105 hover:border-gold hover:bg-gray-800/90"
+              className="px-5 py-2.5 bg-gray-900/80 border-l-2 border-gold text-white text-sm font-light tracking-wide whitespace-nowrap"
             >
               {point}
             </div>
