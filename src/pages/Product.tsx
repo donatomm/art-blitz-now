@@ -74,6 +74,17 @@ const Product = () => {
     return `mailto:info@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
+  const getCustomWhatsAppLink = () => {
+    const message = `Ciao! Vorrei richiedere un FORMATO PERSONALIZZATO per "${product.name}" (${product.medium}). Per favore contattatemi per discutere dimensioni e preventivo.`;
+    return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
+  };
+
+  const getCustomEmailLink = () => {
+    const subject = `Formato Personalizzato - ${product.name}`;
+    const body = `Ciao!\n\nVorrei richiedere un FORMATO PERSONALIZZATO per:\n- Opera: ${product.name}\n- Tecnica: ${product.medium}\n\nPer favore contattatemi per discutere dimensioni e preventivo.\n\nGrazie!`;
+    return `mailto:info@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -209,6 +220,23 @@ const Product = () => {
                 <a href={getEmailLink()}>
                   <Button variant="outline" className="h-12 px-6">
                     <Mail className="mr-2 h-5 w-5" />
+                    Email
+                  </Button>
+                </a>
+              </div>
+
+              {/* Custom Format Section */}
+              <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border">
+                <span className="text-sm text-muted-foreground">Vuoi una dimensione diversa?</span>
+                <a href={getCustomWhatsAppLink()} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" size="sm" className="border-gold/50 hover:border-gold hover:bg-gold/10">
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    Formato Personalizzato
+                  </Button>
+                </a>
+                <a href={getCustomEmailLink()}>
+                  <Button variant="ghost" size="sm">
+                    <Mail className="mr-2 h-4 w-4" />
                     Email
                   </Button>
                 </a>
