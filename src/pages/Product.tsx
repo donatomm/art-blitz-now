@@ -73,15 +73,15 @@ const Product = () => {
   // Get mock rooms for current product or generate placeholders from product sizes
   const productKey = product?.name?.toLowerCase().replace(/\s+/g, '') || '';
   const definedMockRooms = mockRoomsByProduct[productKey];
-  
+
   // Generate placeholder mock rooms if no specific mockups defined
-  const mockRooms = definedMockRooms || [1, 2, 3].map((num) => ({
+  const mockRooms = definedMockRooms || [1, 2, 3].map(num => ({
     id: num,
-    image: "", // Empty = placeholder
+    image: "",
+    // Empty = placeholder
     dimensions: `${product?.name}-Mock${num}`,
     note: ""
   }));
-  
   const maxIndex = Math.max(0, mockRooms.length - 2);
   const handlePrev = () => {
     setCarouselIndex(prev => Math.max(0, prev - 1));
@@ -137,13 +137,11 @@ const Product = () => {
         </Link>
 
         {/* Deal Label */}
-        {product.deal_label_enabled && product.deal_label_text && (
-          <div className="w-full mb-4">
+        {product.deal_label_enabled && product.deal_label_text && <div className="w-full mb-4">
             <span className="inline-block bg-gold text-black font-bold text-sm px-4 py-2 rounded shadow-lg">
               {product.deal_label_text}
             </span>
-          </div>
-        )}
+          </div>}
 
         {/* Product Description - Full width */}
         <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
@@ -168,14 +166,10 @@ const Product = () => {
                 const price = matchingSize?.price;
                 return <div key={room.id} className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col">
                         <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
-                          {room.image ? (
-                            <img src={room.image} alt={`${product?.name} in ambiente`} className="w-full h-full object-contain" />
-                          ) : (
-                            <div className="text-center text-muted-foreground p-4">
+                          {room.image ? <img src={room.image} alt={`${product?.name} in ambiente`} className="w-full h-full object-contain" /> : <div className="text-center text-muted-foreground p-4">
                               <div className="text-4xl mb-2">🖼️</div>
                               <div className="text-sm">Mockup {room.dimensions}</div>
-                            </div>
-                          )}
+                            </div>}
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
                           <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded tracking-wider">
@@ -221,8 +215,8 @@ const Product = () => {
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
-                    <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
+                {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>40x40
+SOLD<div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
                     <div className="text-lg font-bold">€{size.price}</div>
                   </button>)}
               </div>
