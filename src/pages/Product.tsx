@@ -47,13 +47,13 @@ const Product = () => {
   const productKey = product?.name?.toLowerCase().replace(/\s+/g, '') || '';
   const definedMockRooms = mockRoomsByProduct[productKey];
   
-  // Generate placeholder mock rooms from product sizes if no specific mockups defined
-  const mockRooms = definedMockRooms || (product?.sizes.map((size, index) => ({
-    id: index + 1,
+  // Generate placeholder mock rooms if no specific mockups defined
+  const mockRooms = definedMockRooms || [1, 2, 3].map((num) => ({
+    id: num,
     image: "", // Empty = placeholder
-    dimensions: size.dimensions,
+    dimensions: `${product?.name}-Mock${num}`,
     note: ""
-  })) || []);
+  }));
   
   const maxIndex = Math.max(0, mockRooms.length - 2);
   const handlePrev = () => {
