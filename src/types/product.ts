@@ -7,6 +7,7 @@ export interface Product {
   id: string;
   name: string;
   medium: string;
+  description: string;
   image_url: string;
   sizes: ProductSize[];
   display_order: number;
