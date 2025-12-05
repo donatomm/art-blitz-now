@@ -119,9 +119,9 @@ const Product = () => {
                         <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded">
                           {room.dimensions}
                         </span>
-                        {room.note && (
-                          <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
-                            {room.note}
+                        {room.note !== undefined && (
+                          <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border min-w-[80px]">
+                            {room.note || "\u00A0"}
                           </span>
                         )}
                       </div>
