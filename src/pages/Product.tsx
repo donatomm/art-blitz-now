@@ -25,6 +25,17 @@ const Product = () => {
     dimensions: string;
     note?: string;
   }[]> = {
+    "sardinopsis": [{
+      id: 1,
+      image: "/mockrooms/sardinopsis-80x80.png",
+      dimensions: "80x80",
+      note: ""
+    }, {
+      id: 2,
+      image: "/mockrooms/sardinopsis-60x60.png",
+      dimensions: "60x60",
+      note: ""
+    }],
     "octoheaded": [{
       id: 1,
       image: "/mockrooms/octoheaded-room1.jpg",
