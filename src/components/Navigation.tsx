@@ -6,9 +6,10 @@ import logo from "@/assets/logo.png";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Artist", href: "/artist" },
-  { label: "Shipping Rules", href: "/shipping" },
-  { label: "Contact", href: "/contact" },
+  { label: "Artista", href: "/artist" },
+  { label: "Nota per i Clienti", href: "/nota-clienti" },
+  { label: "Regole di Spedizione", href: "/shipping" },
+  { label: "Contatti", href: "/contact" },
 ];
 
 interface NavigationProps {
