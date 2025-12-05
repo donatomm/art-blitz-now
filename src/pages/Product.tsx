@@ -14,11 +14,11 @@ const Product = () => {
   const product = products?.find((p) => p.id === id);
   
   // Mock room images per product
-  const mockRoomsByProduct: Record<string, { id: number; image: string }[]> = {
+  const mockRoomsByProduct: Record<string, { id: number; image: string; dimensions: string; note?: string }[]> = {
     "octoheaded": [
-      { id: 1, image: "/mockrooms/octoheaded-room1.jpg" },
-      { id: 2, image: "/mockrooms/octoheaded-room2.jpg" },
-      { id: 3, image: "/mockrooms/octoheaded-room3.jpg" },
+      { id: 1, image: "/mockrooms/octoheaded-room1.jpg", dimensions: "80x80", note: "" },
+      { id: 2, image: "/mockrooms/octoheaded-room2.jpg", dimensions: "60x60", note: "Con Cornice" },
+      { id: 3, image: "/mockrooms/octoheaded-room3.jpg", dimensions: "40x40", note: "" },
     ],
   };
   
@@ -106,13 +106,25 @@ const Product = () => {
                   {mockRooms.map((room) => (
                     <div 
                       key={room.id}
-                      className="flex-shrink-0 w-[calc(50%-8px)] aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center"
+                      className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col"
                     >
-                      <img 
-                        src={room.image} 
-                        alt={`${product?.name} in ambiente`}
-                        className="w-full h-full object-contain"
-                      />
+                      <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
+                        <img 
+                          src={room.image} 
+                          alt={`${product?.name} in ambiente`}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <div className="flex gap-2 mt-2">
+                        <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded">
+                          {room.dimensions}cm
+                        </span>
+                        {room.note && (
+                          <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
+                            {room.note}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
