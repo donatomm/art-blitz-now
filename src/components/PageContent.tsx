@@ -19,14 +19,14 @@ const PageContent = ({ slug, children }: PageContentProps) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-teal-900 via-teal-800 to-slate-900">
+      <div className="min-h-screen bg-background">
         <Navigation />
         <main className="container mx-auto px-4 pt-24 pb-16">
-          <div className="max-w-3xl mx-auto bg-black/40 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/10 space-y-4">
-            <Skeleton className="h-10 w-64 bg-white/20" />
-            <Skeleton className="h-4 w-full bg-white/20" />
-            <Skeleton className="h-4 w-full bg-white/20" />
-            <Skeleton className="h-4 w-3/4 bg-white/20" />
+          <div className="max-w-3xl mx-auto space-y-4">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
           </div>
         </main>
       </div>
@@ -35,12 +35,12 @@ const PageContent = ({ slug, children }: PageContentProps) => {
 
   if (error || !page) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-teal-900 via-teal-800 to-slate-900">
+      <div className="min-h-screen bg-background">
         <Navigation />
         <main className="container mx-auto px-4 pt-24 pb-16">
-          <div className="max-w-3xl mx-auto bg-black/40 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/10">
-            <h1 className="text-4xl font-bold mb-8 text-white">Pagina non trovata</h1>
-            <p className="text-white/80">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-4xl font-bold mb-8">Pagina non trovata</h1>
+            <p className="text-muted-foreground">
               Il contenuto richiesto non è disponibile.
             </p>
           </div>
@@ -52,13 +52,13 @@ const PageContent = ({ slug, children }: PageContentProps) => {
   const htmlContent = marked.parse(page.content) as string;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-900 via-teal-800 to-slate-900">
+    <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-16">
-        <div className="max-w-3xl mx-auto bg-black/40 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/10">
-          <h1 className="text-4xl font-bold mb-8 text-white">{page.title}</h1>
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold mb-8">{page.title}</h1>
           <div 
-            className="prose prose-lg prose-invert max-w-none prose-headings:text-white prose-p:text-white/90 prose-strong:text-white prose-a:text-primary prose-a:underline hover:prose-a:text-primary/80 prose-li:text-white/90 prose-ul:list-disc prose-ol:list-decimal"
+            className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:underline hover:prose-a:text-primary/80 prose-li:text-muted-foreground prose-ul:list-disc prose-ol:list-decimal"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
           {children}
