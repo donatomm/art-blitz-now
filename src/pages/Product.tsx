@@ -117,7 +117,7 @@ const Product = () => {
                       </div>
                       <div className="flex gap-2 mt-2">
                         <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded">
-                          {room.dimensions}cm
+                          {room.dimensions}
                         </span>
                         {room.note && (
                           <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
