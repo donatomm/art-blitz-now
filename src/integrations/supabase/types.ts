@@ -17,6 +17,8 @@ export type Database = {
       products: {
         Row: {
           created_at: string
+          deal_label_enabled: boolean
+          deal_label_text: string
           display_order: number
           id: string
           image_url: string
@@ -27,6 +29,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deal_label_enabled?: boolean
+          deal_label_text?: string
           display_order?: number
           id?: string
           image_url: string
@@ -37,6 +41,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deal_label_enabled?: boolean
+          deal_label_text?: string
           display_order?: number
           id?: string
           image_url?: string
