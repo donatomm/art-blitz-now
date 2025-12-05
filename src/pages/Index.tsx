@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import { Product } from "@/types/product";
 import { useProducts, useUpdateProduct } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
@@ -8,7 +8,6 @@ import BuyDialog from "@/components/BuyDialog";
 import AdminPanel from "@/components/AdminPanel";
 import { toast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-image.jpg";
-import { useState } from "react";
 
 const Index = () => {
   const { data: products = [], isLoading, refetch } = useProducts();
@@ -84,7 +83,6 @@ const Index = () => {
         onOpenChange={setIsBuyDialogOpen}
       />
 
-      {/* Admin Panel */}
       <AdminPanel products={products} onProductsChange={handleProductsChange} />
     </div>
   );
