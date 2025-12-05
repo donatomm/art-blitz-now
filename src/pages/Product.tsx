@@ -43,9 +43,18 @@ const Product = () => {
     }]
   };
 
-  // Get mock rooms for current product or use empty array
+  // Get mock rooms for current product or generate placeholders from product sizes
   const productKey = product?.name?.toLowerCase().replace(/\s+/g, '') || '';
-  const mockRooms = mockRoomsByProduct[productKey] || [];
+  const definedMockRooms = mockRoomsByProduct[productKey];
+  
+  // Generate placeholder mock rooms from product sizes if no specific mockups defined
+  const mockRooms = definedMockRooms || (product?.sizes.map((size, index) => ({
+    id: index + 1,
+    image: "", // Empty = placeholder
+    dimensions: size.dimensions,
+    note: ""
+  })) || []);
+  
   const maxIndex = Math.max(0, mockRooms.length - 2);
   const handlePrev = () => {
     setCarouselIndex(prev => Math.max(0, prev - 1));
@@ -123,7 +132,14 @@ const Product = () => {
                 const price = matchingSize?.price;
                 return <div key={room.id} className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col">
                         <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
-                          <img src={room.image} alt={`${product?.name} in ambiente`} className="w-full h-full object-contain" />
+                          {room.image ? (
+                            <img src={room.image} alt={`${product?.name} in ambiente`} className="w-full h-full object-contain" />
+                          ) : (
+                            <div className="text-center text-muted-foreground p-4">
+                              <div className="text-4xl mb-2">🖼️</div>
+                              <div className="text-sm">Mockup {room.dimensions}</div>
+                            </div>
+                          )}
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
                           <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded tracking-wider">
