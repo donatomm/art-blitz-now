@@ -1,18 +1,12 @@
 import Navigation from "@/components/Navigation";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
-import { marked } from "marked";
+import { parse } from "marked";
 
 interface PageContentProps {
   slug: string;
   children?: React.ReactNode;
 }
-
-// Configure marked for security and styling
-marked.setOptions({
-  breaks: true,
-  gfm: true,
-});
 
 const PageContent = ({ slug, children }: PageContentProps) => {
   const { data: page, isLoading, error } = usePage(slug);
@@ -49,7 +43,7 @@ const PageContent = ({ slug, children }: PageContentProps) => {
     );
   }
 
-  const htmlContent = marked.parse(page.content) as string;
+  const htmlContent = parse(page.content) as string;
 
   return (
     <div className="min-h-screen bg-background">
