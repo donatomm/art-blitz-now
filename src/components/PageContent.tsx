@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
 import { marked } from "marked";
+import contentBg from "@/assets/content-bg.jpg";
 
 interface PageContentProps {
   slug: string;
@@ -52,18 +53,23 @@ const PageContent = ({ slug, children }: PageContentProps) => {
   const htmlContent = marked.parse(page.content) as string;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="container mx-auto px-4 pt-24 pb-16">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8">{page.title}</h1>
-          <div 
-            className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:underline hover:prose-a:text-primary/80 prose-li:text-muted-foreground prose-ul:list-disc prose-ol:list-decimal"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
-          {children}
-        </div>
-      </main>
+    <div 
+      className="min-h-screen bg-cover bg-center bg-fixed"
+      style={{ backgroundImage: `url(${contentBg})` }}
+    >
+      <div className="min-h-screen bg-background/80 backdrop-blur-sm">
+        <Navigation />
+        <main className="container mx-auto px-4 pt-24 pb-16">
+          <div className="max-w-3xl mx-auto bg-background/60 backdrop-blur-md rounded-2xl p-8 shadow-xl">
+            <h1 className="text-4xl font-bold mb-8 text-foreground">{page.title}</h1>
+            <div 
+              className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground/80 prose-strong:text-foreground prose-a:text-primary prose-a:underline hover:prose-a:text-primary/80 prose-li:text-foreground/80 prose-ul:list-disc prose-ol:list-decimal"
+              dangerouslySetInnerHTML={{ __html: htmlContent }}
+            />
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
