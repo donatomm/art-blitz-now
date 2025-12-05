@@ -153,9 +153,9 @@ const Product = () => {
           </div>
 
           {/* Product Info Row */}
-          <div className="grid lg:grid-cols-[180px_1fr] gap-8 items-start">
-            {/* Small Artwork with Hover Zoom */}
-            <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer max-w-[180px]">
+          <div className="grid lg:grid-cols-[240px_1fr] gap-8 items-start">
+            {/* Artwork with Hover Zoom - 30% bigger */}
+            <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[240px]">
               <img
                 src={product.image_url}
                 alt={product.name}
