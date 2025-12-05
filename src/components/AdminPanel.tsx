@@ -44,6 +44,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
       id: Date.now().toString(),
       name: "New Artwork",
       medium: "Stampa su Tela",
+      description: "",
       image_url: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
       sizes: [
         { dimensions: "40x40", price: 125 },
@@ -222,6 +223,17 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   onChange={(e) =>
                     setEditProduct({ ...editProduct, image_url: e.target.value })
                   }
+                />
+              </div>
+              <div>
+                <Label>Descrizione</Label>
+                <textarea
+                  value={editProduct.description}
+                  onChange={(e) =>
+                    setEditProduct({ ...editProduct, description: e.target.value })
+                  }
+                  className="w-full min-h-[100px] px-3 py-2 text-sm rounded-md border border-input bg-background"
+                  placeholder="Descrizione dell'opera..."
                 />
               </div>
 

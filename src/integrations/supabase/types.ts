@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           deal_label_enabled: boolean
           deal_label_text: string
+          description: string
           display_order: number
           id: string
           image_url: string
@@ -31,6 +32,7 @@ export type Database = {
           created_at?: string
           deal_label_enabled?: boolean
           deal_label_text?: string
+          description?: string
           display_order?: number
           id?: string
           image_url: string
@@ -43,6 +45,7 @@ export type Database = {
           created_at?: string
           deal_label_enabled?: boolean
           deal_label_text?: string
+          description?: string
           display_order?: number
           id?: string
           image_url?: string

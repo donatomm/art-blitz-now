@@ -19,6 +19,7 @@ export const useProducts = () => {
         sizes: (item.sizes as unknown as ProductSize[]) || [],
         deal_label_enabled: item.deal_label_enabled ?? false,
         deal_label_text: item.deal_label_text ?? '',
+        description: item.description ?? '',
       })) as Product[];
     },
   });
@@ -34,6 +35,7 @@ export const useUpdateProduct = () => {
         .update({
           name: product.name,
           medium: product.medium,
+          description: product.description,
           image_url: product.image_url,
           sizes: product.sizes as unknown as Json,
           display_order: product.display_order,
@@ -58,6 +60,7 @@ export const useCreateProduct = () => {
       const { error } = await supabase.from("products").insert({
         name: product.name,
         medium: product.medium,
+        description: product.description,
         image_url: product.image_url,
         sizes: product.sizes as unknown as Json,
         display_order: product.display_order,

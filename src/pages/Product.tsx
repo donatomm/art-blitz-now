@@ -144,10 +144,11 @@ const Product = () => {
           </div>}
 
         {/* Product Description - Full width */}
-        <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
-          <p className="text-muted-foreground text-base leading-relaxed">Sardinopsis
-Il banco si dissolve in un vortice di colore. Sei occhi restano, fissi, ipnotici — come se avessero visto qualcosa che tu non puoi vedere. Sardinopsis: dal greco &quot;visione di sardine.&quot; O forse è la sardina che ha visioni. In ogni caso, quella stanza non sarà mai più la stessa.</p>
-        </div>
+        {product.description && (
+          <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
+            <p className="text-muted-foreground text-base leading-relaxed">{product.description}</p>
+          </div>
+        )}
 
         {/* Mock Room Carousel - Full width at top */}
         {mockRooms.length > 0 && <div className="relative mb-8">
