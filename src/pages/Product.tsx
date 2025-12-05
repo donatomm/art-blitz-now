@@ -40,6 +40,22 @@ const Product = () => {
       image: "/mockrooms/octoheaded-room3.jpg",
       dimensions: "40x40",
       note: ""
+    }],
+    "4anchoios": [{
+      id: 1,
+      image: "/mockrooms/4anchoios-40x40.jpg",
+      dimensions: "40x40",
+      note: "Con Cornice Nera"
+    }, {
+      id: 2,
+      image: "/mockrooms/4anchoios-60x60.png",
+      dimensions: "60x60",
+      note: "Su Tela"
+    }, {
+      id: 3,
+      image: "/mockrooms/4anchoios-80x80.jpg",
+      dimensions: "80x80",
+      note: "Su Tela"
     }]
   };
 
