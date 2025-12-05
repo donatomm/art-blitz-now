@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
-import { parse } from "marked";
 
 interface PageContentProps {
   slug: string;
@@ -10,6 +9,101 @@ interface PageContentProps {
 
 const PageContent = ({ slug, children }: PageContentProps) => {
   const { data: page, isLoading, error } = usePage(slug);
+
+  // Simple markdown renderer for basic formatting
+  const renderContent = (content: string) => {
+    const lines = content.split('\n');
+    const elements: React.ReactNode[] = [];
+    let currentList: string[] = [];
+    let listType: 'ul' | 'ol' | null = null;
+    
+    const flushList = () => {
+      if (currentList.length > 0 && listType) {
+        const ListTag = listType;
+        elements.push(
+          <ListTag key={elements.length} className={`${listType === 'ul' ? 'list-disc' : 'list-decimal'} pl-6 mb-4 space-y-1`}>
+            {currentList.map((item, i) => (
+              <li key={i} className="text-muted-foreground">{renderInlineFormatting(item)}</li>
+            ))}
+          </ListTag>
+        );
+        currentList = [];
+        listType = null;
+      }
+    };
+
+    const renderInlineFormatting = (text: string): React.ReactNode => {
+      // Handle bold **text**
+      const parts = text.split(/(\*\*[^*]+\*\*)/g);
+      return parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={i} className="text-foreground font-semibold">{part.slice(2, -2)}</strong>;
+        }
+        // Handle links [text](url)
+        const linkParts = part.split(/(\[[^\]]+\]\([^)]+\))/g);
+        return linkParts.map((linkPart, j) => {
+          const linkMatch = linkPart.match(/\[([^\]]+)\]\(([^)]+)\)/);
+          if (linkMatch) {
+            return <a key={`${i}-${j}`} href={linkMatch[2]} className="text-primary underline hover:text-primary/80">{linkMatch[1]}</a>;
+          }
+          return linkPart;
+        });
+      });
+    };
+    
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      // Handle headings
+      if (trimmedLine.startsWith('## ')) {
+        flushList();
+        elements.push(
+          <h2 key={index} className="text-2xl font-bold mt-8 mb-4 text-foreground">
+            {trimmedLine.slice(3)}
+          </h2>
+        );
+      } else if (trimmedLine.startsWith('# ')) {
+        flushList();
+        elements.push(
+          <h1 key={index} className="text-3xl font-bold mt-8 mb-4 text-foreground">
+            {trimmedLine.slice(2)}
+          </h1>
+        );
+      }
+      // Handle unordered list items
+      else if (trimmedLine.startsWith('- ')) {
+        if (listType !== 'ul') {
+          flushList();
+          listType = 'ul';
+        }
+        currentList.push(trimmedLine.slice(2));
+      }
+      // Handle ordered list items
+      else if (/^\d+\.\s/.test(trimmedLine)) {
+        if (listType !== 'ol') {
+          flushList();
+          listType = 'ol';
+        }
+        currentList.push(trimmedLine.replace(/^\d+\.\s/, ''));
+      }
+      // Handle regular paragraphs
+      else if (trimmedLine) {
+        flushList();
+        elements.push(
+          <p key={index} className="text-muted-foreground mb-4 leading-relaxed">
+            {renderInlineFormatting(trimmedLine)}
+          </p>
+        );
+      }
+      // Handle empty lines (paragraph breaks)
+      else {
+        flushList();
+      }
+    });
+    
+    flushList(); // Flush any remaining list items
+    return elements;
+  };
 
   if (isLoading) {
     return (
@@ -43,18 +137,15 @@ const PageContent = ({ slug, children }: PageContentProps) => {
     );
   }
 
-  const htmlContent = parse(page.content) as string;
-
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">{page.title}</h1>
-          <div 
-            className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:underline hover:prose-a:text-primary/80 prose-li:text-muted-foreground prose-ul:list-disc prose-ol:list-decimal"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
+          <div className="prose prose-lg max-w-none">
+            {renderContent(page.content)}
+          </div>
           {children}
         </div>
       </main>
