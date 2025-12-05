@@ -39,14 +39,20 @@ const PageContent = ({ slug, children }: PageContentProps) => {
         if (part.startsWith('**') && part.endsWith('**')) {
           return <strong key={i} className="text-foreground font-semibold">{part.slice(2, -2)}</strong>;
         }
-        // Handle links [text](url)
-        const linkParts = part.split(/(\[[^\]]+\]\([^)]+\))/g);
-        return linkParts.map((linkPart, j) => {
-          const linkMatch = linkPart.match(/\[([^\]]+)\]\(([^)]+)\)/);
+        // Handle inline images ![alt](url) and links [text](url)
+        const inlineParts = part.split(/(!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\))/g);
+        return inlineParts.map((inlinePart, j) => {
+          // Check for image first
+          const imageMatch = inlinePart.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+          if (imageMatch) {
+            return <img key={`${i}-${j}`} src={imageMatch[2]} alt={imageMatch[1]} className="inline max-h-64 rounded" />;
+          }
+          // Check for link
+          const linkMatch = inlinePart.match(/\[([^\]]+)\]\(([^)]+)\)/);
           if (linkMatch) {
             return <a key={`${i}-${j}`} href={linkMatch[2]} className="text-primary underline hover:text-primary/80">{linkMatch[1]}</a>;
           }
-          return linkPart;
+          return inlinePart;
         });
       });
     };
@@ -85,6 +91,21 @@ const PageContent = ({ slug, children }: PageContentProps) => {
           listType = 'ol';
         }
         currentList.push(trimmedLine.replace(/^\d+\.\s/, ''));
+      }
+      // Handle block-level images ![alt](url)
+      else if (/^!\[[^\]]*\]\([^)]+\)$/.test(trimmedLine)) {
+        flushList();
+        const imageMatch = trimmedLine.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+        if (imageMatch) {
+          elements.push(
+            <img 
+              key={index} 
+              src={imageMatch[2]} 
+              alt={imageMatch[1]} 
+              className="max-w-full rounded-lg shadow-sm border border-border my-4"
+            />
+          );
+        }
       }
       // Handle regular paragraphs
       else if (trimmedLine) {
