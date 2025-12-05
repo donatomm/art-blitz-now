@@ -95,162 +95,162 @@ const Product = () => {
           Torna alla Galleria
         </Link>
 
-        <div className="space-y-8">
-          {/* Mock Room Carousel - Netflix style */}
-          <div className="relative">
-            <div className="flex items-center gap-4">
-              {/* Left Arrow */}
-              <button
-                onClick={handlePrev}
-                disabled={carouselIndex === 0}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="h-6 w-6" />
-              </button>
-              
-              {/* Carousel Container */}
-              <div className="flex-1 overflow-hidden">
-                <div 
-                  className="flex gap-4 transition-transform duration-300 ease-out"
-                  style={{ transform: `translateX(-${carouselIndex * (50 + 8)}%)` }}
-                >
-                  {mockRooms.map((room) => {
-                    // Find matching price from product sizes
-                    const matchingSize = product?.sizes.find(s => s.dimensions === room.dimensions);
-                    const price = matchingSize?.price;
-                    
-                    return (
-                      <div 
-                        key={room.id}
-                        className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col"
-                      >
-                        <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
-                          <img 
-                            src={room.image} 
-                            alt={`${product?.name} in ambiente`}
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <div className="flex gap-2 mt-2">
-                          <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded">
-                            {room.dimensions}cm
-                          </span>
-                          {price && (
-                            <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
-                              €{price}
-                            </span>
-                          )}
-                          {room.note && (
-                            <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
-                              {room.note}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              
-              {/* Right Arrow */}
-              <button
-                onClick={handleNext}
-                disabled={carouselIndex >= maxIndex}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="h-6 w-6" />
-              </button>
-            </div>
+        {/* Product Info Row - Artwork left, Info right */}
+        <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-start">
+          {/* Artwork - Small preview */}
+          <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[200px] mx-auto md:mx-0 flex-shrink-0">
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
+            />
           </div>
 
-          {/* Product Info Row */}
-          <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8 items-start">
-            {/* Artwork with Hover Zoom - 30% bigger */}
-            <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[240px] mx-auto md:mx-0">
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
-              />
+          {/* Right Column - Info + Carousel */}
+          <div className="space-y-6">
+            {/* Product Name and Medium */}
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">
+                {product.name}
+              </h1>
+              <p className="text-base text-muted-foreground">{product.medium}</p>
+            </div>
+
+            {/* Mock Room Carousel - Netflix style */}
+            {mockRooms.length > 0 && (
+              <div className="relative">
+                <div className="flex items-center gap-3">
+                  {/* Left Arrow */}
+                  <button
+                    onClick={handlePrev}
+                    disabled={carouselIndex === 0}
+                    className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  
+                  {/* Carousel Container */}
+                  <div className="flex-1 overflow-hidden">
+                    <div 
+                      className="flex gap-3 transition-transform duration-300 ease-out"
+                      style={{ transform: `translateX(-${carouselIndex * (50 + 6)}%)` }}
+                    >
+                      {mockRooms.map((room) => {
+                        const matchingSize = product?.sizes.find(s => s.dimensions === room.dimensions);
+                        const price = matchingSize?.price;
+                        
+                        return (
+                          <div 
+                            key={room.id}
+                            className="flex-shrink-0 w-[calc(50%-6px)] flex flex-col"
+                          >
+                            <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
+                              <img 
+                                src={room.image} 
+                                alt={`${product?.name} in ambiente`}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              <span className="bg-black text-white text-xs font-medium px-2 py-0.5 rounded">
+                                {room.dimensions}cm
+                              </span>
+                              {price && (
+                                <span className="bg-gold text-black text-xs font-bold px-2 py-0.5 rounded">
+                                  €{price}
+                                </span>
+                              )}
+                              {room.note && (
+                                <span className="bg-muted text-foreground text-xs px-2 py-0.5 rounded border border-border">
+                                  {room.note}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  {/* Right Arrow */}
+                  <button
+                    onClick={handleNext}
+                    disabled={carouselIndex >= maxIndex}
+                    className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Size Selection */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
+              <div className="flex flex-wrap gap-2">
+                {product.sizes.map((size, index) => (
+                  <button
+                    key={size.dimensions}
+                    onClick={() => setSelectedSize(index)}
+                    className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                      selectedSize === index
+                        ? "border-gold bg-gold/10 text-foreground"
+                        : "border-border hover:border-gold/50 text-muted-foreground"
+                    }`}
+                  >
+                    <div className="text-sm font-medium">{size.dimensions}cm</div>
+                    <div className="text-lg font-bold">€{size.price}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Price and Contact Row */}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="bg-card rounded-lg px-6 py-4 border border-border">
+                <span className="text-muted-foreground text-sm">Totale: </span>
+                <span className="text-2xl font-bold text-gold">€{selectedSizeData.price}</span>
+              </div>
+              
+              <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer">
+                <Button className="h-12 px-6 bg-green-600 hover:bg-green-700">
+                  <MessageCircle className="mr-2 h-5 w-5" />
+                  WhatsApp
+                </Button>
+              </a>
+              <a href={getEmailLink()}>
+                <Button variant="outline" className="h-12 px-6">
+                  <Mail className="mr-2 h-5 w-5" />
+                  Email
+                </Button>
+              </a>
+            </div>
+
+            {/* Custom Format Section */}
+            <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border">
+              <span className="text-sm text-muted-foreground">Vuoi una dimensione diversa?</span>
+              <a href={getCustomWhatsAppLink()} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" size="sm" className="border-gold/50 hover:border-gold hover:bg-gold/10">
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Formato Personalizzato
+                </Button>
+              </a>
+              <a href={getCustomEmailLink()}>
+                <Button variant="ghost" size="sm">
+                  <Mail className="mr-2 h-4 w-4" />
+                  Email
+                </Button>
+              </a>
             </div>
 
             {/* Product Details */}
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2">
-                  {product.name}
-                </h1>
-                <p className="text-lg text-muted-foreground">{product.medium}</p>
-              </div>
-
-              {/* Size Selection */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size, index) => (
-                    <button
-                      key={size.dimensions}
-                      onClick={() => setSelectedSize(index)}
-                      className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                        selectedSize === index
-                          ? "border-gold bg-gold/10 text-foreground"
-                          : "border-border hover:border-gold/50 text-muted-foreground"
-                      }`}
-                    >
-                      <div className="text-sm font-medium">{size.dimensions}cm</div>
-                      <div className="text-lg font-bold">€{size.price}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price and Contact Row */}
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="bg-card rounded-lg px-6 py-4 border border-border">
-                  <span className="text-muted-foreground text-sm">Totale: </span>
-                  <span className="text-2xl font-bold text-gold">€{selectedSizeData.price}</span>
-                </div>
-                
-                <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer">
-                  <Button className="h-12 px-6 bg-green-600 hover:bg-green-700">
-                    <MessageCircle className="mr-2 h-5 w-5" />
-                    WhatsApp
-                  </Button>
-                </a>
-                <a href={getEmailLink()}>
-                  <Button variant="outline" className="h-12 px-6">
-                    <Mail className="mr-2 h-5 w-5" />
-                    Email
-                  </Button>
-                </a>
-              </div>
-
-              {/* Custom Format Section */}
-              <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border">
-                <span className="text-sm text-muted-foreground">Vuoi una dimensione diversa?</span>
-                <a href={getCustomWhatsAppLink()} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="sm" className="border-gold/50 hover:border-gold hover:bg-gold/10">
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    Formato Personalizzato
-                  </Button>
-                </a>
-                <a href={getCustomEmailLink()}>
-                  <Button variant="ghost" size="sm">
-                    <Mail className="mr-2 h-4 w-4" />
-                    Email
-                  </Button>
-                </a>
-              </div>
-
-              {/* Product Details */}
-              <div className="border-t border-border pt-4">
-                <ul className="text-sm text-muted-foreground flex flex-wrap gap-x-4 gap-y-1">
-                  <li>• Stampa professionale su tela</li>
-                  <li>• Tecnologia HP Latex</li>
-                  <li>• Colori brillanti garantiti</li>
-                  <li>• Pronta da appendere</li>
-                </ul>
-              </div>
+            <div className="border-t border-border pt-4">
+              <ul className="text-sm text-muted-foreground flex flex-wrap gap-x-4 gap-y-1">
+                <li>• Stampa professionale su tela</li>
+                <li>• Tecnologia HP Latex</li>
+                <li>• Colori brillanti garantiti</li>
+                <li>• Pronta da appendere</li>
+              </ul>
             </div>
           </div>
         </div>
