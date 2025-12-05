@@ -1,5 +1,4 @@
 export interface ProductSize {
-  label: string;
   dimensions: string;
   price: number;
 }
