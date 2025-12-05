@@ -145,7 +145,8 @@ const Product = () => {
 
         {/* Product Description - Full width */}
         <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
-          <p className="text-muted-foreground text-base leading-relaxed">Descrizione del prodoserire qui. Puoi modificare questo testo per aggiungere dettagli sull'opera, la tecnica utilizzata, l'ispirazione artistica o qualsiasi altra informazione rilevante per i clienti.</p>
+          <p className="text-muted-foreground text-base leading-relaxed">Sardinopsis
+Il banco si dissolve in un vortice di colore. Sei occhi restano, fissi, ipnotici — come se avessero visto qualcosa che tu non puoi vedere. Sardinopsis: dal greco &quot;visione di sardine.&quot; O forse è la sardina che ha visioni. In ogni caso, quella stanza non sarà mai più la stessa.</p>
         </div>
 
         {/* Mock Room Carousel - Full width at top */}
