@@ -24,7 +24,7 @@ const BuyDialog = ({ product, open, onOpenChange }: BuyDialogProps) => {
 
   const getWhatsAppLink = () => {
     const message = encodeURIComponent(
-      `Hi! I'm interested in purchasing:\n\n${product.name}\n${product.medium}\nSize: ${currentSize.dimensions}cm\nPrice: €${currentSize.price}\n\nPlease let me know the next steps!`
+      `Hi! I'm interested in purchasing:\n\n${product.name}\n${product.medium}\nSize: ${currentSize.dimensions}\nPrice: €${currentSize.price}\n\nPlease let me know the next steps!`
     );
     return `https://wa.me/?text=${message}`;
   };
@@ -32,7 +32,7 @@ const BuyDialog = ({ product, open, onOpenChange }: BuyDialogProps) => {
   const getEmailLink = () => {
     const subject = encodeURIComponent(`Inquiry: ${product.name}`);
     const body = encodeURIComponent(
-      `Hi!\n\nI'm interested in purchasing:\n\n${product.name}\n${product.medium}\nSize: ${currentSize.dimensions}cm\nPrice: €${currentSize.price}\n\nPlease let me know the next steps!\n\nThank you!`
+      `Hi!\n\nI'm interested in purchasing:\n\n${product.name}\n${product.medium}\nSize: ${currentSize.dimensions}\nPrice: €${currentSize.price}\n\nPlease let me know the next steps!\n\nThank you!`
     );
     return `mailto:?subject=${subject}&body=${body}`;
   };
@@ -62,7 +62,7 @@ const BuyDialog = ({ product, open, onOpenChange }: BuyDialogProps) => {
                   onClick={() => setSelectedSize(size)}
                   className="flex-1 min-w-[100px]"
                 >
-                  {size.dimensions}cm - €{size.price}
+                  {size.dimensions} - €{size.price}
                 </Button>
               ))}
             </div>

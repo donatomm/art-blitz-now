@@ -99,12 +99,12 @@ const Product = () => {
   }
   const selectedSizeData = product.sizes[selectedSize];
   const getWhatsAppLink = () => {
-    const message = `Ciao! Sono interessato a "${product.name}" - ${selectedSizeData.dimensions}cm a €${selectedSizeData.price}`;
+    const message = `Ciao! Sono interessato a "${product.name}" - ${selectedSizeData.dimensions} a €${selectedSizeData.price}`;
     return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
   };
   const getEmailLink = () => {
     const subject = `Richiesta per ${product.name}`;
-    const body = `Ciao!\n\nSono interessato a:\n- Opera: ${product.name}\n- Dimensione: ${selectedSizeData.dimensions}cm\n- Prezzo: €${selectedSizeData.price}\n\nGrazie!`;
+    const body = `Ciao!\n\nSono interessato a:\n- Opera: ${product.name}\n- Dimensione: ${selectedSizeData.dimensions}\n- Prezzo: €${selectedSizeData.price}\n\nGrazie!`;
     return `mailto:info@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
   const getCustomWhatsAppLink = () => {
