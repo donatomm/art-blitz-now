@@ -144,16 +144,14 @@ const Product = () => {
           </div>}
 
         {/* Product Name - Prominent display */}
-        <h1 className="w-full text-3xl md:text-4xl font-bold text-foreground mb-4 tracking-wide">
+        <h1 className="w-full text-3xl md:text-4xl font-bold text-foreground mb-4 tracking-wide mx-[25px] my-0">
           {product.name}
         </h1>
 
         {/* Product Description - Full width */}
-        {product.description && (
-          <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
-            <p className="text-muted-foreground text-base leading-relaxed">{product.description}</p>
-          </div>
-        )}
+        {product.description && <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
+            <p className="text-muted-foreground leading-relaxed my-0 py-0 mt-px ml-0 text-lg font-sans font-medium">{product.description}</p>
+          </div>}
 
         {/* Mock Room Carousel - Full width at top */}
         {mockRooms.length > 0 && <div className="relative mb-8">
