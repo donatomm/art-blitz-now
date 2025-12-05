@@ -42,6 +42,50 @@ const PageContent = ({ slug, children }: PageContentProps) => {
     );
   }
 
+  // Parse inline formatting (bold and links)
+  const parseInlineFormatting = (text: string, keyPrefix: string) => {
+    // First handle links [text](url), then bold **text**
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = linkRegex.exec(text)) !== null) {
+      // Add text before the link
+      if (match.index > lastIndex) {
+        parts.push(...parseBold(text.slice(lastIndex, match.index), `${keyPrefix}-pre-${match.index}`));
+      }
+      // Add the link
+      parts.push(
+        <a
+          key={`${keyPrefix}-link-${match.index}`}
+          href={match[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary underline hover:text-primary/80 transition-colors"
+        >
+          {match[1]}
+        </a>
+      );
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text after last link
+    if (lastIndex < text.length) {
+      parts.push(...parseBold(text.slice(lastIndex), `${keyPrefix}-post-${lastIndex}`));
+    }
+
+    return parts.length > 0 ? parts : parseBold(text, keyPrefix);
+  };
+
+  // Parse bold text **text**
+  const parseBold = (text: string, keyPrefix: string) => {
+    const boldParts = text.split(/\*\*(.*?)\*\*/g);
+    return boldParts.map((part, j) =>
+      j % 2 === 1 ? <strong key={`${keyPrefix}-bold-${j}`} className="text-foreground">{part}</strong> : part
+    );
+  };
+
   // Simple markdown-like rendering for basic formatting
   const renderContent = (content: string) => {
     return content.split('\n').map((line, i) => {
@@ -49,16 +93,14 @@ const PageContent = ({ slug, children }: PageContentProps) => {
         return <h2 key={i} className="text-2xl font-semibold mt-6 mb-3 text-foreground">{line.slice(3)}</h2>;
       }
       if (line.startsWith('- ')) {
-        return <li key={i} className="text-muted-foreground ml-4">{line.slice(2)}</li>;
+        return <li key={i} className="text-muted-foreground ml-4">{parseInlineFormatting(line.slice(2), `li-${i}`)}</li>;
       }
       if (line.trim() === '') {
         return <br key={i} />;
       }
-      // Handle **bold** text
-      const parts = line.split(/\*\*(.*?)\*\*/g);
       return (
         <p key={i} className="text-muted-foreground mb-2">
-          {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-foreground">{part}</strong> : part)}
+          {parseInlineFormatting(line, `p-${i}`)}
         </p>
       );
     });
