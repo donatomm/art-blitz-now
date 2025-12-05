@@ -52,12 +52,12 @@ const BuyDialog = ({ product, open, onOpenChange }: BuyDialogProps) => {
           <p className="text-sm text-muted-foreground">{product.medium}</p>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">Select Size:</p>
+            <p className="text-sm font-medium">Seleziona Dimensione:</p>
             <div className="flex gap-2 flex-wrap">
               {product.sizes.map((size) => (
                 <Button
-                  key={size.label}
-                  variant={currentSize.label === size.label ? "default" : "outline"}
+                  key={size.dimensions}
+                  variant={currentSize.dimensions === size.dimensions ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedSize(size)}
                   className="flex-1 min-w-[100px]"

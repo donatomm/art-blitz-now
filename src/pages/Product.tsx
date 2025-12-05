@@ -178,7 +178,7 @@ const Product = () => {
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((size, index) => (
                     <button
-                      key={size.label}
+                      key={size.dimensions}
                       onClick={() => setSelectedSize(index)}
                       className={`px-4 py-3 rounded-lg border-2 transition-all ${
                         selectedSize === index

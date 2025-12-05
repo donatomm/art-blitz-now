@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Product, ProductSize } from "@/data/products";
+import { Product, ProductSize } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,14 +42,14 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
     const newProduct: Product = {
       id: Date.now().toString(),
       name: "New Artwork",
-      medium: "Print on Canvas",
-      image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
+      medium: "Stampa su Tela",
+      image_url: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
       sizes: [
-        { label: "S", dimensions: "40x60", price: 125 },
-        { label: "M", dimensions: "60x90", price: 175 },
-        { label: "L", dimensions: "80x120", price: 245 },
+        { dimensions: "40x40", price: 125 },
+        { dimensions: "60x60", price: 175 },
+        { dimensions: "80x80", price: 245 },
       ],
-      order: products.length,
+      display_order: products.length,
     };
     setEditProduct(newProduct);
     setIsEditDialogOpen(true);
@@ -83,10 +83,10 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
     const newIndex = direction === "up" ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= products.length) return;
 
-    const sorted = [...products].sort((a, b) => a.order - b.order);
-    const temp = sorted[index].order;
-    sorted[index].order = sorted[newIndex].order;
-    sorted[newIndex].order = temp;
+    const sorted = [...products].sort((a, b) => a.display_order - b.display_order);
+    const temp = sorted[index].display_order;
+    sorted[index].display_order = sorted[newIndex].display_order;
+    sorted[newIndex].display_order = temp;
     onProductsChange([...sorted]);
   };
 
@@ -127,7 +127,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
 
             <div className="space-y-2">
               {[...products]
-                .sort((a, b) => a.order - b.order)
+                .sort((a, b) => a.display_order - b.display_order)
                 .map((product, index) => (
                   <div
                     key={product.id}
@@ -154,7 +154,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                       </Button>
                     </div>
                     <img
-                      src={product.image}
+                      src={product.image_url}
                       alt={product.name}
                       className="w-12 h-12 object-cover rounded"
                     />
@@ -215,31 +215,26 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
               <div>
                 <Label>Image URL</Label>
                 <Input
-                  value={editProduct.image}
+                  value={editProduct.image_url}
                   onChange={(e) =>
-                    setEditProduct({ ...editProduct, image: e.target.value })
+                    setEditProduct({ ...editProduct, image_url: e.target.value })
                   }
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>Sizes & Prices</Label>
+                <Label>Dimensioni & Prezzi</Label>
                 {editProduct.sizes.map((size, i) => (
-                  <div key={i} className="flex gap-2">
+                  <div key={i} className="flex gap-2 items-center">
                     <Input
-                      placeholder="Label"
-                      value={size.label}
-                      onChange={(e) => updateEditSize(i, "label", e.target.value)}
-                      className="w-16"
-                    />
-                    <Input
-                      placeholder="Dimensions"
+                      placeholder="NNxNN"
                       value={size.dimensions}
                       onChange={(e) => updateEditSize(i, "dimensions", e.target.value)}
                       className="flex-1"
                     />
+                    <span className="text-muted-foreground">€</span>
                     <Input
-                      placeholder="Price"
+                      placeholder="Prezzo"
                       type="number"
                       value={size.price}
                       onChange={(e) => updateEditSize(i, "price", Number(e.target.value))}

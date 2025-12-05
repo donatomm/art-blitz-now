@@ -1,5 +1,4 @@
 export interface ProductSize {
-  label: string;
   dimensions: string;
   price: number;
 }
@@ -20,9 +19,9 @@ export const products: Product[] = [
     medium: "Print on Canvas",
     image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80",
     sizes: [
-      { label: "S", dimensions: "40x60", price: 125 },
-      { label: "M", dimensions: "60x90", price: 175 },
-      { label: "L", dimensions: "80x120", price: 245 },
+      { dimensions: "40x60", price: 125 },
+      { dimensions: "60x90", price: 175 },
+      { dimensions: "80x120", price: 245 },
     ],
     order: 0,
   },
@@ -32,9 +31,9 @@ export const products: Product[] = [
     medium: "Print on Canvas",
     image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
     sizes: [
-      { label: "S", dimensions: "40x60", price: 125 },
-      { label: "M", dimensions: "60x90", price: 175 },
-      { label: "L", dimensions: "80x120", price: 245 },
+      { dimensions: "40x60", price: 125 },
+      { dimensions: "60x90", price: 175 },
+      { dimensions: "80x120", price: 245 },
     ],
     order: 1,
   },
@@ -44,9 +43,9 @@ export const products: Product[] = [
     medium: "Giclée Print",
     image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
     sizes: [
-      { label: "S", dimensions: "30x40", price: 95 },
-      { label: "M", dimensions: "50x70", price: 145 },
-      { label: "L", dimensions: "70x100", price: 195 },
+      { dimensions: "30x40", price: 95 },
+      { dimensions: "50x70", price: 145 },
+      { dimensions: "70x100", price: 195 },
     ],
     order: 2,
   },
@@ -56,9 +55,9 @@ export const products: Product[] = [
     medium: "Print on Canvas",
     image: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80",
     sizes: [
-      { label: "S", dimensions: "40x60", price: 125 },
-      { label: "M", dimensions: "60x90", price: 175 },
-      { label: "L", dimensions: "80x120", price: 245 },
+      { dimensions: "40x60", price: 125 },
+      { dimensions: "60x90", price: 175 },
+      { dimensions: "80x120", price: 245 },
     ],
     order: 3,
   },
@@ -68,9 +67,9 @@ export const products: Product[] = [
     medium: "Print on Aluminum",
     image: "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&q=80",
     sizes: [
-      { label: "S", dimensions: "40x60", price: 165 },
-      { label: "M", dimensions: "60x90", price: 225 },
-      { label: "L", dimensions: "80x120", price: 295 },
+      { dimensions: "40x60", price: 165 },
+      { dimensions: "60x90", price: 225 },
+      { dimensions: "80x120", price: 295 },
     ],
     order: 4,
   },
@@ -80,9 +79,9 @@ export const products: Product[] = [
     medium: "Print on Canvas",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
     sizes: [
-      { label: "S", dimensions: "40x60", price: 125 },
-      { label: "M", dimensions: "60x90", price: 175 },
-      { label: "L", dimensions: "80x120", price: 245 },
+      { dimensions: "40x60", price: 125 },
+      { dimensions: "60x90", price: 175 },
+      { dimensions: "80x120", price: 245 },
     ],
     order: 5,
   },
