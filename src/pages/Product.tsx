@@ -16,7 +16,7 @@ const Product = () => {
   // Mock room images per product
   const mockRoomsByProduct: Record<string, { id: number; image: string; dimensions: string; note?: string }[]> = {
     "octoheaded": [
-      { id: 1, image: "/mockrooms/octoheaded-room1.jpg", dimensions: "80x85", note: "" },
+      { id: 1, image: "/mockrooms/octoheaded-room1.jpg", dimensions: "80x80", note: "" },
       { id: 2, image: "/mockrooms/octoheaded-room2.jpg", dimensions: "60x60", note: "Con Cornice" },
       { id: 3, image: "/mockrooms/octoheaded-room3.jpg", dimensions: "40x40", note: "" },
     ],
