@@ -143,6 +143,11 @@ const Product = () => {
             </span>
           </div>}
 
+        {/* Product Name - Prominent display */}
+        <h1 className="w-full text-3xl md:text-4xl font-bold text-foreground mb-4 tracking-wide">
+          {product.name}
+        </h1>
+
         {/* Product Description - Full width */}
         {product.description && (
           <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
