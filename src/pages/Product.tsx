@@ -201,9 +201,9 @@ const Product = () => {
 
         {/* Product Info Row - Artwork left, Info right */}
         <div className="flex flex-col md:flex-row gap-6 items-start md:pl-[68px]">
-          {/* Artwork - Small preview */}
-          <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[200px] mx-auto md:mx-0 flex-shrink-0">
-            <img src={product.image_url} alt={product.name} className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+          {/* Artwork - Preview */}
+          <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[300px] mx-auto md:mx-0 flex-shrink-0">
+            <img src={product.image_url} alt={product.name} className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-125" />
           </div>
 
           {/* Right Column - Info */}
