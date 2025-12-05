@@ -52,23 +52,18 @@ const PageContent = ({ slug, children }: PageContentProps) => {
   const htmlContent = marked.parse(page.content) as string;
 
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center bg-fixed"
-      style={{ backgroundImage: `url('/content-bg.jpg')` }}
-    >
-      <div className="min-h-screen bg-black/30">
-        <Navigation />
-        <main className="container mx-auto px-4 pt-24 pb-16">
-          <div className="max-w-3xl mx-auto bg-black/50 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/10">
-            <h1 className="text-4xl font-bold mb-8 text-white">{page.title}</h1>
-            <div 
-              className="prose prose-lg prose-invert max-w-none prose-headings:text-white prose-p:text-white/90 prose-strong:text-white prose-a:text-primary prose-a:underline hover:prose-a:text-primary/80 prose-li:text-white/90 prose-ul:list-disc prose-ol:list-decimal"
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
-            />
-            {children}
-          </div>
-        </main>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-teal-900 via-teal-800 to-slate-900">
+      <Navigation />
+      <main className="container mx-auto px-4 pt-24 pb-16">
+        <div className="max-w-3xl mx-auto bg-black/40 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/10">
+          <h1 className="text-4xl font-bold mb-8 text-white">{page.title}</h1>
+          <div 
+            className="prose prose-lg prose-invert max-w-none prose-headings:text-white prose-p:text-white/90 prose-strong:text-white prose-a:text-primary prose-a:underline hover:prose-a:text-primary/80 prose-li:text-white/90 prose-ul:list-disc prose-ol:list-decimal"
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+          />
+          {children}
+        </div>
+      </main>
     </div>
   );
 };
