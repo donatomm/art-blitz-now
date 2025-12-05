@@ -95,6 +95,13 @@ const Product = () => {
           Torna alla Galleria
         </Link>
 
+        {/* Product Description - Full width */}
+        <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
+          <p className="text-muted-foreground text-base leading-relaxed">
+            Descrizione del prodotto da inserire qui. Puoi modificare questo testo per aggiungere dettagli sull'opera, la tecnica utilizzata, l'ispirazione artistica o qualsiasi altra informazione rilevante per i clienti.
+          </p>
+        </div>
+
         {/* Mock Room Carousel - Full width at top */}
         {mockRooms.length > 0 && (
           <div className="relative mb-8">
