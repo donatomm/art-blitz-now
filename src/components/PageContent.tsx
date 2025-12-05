@@ -19,14 +19,14 @@ const PageContent = ({ slug, children }: PageContentProps) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-b from-teal-900 via-teal-800 to-slate-900">
         <Navigation />
         <main className="container mx-auto px-4 pt-24 pb-16">
-          <div className="max-w-3xl mx-auto space-y-4">
-            <Skeleton className="h-10 w-64" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
+          <div className="max-w-3xl mx-auto bg-black/40 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/10 space-y-4">
+            <Skeleton className="h-10 w-64 bg-white/20" />
+            <Skeleton className="h-4 w-full bg-white/20" />
+            <Skeleton className="h-4 w-full bg-white/20" />
+            <Skeleton className="h-4 w-3/4 bg-white/20" />
           </div>
         </main>
       </div>
@@ -35,12 +35,12 @@ const PageContent = ({ slug, children }: PageContentProps) => {
 
   if (error || !page) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-b from-teal-900 via-teal-800 to-slate-900">
         <Navigation />
         <main className="container mx-auto px-4 pt-24 pb-16">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl font-bold mb-8">Pagina non trovata</h1>
-            <p className="text-muted-foreground">
+          <div className="max-w-3xl mx-auto bg-black/40 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/10">
+            <h1 className="text-4xl font-bold mb-8 text-white">Pagina non trovata</h1>
+            <p className="text-white/80">
               Il contenuto richiesto non è disponibile.
             </p>
           </div>
