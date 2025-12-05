@@ -13,13 +13,18 @@ const Product = () => {
 
   const product = products?.find((p) => p.id === id);
   
-  // Placeholder mock rooms - will be replaced with actual images
-  const mockRooms = [
-    { id: 1, label: "Living Room 1" },
-    { id: 2, label: "Living Room 2" },
-    { id: 3, label: "Bedroom" },
-    { id: 4, label: "Office" },
-  ];
+  // Mock room images per product
+  const mockRoomsByProduct: Record<string, { id: number; image: string }[]> = {
+    "octoheaded": [
+      { id: 1, image: "/mockrooms/octoheaded-room1.jpg" },
+      { id: 2, image: "/mockrooms/octoheaded-room2.jpg" },
+      { id: 3, image: "/mockrooms/octoheaded-room3.jpg" },
+    ],
+  };
+  
+  // Get mock rooms for current product or use empty array
+  const productKey = product?.name?.toLowerCase().replace(/\s+/g, '') || '';
+  const mockRooms = mockRoomsByProduct[productKey] || [];
   
   const maxIndex = Math.max(0, mockRooms.length - 2);
   
@@ -101,9 +106,13 @@ const Product = () => {
                   {mockRooms.map((room) => (
                     <div 
                       key={room.id}
-                      className="flex-shrink-0 w-[calc(50%-8px)] aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground border border-border"
+                      className="flex-shrink-0 w-[calc(50%-8px)] aspect-video bg-muted rounded-lg overflow-hidden border border-border"
                     >
-                      {room.label}
+                      <img 
+                        src={room.image} 
+                        alt={`${product?.name} in ambiente`}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   ))}
                 </div>
