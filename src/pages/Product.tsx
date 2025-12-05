@@ -106,12 +106,12 @@ const Product = () => {
                   {mockRooms.map((room) => (
                     <div 
                       key={room.id}
-                      className="flex-shrink-0 w-[calc(50%-8px)] aspect-video bg-muted rounded-lg overflow-hidden border border-border"
+                      className="flex-shrink-0 w-[calc(50%-8px)] aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center"
                     >
                       <img 
                         src={room.image} 
                         alt={`${product?.name} in ambiente`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     </div>
                   ))}
