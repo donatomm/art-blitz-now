@@ -125,6 +125,15 @@ const Product = () => {
           Torna alla Galleria
         </Link>
 
+        {/* Deal Label */}
+        {product.deal_label_enabled && product.deal_label_text && (
+          <div className="w-full mb-4">
+            <span className="inline-block bg-gold text-black font-bold text-sm px-4 py-2 rounded shadow-lg">
+              {product.deal_label_text}
+            </span>
+          </div>
+        )}
+
         {/* Product Description - Full width */}
         <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
           <p className="text-muted-foreground text-base leading-relaxed">Descrizione del prodoserire qui. Puoi modificare questo testo per aggiungere dettagli sull'opera, la tecnica utilizzata, l'ispirazione artistica o qualsiasi altra informazione rilevante per i clienti.</p>

@@ -17,6 +17,8 @@ export const useProducts = () => {
       return (data || []).map((item) => ({
         ...item,
         sizes: (item.sizes as unknown as ProductSize[]) || [],
+        deal_label_enabled: item.deal_label_enabled ?? false,
+        deal_label_text: item.deal_label_text ?? '',
       })) as Product[];
     },
   });
@@ -35,6 +37,8 @@ export const useUpdateProduct = () => {
           image_url: product.image_url,
           sizes: product.sizes as unknown as Json,
           display_order: product.display_order,
+          deal_label_enabled: product.deal_label_enabled,
+          deal_label_text: product.deal_label_text,
         })
         .eq("id", product.id);
 

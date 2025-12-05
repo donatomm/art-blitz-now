@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Settings, Plus, Trash2, GripVertical, Download, Edit } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 
 interface AdminPanelProps {
@@ -50,6 +51,8 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
         { dimensions: "80x80", price: 245 },
       ],
       display_order: products.length,
+      deal_label_enabled: false,
+      deal_label_text: "OFFERTA DEL GIORNO, scade h20:00",
     };
     setEditProduct(newProduct);
     setIsEditDialogOpen(true);
@@ -242,6 +245,31 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                     />
                   </div>
                 ))}
+              </div>
+
+              {/* Deal Label Section */}
+              <div className="space-y-3 border-t pt-4">
+                <div className="flex items-center justify-between">
+                  <Label>Offerta del Giorno</Label>
+                  <Switch
+                    checked={editProduct.deal_label_enabled}
+                    onCheckedChange={(checked) =>
+                      setEditProduct({ ...editProduct, deal_label_enabled: checked })
+                    }
+                  />
+                </div>
+                {editProduct.deal_label_enabled && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Testo Label</Label>
+                    <Input
+                      value={editProduct.deal_label_text}
+                      onChange={(e) =>
+                        setEditProduct({ ...editProduct, deal_label_text: e.target.value })
+                      }
+                      placeholder="OFFERTA DEL GIORNO, scade h20:00 GG/MM/YY"
+                    />
+                  </div>
+                )}
               </div>
 
               <Button onClick={handleSaveProduct} className="w-full">
