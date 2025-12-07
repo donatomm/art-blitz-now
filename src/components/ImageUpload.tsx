@@ -44,9 +44,29 @@ const ImageUpload = ({ label, currentUrl, onUpload, folder }: ImageUploadProps) 
     setIsUploading(true);
 
     try {
+      // Verify session before upload
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log('[ImageUpload] Session check:', {
+        hasSession: !!sessionData.session,
+        userId: sessionData.session?.user?.id,
+        email: sessionData.session?.user?.email
+      });
+
+      if (!sessionData.session) {
+        toast({
+          title: "Sessione scaduta",
+          description: "Devi effettuare nuovamente il login per caricare immagini.",
+          variant: "destructive",
+        });
+        setIsUploading(false);
+        return;
+      }
+
       // Create unique filename
       const fileExt = file.name.split(".").pop();
       const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+      console.log('[ImageUpload] Uploading to:', fileName);
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
@@ -56,7 +76,12 @@ const ImageUpload = ({ label, currentUrl, onUpload, folder }: ImageUploadProps) 
           upsert: false,
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[ImageUpload] Storage error:', error);
+        throw error;
+      }
+
+      console.log('[ImageUpload] Upload successful:', data.path);
 
       // Get public URL
       const { data: urlData } = supabase.storage
@@ -71,10 +96,21 @@ const ImageUpload = ({ label, currentUrl, onUpload, folder }: ImageUploadProps) 
         description: "Immagine caricata con successo.",
       });
     } catch (error: any) {
-      console.error("Upload error:", error);
+      console.error("[ImageUpload] Upload error:", error);
+      
+      // Provide more specific error messages
+      let errorMessage = "Impossibile caricare l'immagine.";
+      if (error.message?.includes("row-level security")) {
+        errorMessage = "Permessi insufficienti. Prova a rieffettuare il login.";
+      } else if (error.message?.includes("not authenticated")) {
+        errorMessage = "Sessione scaduta. Effettua nuovamente il login.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Errore caricamento",
-        description: error.message || "Impossibile caricare l'immagine.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
