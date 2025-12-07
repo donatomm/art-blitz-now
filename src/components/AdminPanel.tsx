@@ -58,6 +58,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
         { dimensions: "40x40", price: 125 },
         { dimensions: "60x60", price: 175 },
         { dimensions: "80x80", price: 245 },
+        { dimensions: "100x100", price: 295 },
       ],
       display_order: products.length,
       deal_label_enabled: false,
