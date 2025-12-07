@@ -29,11 +29,10 @@ interface AdminPanelProps {
   onProductsChange: (products: Product[]) => void;
 }
 
-const ADMIN_PASSWORD = "dmadmin";
-
 const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -44,28 +43,44 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const { data: pages = [] } = usePages();
   const updatePageMutation = useUpdatePage();
 
-  // Check if already authenticated via Supabase session
+  // Check if already authenticated via Supabase session and has admin role
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        setIsAuthenticated(true);
+        // Verify user has admin role
+        const { data: hasAdminRole } = await supabase.rpc('has_role', {
+          _user_id: session.user.id,
+          _role: 'admin'
+        });
+        setIsAuthenticated(!!hasAdminRole);
       }
     };
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
+      if (session) {
+        // Verify admin role on auth state change
+        setTimeout(async () => {
+          const { data: hasAdminRole } = await supabase.rpc('has_role', {
+            _user_id: session.user.id,
+            _role: 'admin'
+          });
+          setIsAuthenticated(!!hasAdminRole);
+        }, 0);
+      } else {
+        setIsAuthenticated(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const handleLogin = async () => {
-    if (passwordInput !== ADMIN_PASSWORD) {
+    if (!emailInput || !passwordInput) {
       toast({
         title: "Errore",
-        description: "Password non corretta.",
+        description: "Inserisci email e password.",
         variant: "destructive",
       });
       return;
@@ -73,70 +88,44 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
 
     setIsLoading(true);
     try {
-      console.log('[Admin] Starting login flow...');
-      
-      // Call setup function to ensure admin user exists and get credentials
-      const { data, error: setupError } = await supabase.functions.invoke('setup-admin');
-      
-      if (setupError) {
-        console.error('[Admin] Setup error:', setupError);
-        toast({
-          title: "Errore",
-          description: "Impossibile configurare l'accesso admin.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      console.log('[Admin] Setup function response:', { email: data?.email, hasPassword: !!data?.password });
-
-      if (!data?.email || !data?.password) {
-        console.error('[Admin] Missing credentials from setup function');
-        toast({
-          title: "Errore",
-          description: "Credenziali admin non disponibili.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Sign in with the credentials from the edge function
-      console.log('[Admin] Attempting signInWithPassword...');
+      // Sign in with email/password
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
+        email: emailInput,
+        password: passwordInput,
       });
 
       if (signInError) {
-        console.error('[Admin] Sign in error:', signInError.message, signInError);
         toast({
           title: "Errore di autenticazione",
-          description: `Impossibile accedere: ${signInError.message}`,
+          description: "Email o password non corretti.",
           variant: "destructive",
         });
         return;
       }
 
-      console.log('[Admin] Sign in successful, session:', {
-        hasSession: !!signInData.session,
-        userId: signInData.user?.id,
-        email: signInData.user?.email
+      // Verify user has admin role
+      const { data: hasAdminRole } = await supabase.rpc('has_role', {
+        _user_id: signInData.user.id,
+        _role: 'admin'
       });
 
-      // Verify session is actually set
-      const { data: sessionData } = await supabase.auth.getSession();
-      console.log('[Admin] Verified session after login:', {
-        hasSession: !!sessionData.session,
-        accessToken: sessionData.session?.access_token?.substring(0, 20) + '...'
-      });
+      if (!hasAdminRole) {
+        await supabase.auth.signOut();
+        toast({
+          title: "Accesso negato",
+          description: "Non hai i permessi di amministratore.",
+          variant: "destructive",
+        });
+        return;
+      }
 
+      setEmailInput("");
       setPasswordInput("");
       toast({
         title: "Accesso effettuato",
         description: "Benvenuto nel pannello admin.",
       });
     } catch (error) {
-      console.error('[Admin] Login error:', error);
       toast({
         title: "Errore",
         description: "Errore durante l'accesso.",
@@ -288,12 +277,22 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
           {!isAuthenticated ? (
             <div className="mt-8 space-y-4">
               <div>
-                <Label>Password Admin</Label>
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  placeholder="admin@example.com"
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <Label>Password</Label>
                 <Input
                   type="password"
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="Inserisci password..."
+                  placeholder="••••••••"
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   disabled={isLoading}
                 />
