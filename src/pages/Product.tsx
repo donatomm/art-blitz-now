@@ -23,7 +23,7 @@ const Product = () => {
     ? product.mock_rooms.map((imageUrl, index) => ({
         id: index + 1,
         image: imageUrl,
-        dimensions: `${product?.name}-Mock${index + 1}`,
+        dimensions: product?.sizes[index]?.dimensions || `Mock ${index + 1}`,
         note: ""
       }))
     : [1, 2, 3].map(num => ({
