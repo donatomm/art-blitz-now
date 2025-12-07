@@ -33,7 +33,8 @@ const Product = () => {
     return {
       id: index + 1,
       image: imageUrl,
-      customLabel: customLabel, // Only show if explicitly set, empty string = hidden
+      customLabel: customLabel,
+      // Only show if explicitly set, empty string = hidden
       sizeDimensions: sizeDimensions,
       note: ""
     };
@@ -141,19 +142,15 @@ const Product = () => {
                             </div>}
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
-                          {room.sizeDimensions && <span className="bg-muted text-foreground text-xs font-medium px-3 py-1 rounded border border-border tracking-wider">
+                          {room.sizeDimensions && <span className="text-xs font-medium px-3 py-1 rounded border border-border tracking-wider bg-gray-950 text-primary-foreground">
                               {room.sizeDimensions}
                             </span>}
                           {price && <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
                               €{price}
                             </span>}
-                          {room.customLabel ? (
-                            <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded tracking-wider">
+                          {room.customLabel ? <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded tracking-wider">
                               {room.customLabel}
-                            </span>
-                          ) : (
-                            <span className="w-[10px]" />
-                          )}
+                            </span> : <span className="w-[10px]" />}
                           {room.note && <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
                               {room.note}
                             </span>}
