@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Product } from "@/types/product";
-import { useProducts, useUpdateProduct } from "@/hooks/useProducts";
+import { useProducts, useUpdateProduct, useCreateProduct, useDeleteProduct } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import MasonryGrid from "@/components/MasonryGrid";
@@ -12,6 +12,8 @@ import heroImage from "@/assets/hero-image.jpg";
 const Index = () => {
   const { data: products = [], isLoading, refetch } = useProducts();
   const updateProduct = useUpdateProduct();
+  const createProduct = useCreateProduct();
+  const deleteProduct = useDeleteProduct();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -34,15 +36,40 @@ const Index = () => {
 
   const handleProductsChange = async (updatedProducts: Product[]) => {
     try {
-      for (const product of updatedProducts) {
+      const existingIds = new Set(products.map(p => p.id));
+      const updatedIds = new Set(updatedProducts.map(p => p.id));
+      
+      // Find new products (in updated but not in existing)
+      const newProducts = updatedProducts.filter(p => !existingIds.has(p.id));
+      
+      // Find deleted products (in existing but not in updated)
+      const deletedProducts = products.filter(p => !updatedIds.has(p.id));
+      
+      // Find products to update (exist in both)
+      const productsToUpdate = updatedProducts.filter(p => existingIds.has(p.id));
+      
+      // Create new products
+      for (const product of newProducts) {
+        await createProduct.mutateAsync(product);
+      }
+      
+      // Update existing products
+      for (const product of productsToUpdate) {
         await updateProduct.mutateAsync(product);
       }
+      
+      // Delete removed products
+      for (const product of deletedProducts) {
+        await deleteProduct.mutateAsync(product.id);
+      }
+      
       refetch();
       toast({
         title: "Prodotti aggiornati",
         description: "Modifiche salvate con successo.",
       });
     } catch (error) {
+      console.error('[Index] Error saving products:', error);
       toast({
         title: "Errore",
         description: "Impossibile salvare. Verifica di essere admin.",
