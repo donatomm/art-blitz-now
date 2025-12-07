@@ -163,7 +163,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
 
   const handleAddProduct = () => {
     const newProduct: Product = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       name: "Nuova Opera",
       medium: "Stampa su Tela",
       description: "",
