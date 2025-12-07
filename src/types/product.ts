@@ -13,6 +13,7 @@ export interface Product {
   display_order: number;
   deal_label_enabled: boolean;
   deal_label_text: string;
+  mock_rooms?: string[];
   created_at?: string;
   updated_at?: string;
 }

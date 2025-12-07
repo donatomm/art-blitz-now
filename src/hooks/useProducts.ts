@@ -20,6 +20,7 @@ export const useProducts = () => {
         deal_label_enabled: item.deal_label_enabled ?? false,
         deal_label_text: item.deal_label_text ?? '',
         description: item.description ?? '',
+        mock_rooms: (item.mock_rooms as unknown as string[]) || [],
       })) as Product[];
     },
   });
@@ -41,6 +42,7 @@ export const useUpdateProduct = () => {
           display_order: product.display_order,
           deal_label_enabled: product.deal_label_enabled,
           deal_label_text: product.deal_label_text,
+          mock_rooms: product.mock_rooms as unknown as Json,
         })
         .eq("id", product.id);
 
@@ -64,6 +66,9 @@ export const useCreateProduct = () => {
         image_url: product.image_url,
         sizes: product.sizes as unknown as Json,
         display_order: product.display_order,
+        deal_label_enabled: product.deal_label_enabled,
+        deal_label_text: product.deal_label_text,
+        mock_rooms: product.mock_rooms as unknown as Json,
       });
       if (error) throw error;
     },
