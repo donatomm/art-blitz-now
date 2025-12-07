@@ -21,31 +21,27 @@ const Product = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
-
   const product = products?.find(p => p.id === id);
 
   // Use mock rooms from database, or generate placeholders
-  const mockRooms = (product?.mock_rooms && product.mock_rooms.length > 0)
-    ? product.mock_rooms.map((mockRoom, index) => {
-        // Handle both old string format and new object format
-        const isOldFormat = typeof mockRoom === 'string';
-        const imageUrl = isOldFormat ? mockRoom : mockRoom?.url || "";
-        const customLabel = isOldFormat ? "" : mockRoom?.label || "";
-        const defaultLabel = product?.sizes[index]?.dimensions || `Mock ${index + 1}`;
-        
-        return {
-          id: index + 1,
-          image: imageUrl,
-          dimensions: customLabel || defaultLabel,
-          note: ""
-        };
-      })
-    : [1, 2, 3].map(num => ({
-        id: num,
-        image: "",
-        dimensions: `${product?.name}-Mock${num}`,
-        note: ""
-      }));
+  const mockRooms = product?.mock_rooms && product.mock_rooms.length > 0 ? product.mock_rooms.map((mockRoom, index) => {
+    // Handle both old string format and new object format
+    const isOldFormat = typeof mockRoom === 'string';
+    const imageUrl = isOldFormat ? mockRoom : mockRoom?.url || "";
+    const customLabel = isOldFormat ? "" : mockRoom?.label || "";
+    const defaultLabel = product?.sizes[index]?.dimensions || `Mock ${index + 1}`;
+    return {
+      id: index + 1,
+      image: imageUrl,
+      dimensions: customLabel || defaultLabel,
+      note: ""
+    };
+  }) : [1, 2, 3].map(num => ({
+    id: num,
+    image: "",
+    dimensions: `${product?.name}-Mock${num}`,
+    note: ""
+  }));
   const maxIndex = Math.max(0, mockRooms.length - 2);
   const handlePrev = () => {
     setCarouselIndex(prev => Math.max(0, prev - 1));
@@ -95,11 +91,8 @@ const Product = () => {
       <Navigation />
       
       {/* Fixed back button */}
-      <Link 
-        to="/" 
-        className="fixed top-20 left-4 z-40 inline-flex items-center gap-2 bg-foreground text-background px-4 py-2 rounded-full shadow-lg hover:bg-gold hover:text-black transition-all font-medium"
-      >
-        <ArrowLeft className="h-5 w-5" />
+      <Link to="/" className="fixed top-20 left-4 z-40 inline-flex items-center gap-2 bg-foreground text-background px-4 py-2 rounded-full shadow-lg hover:bg-gold hover:text-black transition-all font-medium">
+        <ArrowLeft className="h-5 w-5 bg-gold" />
         <span className="hidden sm:inline">Galleria</span>
       </Link>
       
