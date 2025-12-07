@@ -6,6 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// This function is used for initial admin setup only.
+// It creates the admin user and role if they don't exist.
+// It should be called once during initial setup, not for authentication.
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -95,13 +98,11 @@ serve(async (req) => {
 
     console.log('Admin setup complete!');
 
-    // Return the admin credentials for the client to use
+    // Return success without exposing credentials
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Admin user setup complete',
-        email: adminEmail,
-        password: adminPassword
+        message: 'Admin user setup complete'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
