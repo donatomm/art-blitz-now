@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Product, ProductSize } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,11 +17,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
 import ImageUpload from "./ImageUpload";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AdminPanelProps {
   products: Product[];
@@ -31,9 +32,8 @@ interface AdminPanelProps {
 const ADMIN_PASSWORD = "dmadmin";
 
 const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem("admin_authenticated") === "true";
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -44,27 +44,94 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const { data: pages = [] } = usePages();
   const updatePageMutation = useUpdatePage();
 
-  const handleLogin = () => {
-    if (passwordInput === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      localStorage.setItem("admin_authenticated", "true");
-      setPasswordInput("");
-      toast({
-        title: "Accesso effettuato",
-        description: "Benvenuto nel pannello admin.",
-      });
-    } else {
+  // Check if already authenticated via Supabase session
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setIsAuthenticated(true);
+      }
+    };
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    if (passwordInput !== ADMIN_PASSWORD) {
       toast({
         title: "Errore",
         description: "Password non corretta.",
         variant: "destructive",
       });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Call setup function to ensure admin user exists and get credentials
+      const { data, error: setupError } = await supabase.functions.invoke('setup-admin');
+      
+      if (setupError) {
+        console.error('Setup error:', setupError);
+        toast({
+          title: "Errore",
+          description: "Impossibile configurare l'accesso admin.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!data?.email || !data?.password) {
+        console.error('Missing credentials from setup function');
+        toast({
+          title: "Errore",
+          description: "Credenziali admin non disponibili.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Sign in with the credentials from the edge function
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (signInError) {
+        console.error('Sign in error:', signInError.message);
+        toast({
+          title: "Errore di autenticazione",
+          description: "Impossibile accedere. Riprova.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setPasswordInput("");
+      toast({
+        title: "Accesso effettuato",
+        description: "Benvenuto nel pannello admin.",
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        title: "Errore",
+        description: "Errore durante l'accesso.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsAuthenticated(false);
-    localStorage.removeItem("admin_authenticated");
   };
 
   const handleExportJSON = () => {
@@ -210,10 +277,18 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   onChange={(e) => setPasswordInput(e.target.value)}
                   placeholder="Inserisci password..."
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                  disabled={isLoading}
                 />
               </div>
-              <Button onClick={handleLogin} className="w-full">
-                Accedi
+              <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Accesso in corso...
+                  </>
+                ) : (
+                  "Accedi"
+                )}
               </Button>
             </div>
           ) : (
@@ -483,7 +558,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                 className="w-full"
                 disabled={updatePageMutation.isPending}
               >
-                {updatePageMutation.isPending ? "Salvataggio..." : "Salva"}
+                {updatePageMutation.isPending ? "Salvataggio..." : "Salva Pagina"}
               </Button>
             </div>
           )}
