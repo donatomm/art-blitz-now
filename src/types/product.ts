@@ -3,6 +3,11 @@ export interface ProductSize {
   price: number;
 }
 
+export interface MockRoom {
+  url: string;
+  label?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -13,7 +18,7 @@ export interface Product {
   display_order: number;
   deal_label_enabled: boolean;
   deal_label_text: string;
-  mock_rooms?: string[];
+  mock_rooms?: MockRoom[];
   created_at?: string;
   updated_at?: string;
 }

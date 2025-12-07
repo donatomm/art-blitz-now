@@ -1,7 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Product, ProductSize } from "@/types/product";
+import { Product, ProductSize, MockRoom } from "@/types/product";
 import { Json } from "@/integrations/supabase/types";
+
+// Helper to normalize mock_rooms from DB (can be string[] or MockRoom[])
+const normalizeMockRooms = (mockRooms: unknown): MockRoom[] => {
+  if (!Array.isArray(mockRooms)) return [];
+  return mockRooms.map((item) => {
+    if (typeof item === 'string') {
+      return { url: item, label: '' };
+    }
+    return item as MockRoom;
+  });
+};
 
 export const useProducts = () => {
   return useQuery({
@@ -20,7 +31,7 @@ export const useProducts = () => {
         deal_label_enabled: item.deal_label_enabled ?? false,
         deal_label_text: item.deal_label_text ?? '',
         description: item.description ?? '',
-        mock_rooms: (item.mock_rooms as unknown as string[]) || [],
+        mock_rooms: normalizeMockRooms(item.mock_rooms),
       })) as Product[];
     },
   });
