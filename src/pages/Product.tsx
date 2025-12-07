@@ -3,7 +3,7 @@ import { useProducts } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 const Product = () => {
   const {
     id
@@ -16,6 +16,12 @@ const Product = () => {
   } = useProducts();
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
+
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
   const product = products?.find(p => p.id === id);
 
   // Use mock rooms from database, or generate placeholders
