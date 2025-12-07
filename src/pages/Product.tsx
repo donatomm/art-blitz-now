@@ -18,70 +18,20 @@ const Product = () => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const product = products?.find(p => p.id === id);
 
-  // Mock room images per product
-  const mockRoomsByProduct: Record<string, {
-    id: number;
-    image: string;
-    dimensions: string;
-    note?: string;
-  }[]> = {
-    "sardinopsis": [{
-      id: 1,
-      image: "/mockrooms/sardinopsis-80x80.png",
-      dimensions: "80x80",
-      note: ""
-    }, {
-      id: 2,
-      image: "/mockrooms/sardinopsis-60x60.png",
-      dimensions: "60x60",
-      note: ""
-    }],
-    "octoheaded": [{
-      id: 1,
-      image: "/mockrooms/octoheaded-room1.jpg",
-      dimensions: "80x80",
-      note: "Disponibile Su Lastra di Alluminio"
-    }, {
-      id: 2,
-      image: "/mockrooms/octoheaded-room2.jpg",
-      dimensions: "60x60",
-      note: "Con Cornice"
-    }, {
-      id: 3,
-      image: "/mockrooms/octoheaded-room3.jpg",
-      dimensions: "40x40",
-      note: ""
-    }],
-    "4anchoios": [{
-      id: 1,
-      image: "/mockrooms/4anchoios-40x40.jpg",
-      dimensions: "40x40",
-      note: "Con Cornice Nera"
-    }, {
-      id: 2,
-      image: "/mockrooms/4anchoios-60x60.png",
-      dimensions: "60x60",
-      note: "Su Tela"
-    }, {
-      id: 3,
-      image: "/mockrooms/4anchoios-80x80.jpg",
-      dimensions: "80x80",
-      note: "Su Tela"
-    }]
-  };
-
-  // Get mock rooms for current product or generate placeholders from product sizes
-  const productKey = product?.name?.toLowerCase().replace(/\s+/g, '') || '';
-  const definedMockRooms = mockRoomsByProduct[productKey];
-
-  // Generate placeholder mock rooms if no specific mockups defined
-  const mockRooms = definedMockRooms || [1, 2, 3].map(num => ({
-    id: num,
-    image: "",
-    // Empty = placeholder
-    dimensions: `${product?.name}-Mock${num}`,
-    note: ""
-  }));
+  // Use mock rooms from database, or generate placeholders
+  const mockRooms = (product?.mock_rooms && product.mock_rooms.length > 0)
+    ? product.mock_rooms.map((imageUrl, index) => ({
+        id: index + 1,
+        image: imageUrl,
+        dimensions: `${product?.name}-Mock${index + 1}`,
+        note: ""
+      }))
+    : [1, 2, 3].map(num => ({
+        id: num,
+        image: "",
+        dimensions: `${product?.name}-Mock${num}`,
+        note: ""
+      }));
   const maxIndex = Math.max(0, mockRooms.length - 2);
   const handlePrev = () => {
     setCarouselIndex(prev => Math.max(0, prev - 1));
