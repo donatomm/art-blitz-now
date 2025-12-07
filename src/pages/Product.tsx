@@ -91,7 +91,7 @@ const Product = () => {
       <Navigation />
       
       {/* Fixed back button */}
-      <Link to="/" className="fixed top-20 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all font-medium bg-gold text-primary">
+      <Link to="/" className="fixed top-20 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all font-medium bg-gold text-primary opacity-75">
         <ArrowLeft className="h-5 w-5 bg-gold" />
         <span className="hidden sm:inline bg-gold text-primary">Torna alla Galleria
       </span>
