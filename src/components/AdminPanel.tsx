@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Product, ProductSize } from "@/types/product";
+import { Product, ProductSize, MockRoom } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -450,24 +450,50 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
               {/* Mock Room Images */}
               <div className="space-y-3 border-t pt-4">
                 <Label>Immagini Mock Room</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {[0, 1, 2, 3].map((index) => (
-                    <ImageUpload
-                      key={index}
-                      label={`Mock ${index + 1}`}
-                      currentUrl={editProduct.mock_rooms?.[index] || ""}
-                      onUpload={(url) => {
-                        const newMockRooms = [...(editProduct.mock_rooms || [])];
-                        if (url) {
-                          newMockRooms[index] = url;
-                        } else {
-                          newMockRooms[index] = "";
-                        }
-                        setEditProduct({ ...editProduct, mock_rooms: newMockRooms });
-                      }}
-                      folder="mockrooms"
-                    />
-                  ))}
+                <div className="space-y-4">
+                  {[0, 1, 2, 3].map((index) => {
+                    const mockRoom = editProduct.mock_rooms?.[index];
+                    const currentUrl = typeof mockRoom === 'string' ? mockRoom : mockRoom?.url || "";
+                    const currentLabel = typeof mockRoom === 'string' ? "" : mockRoom?.label || "";
+                    
+                    return (
+                      <div key={index} className="p-3 bg-muted/50 rounded-lg space-y-2">
+                        <ImageUpload
+                          label={`Mock ${index + 1}`}
+                          currentUrl={currentUrl}
+                          onUpload={(url) => {
+                            const newMockRooms: MockRoom[] = [...(editProduct.mock_rooms || [])].map(mr => 
+                              typeof mr === 'string' ? { url: mr, label: '' } : mr
+                            );
+                            while (newMockRooms.length <= index) {
+                              newMockRooms.push({ url: '', label: '' });
+                            }
+                            newMockRooms[index] = { ...newMockRooms[index], url: url || '' };
+                            setEditProduct({ ...editProduct, mock_rooms: newMockRooms });
+                          }}
+                          folder="mockrooms"
+                        />
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Etichetta (opzionale)</Label>
+                          <Input
+                            placeholder={editProduct.sizes[index]?.dimensions || `Mock ${index + 1}`}
+                            value={currentLabel}
+                            onChange={(e) => {
+                              const newMockRooms: MockRoom[] = [...(editProduct.mock_rooms || [])].map(mr => 
+                                typeof mr === 'string' ? { url: mr, label: '' } : mr
+                              );
+                              while (newMockRooms.length <= index) {
+                                newMockRooms.push({ url: '', label: '' });
+                              }
+                              newMockRooms[index] = { ...newMockRooms[index], label: e.target.value };
+                              setEditProduct({ ...editProduct, mock_rooms: newMockRooms });
+                            }}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
               <div>

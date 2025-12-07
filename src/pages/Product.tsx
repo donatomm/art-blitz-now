@@ -20,12 +20,20 @@ const Product = () => {
 
   // Use mock rooms from database, or generate placeholders
   const mockRooms = (product?.mock_rooms && product.mock_rooms.length > 0)
-    ? product.mock_rooms.map((imageUrl, index) => ({
-        id: index + 1,
-        image: imageUrl,
-        dimensions: product?.sizes[index]?.dimensions || `Mock ${index + 1}`,
-        note: ""
-      }))
+    ? product.mock_rooms.map((mockRoom, index) => {
+        // Handle both old string format and new object format
+        const isOldFormat = typeof mockRoom === 'string';
+        const imageUrl = isOldFormat ? mockRoom : mockRoom?.url || "";
+        const customLabel = isOldFormat ? "" : mockRoom?.label || "";
+        const defaultLabel = product?.sizes[index]?.dimensions || `Mock ${index + 1}`;
+        
+        return {
+          id: index + 1,
+          image: imageUrl,
+          dimensions: customLabel || defaultLabel,
+          note: ""
+        };
+      })
     : [1, 2, 3].map(num => ({
         id: num,
         image: "",
