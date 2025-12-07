@@ -73,11 +73,13 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
 
     setIsLoading(true);
     try {
+      console.log('[Admin] Starting login flow...');
+      
       // Call setup function to ensure admin user exists and get credentials
       const { data, error: setupError } = await supabase.functions.invoke('setup-admin');
       
       if (setupError) {
-        console.error('Setup error:', setupError);
+        console.error('[Admin] Setup error:', setupError);
         toast({
           title: "Errore",
           description: "Impossibile configurare l'accesso admin.",
@@ -86,8 +88,10 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
         return;
       }
 
+      console.log('[Admin] Setup function response:', { email: data?.email, hasPassword: !!data?.password });
+
       if (!data?.email || !data?.password) {
-        console.error('Missing credentials from setup function');
+        console.error('[Admin] Missing credentials from setup function');
         toast({
           title: "Errore",
           description: "Credenziali admin non disponibili.",
@@ -97,20 +101,34 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
       }
 
       // Sign in with the credentials from the edge function
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      console.log('[Admin] Attempting signInWithPassword...');
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
 
       if (signInError) {
-        console.error('Sign in error:', signInError.message);
+        console.error('[Admin] Sign in error:', signInError.message, signInError);
         toast({
           title: "Errore di autenticazione",
-          description: "Impossibile accedere. Riprova.",
+          description: `Impossibile accedere: ${signInError.message}`,
           variant: "destructive",
         });
         return;
       }
+
+      console.log('[Admin] Sign in successful, session:', {
+        hasSession: !!signInData.session,
+        userId: signInData.user?.id,
+        email: signInData.user?.email
+      });
+
+      // Verify session is actually set
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log('[Admin] Verified session after login:', {
+        hasSession: !!sessionData.session,
+        accessToken: sessionData.session?.access_token?.substring(0, 20) + '...'
+      });
 
       setPasswordInput("");
       toast({
@@ -118,7 +136,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
         description: "Benvenuto nel pannello admin.",
       });
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('[Admin] Login error:', error);
       toast({
         title: "Errore",
         description: "Errore durante l'accesso.",
