@@ -30,18 +30,17 @@ const Product = () => {
     const imageUrl = isOldFormat ? mockRoom : mockRoom?.url || "";
     const customLabel = isOldFormat ? "" : mockRoom?.label || "";
     const sizeDimensions = product?.sizes[index]?.dimensions || "";
-    const defaultLabel = sizeDimensions || `Mock ${index + 1}`;
     return {
       id: index + 1,
       image: imageUrl,
-      displayLabel: customLabel || defaultLabel,
+      customLabel: customLabel, // Only show if explicitly set, empty string = hidden
       sizeDimensions: sizeDimensions,
       note: ""
     };
   }) : [1, 2, 3].map(num => ({
     id: num,
     image: "",
-    displayLabel: `${product?.name}-Mock${num}`,
+    customLabel: "",
     sizeDimensions: "",
     note: ""
   }));
@@ -138,19 +137,23 @@ const Product = () => {
                         <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
                           {room.image ? <img src={room.image} alt={`${product?.name} in ambiente`} className="w-full h-full object-contain" /> : <div className="text-center text-muted-foreground p-4">
                               <div className="text-4xl mb-2">🖼️</div>
-                              <div className="text-sm">Mockup {room.displayLabel}</div>
+                              <div className="text-sm">Mockup {room.id}</div>
                             </div>}
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
-                          <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded tracking-wider">
-                            {room.displayLabel}
-                          </span>
                           {room.sizeDimensions && <span className="bg-muted text-foreground text-xs font-medium px-3 py-1 rounded border border-border tracking-wider">
                               {room.sizeDimensions}
                             </span>}
                           {price && <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
                               €{price}
                             </span>}
+                          {room.customLabel ? (
+                            <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded tracking-wider">
+                              {room.customLabel}
+                            </span>
+                          ) : (
+                            <span className="w-[10px]" />
+                          )}
                           {room.note && <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
                               {room.note}
                             </span>}
