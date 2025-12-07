@@ -94,11 +94,16 @@ const Product = () => {
   return <div className="min-h-screen bg-background">
       <Navigation />
       
+      {/* Fixed back button */}
+      <Link 
+        to="/" 
+        className="fixed top-20 left-4 z-40 inline-flex items-center gap-2 bg-foreground text-background px-4 py-2 rounded-full shadow-lg hover:bg-gold hover:text-black transition-all font-medium"
+      >
+        <ArrowLeft className="h-5 w-5" />
+        <span className="hidden sm:inline">Torna alla Galleria</span>
+      </Link>
+      
       <div className="container mx-auto px-4 pt-24 pb-12">
-        <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Torna alla Galleria
-        </Link>
 
         {/* Deal Label */}
         {product.deal_label_enabled && product.deal_label_text && <div className="w-full mb-4">
