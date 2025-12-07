@@ -97,10 +97,10 @@ const Product = () => {
       {/* Fixed back button */}
       <Link 
         to="/" 
-        className="fixed top-20 left-4 z-40 inline-flex items-center gap-2 bg-foreground text-background px-4 py-2 rounded-full shadow-lg hover:bg-gold hover:text-black transition-all font-medium"
+        className="fixed bottom-4 left-4 z-40 inline-flex items-center gap-2 bg-foreground text-background px-4 py-3 rounded-full shadow-lg hover:bg-gold hover:text-black transition-all font-medium"
       >
         <ArrowLeft className="h-5 w-5" />
-        <span className="hidden sm:inline">Torna alla Galleria</span>
+        <span className="hidden sm:inline">Galleria</span>
       </Link>
       
       <div className="container mx-auto px-4 pt-24 pb-12">
