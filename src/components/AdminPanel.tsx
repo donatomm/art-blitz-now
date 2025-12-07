@@ -28,7 +28,13 @@ interface AdminPanelProps {
   onProductsChange: (products: Product[]) => void;
 }
 
+const ADMIN_PASSWORD = "dmadmin";
+
 const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem("admin_authenticated") === "true";
+  });
+  const [passwordInput, setPasswordInput] = useState("");
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editPage, setEditPage] = useState<Page | null>(null);
@@ -37,6 +43,29 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   
   const { data: pages = [] } = usePages();
   const updatePageMutation = useUpdatePage();
+
+  const handleLogin = () => {
+    if (passwordInput === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      localStorage.setItem("admin_authenticated", "true");
+      setPasswordInput("");
+      toast({
+        title: "Accesso effettuato",
+        description: "Benvenuto nel pannello admin.",
+      });
+    } else {
+      toast({
+        title: "Errore",
+        description: "Password non corretta.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem("admin_authenticated");
+  };
 
   const handleExportJSON = () => {
     const json = JSON.stringify(products, null, 2);
@@ -161,9 +190,33 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
         </SheetTrigger>
         <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Admin Panel</SheetTitle>
+            <div className="flex items-center justify-between">
+              <SheetTitle>Admin Panel</SheetTitle>
+              {isAuthenticated && (
+                <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  Esci
+                </Button>
+              )}
+            </div>
           </SheetHeader>
           
+          {!isAuthenticated ? (
+            <div className="mt-8 space-y-4">
+              <div>
+                <Label>Password Admin</Label>
+                <Input
+                  type="password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="Inserisci password..."
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                />
+              </div>
+              <Button onClick={handleLogin} className="w-full">
+                Accedi
+              </Button>
+            </div>
+          ) : (
           <Tabs defaultValue="products" className="mt-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
@@ -260,6 +313,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
               ))}
             </TabsContent>
           </Tabs>
+          )}
         </SheetContent>
       </Sheet>
 
