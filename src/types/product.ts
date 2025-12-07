@@ -1,6 +1,7 @@
 export interface ProductSize {
   dimensions: string;
   price: number;
+  stripe_product_id?: string;
 }
 
 export interface MockRoom {
