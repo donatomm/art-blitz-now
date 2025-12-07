@@ -508,22 +508,30 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label>Dimensioni & Prezzi</Label>
+                <Label>Dimensioni, Prezzi & Stripe Product ID</Label>
                 {editProduct.sizes.map((size, i) => (
-                  <div key={i} className="flex gap-2 items-center">
+                  <div key={i} className="flex flex-col gap-2 p-3 bg-muted/50 rounded-lg">
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        placeholder="NNxNN"
+                        value={size.dimensions}
+                        onChange={(e) => updateEditSize(i, "dimensions", e.target.value)}
+                        className="flex-1"
+                      />
+                      <span className="text-muted-foreground">€</span>
+                      <Input
+                        placeholder="Prezzo"
+                        type="number"
+                        value={size.price}
+                        onChange={(e) => updateEditSize(i, "price", Number(e.target.value))}
+                        className="w-24"
+                      />
+                    </div>
                     <Input
-                      placeholder="NNxNN"
-                      value={size.dimensions}
-                      onChange={(e) => updateEditSize(i, "dimensions", e.target.value)}
-                      className="flex-1"
-                    />
-                    <span className="text-muted-foreground">€</span>
-                    <Input
-                      placeholder="Prezzo"
-                      type="number"
-                      value={size.price}
-                      onChange={(e) => updateEditSize(i, "price", Number(e.target.value))}
-                      className="w-24"
+                      placeholder="Stripe Product ID (es. prod_ABC123)"
+                      value={size.stripe_product_id || ""}
+                      onChange={(e) => updateEditSize(i, "stripe_product_id", e.target.value)}
+                      className="text-xs font-mono"
                     />
                   </div>
                 ))}

@@ -2,8 +2,10 @@ import { useParams, Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingCart, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 const Product = () => {
   const {
     id
@@ -16,6 +18,8 @@ const Product = () => {
   } = useProducts();
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const { toast } = useToast();
 
   // Scroll to top when page loads
   useEffect(() => {
@@ -84,6 +88,46 @@ const Product = () => {
   const getCustomWhatsAppLink = () => {
     const message = `Ciao! Vorrei richiedere un FORMATO PERSONALIZZATO per "${product.name}" (${product.medium}). Per favore contattatemi per discutere dimensioni e preventivo.`;
     return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
+  };
+
+  const handleCheckout = async () => {
+    if (!product) return;
+    
+    const selectedSizeData = product.sizes[selectedSize];
+    if (!selectedSizeData.stripe_product_id) {
+      toast({
+        title: "Pagamento non disponibile",
+        description: "Questa dimensione non è ancora configurata per il pagamento. Contattaci via WhatsApp o Email.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          product_id: product.id,
+          size_index: selectedSize,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (!data?.url) throw new Error("No checkout URL received");
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast({
+        title: "Errore",
+        description: error instanceof Error ? error.message : "Impossibile avviare il pagamento. Riprova o contattaci.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckoutLoading(false);
+    }
   };
   const getCustomEmailLink = () => {
     const subject = `Formato Personalizzato - ${product.name}`;
@@ -195,22 +239,44 @@ const Product = () => {
               </div>
             </div>
 
-            {/* Price and Contact Row */}
+            {/* Price and Buy Button */}
             <div className="flex flex-wrap items-center gap-4">
               <div className="bg-card rounded-lg px-6 py-4 border border-border">
                 <span className="text-muted-foreground text-sm">Totale: </span>
                 <span className="text-2xl font-bold text-gold">€{selectedSizeData.price}</span>
               </div>
               
+              <Button 
+                onClick={handleCheckout}
+                disabled={isCheckoutLoading}
+                className="h-12 px-8 bg-gold hover:bg-gold/90 text-black font-bold"
+              >
+                {isCheckoutLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Caricamento...
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    ACQUISTA ORA
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Alternative Contact Methods */}
+            <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border">
+              <span className="text-sm text-muted-foreground">Preferisci contattarci?</span>
               <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer">
-                <Button className="h-12 px-6 bg-green-600 hover:bg-green-700">
-                  <MessageCircle className="mr-2 h-5 w-5" />
+                <Button variant="outline" size="sm" className="border-green-600/50 hover:border-green-600 hover:bg-green-600/10">
+                  <MessageCircle className="mr-2 h-4 w-4" />
                   WhatsApp
                 </Button>
               </a>
               <a href={getEmailLink()}>
-                <Button variant="outline" className="h-12 px-6">
-                  <Mail className="mr-2 h-5 w-5" />
+                <Button variant="ghost" size="sm">
+                  <Mail className="mr-2 h-4 w-4" />
                   Email
                 </Button>
               </a>
