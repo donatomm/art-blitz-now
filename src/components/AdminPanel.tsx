@@ -21,6 +21,7 @@ import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText } from "
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
+import ImageUpload from "./ImageUpload";
 
 interface AdminPanelProps {
   products: Product[];
@@ -52,7 +53,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
       name: "Nuova Opera",
       medium: "Stampa su Tela",
       description: "",
-      image_url: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
+      image_url: "",
       sizes: [
         { dimensions: "40x40", price: 125 },
         { dimensions: "60x60", price: 175 },
@@ -61,6 +62,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
       display_order: products.length,
       deal_label_enabled: false,
       deal_label_text: "OFFERTA DEL GIORNO, scade h20:00",
+      mock_rooms: [],
     };
     setEditProduct(newProduct);
     setIsEditDialogOpen(true);
@@ -290,14 +292,35 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   }
                 />
               </div>
-              <div>
-                <Label>URL Immagine</Label>
-                <Input
-                  value={editProduct.image_url}
-                  onChange={(e) =>
-                    setEditProduct({ ...editProduct, image_url: e.target.value })
-                  }
-                />
+              <ImageUpload
+                label="Immagine Opera"
+                currentUrl={editProduct.image_url}
+                onUpload={(url) => setEditProduct({ ...editProduct, image_url: url })}
+                folder="artworks"
+              />
+              
+              {/* Mock Room Images */}
+              <div className="space-y-3 border-t pt-4">
+                <Label>Immagini Mock Room</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[0, 1, 2, 3].map((index) => (
+                    <ImageUpload
+                      key={index}
+                      label={`Mock ${index + 1}`}
+                      currentUrl={editProduct.mock_rooms?.[index] || ""}
+                      onUpload={(url) => {
+                        const newMockRooms = [...(editProduct.mock_rooms || [])];
+                        if (url) {
+                          newMockRooms[index] = url;
+                        } else {
+                          newMockRooms[index] = "";
+                        }
+                        setEditProduct({ ...editProduct, mock_rooms: newMockRooms });
+                      }}
+                      folder="mockrooms"
+                    />
+                  ))}
+                </div>
               </div>
               <div>
                 <Label>Descrizione</Label>
