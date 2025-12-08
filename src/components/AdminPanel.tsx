@@ -256,24 +256,30 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const handleImportStripeIds = () => {
     try {
       const mapping = JSON.parse(stripeImportJson) as Record<string, string>;
+      let matchedCount = 0;
       
       const updatedProducts = products.map(product => {
-        const stripeProductId = mapping[product.name];
-        if (stripeProductId) {
-          return {
-            ...product,
-            sizes: product.sizes.map(size => ({
-              ...size,
-              stripe_product_id: stripeProductId
-            }))
-          };
-        }
-        return product;
+        const updatedSizes = product.sizes.map(size => {
+          // Create key by combining product name (no spaces) + dimension (no "x" variations)
+          const normalizedName = product.name.replace(/\s+/g, '').replace(/-/g, '');
+          const normalizedDimension = size.dimensions.replace(/\s+/g, '');
+          const key = `${normalizedName}${normalizedDimension}`;
+          
+          // Try exact match first, then try variations
+          const stripeId = mapping[key] || 
+            Object.entries(mapping).find(([k]) => 
+              k.toLowerCase() === key.toLowerCase()
+            )?.[1];
+          
+          if (stripeId) {
+            matchedCount++;
+            return { ...size, stripe_product_id: stripeId };
+          }
+          return size;
+        });
+        
+        return { ...product, sizes: updatedSizes };
       });
-
-      const matchedCount = Object.keys(mapping).filter(name => 
-        products.some(p => p.name === name)
-      ).length;
 
       onProductsChange(updatedProducts);
       setIsStripeImportDialogOpen(false);
@@ -281,7 +287,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
       
       toast({
         title: "Stripe IDs importati!",
-        description: `${matchedCount} prodotti aggiornati con successo.`,
+        description: `${matchedCount} varianti aggiornate con successo.`,
       });
     } catch (error) {
       toast({
