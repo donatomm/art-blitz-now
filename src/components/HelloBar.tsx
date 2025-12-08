@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { MessageCircle, Mail } from 'lucide-react';
+import { MessageCircle, Mail, Gift, Truck } from 'lucide-react';
 const HelloBar = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
@@ -15,6 +15,7 @@ const HelloBar = () => {
       <div className={`fixed top-16 left-0 right-0 z-40 min-h-[45px] w-full bg-emerald-600 flex items-center justify-center px-4 py-2 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
         <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-white text-center">
           <span className="flex items-center gap-1">
+            <Truck className="h-4 w-4 animate-pulse" />
             SPEDIZIONE GRATUITA
             <button onClick={() => setShippingDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-gold-foreground">
               Dettagli
@@ -22,6 +23,7 @@ const HelloBar = () => {
           </span>
           <span className="hidden sm:inline">•</span>
           <span className="flex items-center gap-1">
+            <Gift className="h-4 w-4 animate-bounce" />
             CONSEGNA ENTRO 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA PER ACQUISTI ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘
             <button onClick={() => setDeliveryDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-gold-foreground shadow-md">
               Dettagli
