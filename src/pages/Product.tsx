@@ -116,8 +116,8 @@ const Product = () => {
       if (data?.error) throw new Error(data.error);
       if (!data?.url) throw new Error("No checkout URL received");
 
-      // Redirect to Stripe Checkout
-      window.location.href = data.url;
+      // Open Stripe Checkout in new tab (works better in iframe previews)
+      window.open(data.url, '_blank');
     } catch (error) {
       console.error('Checkout error:', error);
       toast({
