@@ -21,9 +21,15 @@ const Product = () => {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const { toast } = useToast();
 
-  // Scroll to top when page loads
+  // Scroll to top or to #acquista section when page loads
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (window.location.hash === '#acquista') {
+      setTimeout(() => {
+        document.getElementById('acquista')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, [id]);
   const product = products?.find(p => p.id === id);
 
@@ -229,7 +235,7 @@ const Product = () => {
             </div>
 
             {/* Size Selection */}
-            <div className="space-y-3">
+            <div id="acquista" className="space-y-3">
               <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
               <div className="flex flex-wrap gap-2">
                 {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
