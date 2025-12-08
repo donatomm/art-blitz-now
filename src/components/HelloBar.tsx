@@ -22,7 +22,7 @@ const HelloBar = () => {
           </span>
           <span className="hidden sm:inline">•</span>
           <span className="flex items-center gap-1">
-            CONSEGNA ENTRO NATALE GARANTITA PER ACQUISTI ENTRO 14 Dicembre
+            CONSEGNA ENTRO 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA PER ACQUISTI ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘
             <button onClick={() => setDeliveryDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs bg-white/20 hover:bg-white/30 rounded transition-colors">
               Dettagli
             </button>
@@ -74,21 +74,19 @@ const HelloBar = () => {
             <p>Per ricevere il tuo ordine <strong>prima di Natale</strong>, assicurati di completare l'acquisto entro:</p>
             <p className="text-xl font-bold text-center py-2">14 Dicembre 2025</p>
             {(() => {
-              const deadline = new Date(2025, 11, 14, 23, 59, 59);
-              const now = new Date();
-              const diffTime = deadline.getTime() - now.getTime();
-              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-              if (diffDays > 0) {
-                return (
-                  <p className="text-center text-lg font-semibold text-emerald-600">
+            const deadline = new Date(2025, 11, 14, 23, 59, 59);
+            const now = new Date();
+            const diffTime = deadline.getTime() - now.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays > 0) {
+              return <p className="text-center text-lg font-semibold text-emerald-600">
                     ⏰ Mancano solo <span className="text-2xl">{diffDays}</span> giorni!
-                  </p>
-                );
-              } else if (diffDays === 0) {
-                return <p className="text-center text-lg font-semibold text-orange-600">⚠️ Ultimo giorno!</p>;
-              }
-              return <p className="text-center text-lg font-semibold text-red-600">❌ Termine scaduto</p>;
-            })()}
+                  </p>;
+            } else if (diffDays === 0) {
+              return <p className="text-center text-lg font-semibold text-orange-600">⚠️ Ultimo giorno!</p>;
+            }
+            return <p className="text-center text-lg font-semibold text-red-600">❌ Termine scaduto</p>;
+          })()}
             <p className="text-sm text-muted-foreground">
               Gli ordini effettuati dopo questa data potrebbero non arrivare in tempo per le festività natalizie.
               A meno che per EMERGENZE non si usi un diverso fornitore che ha prezzi quasi doppi (farò uno sconto da parte mia).
