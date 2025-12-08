@@ -83,10 +83,12 @@ serve(async (req) => {
     // Create checkout session with dynamic pricing
     const origin = req.headers.get("origin") || "https://octowonders.lovable.app";
     
-    // Build absolute image URL for Stripe
+    // Build absolute image URL for Stripe - use production URL for local paths
+    // Stripe needs publicly accessible URLs, preview URLs may not work
+    const productionUrl = "https://octowonders.lovable.app";
     let imageUrl = product.image_url;
     if (imageUrl && !imageUrl.startsWith('http')) {
-      imageUrl = `${origin}${imageUrl}`;
+      imageUrl = `${productionUrl}${imageUrl}`;
     }
     logStep("Image URL for Stripe", { imageUrl });
     
