@@ -1,4 +1,4 @@
-const trustPoints = ["Stampe Professionali Su Tela", "Tecnologia HP Latex", "Colori Brillanti Garantiti per Decenni", "Pronte da Appendere"];
+const trustPoints = ["Stampe Professionali Su Tela", "Tecnologia HP Latex™", "Colori Brillanti Garantiti per Decenni", "Pronte da Appendere"];
 const TrustBar = () => {
   return <div className="py-6 px-4">
       <div className="max-w-6xl mx-auto">
