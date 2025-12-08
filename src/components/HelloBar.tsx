@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Clock } from 'lucide-react';
 
 const HelloBar = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -18,7 +19,10 @@ const HelloBar = () => {
           : 'opacity-0 -translate-y-full'
       }`}
     >
-      {/* Contenuto da aggiungere */}
+      <p className="text-white text-sm font-medium flex items-center gap-2">
+        <span className="font-bold">SPEDIZIONE GRATUITA</span> - Italia peninsulare e Sicilia. 
+        Consegna garantita prima di Natale solo se <Clock className="inline w-4 h-4" />
+      </p>
     </div>
   );
 };
