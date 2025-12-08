@@ -44,6 +44,9 @@ const HelloBar = () => {
             <p className="text-sm text-muted-foreground mt-4">
               Per spedizioni in altre zone (Sardegna, isole minori, Paesi Europei), i costi di produzione sono significativamente più alti (diverso fornitore) mentre lo shipping rientra nella norma, a parte San Marino che ha costi impossibili (mah).
             </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Paesi inclusi: DE, AT, CH, LU, GB, IE, FR, BE, ES, SE, DK, FI, NL, PL, PT, CZ, HU, SK.
+            </p>
             <p className="text-sm text-muted-foreground mt-3">
               Tale fornitore fa la consegna <strong className="text-foreground">EXPRESS 24h</strong>. Contattaci per un preventivo personalizzato.
             </p>
