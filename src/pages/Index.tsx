@@ -9,112 +9,88 @@ import BuyDialog from "@/components/BuyDialog";
 import AdminPanel from "@/components/AdminPanel";
 import { toast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-image.jpg";
-
 const Index = () => {
-  const { data: products = [], isLoading, refetch } = useProducts();
+  const {
+    data: products = [],
+    isLoading,
+    refetch
+  } = useProducts();
   const updateProduct = useUpdateProduct();
   const createProduct = useCreateProduct();
   const deleteProduct = useDeleteProduct();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
-
   const scrollToGallery = () => {
-    galleryRef.current?.scrollIntoView({ behavior: "smooth" });
+    galleryRef.current?.scrollIntoView({
+      behavior: "smooth"
+    });
   };
-
   const handleBuyClick = (product: Product) => {
     setSelectedProduct(product);
     setIsBuyDialogOpen(true);
   };
-
   const handleCustomOrder = (product: Product) => {
-    const message = encodeURIComponent(
-      `Hi! I'm interested in a custom order for:\n\n${product.name}\n${product.medium}\n\nPlease let me know the available options!`
-    );
+    const message = encodeURIComponent(`Hi! I'm interested in a custom order for:\n\n${product.name}\n${product.medium}\n\nPlease let me know the available options!`);
     window.open(`https://wa.me/?text=${message}`, "_blank");
   };
-
   const handleProductsChange = async (updatedProducts: Product[]) => {
     try {
       const existingIds = new Set(products.map(p => p.id));
       const updatedIds = new Set(updatedProducts.map(p => p.id));
-      
+
       // Find new products (in updated but not in existing)
       const newProducts = updatedProducts.filter(p => !existingIds.has(p.id));
-      
+
       // Find deleted products (in existing but not in updated)
       const deletedProducts = products.filter(p => !updatedIds.has(p.id));
-      
+
       // Find products to update (exist in both)
       const productsToUpdate = updatedProducts.filter(p => existingIds.has(p.id));
-      
+
       // Create new products
       for (const product of newProducts) {
         await createProduct.mutateAsync(product);
       }
-      
+
       // Update existing products
       for (const product of productsToUpdate) {
         await updateProduct.mutateAsync(product);
       }
-      
+
       // Delete removed products
       for (const product of deletedProducts) {
         await deleteProduct.mutateAsync(product.id);
       }
-      
       refetch();
       toast({
         title: "Prodotti aggiornati",
-        description: "Modifiche salvate con successo.",
+        description: "Modifiche salvate con successo."
       });
     } catch (error) {
       console.error('[Index] Error saving products:', error);
       toast({
         title: "Errore",
         description: "Impossibile salvare. Verifica di essere admin.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navigation isOverHero />
-      <HelloBar />
+      <HelloBar className="shadow" />
 
-      <Hero
-        imageUrl={heroImage}
-        title={"Accendi Quella Stanza\nFalla Vibrare"}
-        subtitle="Regalo di Natale Fatto. Ansia Zero. Risultato Memorabile."
-        ctaText="Trova il Regalo Perfetto"
-        onCtaClick={scrollToGallery}
-      />
+      <Hero imageUrl={heroImage} title={"Accendi Quella Stanza\nFalla Vibrare"} subtitle="Regalo di Natale Fatto. Ansia Zero. Risultato Memorabile." ctaText="Trova il Regalo Perfetto" onCtaClick={scrollToGallery} />
 
       <main ref={galleryRef} className="p-1">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
+        {isLoading ? <div className="flex items-center justify-center py-12">
             <p className="text-muted-foreground">Loading products...</p>
-          </div>
-        ) : (
-          <MasonryGrid
-            products={products}
-            onBuyClick={handleBuyClick}
-            onCustomOrder={handleCustomOrder}
-          />
-        )}
+          </div> : <MasonryGrid products={products} onBuyClick={handleBuyClick} onCustomOrder={handleCustomOrder} />}
       </main>
 
-      <BuyDialog
-        product={selectedProduct}
-        open={isBuyDialogOpen}
-        onOpenChange={setIsBuyDialogOpen}
-      />
+      <BuyDialog product={selectedProduct} open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen} />
 
       <AdminPanel products={products} onProductsChange={handleProductsChange} />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
