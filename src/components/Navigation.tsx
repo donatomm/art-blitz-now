@@ -48,13 +48,22 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
               alt="OctoWonders Logo"
               className={`w-10 h-10 ${showTransparent ? "invert" : ""}`}
             />
-            <span
-              className={`text-xl font-semibold ${
-                showTransparent ? "text-white" : "text-foreground"
-              }`}
-            >
-              OctoWonders
-            </span>
+            <div className="flex flex-col">
+              <span
+                className={`text-xl font-semibold ${
+                  showTransparent ? "text-white" : "text-foreground"
+                }`}
+              >
+                OctoWonders
+              </span>
+              <span
+                className={`text-xs font-light ${
+                  showTransparent ? "text-white/70" : "text-muted-foreground"
+                }`}
+              >
+                by Marco De Francesco
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
