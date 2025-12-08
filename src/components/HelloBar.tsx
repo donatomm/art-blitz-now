@@ -90,9 +90,9 @@ const HelloBar = () => {
             return <p className="text-center text-lg font-semibold text-red-600">❌ Termine scaduto</p>;
           })()}
             <p className="text-sm text-muted-foreground">
-              Gli ordini effettuati dopo questa data potrebbero non arrivare in tempo per le festività natalizie.
-              A meno che per EMERGENZE non si usi un diverso fornitore che ha prezzi quasi doppi (farò uno sconto da parte mia).
-              Contattatemi.
+              Gli ordini effettuati dopo questa data diffilmente arriveranno in tempo per le festività natalizie. 
+
+A meno che per EMERGENZE non si usi un diverso fornitore che ha prezzi quasi doppi - ma consegma Express 24h. Contattatemi.
             </p>
           </DialogDescription>
         </DialogContent>
