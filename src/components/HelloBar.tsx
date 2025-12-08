@@ -8,7 +8,7 @@ const HelloBar = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
   return <>
