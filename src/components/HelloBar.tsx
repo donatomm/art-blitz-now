@@ -53,7 +53,10 @@ const HelloBar = () => {
               <li>Sicilia</li>
             </ul>
             <p className="text-sm text-muted-foreground mt-4">
-              Per spedizioni in altre zone (Sardegna, isole minori, UE), i costi di produzione sono significativamente più alti (diverso fornitore), mentre lo shipping rientra nella norma — a parte San Marino che ha costi impossibili (mah!). Tale fornitore fa la consegna <strong className="text-foreground">EXPRESS 24h</strong>. Contattaci per un preventivo personalizzato.
+              Per spedizioni in altre zone (Sardegna, isole minori, Paesi Europei), i costi di produzione sono significativamente più alti (diverso fornitore) mentre lo shipping rientra nella norma, a parte San Marino che ha costi impossibili (mah).
+            </p>
+            <p className="text-sm text-muted-foreground mt-3">
+              Tale fornitore fa la consegna <strong className="text-foreground">EXPRESS 24h</strong>. Contattaci per un preventivo personalizzato.
             </p>
             <div className="flex gap-3 mt-4">
               <a
