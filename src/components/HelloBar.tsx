@@ -40,7 +40,6 @@ const HelloBar = () => {
             <p>La spedizione gratuita è valida per:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>𝙄𝙩𝙖𝙡𝙞𝙖 𝙋𝙚𝙣𝙞𝙣𝙨𝙪𝙡𝙖𝙧𝙚 𝙚 𝙎𝙞𝙘𝙞𝙡𝙞𝙖</li>
-              <li>Sicilia</li>
             </ul>
             <p className="text-sm text-muted-foreground mt-4">
               Per spedizioni in altre zone (Sardegna, isole minori, Paesi Europei), i costi di produzione sono significativamente più alti (diverso fornitore) mentre lo shipping rientra nella norma, a parte San Marino che ha costi impossibili (mah).
