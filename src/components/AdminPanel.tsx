@@ -17,7 +17,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2 } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2, Upload } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
@@ -38,6 +39,8 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editPage, setEditPage] = useState<Page | null>(null);
   const [isPageDialogOpen, setIsPageDialogOpen] = useState(false);
+  const [isStripeImportDialogOpen, setIsStripeImportDialogOpen] = useState(false);
+  const [stripeImportJson, setStripeImportJson] = useState("");
   const { toast } = useToast();
   
   const { data: pages = [] } = usePages();
@@ -250,6 +253,45 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
     contatti: "Contatti",
   };
 
+  const handleImportStripeIds = () => {
+    try {
+      const mapping = JSON.parse(stripeImportJson) as Record<string, string>;
+      
+      const updatedProducts = products.map(product => {
+        const stripeProductId = mapping[product.name];
+        if (stripeProductId) {
+          return {
+            ...product,
+            sizes: product.sizes.map(size => ({
+              ...size,
+              stripe_product_id: stripeProductId
+            }))
+          };
+        }
+        return product;
+      });
+
+      const matchedCount = Object.keys(mapping).filter(name => 
+        products.some(p => p.name === name)
+      ).length;
+
+      onProductsChange(updatedProducts);
+      setIsStripeImportDialogOpen(false);
+      setStripeImportJson("");
+      
+      toast({
+        title: "Stripe IDs importati!",
+        description: `${matchedCount} prodotti aggiornati con successo.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Errore nel JSON",
+        description: "Formato JSON non valido. Controlla la sintassi.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <Sheet>
@@ -316,14 +358,18 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
             </TabsList>
             
             <TabsContent value="products" className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button onClick={handleAddProduct} className="flex-1">
                   <Plus className="mr-2 h-4 w-4" />
-                  Aggiungi Prodotto
+                  Aggiungi
                 </Button>
                 <Button onClick={handleExportJSON} variant="secondary">
                   <Download className="mr-2 h-4 w-4" />
                   Esporta
+                </Button>
+                <Button onClick={() => setIsStripeImportDialogOpen(true)} variant="outline">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Stripe IDs
                 </Button>
               </div>
 
@@ -613,6 +659,37 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
               </Button>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Stripe IDs Import Dialog */}
+      <Dialog open={isStripeImportDialogOpen} onOpenChange={setIsStripeImportDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Importa Stripe Product IDs</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>JSON Mapping</Label>
+              <Textarea
+                value={stripeImportJson}
+                onChange={(e) => setStripeImportJson(e.target.value)}
+                placeholder={`{
+  "Octoheaded": "prod_ABC123",
+  "Octoghost": "prod_DEF456",
+  "Octosuckers": "prod_GHI789"
+}`}
+                className="min-h-[200px] font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                Inserisci un JSON con i nomi prodotto come chiavi e gli ID Stripe come valori.
+                Tutti i size variants di ogni prodotto saranno aggiornati con lo stesso ID.
+              </p>
+            </div>
+            <Button onClick={handleImportStripeIds} className="w-full">
+              Importa
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </>
