@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Home, ShoppingBag } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, MessageCircle, Mail } from "lucide-react";
 
 const CheckoutSuccess = () => {
   return (
@@ -36,6 +36,30 @@ const CheckoutSuccess = () => {
                 <span>Riceverai il tracking della spedizione via email</span>
               </li>
             </ul>
+          </div>
+
+          <div className="text-muted-foreground">
+            <p>Per qualsiasi domanda{" "}
+              <span className="font-medium text-foreground">contattami qui:</span>
+            </p>
+            <div className="flex justify-center gap-4 mt-3">
+              <a
+                href="https://wa.me/393401234567?text=Ciao%2C%20ho%20una%20domanda%20sul%20mio%20ordine"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
+              >
+                <MessageCircle className="h-5 w-5" />
+                <span>WhatsApp</span>
+              </a>
+              <a
+                href="mailto:info@octowonders.com?subject=Domanda%20sul%20mio%20ordine"
+                className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+              >
+                <Mail className="h-5 w-5" />
+                <span>Email</span>
+              </a>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
