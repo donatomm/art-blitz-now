@@ -90,7 +90,9 @@ serve(async (req) => {
         {
           price_data: {
             currency: "eur",
-            product: selectedSize.stripe_product_id,
+            product_data: {
+              name: `${product.name} - ${selectedSize.dimensions}`,
+            },
             unit_amount: Math.round(selectedSize.price * 100), // Convert to cents
           },
           quantity: 1,
