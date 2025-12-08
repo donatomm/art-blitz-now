@@ -83,6 +83,13 @@ serve(async (req) => {
     // Create checkout session with dynamic pricing
     const origin = req.headers.get("origin") || "https://octowonders.lovable.app";
     
+    // Build absolute image URL for Stripe
+    let imageUrl = product.image_url;
+    if (imageUrl && !imageUrl.startsWith('http')) {
+      imageUrl = `${origin}${imageUrl}`;
+    }
+    logStep("Image URL for Stripe", { imageUrl });
+    
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : customer_email,
@@ -92,6 +99,7 @@ serve(async (req) => {
             currency: "eur",
             product_data: {
               name: `${product.name} - ${selectedSize.dimensions}`,
+              images: imageUrl ? [imageUrl] : [],
             },
             unit_amount: Math.round(selectedSize.price * 100), // Convert to cents
           },
