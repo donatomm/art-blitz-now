@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { MessageCircle, Mail } from 'lucide-react';
 
 const HelloBar = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -54,6 +55,24 @@ const HelloBar = () => {
             <p className="text-sm text-muted-foreground mt-4">
               Per spedizioni in altre zone (Sardegna, isole minori, UE), i costi di spedizione sono significativamente più alti in quanto dovremo utilizzare un altro fornitore. Però fa la consegna <strong className="text-foreground">EXPRESS 24h</strong>! Contattaci per un preventivo personalizzato.
             </p>
+            <div className="flex gap-3 mt-4">
+              <a
+                href="https://wa.me/393402748703?text=Ciao!%20Vorrei%20un%20preventivo%20per%20spedizione%20in%20zona%20non%20coperta%20dalla%20spedizione%20gratuita."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors text-sm font-medium"
+              >
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </a>
+              <a
+                href="mailto:info@octowonders.com?subject=Richiesta%20preventivo%20spedizione"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-md transition-colors text-sm font-medium"
+              >
+                <Mail className="h-4 w-4" />
+                Email
+              </a>
+            </div>
           </DialogDescription>
         </DialogContent>
       </Dialog>
