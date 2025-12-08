@@ -52,7 +52,7 @@ const HelloBar = () => {
               <li>Sicilia</li>
             </ul>
             <p className="text-sm text-muted-foreground mt-4">
-              Per spedizioni in altre zone (Sardegna, isole minori, UE), i costi di spedizione sono significativamente più alti. Contattaci per un preventivo personalizzato.
+              Per spedizioni in altre zone (Sardegna, isole minori, UE), i costi di spedizione sono significativamente più alti in quanto dovremo utilizzare un altro fornitore. Però fa la consegna <strong className="text-foreground">EXPRESS 24h</strong>! Contattaci per un preventivo personalizzato.
             </p>
           </DialogDescription>
         </DialogContent>
