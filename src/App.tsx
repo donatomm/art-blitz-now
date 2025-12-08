@@ -11,8 +11,6 @@ import Contact from "./pages/Contact";
 import NotaClienti from "./pages/NotaClienti";
 import NotFound from "./pages/NotFound";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
-import HelloBar from "./components/HelloBar";
-
 const queryClient = new QueryClient();
 
 // Main app component
@@ -22,7 +20,6 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <HelloBar />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/product/:id" element={<Product />} />
