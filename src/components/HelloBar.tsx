@@ -75,6 +75,10 @@ const HelloBar = () => {
             <p className="text-xl font-bold text-center py-2">14 Dicembre 2025</p>
             <p className="text-sm text-muted-foreground">
               Gli ordini effettuati dopo questa data potrebbero non arrivare in tempo per le festività natalizie.
+A meno che per EMERGENZE non si usi un diverso fornitore che ha prezzi quasi doppi (faro' uno sconto da parte mia)
+Contattatemi
+                   
+
             </p>
           </DialogDescription>
         </DialogContent>
