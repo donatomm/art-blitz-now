@@ -7,21 +7,19 @@ const CheckoutSuccess = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <div className="container mx-auto px-4 pt-32 pb-12">
         <div className="max-w-lg mx-auto text-center space-y-6">
           <div className="flex justify-center">
             <CheckCircle className="h-20 w-20 text-green-500" />
           </div>
-          
-          <h1 className="text-3xl font-bold text-foreground">
-            Grazie per il tuo ordine!
-          </h1>
-          
+
+          <h1 className="text-3xl font-bold text-foreground">Grazie per il tuo ordine!</h1>
+
           <p className="text-muted-foreground text-lg">
             Il pagamento è stato elaborato con successo. Riceverai una email di conferma a breve.
           </p>
-          
+
           <div className="bg-card border border-border rounded-lg p-6 space-y-4">
             <h2 className="font-semibold text-foreground">Prossimi passi:</h2>
             <ul className="text-left text-muted-foreground space-y-2">
@@ -39,7 +37,7 @@ const CheckoutSuccess = () => {
               </li>
             </ul>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link to="/">
               <Button className="w-full sm:w-auto bg-gold text-black hover:bg-gold/90">
@@ -50,7 +48,7 @@ const CheckoutSuccess = () => {
             <Link to="/">
               <Button variant="outline" className="w-full sm:w-auto">
                 <ShoppingBag className="mr-2 h-4 w-4" />
-                Continua a Esplorare
+                Esplora altre opere
               </Button>
             </Link>
           </div>
