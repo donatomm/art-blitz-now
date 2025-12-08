@@ -3,7 +3,10 @@ import { Link } from "react-router-dom";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, X } from "lucide-react";
+import { Check, X, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
 interface ProductCardProps {
   product: Product;
   onBuyClick: (product: Product) => void;
@@ -11,6 +14,7 @@ interface ProductCardProps {
   editMode?: boolean;
   onProductUpdate?: (product: Product) => void;
 }
+
 const ProductCard = ({
   product,
   onBuyClick,
@@ -20,12 +24,17 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const { toast } = useToast();
+
   const sizePrices = product.sizes.map(s => `${s.dimensions} €${s.price}`).join(" | ");
+
   const handleEditStart = (field: string, value: string) => {
     if (!editMode) return;
     setEditingField(field);
     setEditValue(value);
   };
+
   const handleEditSave = () => {
     if (!onProductUpdate || !editingField) return;
     const updatedProduct = {
@@ -40,10 +49,48 @@ const ProductCard = ({
     setEditingField(null);
     setEditValue("");
   };
+
   const handleEditCancel = () => {
     setEditingField(null);
     setEditValue("");
   };
+
+  const handleCheckout = async () => {
+    // Use first available size with stripe_product_id
+    const sizeIndex = product.sizes.findIndex(s => s.stripe_product_id);
+    
+    if (sizeIndex === -1) {
+      // Fallback to dialog if no Stripe product configured
+      onBuyClick(product);
+      return;
+    }
+
+    setIsCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          product_id: product.id,
+          size_index: sizeIndex,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (!data?.url) throw new Error("No checkout URL received");
+
+      window.open(data.url, '_blank');
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast({
+        title: "Errore",
+        description: error instanceof Error ? error.message : "Impossibile avviare il pagamento.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+  };
+
   const renderEditableField = (field: string, value: string, className: string) => {
     if (editMode && editingField === field) {
       return <div className="flex items-center gap-1">
@@ -60,6 +107,7 @@ const ProductCard = ({
         {value}
       </span>;
   };
+
   return <div className="group overflow-hidden bg-card rounded-sm break-inside-avoid mb-1">
       <Link to={`/product/${product.id}`} className="relative overflow-hidden block">
         <img src={product.image_url} alt={product.name} className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -77,8 +125,13 @@ const ProductCard = ({
           <span className="text-muted-foreground">|</span>
           <span className="text-muted-foreground mx-px">{sizePrices}</span>
           <span className="text-muted-foreground">|</span>
-          <Button size="sm" variant="default" className="h-6 px-2 text-xs" onClick={() => onBuyClick(product)}>
-            BUY
+          <Button 
+            size="sm" 
+            className="h-6 px-2 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
+            onClick={handleCheckout}
+            disabled={isCheckoutLoading}
+          >
+            {isCheckoutLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "ACQUISTA"}
           </Button>
           <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground" onClick={() => onCustomOrder(product)}>
             Custom Order
@@ -87,4 +140,5 @@ const ProductCard = ({
       </div>
     </div>;
 };
+
 export default ProductCard;
