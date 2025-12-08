@@ -23,7 +23,7 @@ const HelloBar = () => {
           </span>
           <span className="hidden sm:inline">•</span>
           <span className="flex items-center gap-1">
-            <Gift className="h-4 w-4 animate-bounce" />
+            <Gift className="h-4 w-4 animate-spin" />
             CONSEGNA ENTRO 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA PER ACQUISTI ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘
             <button onClick={() => setDeliveryDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-gold-foreground shadow-md">
               Dettagli
