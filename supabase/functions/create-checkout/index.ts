@@ -100,7 +100,8 @@ serve(async (req) => {
           price_data: {
             currency: "eur",
             product_data: {
-              name: `${product.name} - ${selectedSize.dimensions}`,
+              name: `${product.name.toUpperCase()} | ${selectedSize.dimensions} cm`,
+              description: `Stampa su Tela - Dimensioni: ${selectedSize.dimensions} cm`,
               images: imageUrl ? [imageUrl] : [],
             },
             unit_amount: Math.round(selectedSize.price * 100), // Convert to cents
