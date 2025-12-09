@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Gift } from "lucide-react";
 
-// Christmas countdown component
+// Christmas countdown component - compact square version
 const ChristmasCountdown = () => {
   const deadline = new Date('2025-12-14T23:59:59');
   const now = new Date();
@@ -17,24 +17,20 @@ const ChristmasCountdown = () => {
   if (daysRemaining <= 0) return null;
   
   return (
-    <div className="w-full mb-6 p-4 bg-gradient-to-r from-green-900/80 to-red-900/80 border-2 border-gold rounded-lg shadow-lg">
-      <div className="flex flex-col items-center text-center gap-2">
-        <div className="flex items-center gap-2">
-          <Gift className="h-6 w-6 text-gold animate-bounce" />
-          <span className="text-xl md:text-2xl font-bold text-white tracking-wide">
-            🎄 CONSEGNA GARANTITA ENTRO NATALE 🎄
-          </span>
-          <Gift className="h-6 w-6 text-gold animate-bounce" />
-        </div>
-        <p className="text-lg text-white/90 font-medium">
-          Per acquisti fatti entro <span className="text-gold font-bold">14 Dicembre 2025</span>
-        </p>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-2xl md:text-3xl font-black text-red-500 animate-pulse">
-            ⏰ MANCANO SOLO {daysRemaining} GIORNI!
-          </span>
-        </div>
+    <div className="w-48 h-48 flex-shrink-0 p-4 bg-card border-2 border-gold/50 rounded-lg flex flex-col items-center justify-center text-center">
+      <Gift className="h-8 w-8 text-gold mb-2" />
+      <p className="text-xs text-muted-foreground font-medium leading-tight">
+        Consegna Natale garantita
+      </p>
+      <p className="text-xs text-muted-foreground mb-2">
+        acquisti entro <span className="text-gold font-bold">14 Dic</span>
+      </p>
+      <div className="text-3xl font-black text-red-500">
+        {daysRemaining}
       </div>
+      <p className="text-xs font-bold text-red-500 uppercase tracking-wide">
+        giorni
+      </p>
     </div>
   );
 };
@@ -183,9 +179,6 @@ const Product = () => {
       </Link>
       
       <div className="container mx-auto px-4 pt-32 pb-12">
-        
-        {/* Christmas Countdown Banner */}
-        <ChristmasCountdown />
 
         {/* Deal Label */}
         {product.deal_label_enabled && product.deal_label_text && <div className="w-full mb-4">
@@ -270,14 +263,17 @@ const Product = () => {
               <p className="text-base text-muted-foreground">{product.medium}</p>
             </div>
 
-            {/* Size Selection */}
+            {/* Size Selection + Christmas Countdown */}
             <div id="acquista" className="space-y-3">
               <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
-                    <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
-                    <div className="text-lg font-bold">€{size.price}</div>
-                  </button>)}
+              <div className="flex flex-wrap items-start gap-4">
+                <div className="flex flex-wrap gap-2">
+                  {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
+                      <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
+                      <div className="text-lg font-bold">€{size.price}</div>
+                    </button>)}
+                </div>
+                <ChristmasCountdown />
               </div>
             </div>
 
