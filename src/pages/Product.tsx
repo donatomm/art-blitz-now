@@ -113,7 +113,7 @@ const Product = () => {
   const getEmailLink = () => {
     const subject = `Richiesta per ${product.name}`;
     const body = `Ciao!\n\nSono interessato a:\n- Opera: ${product.name}\n- Dimensione: ${selectedSizeData.dimensions}\n- Prezzo: €${selectedSizeData.price}\n\nGrazie!`;
-    return `mailto:info@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    return `mailto:me@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
   const getCustomWhatsAppLink = () => {
     const message = `Ciao! Vorrei richiedere un FORMATO PERSONALIZZATO per "${product.name}" (${product.medium}). Per favore contattatemi per discutere dimensioni e preventivo.`;
