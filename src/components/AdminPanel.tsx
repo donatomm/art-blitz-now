@@ -17,7 +17,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2, Upload } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2, Upload, FileSpreadsheet } from "lucide-react";
+import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
@@ -454,8 +455,38 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   return numA - numB;
                 });
 
+                const handleExportXLSX = () => {
+                  const exportData = allSkus
+                    .sort((a, b) => {
+                      const numA = parseInt(a.size.split('x')[0]) || 0;
+                      const numB = parseInt(b.size.split('x')[0]) || 0;
+                      return numA - numB || a.price - b.price;
+                    })
+                    .map(sku => ({
+                      'Size': sku.size,
+                      'Price (€)': sku.price,
+                      'Product Name': sku.productName,
+                      'Stripe ID': sku.stripeId
+                    }));
+                  
+                  const ws = XLSX.utils.json_to_sheet(exportData);
+                  const wb = XLSX.utils.book_new();
+                  XLSX.utils.book_append_sheet(wb, ws, "SKUs");
+                  XLSX.writeFile(wb, "octowonders-skus.xlsx");
+                  
+                  toast({
+                    title: "Esportato!",
+                    description: "File Excel scaricato.",
+                  });
+                };
+
                 return (
-                  <Tabs defaultValue={uniqueSizes[0] || ''} className="w-full">
+                  <>
+                    <Button onClick={handleExportXLSX} variant="outline" className="w-full">
+                      <FileSpreadsheet className="mr-2 h-4 w-4" />
+                      Esporta Excel
+                    </Button>
+                    <Tabs defaultValue={uniqueSizes[0] || ''} className="w-full">
                     <TabsList className="flex flex-wrap h-auto gap-1">
                       {uniqueSizes.map(size => (
                         <TabsTrigger key={size} value={size} className="text-xs px-2 py-1">
@@ -489,7 +520,8 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                           ))}
                       </TabsContent>
                     ))}
-                  </Tabs>
+                    </Tabs>
+                  </>
                 );
               })()}
             </TabsContent>
