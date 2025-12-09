@@ -112,10 +112,17 @@ const Product = () => {
     return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
   };
   const getEmailLink = () => {
-    const subject = `Richiesta per ${product.name}`;
-    if (!selectedSizeData) return `mailto:me@octowonders.com?subject=${encodeURIComponent(subject)}`;
-    const body = `Ciao!\n\nSono interessato a:\n- Opera: ${product.name}\n- Dimensione: ${selectedSizeData.dimensions}\n- Prezzo: €${selectedSizeData.price}\n\nGrazie!`;
-    return `mailto:me@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const subject = encodeURIComponent(`Richiesta per ${product.name}`);
+    if (!selectedSizeData) return `mailto:me@octowonders.com?subject=${subject}`;
+    const body = encodeURIComponent(`Ciao!
+
+Sono interessato a:
+- Opera: ${product.name}
+- Dimensione: ${selectedSizeData.dimensions}
+- Prezzo: €${selectedSizeData.price}
+
+Grazie!`);
+    return `mailto:me@octowonders.com?subject=${subject}&body=${body}`;
   };
   const getCustomWhatsAppLink = () => {
     const message = `Ciao! Vorrei richiedere un FORMATO PERSONALIZZATO per "${product.name}" (${product.medium}). Per favore contattatemi per discutere dimensioni e preventivo.`;
