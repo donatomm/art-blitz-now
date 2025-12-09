@@ -101,10 +101,10 @@ const Product = () => {
       </div>;
   }
   // Filter out sizes with price = 0 (hidden variants)
-  const activeSizes = product.sizes
-    .map((size, originalIndex) => ({ ...size, originalIndex }))
-    .filter(size => size.price > 0);
-  
+  const activeSizes = product.sizes.map((size, originalIndex) => ({
+    ...size,
+    originalIndex
+  })).filter(size => size.price > 0);
   const selectedSizeData = activeSizes[selectedSize] || activeSizes[0];
   const getWhatsAppLink = () => {
     const message = `Ciao! Sono interessato a "${product.name}" - ${selectedSizeData.dimensions} a €${selectedSizeData.price}`;
@@ -176,7 +176,7 @@ const Product = () => {
 
         {/* Deal Label */}
         {product.deal_label_enabled && product.deal_label_text && <div className="w-full mb-4">
-            <span className="inline-block bg-gold text-black font-bold text-sm px-4 py-2 rounded shadow-lg">
+            <span className="inline-block text-black font-bold text-sm px-4 py-2 rounded shadow-lg bg-fuchsia-500">
               {product.deal_label_text}
             </span>
           </div>}
