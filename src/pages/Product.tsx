@@ -6,6 +6,39 @@ import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingCart
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Gift } from "lucide-react";
+
+// Christmas countdown component
+const ChristmasCountdown = () => {
+  const deadline = new Date('2025-12-14T23:59:59');
+  const now = new Date();
+  const daysRemaining = Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+  
+  if (daysRemaining <= 0) return null;
+  
+  return (
+    <div className="w-full mb-6 p-4 bg-gradient-to-r from-green-900/80 to-red-900/80 border-2 border-gold rounded-lg shadow-lg">
+      <div className="flex flex-col items-center text-center gap-2">
+        <div className="flex items-center gap-2">
+          <Gift className="h-6 w-6 text-gold animate-bounce" />
+          <span className="text-xl md:text-2xl font-bold text-white tracking-wide">
+            🎄 CONSEGNA GARANTITA ENTRO NATALE 🎄
+          </span>
+          <Gift className="h-6 w-6 text-gold animate-bounce" />
+        </div>
+        <p className="text-lg text-white/90 font-medium">
+          Per acquisti fatti entro <span className="text-gold font-bold">14 Dicembre 2025</span>
+        </p>
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-2xl md:text-3xl font-black text-red-500 animate-pulse">
+            ⏰ MANCANO SOLO {daysRemaining} GIORNI!
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Product = () => {
   const {
     id
@@ -150,6 +183,9 @@ const Product = () => {
       </Link>
       
       <div className="container mx-auto px-4 pt-32 pb-12">
+        
+        {/* Christmas Countdown Banner */}
+        <ChristmasCountdown />
 
         {/* Deal Label */}
         {product.deal_label_enabled && product.deal_label_text && <div className="w-full mb-4">
