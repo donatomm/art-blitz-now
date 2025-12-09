@@ -291,14 +291,13 @@ const Product = () => {
             <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border">
               <span className="text-sm text-muted-foreground">Contattami / Supporto </span>
               <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer">
-                <Button size="sm" className="bg-green-500 hover:bg-green-400 text-gold-foreground">
-                  <MessageCircle className="mr-2 h-4 w-4 shadow-sm text-green-600" />
-                  ​Whatsapp
-
+                <Button size="sm" className="bg-gray-100 hover:bg-gray-200 text-black">
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  WhatsApp
                 </Button>
               </a>
               <a href={getEmailLink()}>
-                <Button size="sm" className="bg-yellow-500 hover:bg-yellow-400 text-black">
+                <Button size="sm" className="bg-gray-100 hover:bg-gray-200 text-black">
                   <Mail className="mr-2 h-4 w-4" />
                   Email
                 </Button>
