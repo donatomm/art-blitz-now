@@ -114,12 +114,27 @@ const Product = () => {
   const getEmailLink = () => {
     const subject = encodeURIComponent(`Richiesta per ${product.name}`);
     if (!selectedSizeData) return `mailto:me@octowonders.com?subject=${subject}`;
-    const body = encodeURIComponent(`Ciao!
+    const body = encodeURIComponent(`Ciao Marco,
 
-Sono interessato a:
+Sono interessato/a all'opera
+
 - Opera: ${product.name}
 - Dimensione: ${selectedSizeData.dimensions}
 - Prezzo: €${selectedSizeData.price}
+
+MESSAGGIO QUI SOTTO:
+____________________
+
+
+Scrivi in questo spazio 
+
+
+
+
+
+
+
+____________________
 
 Grazie!`);
     return `mailto:me@octowonders.com?subject=${subject}&body=${body}`;

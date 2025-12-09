@@ -10,7 +10,26 @@ const Contact = () => {
 
   const getEmailLink = () => {
     const subject = encodeURIComponent("Richiesta informazioni");
-    return `mailto:?subject=${subject}`;
+    const body = encodeURIComponent(`Ciao Marco,
+
+Sono interessato/a alle vostre opere.
+
+MESSAGGIO QUI SOTTO:
+____________________
+
+
+Scrivi in questo spazio 
+
+
+
+
+
+
+
+____________________
+
+Grazie!`);
+    return `mailto:me@octowonders.com?subject=${subject}&body=${body}`;
   };
 
   return (
