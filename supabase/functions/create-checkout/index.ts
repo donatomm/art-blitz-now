@@ -100,7 +100,7 @@ serve(async (req) => {
     // Build description with Christmas guarantee
     let description = `Stampa su Tela Premium`;
     if (daysRemaining > 0) {
-      description += `\n\n🎄 Consegna Garantita entro Natale per acquisti fatti entro 14 Dicembre 2025\n⏰ Mancano solo ${daysRemaining} giorni!`;
+      description += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n🎄🎄🎄 CONSEGNA GARANTITA ENTRO NATALE 🎄🎄🎄\n\nPer acquisti fatti entro 14 Dicembre 2025\n\n🔴🔴🔴 MANCANO SOLO ${daysRemaining} GIORNI! 🔴🔴🔴\n━━━━━━━━━━━━━━━━━━━━━━━━━━`;
     }
     
     const session = await stripe.checkout.sessions.create({
