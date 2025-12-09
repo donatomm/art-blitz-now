@@ -6,29 +6,21 @@ import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingCart
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Gift } from "lucide-react";
+import { TreePine } from "lucide-react";
 
-// Christmas countdown component - compact square version
-const ChristmasCountdown = () => {
+// Christmas deadline inline text component
+const ChristmasDeadlineText = () => {
   const deadline = new Date('2025-12-14T23:59:59');
   const now = new Date();
   const daysRemaining = Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
   if (daysRemaining <= 0) return null;
-  return <div className="w-48 h-48 flex-shrink-0 p-4 bg-card border-2 border-gold/50 rounded-lg flex flex-col items-center justify-center text-center">
-      <Gift className="h-8 w-8 text-gold mb-2" />
-      <p className="text-xs text-muted-foreground font-medium leading-tight">
-        Consegna Natale garantita
-      </p>
-      <p className="text-xs text-muted-foreground mb-2">
-        acquisti entro <span className="text-gold font-bold">14 Dic</span>
-      </p>
-      <div className="text-3xl font-black text-red-500">
-        {daysRemaining}
-      </div>
-      <p className="text-xs font-bold text-red-500 uppercase tracking-wide">
-        giorni
-      </p>
-    </div>;
+  return (
+    <p className="text-sm text-foreground mt-2">
+      Consegna entro <TreePine className="inline h-4 w-4 text-green-600 mx-1" /> Natale Garantita per acquisti entro il{" "}
+      <span className="text-red-500 font-bold">14 Dicembre</span>, Mancano{" "}
+      <span className="text-red-500 font-bold">{daysRemaining}</span> Giorni
+    </p>
+  );
 };
 const Product = () => {
   const {
@@ -253,15 +245,13 @@ const Product = () => {
 
           {/* Right Column - Info */}
           <div className="space-y-6">
-            {/* Product Name and Medium + Christmas Countdown */}
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">
-                  {product.name}
-                </h1>
-                <p className="text-base text-muted-foreground">{product.medium}</p>
-              </div>
-              <ChristmasCountdown className="my-px px-0 border-dashed" />
+            {/* Product Name and Medium + Christmas Deadline */}
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">
+                {product.name}
+              </h1>
+              <p className="text-base text-muted-foreground">{product.medium}</p>
+              <ChristmasDeadlineText />
             </div>
 
             {/* Size Selection */}
