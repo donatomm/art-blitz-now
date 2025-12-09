@@ -291,9 +291,9 @@ const Product = () => {
             <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border">
               <span className="text-sm text-muted-foreground">Contattami / Supporto </span>
               <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer">
-                <Button size="sm" className="bg-green-500 hover:bg-green-400 text-primary-foreground">
+                <Button size="sm" className="bg-green-500 hover:bg-green-400 text-gold-foreground">
                   <MessageCircle className="mr-2 h-4 w-4 shadow-sm text-green-600" />
-                  ​
+                  ​Whatsapp
 
                 </Button>
               </a>
