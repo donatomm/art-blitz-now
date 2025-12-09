@@ -321,7 +321,7 @@ Grazie!`);
                 </Button>
               </a>
               <a 
-                href={`mailto:me@octowonders.com?subject=${encodeURIComponent('Richiesta per ' + product.name)}&body=${encodeURIComponent('Ciao!' + '\r\n\r\n' + 'Sono interessato a:' + '\r\n' + '- Opera: ' + product.name + '\r\n' + '- Dimensione: ' + (selectedSizeData?.dimensions || '') + '\r\n' + '- Prezzo: ' + (selectedSizeData?.price || '') + ' EUR' + '\r\n\r\n' + 'Grazie!')}`}
+                href={getEmailLink()}
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 bg-gray-100 hover:bg-gray-200 text-black transition-colors"
               >
                 <Mail className="mr-2 h-4 w-4" />
