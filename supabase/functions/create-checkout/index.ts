@@ -83,14 +83,40 @@ serve(async (req) => {
     // Create checkout session with dynamic pricing
     const origin = req.headers.get("origin") || "https://octowonders.lovable.app";
     
-    // Build absolute image URL for Stripe - use production URL for local paths
-    // Stripe needs publicly accessible URLs, preview URLs may not work
+    // Build absolute image URL for Stripe
+    // Prefer Supabase storage URLs (more reliable), fallback to production URL for local paths
     const productionUrl = "https://octowonders.lovable.app";
     let imageUrl = product.image_url;
-    if (imageUrl && !imageUrl.startsWith('http')) {
-      imageUrl = `${productionUrl}${imageUrl}`;
+    
+    // Skip image if URL is empty or invalid
+    let finalImageUrl: string | null = null;
+    if (imageUrl) {
+      if (imageUrl.startsWith('http')) {
+        // Already absolute URL (e.g., Supabase storage)
+        finalImageUrl = imageUrl;
+      } else if (imageUrl.startsWith('/')) {
+        // Local path - convert to production URL
+        finalImageUrl = `${productionUrl}${imageUrl}`;
+      }
     }
-    logStep("Image URL for Stripe", { imageUrl });
+    
+    // If we still don't have a valid image, try to get it from the Stripe product
+    let images: string[] = [];
+    if (finalImageUrl) {
+      images = [finalImageUrl];
+    } else if (selectedSize.stripe_product_id) {
+      // Fallback: fetch image from existing Stripe product
+      try {
+        const stripeProduct = await stripe.products.retrieve(selectedSize.stripe_product_id);
+        if (stripeProduct.images && stripeProduct.images.length > 0) {
+          images = [stripeProduct.images[0]];
+          logStep("Using Stripe product image as fallback", { image: images[0] });
+        }
+      } catch (e) {
+        logStep("Could not fetch Stripe product image", { error: String(e) });
+      }
+    }
+    logStep("Image URL for Stripe", { imageUrl: images[0] || 'none' });
     
     // Calculate days remaining until December 14, 2025
     const deadline = new Date('2025-12-14T23:59:59');
@@ -113,7 +139,7 @@ serve(async (req) => {
             product_data: {
               name: `★ ${product.name.toUpperCase()} ★ ${selectedSize.dimensions} cm`,
               description: description,
-              images: imageUrl ? [imageUrl] : [],
+              images: images,
             },
             unit_amount: Math.round(selectedSize.price * 100), // Convert to cents
           },
