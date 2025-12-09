@@ -176,7 +176,7 @@ const Product = () => {
 
         {/* Deal Label */}
         {product.deal_label_enabled && product.deal_label_text && <div className="w-full mb-4">
-            <span className="inline-block text-black font-bold text-sm px-4 py-2 rounded shadow-lg bg-fuchsia-500">
+            <span className="inline-block font-bold text-sm px-4 py-2 rounded shadow-lg bg-fuchsia-500 text-primary-foreground">
               {product.deal_label_text}
             </span>
           </div>}
