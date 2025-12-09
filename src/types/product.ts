@@ -2,6 +2,8 @@ export interface ProductSize {
   dimensions: string;
   price: number;
   stripe_product_id?: string;
+  deal_label_enabled?: boolean;
+  deal_label_text?: string;
 }
 
 export interface MockRoom {
