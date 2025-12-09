@@ -14,14 +14,12 @@ const ChristmasDeadlineText = () => {
   const now = new Date();
   const daysRemaining = Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
   if (daysRemaining <= 0) return null;
-  return (
-    <p className="text-sm text-foreground mt-2">
+  return <p className="text-sm text-foreground mt-2">
       <TreePine className="inline h-4 w-4 text-green-600 mr-1" />
       Consegna per Natale GARANTITA per acquisti ENTRO IL{" "}
       <span className="text-red-500 font-bold">14 Dicembre</span>, cioè{" "}
       <span className="text-red-500 font-bold">-{daysRemaining} giorni</span>
-    </p>
-  );
+    </p>;
 };
 const Product = () => {
   const {
@@ -269,7 +267,7 @@ const Product = () => {
             {/* Price and Buy Button */}
             <div className="flex flex-wrap items-center gap-4">
               <div className="bg-card rounded-lg px-6 py-4 border border-border">
-                <span className="text-muted-foreground text-sm">Totale: </span>
+                <span className="text-muted-foreground text-sm">Totale </span>
                 <span className="text-2xl font-bold text-gold">€{selectedSizeData.price}</span>
               </div>
               
