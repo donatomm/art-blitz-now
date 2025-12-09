@@ -305,11 +305,12 @@ Grazie!`);
                   WhatsApp
                 </Button>
               </a>
-              <a href={getEmailLink()}>
-                <Button size="sm" className="bg-gray-100 hover:bg-gray-200 text-black">
-                  <Mail className="mr-2 h-4 w-4" />
-                  Email
-                </Button>
+              <a 
+                href={`mailto:me@octowonders.com?subject=${encodeURIComponent(`Richiesta per ${product.name}`)}&body=${encodeURIComponent(`Ciao!\n\nSono interessato a:\n- Opera: ${product.name}\n- Dimensione: ${selectedSizeData?.dimensions || ''}\n- Prezzo: €${selectedSizeData?.price || ''}\n\nGrazie!`)}`}
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 bg-gray-100 hover:bg-gray-200 text-black transition-colors"
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                Email
               </a>
             </div>
           </div>
