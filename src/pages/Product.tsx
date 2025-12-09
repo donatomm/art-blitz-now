@@ -268,7 +268,7 @@ const Product = () => {
             <div className="flex flex-wrap items-center gap-4">
               <div className="bg-card rounded-lg px-6 py-4 border border-border">
                 <span className="text-muted-foreground text-sm">Totale </span>
-                <span className="text-2xl font-bold text-gold">€{selectedSizeData.price}</span>
+                <span className="text-2xl font-bold text-green-600">€{selectedSizeData.price}</span>
               </div>
               
               <Button onClick={handleCheckout} disabled={isCheckoutLoading} className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
