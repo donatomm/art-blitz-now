@@ -352,8 +352,9 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
             </div>
           ) : (
           <Tabs defaultValue="products" className="mt-4">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
+              <TabsTrigger value="skus">SKUs</TabsTrigger>
               <TabsTrigger value="pages">Pagine</TabsTrigger>
             </TabsList>
             
@@ -427,6 +428,70 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                     </div>
                   ))}
               </div>
+            </TabsContent>
+
+            <TabsContent value="skus" className="space-y-4">
+              {(() => {
+                // Collect all SKUs and group by size
+                const allSkus: { size: string; price: number; productName: string; stripeId: string }[] = [];
+                products.forEach(product => {
+                  product.sizes.forEach(size => {
+                    if (size.price > 0) {
+                      allSkus.push({
+                        size: size.dimensions,
+                        price: size.price,
+                        productName: product.name,
+                        stripeId: size.stripe_product_id || '-'
+                      });
+                    }
+                  });
+                });
+
+                // Get unique sizes sorted numerically
+                const uniqueSizes = [...new Set(allSkus.map(s => s.size))].sort((a, b) => {
+                  const numA = parseInt(a.split('x')[0]) || 0;
+                  const numB = parseInt(b.split('x')[0]) || 0;
+                  return numA - numB;
+                });
+
+                return (
+                  <Tabs defaultValue={uniqueSizes[0] || ''} className="w-full">
+                    <TabsList className="flex flex-wrap h-auto gap-1">
+                      {uniqueSizes.map(size => (
+                        <TabsTrigger key={size} value={size} className="text-xs px-2 py-1">
+                          {size}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    {uniqueSizes.map(size => (
+                      <TabsContent key={size} value={size} className="mt-3 space-y-1">
+                        <div className="text-xs font-medium text-muted-foreground mb-2 grid grid-cols-12 gap-2 px-2">
+                          <span className="col-span-1">Size</span>
+                          <span className="col-span-2">Price</span>
+                          <span className="col-span-4">Product</span>
+                          <span className="col-span-5">Stripe ID</span>
+                        </div>
+                        {allSkus
+                          .filter(sku => sku.size === size)
+                          .sort((a, b) => a.price - b.price)
+                          .map((sku, idx) => (
+                            <div 
+                              key={`${sku.productName}-${sku.size}-${idx}`}
+                              className="grid grid-cols-12 gap-2 p-2 bg-muted rounded text-sm items-center"
+                            >
+                              <span className="col-span-1 font-mono text-xs">{sku.size}</span>
+                              <span className="col-span-2 font-medium">€{sku.price}</span>
+                              <span className="col-span-4 truncate">{sku.productName}</span>
+                              <span className="col-span-5 font-mono text-xs text-muted-foreground truncate">
+                                {sku.stripeId}
+                              </span>
+                            </div>
+                          ))}
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                );
+              })()}
             </TabsContent>
             
             <TabsContent value="pages" className="space-y-2">
