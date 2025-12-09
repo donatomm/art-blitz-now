@@ -13,11 +13,8 @@ const ChristmasCountdown = () => {
   const deadline = new Date('2025-12-14T23:59:59');
   const now = new Date();
   const daysRemaining = Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-  
   if (daysRemaining <= 0) return null;
-  
-  return (
-    <div className="w-48 h-48 flex-shrink-0 p-4 bg-card border-2 border-gold/50 rounded-lg flex flex-col items-center justify-center text-center">
+  return <div className="w-48 h-48 flex-shrink-0 p-4 bg-card border-2 border-gold/50 rounded-lg flex flex-col items-center justify-center text-center">
       <Gift className="h-8 w-8 text-gold mb-2" />
       <p className="text-xs text-muted-foreground font-medium leading-tight">
         Consegna Natale garantita
@@ -31,10 +28,8 @@ const ChristmasCountdown = () => {
       <p className="text-xs font-bold text-red-500 uppercase tracking-wide">
         giorni
       </p>
-    </div>
-  );
+    </div>;
 };
-
 const Product = () => {
   const {
     id
@@ -48,13 +43,17 @@ const Product = () => {
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
 
   // Scroll to top or to #acquista section when page loads
   useEffect(() => {
     if (window.location.hash === '#acquista') {
       setTimeout(() => {
-        document.getElementById('acquista')?.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('acquista')?.scrollIntoView({
+          behavior: 'smooth'
+        });
       }, 100);
     } else {
       window.scrollTo(0, 0);
@@ -124,29 +123,28 @@ const Product = () => {
     const message = `Ciao! Vorrei richiedere un FORMATO PERSONALIZZATO per "${product.name}" (${product.medium}). Per favore contattatemi per discutere dimensioni e preventivo.`;
     return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
   };
-
   const handleCheckout = async () => {
     if (!product) return;
-    
     const selectedSizeData = product.sizes[selectedSize];
     if (!selectedSizeData.stripe_product_id) {
       toast({
         title: "Pagamento non disponibile",
         description: "Questa dimensione non è ancora configurata per il pagamento. Contattaci via WhatsApp o Email.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setIsCheckoutLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-checkout', {
         body: {
           product_id: product.id,
-          size_index: selectedSize,
-        },
+          size_index: selectedSize
+        }
       });
-
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (!data?.url) throw new Error("No checkout URL received");
@@ -158,7 +156,7 @@ const Product = () => {
       toast({
         title: "Errore",
         description: error instanceof Error ? error.message : "Impossibile avviare il pagamento. Riprova o contattaci.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsCheckoutLoading(false);
@@ -263,7 +261,7 @@ const Product = () => {
                 </h1>
                 <p className="text-base text-muted-foreground">{product.medium}</p>
               </div>
-              <ChristmasCountdown />
+              <ChristmasCountdown className="my-px px-0" />
             </div>
 
             {/* Size Selection */}
@@ -284,22 +282,14 @@ const Product = () => {
                 <span className="text-2xl font-bold text-gold">€{selectedSizeData.price}</span>
               </div>
               
-              <Button 
-                onClick={handleCheckout}
-                disabled={isCheckoutLoading}
-                className="h-12 px-8 bg-gold hover:bg-gold/90 text-black font-bold"
-              >
-                {isCheckoutLoading ? (
-                  <>
+              <Button onClick={handleCheckout} disabled={isCheckoutLoading} className="h-12 px-8 bg-gold hover:bg-gold/90 text-black font-bold">
+                {isCheckoutLoading ? <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Caricamento...
-                  </>
-                ) : (
-                  <>
+                  </> : <>
                     <ShoppingCart className="mr-2 h-5 w-5" />
                     ACQUISTA ORA
-                  </>
-                )}
+                  </>}
               </Button>
             </div>
 
