@@ -97,10 +97,10 @@ serve(async (req) => {
     const now = new Date();
     const daysRemaining = Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
     
-    // Build description with Christmas guarantee - clean format
+    // Build description with Christmas guarantee - emoji format
     let description = `Stampa su Tela Premium`;
     if (daysRemaining > 0) {
-      description += `\n\n⚠️ ATTENZIONE: Consegna per Natale GARANTITA per acquisti ENTRO IL 14 Dicembre, cioè -${daysRemaining} giorni`;
+      description += `\n\n⚠️ATTENZIONE ⚠️\nConsegna per Natale GARANTITA\nper acquisti ‼️ENTRO IL 14 Dicembre‼️ Mancano solo ♥️ ${daysRemaining} GIORNI ♥️.`;
     }
     
     const session = await stripe.checkout.sessions.create({

@@ -100,7 +100,12 @@ const Product = () => {
         </div>
       </div>;
   }
-  const selectedSizeData = product.sizes[selectedSize];
+  // Filter out sizes with price = 0 (hidden variants)
+  const activeSizes = product.sizes
+    .map((size, originalIndex) => ({ ...size, originalIndex }))
+    .filter(size => size.price > 0);
+  
+  const selectedSizeData = activeSizes[selectedSize] || activeSizes[0];
   const getWhatsAppLink = () => {
     const message = `Ciao! Sono interessato a "${product.name}" - ${selectedSizeData.dimensions} a €${selectedSizeData.price}`;
     return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
@@ -116,8 +121,8 @@ const Product = () => {
   };
   const handleCheckout = async () => {
     if (!product) return;
-    const selectedSizeData = product.sizes[selectedSize];
-    if (!selectedSizeData.stripe_product_id) {
+    const sizeData = activeSizes[selectedSize];
+    if (!sizeData?.stripe_product_id) {
       toast({
         title: "Pagamento non disponibile",
         description: "Questa dimensione non è ancora configurata per il pagamento. Contattaci via WhatsApp o Email.",
@@ -133,7 +138,7 @@ const Product = () => {
       } = await supabase.functions.invoke('create-checkout', {
         body: {
           product_id: product.id,
-          size_index: selectedSize
+          size_index: sizeData.originalIndex // Use original index from full sizes array
         }
       });
       if (error) throw error;
@@ -257,7 +262,7 @@ const Product = () => {
             <div id="acquista" className="space-y-3">
               <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
+                {activeSizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
                     <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
                     <div className="text-lg font-bold">€{size.price}</div>
                   </button>)}
