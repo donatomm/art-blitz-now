@@ -107,11 +107,13 @@ const Product = () => {
   })).filter(size => size.price > 0);
   const selectedSizeData = activeSizes[selectedSize] || activeSizes[0];
   const getWhatsAppLink = () => {
+    if (!selectedSizeData) return `https://wa.me/+393331234567?text=${encodeURIComponent(`Ciao! Sono interessato a "${product.name}"`)}`;
     const message = `Ciao! Sono interessato a "${product.name}" - ${selectedSizeData.dimensions} a €${selectedSizeData.price}`;
     return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
   };
   const getEmailLink = () => {
     const subject = `Richiesta per ${product.name}`;
+    if (!selectedSizeData) return `mailto:me@octowonders.com?subject=${encodeURIComponent(subject)}`;
     const body = `Ciao!\n\nSono interessato a:\n- Opera: ${product.name}\n- Dimensione: ${selectedSizeData.dimensions}\n- Prezzo: €${selectedSizeData.price}\n\nGrazie!`;
     return `mailto:me@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
