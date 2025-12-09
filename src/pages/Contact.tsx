@@ -5,7 +5,7 @@ import { MessageCircle, Mail } from "lucide-react";
 const Contact = () => {
   const getWhatsAppLink = () => {
     const message = encodeURIComponent("Ciao! Vorrei informazioni sulle vostre opere.");
-    return `https://wa.me/?text=${message}`;
+    return `https://wa.me/393666295174?text=${message}`;
   };
 
   const getEmailLink = () => {

@@ -26,7 +26,7 @@ const BuyDialog = ({ product, open, onOpenChange }: BuyDialogProps) => {
     const message = encodeURIComponent(
       `Hi! I'm interested in purchasing:\n\n${product.name}\n${product.medium}\nSize: ${currentSize.dimensions}\nPrice: €${currentSize.price}\n\nPlease let me know the next steps!`
     );
-    return `https://wa.me/?text=${message}`;
+    return `https://wa.me/393666295174?text=${message}`;
   };
 
   const getEmailLink = () => {

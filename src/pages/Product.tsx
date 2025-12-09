@@ -107,9 +107,9 @@ const Product = () => {
   })).filter(size => size.price > 0);
   const selectedSizeData = activeSizes[selectedSize] || activeSizes[0];
   const getWhatsAppLink = () => {
-    if (!selectedSizeData) return `https://wa.me/+393331234567?text=${encodeURIComponent(`Ciao! Sono interessato a "${product.name}"`)}`;
+    if (!selectedSizeData) return `https://wa.me/393666295174?text=${encodeURIComponent(`Ciao! Sono interessato a "${product.name}"`)}`;
     const message = `Ciao! Sono interessato a "${product.name}" - ${selectedSizeData.dimensions} a €${selectedSizeData.price}`;
-    return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/393666295174?text=${encodeURIComponent(message)}`;
   };
   const getEmailLink = () => {
     const subject = encodeURIComponent(`Richiesta per ${product.name}`);
@@ -126,7 +126,7 @@ Grazie!`);
   };
   const getCustomWhatsAppLink = () => {
     const message = `Ciao! Vorrei richiedere un FORMATO PERSONALIZZATO per "${product.name}" (${product.medium}). Per favore contattatemi per discutere dimensioni e preventivo.`;
-    return `https://wa.me/+393331234567?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/393666295174?text=${encodeURIComponent(message)}`;
   };
   const handleCheckout = async () => {
     if (!product) return;
