@@ -108,7 +108,26 @@ const Product = () => {
   const selectedSizeData = activeSizes[selectedSize] || activeSizes[0];
   const getWhatsAppLink = () => {
     if (!selectedSizeData) return `https://wa.me/393666295174?text=${encodeURIComponent(`Ciao! Sono interessato a "${product.name}"`)}`;
-    const message = `Ciao! Sono interessato a "${product.name}" - ${selectedSizeData.dimensions} a €${selectedSizeData.price}`;
+    const message = `Ciao Marco,
+
+Sono interessato/a all'opera
+
+- Opera: ${product.name}
+- Dimensione: ${selectedSizeData.dimensions}
+- Prezzo: €${selectedSizeData.price}
+
+MESSAGGIO QUI SOTTO:
+____________________
+
+
+Scrivi in questo spazio 
+
+
+
+
+____________________
+
+Grazie!`;
     return `https://wa.me/393666295174?text=${encodeURIComponent(message)}`;
   };
   const getEmailLink = () => {
