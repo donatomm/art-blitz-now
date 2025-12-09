@@ -261,7 +261,7 @@ const Product = () => {
                 </h1>
                 <p className="text-base text-muted-foreground">{product.medium}</p>
               </div>
-              <ChristmasCountdown className="my-px px-0" />
+              <ChristmasCountdown className="my-px px-0 border-dashed" />
             </div>
 
             {/* Size Selection */}
