@@ -174,10 +174,10 @@ const Product = () => {
       
       <div className="container mx-auto px-4 pt-32 pb-12">
 
-        {/* Deal Label */}
-        {product.deal_label_enabled && product.deal_label_text && <div className="w-full mb-4">
+        {/* Deal Label - based on selected size */}
+        {selectedSizeData?.deal_label_enabled && selectedSizeData?.deal_label_text && <div className="w-full mb-4">
             <span className="inline-block font-bold text-sm px-4 py-2 rounded shadow-lg bg-fuchsia-500 text-primary-foreground">
-              {product.deal_label_text}
+              {selectedSizeData.deal_label_text}
             </span>
           </div>}
 

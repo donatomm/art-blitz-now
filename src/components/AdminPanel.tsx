@@ -210,7 +210,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
     onProductsChange([...sorted]);
   };
 
-  const updateEditSize = (sizeIndex: number, field: keyof ProductSize, value: string | number) => {
+  const updateEditSize = (sizeIndex: number, field: keyof ProductSize, value: string | number | boolean) => {
     if (!editProduct) return;
     const newSizes = [...editProduct.sizes];
     newSizes[sizeIndex] = { ...newSizes[sizeIndex], [field]: value };
@@ -554,7 +554,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label>Dimensioni, Prezzi & Stripe Product ID</Label>
+                <Label>Dimensioni, Prezzi & Offerta del Giorno</Label>
                 {editProduct.sizes.map((size, i) => (
                   <div key={i} className="flex flex-col gap-2 p-3 bg-muted/50 rounded-lg">
                     <div className="flex gap-2 items-center">
@@ -579,33 +579,24 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                       onChange={(e) => updateEditSize(i, "stripe_product_id", e.target.value)}
                       className="text-xs font-mono"
                     />
+                    {/* Per-size Deal Label */}
+                    <div className="flex items-center gap-2 pt-1 border-t border-border/50">
+                      <Switch
+                        checked={size.deal_label_enabled || false}
+                        onCheckedChange={(checked) => updateEditSize(i, "deal_label_enabled", checked)}
+                      />
+                      <span className="text-xs text-muted-foreground">Offerta</span>
+                      {size.deal_label_enabled && (
+                        <Input
+                          placeholder="OFFERTA DEL GIORNO"
+                          value={size.deal_label_text || ""}
+                          onChange={(e) => updateEditSize(i, "deal_label_text", e.target.value)}
+                          className="flex-1 text-xs"
+                        />
+                      )}
+                    </div>
                   </div>
                 ))}
-              </div>
-
-              {/* Deal Label Section */}
-              <div className="space-y-3 border-t pt-4">
-                <div className="flex items-center justify-between">
-                  <Label>Offerta del Giorno</Label>
-                  <Switch
-                    checked={editProduct.deal_label_enabled}
-                    onCheckedChange={(checked) =>
-                      setEditProduct({ ...editProduct, deal_label_enabled: checked })
-                    }
-                  />
-                </div>
-                {editProduct.deal_label_enabled && (
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Testo Label</Label>
-                    <Input
-                      value={editProduct.deal_label_text}
-                      onChange={(e) =>
-                        setEditProduct({ ...editProduct, deal_label_text: e.target.value })
-                      }
-                      placeholder="OFFERTA DEL GIORNO, scade h20:00 GG/MM/YY"
-                    />
-                  </div>
-                )}
               </div>
 
               <Button onClick={handleSaveProduct} className="w-full">

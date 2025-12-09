@@ -71,14 +71,18 @@ const ProductCard = ({
   return <div className="group overflow-hidden bg-card rounded-sm break-inside-avoid mb-1">
       <Link to={`/product/${product.id}`} className="relative overflow-hidden block">
         <img src={product.image_url} alt={product.name} className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" />
-        {/* Deal Label Badge */}
-        {product.deal_label_enabled && product.deal_label_text && (
-          <div className="absolute top-2 left-2 z-10">
-            <span className="inline-block bg-gold text-black font-bold text-xs px-2 py-1 rounded shadow-lg">
-              {product.deal_label_text}
-            </span>
-          </div>
-        )}
+        {/* Deal Label Badge - show if ANY size has deal enabled */}
+        {(() => {
+          const dealSize = product.sizes.find(s => s.deal_label_enabled && s.deal_label_text);
+          if (!dealSize) return null;
+          return (
+            <div className="absolute top-2 left-2 z-10">
+              <span className="inline-block bg-gold text-black font-bold text-xs px-2 py-1 rounded shadow-lg">
+                {dealSize.deal_label_text}
+              </span>
+            </div>
+          );
+        })()}
         {editMode && <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <span className="text-white text-xs bg-black/50 px-2 py-1 rounded">
               Click to edit image
