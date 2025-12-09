@@ -83,40 +83,30 @@ serve(async (req) => {
     // Create checkout session with dynamic pricing
     const origin = req.headers.get("origin") || "https://octowonders.lovable.app";
     
-    // Build absolute image URL for Stripe
-    // Prefer Supabase storage URLs (more reliable), fallback to production URL for local paths
-    const productionUrl = "https://octowonders.lovable.app";
-    let imageUrl = product.image_url;
-    
-    // Skip image if URL is empty or invalid
-    let finalImageUrl: string | null = null;
-    if (imageUrl) {
-      if (imageUrl.startsWith('http')) {
-        // Already absolute URL (e.g., Supabase storage)
-        finalImageUrl = imageUrl;
-      } else if (imageUrl.startsWith('/')) {
-        // Local path - convert to production URL
-        finalImageUrl = `${productionUrl}${imageUrl}`;
-      }
-    }
-    
-    // If we still don't have a valid image, try to get it from the Stripe product
+    // Build image URL for Stripe checkout
+    // PRIORITY: 1) Stripe product image (most reliable), 2) Supabase storage URL, 3) skip
     let images: string[] = [];
-    if (finalImageUrl) {
-      images = [finalImageUrl];
-    } else if (selectedSize.stripe_product_id) {
-      // Fallback: fetch image from existing Stripe product
+    
+    // First, try to get image from Stripe product (already uploaded by user)
+    if (selectedSize.stripe_product_id) {
       try {
         const stripeProduct = await stripe.products.retrieve(selectedSize.stripe_product_id);
         if (stripeProduct.images && stripeProduct.images.length > 0) {
           images = [stripeProduct.images[0]];
-          logStep("Using Stripe product image as fallback", { image: images[0] });
+          logStep("Using Stripe product image", { image: images[0] });
         }
       } catch (e) {
         logStep("Could not fetch Stripe product image", { error: String(e) });
       }
     }
-    logStep("Image URL for Stripe", { imageUrl: images[0] || 'none' });
+    
+    // Fallback to Supabase storage URL if no Stripe image found
+    if (images.length === 0 && product.image_url && product.image_url.startsWith('http')) {
+      images = [product.image_url];
+      logStep("Using Supabase storage image", { image: images[0] });
+    }
+    
+    logStep("Final image for Stripe", { imageUrl: images[0] || 'none' });
     
     // Calculate days remaining until December 14, 2025
     const deadline = new Date('2025-12-14T23:59:59');
