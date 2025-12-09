@@ -273,12 +273,12 @@ const Product = () => {
                 <span className="text-2xl font-bold text-gold">€{selectedSizeData.price}</span>
               </div>
               
-              <Button onClick={handleCheckout} disabled={isCheckoutLoading} className="h-12 px-8 bg-gold hover:bg-gold/90 text-black font-bold">
+              <Button onClick={handleCheckout} disabled={isCheckoutLoading} className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
                 {isCheckoutLoading ? <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
                     Caricamento...
                   </> : <>
-                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    <ShoppingCart className="mr-2 h-6 w-6 animate-bounce" />
                     ACQUISTA ORA
                   </>}
               </Button>
