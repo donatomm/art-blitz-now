@@ -16,9 +16,10 @@ const ChristmasDeadlineText = () => {
   if (daysRemaining <= 0) return null;
   return (
     <p className="text-sm text-foreground mt-2">
-      Consegna entro <TreePine className="inline h-4 w-4 text-green-600 mx-1" /> Natale Garantita per acquisti entro il{" "}
-      <span className="text-red-500 font-bold">14 Dicembre</span>, Mancano{" "}
-      <span className="text-red-500 font-bold">{daysRemaining}</span> Giorni
+      <TreePine className="inline h-4 w-4 text-green-600 mr-1" />
+      Consegna per Natale GARANTITA per acquisti ENTRO IL{" "}
+      <span className="text-red-500 font-bold">14 Dicembre</span>, cioè{" "}
+      <span className="text-red-500 font-bold">-{daysRemaining} giorni</span>
     </p>
   );
 };
