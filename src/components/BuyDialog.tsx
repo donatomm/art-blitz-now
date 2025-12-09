@@ -30,11 +30,33 @@ const BuyDialog = ({ product, open, onOpenChange }: BuyDialogProps) => {
   };
 
   const getEmailLink = () => {
-    const subject = encodeURIComponent(`Inquiry: ${product.name}`);
+    const subject = encodeURIComponent(`Richiesta per ${product.name}`);
     const body = encodeURIComponent(
-      `Hi!\n\nI'm interested in purchasing:\n\n${product.name}\n${product.medium}\nSize: ${currentSize.dimensions}\nPrice: €${currentSize.price}\n\nPlease let me know the next steps!\n\nThank you!`
+      `Ciao Marco,
+
+Sono interessato/a all'opera
+
+- Opera: ${product.name}
+- Dimensione: ${currentSize.dimensions}
+- Prezzo: €${currentSize.price}
+
+MESSAGGIO QUI SOTTO:
+____________________
+
+
+Scrivi in questo spazio 
+
+
+
+
+
+
+
+____________________
+
+Grazie!`
     );
-    return `mailto:?subject=${subject}&body=${body}`;
+    return `mailto:me@octowonders.com?subject=${subject}&body=${body}`;
   };
 
   return (
