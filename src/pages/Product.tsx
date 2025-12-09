@@ -287,48 +287,21 @@ const Product = () => {
               </Button>
             </div>
 
-            {/* Alternative Contact Methods */}
-            <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border">
-              <span className="text-sm text-muted-foreground">Preferisci contattarci?</span>
+            {/* Contact/Support Section */}
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border">
+              <span className="text-sm text-muted-foreground">Contattami</span>
               <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="sm" className="border-green-600/50 hover:border-green-600 hover:bg-green-600/10">
+                <Button size="sm" className="bg-green-600 hover:bg-green-500 text-white">
                   <MessageCircle className="mr-2 h-4 w-4" />
                   WhatsApp
                 </Button>
               </a>
               <a href={getEmailLink()}>
-                <Button variant="ghost" size="sm">
+                <Button size="sm" className="bg-yellow-500 hover:bg-yellow-400 text-black">
                   <Mail className="mr-2 h-4 w-4" />
                   Email
                 </Button>
               </a>
-            </div>
-
-            {/* Custom Format Section */}
-            <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border">
-              <span className="text-sm text-muted-foreground">Vuoi una dimensione diversa?</span>
-              <a href={getCustomWhatsAppLink()} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="sm" className="border-gold/50 hover:border-gold hover:bg-gold/10">
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  Formato Personalizzato
-                </Button>
-              </a>
-              <a href={getCustomEmailLink()}>
-                <Button variant="ghost" size="sm">
-                  <Mail className="mr-2 h-4 w-4" />
-                  Email
-                </Button>
-              </a>
-            </div>
-
-            {/* Product Details */}
-            <div className="border-t border-border pt-4">
-              <ul className="text-sm text-muted-foreground flex flex-wrap gap-x-4 gap-y-1">
-                <li>• Stampa professionale su tela</li>
-                <li>• Tecnologia HP Latex</li>
-                <li>• Colori brillanti garantiti</li>
-                <li>• Pronta da appendere</li>
-              </ul>
             </div>
           </div>
         </div>
