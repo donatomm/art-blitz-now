@@ -255,25 +255,25 @@ const Product = () => {
 
           {/* Right Column - Info */}
           <div className="space-y-6">
-            {/* Product Name and Medium */}
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">
-                {product.name}
-              </h1>
-              <p className="text-base text-muted-foreground">{product.medium}</p>
+            {/* Product Name and Medium + Christmas Countdown */}
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">
+                  {product.name}
+                </h1>
+                <p className="text-base text-muted-foreground">{product.medium}</p>
+              </div>
+              <ChristmasCountdown />
             </div>
 
-            {/* Size Selection + Christmas Countdown */}
+            {/* Size Selection */}
             <div id="acquista" className="space-y-3">
               <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
-              <div className="flex flex-wrap items-start gap-4">
-                <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
-                      <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
-                      <div className="text-lg font-bold">€{size.price}</div>
-                    </button>)}
-                </div>
-                <ChristmasCountdown />
+              <div className="flex flex-wrap gap-2">
+                {product.sizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
+                    <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
+                    <div className="text-lg font-bold">€{size.price}</div>
+                  </button>)}
               </div>
             </div>
 
