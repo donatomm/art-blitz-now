@@ -92,6 +92,17 @@ serve(async (req) => {
     }
     logStep("Image URL for Stripe", { imageUrl });
     
+    // Calculate days remaining until December 14, 2025
+    const deadline = new Date('2025-12-14T23:59:59');
+    const now = new Date();
+    const daysRemaining = Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+    
+    // Build description with Christmas guarantee
+    let description = `Stampa su Tela Premium`;
+    if (daysRemaining > 0) {
+      description += `\n\n🎄 Consegna Garantita entro Natale per acquisti fatti entro 14 Dicembre 2025\n⏰ Mancano solo ${daysRemaining} giorni!`;
+    }
+    
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : customer_email,
@@ -101,7 +112,7 @@ serve(async (req) => {
             currency: "eur",
             product_data: {
               name: `★ ${product.name.toUpperCase()} ★ ${selectedSize.dimensions} cm`,
-              description: `Stampa su Tela Premium`,
+              description: description,
               images: imageUrl ? [imageUrl] : [],
             },
             unit_amount: Math.round(selectedSize.price * 100), // Convert to cents
