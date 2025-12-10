@@ -6,7 +6,7 @@ import logo from "@/assets/logo.png";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "L'Artista", href: "/artist" },
+  { label: "Autore", href: "/artist" },
   { label: "Regole di Spedizione", href: "/shipping" },
   { label: "Contatti", href: "/contact" },
 ];
