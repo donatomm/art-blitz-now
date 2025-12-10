@@ -1,5 +1,6 @@
+import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
-import { MessageCircle, Mail } from "lucide-react";
+import { MessageCircle, Mail, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Shipping = () => {
@@ -13,6 +14,12 @@ Ed ho le seguenti domande:
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      
+      {/* Back to Gallery button */}
+      <Link to="/" className="fixed top-20 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
+        <ArrowLeft className="h-5 w-5" />
+        <span className="hidden sm:inline">Torna alla Galleria</span>
+      </Link>
       
       <main className="max-w-[800px] mx-auto px-4 py-8 md:px-8 md:py-16 pt-24">
         <h1 className="text-4xl font-bold text-foreground mb-8">
