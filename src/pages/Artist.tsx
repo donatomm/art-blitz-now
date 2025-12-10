@@ -54,6 +54,9 @@ const Artist = () => {
           <p className="text-lg leading-relaxed text-foreground mb-4">
             Ho messo su questo sito facendo le ore piccole, tra una call di lavoro e l'altra. Perdonatemi per qualche problemino tecnico — sono un marketer, non uno sviluppatore :-)
           </p>
+          <p className="text-lg leading-relaxed text-foreground mb-4">
+            Mancherà qualche parte, ma ci sto già lavorando su
+          </p>
           <p className="text-lg leading-relaxed text-foreground mb-2">
             <strong>Ma sulla qualità non scendo a compromessi:</strong>
           </p>
