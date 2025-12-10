@@ -100,7 +100,7 @@ const Shipping = () => {
             📞 Hai Domande?
           </h2>
           <p className="text-lg leading-relaxed text-muted-foreground mb-6">
-            Rispondiamo entro 24 ore.
+            Rispondiamo al più presto, e comunque entro 24 ore.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">
