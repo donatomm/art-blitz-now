@@ -3,7 +3,11 @@ import { MessageCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Shipping = () => {
-  const whatsappLink = `https://wa.me/393666295174?text=${encodeURIComponent("Ciao! Ho una domanda sulla spedizione")}`;
+  const whatsappMessage = `Ciao, mi chiamo .......
+Ed ho le seguenti domande:
+
+`;
+  const whatsappLink = `https://wa.me/393666295174?text=${encodeURIComponent(whatsappMessage)}`;
   const emailLink = `mailto:me@octowonders.com?subject=${encodeURIComponent("Domanda Spedizione")}`;
 
   return (
