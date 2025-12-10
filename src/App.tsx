@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Product from "./pages/Product";
 import Artist from "./pages/Artist";
 import Shipping from "./pages/Shipping";
+import PricingPolicy from "./pages/PricingPolicy";
 import Contact from "./pages/Contact";
 import NotaClienti from "./pages/NotaClienti";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/artist" element={<Artist />} />
           <Route path="/nota-clienti" element={<NotaClienti />} />
           <Route path="/shipping" element={<Shipping />} />
+          <Route path="/pricing-policy" element={<PricingPolicy />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
