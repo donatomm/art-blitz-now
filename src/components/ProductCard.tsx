@@ -105,9 +105,6 @@ const ProductCard = ({
               ACQUISTA
             </Button>
           </Link>
-          <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground" onClick={() => onCustomOrder(product)}>
-            Custom Order
-          </Button>
         </div>
       </div>
     </div>;
