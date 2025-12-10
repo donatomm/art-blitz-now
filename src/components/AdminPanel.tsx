@@ -519,12 +519,11 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                       <div className="max-h-[400px] overflow-y-auto">
                         {allSkus
                           .sort((a, b) => {
-                            // Sort by product name first, then by size
-                            const nameCompare = a.productName.localeCompare(b.productName);
-                            if (nameCompare !== 0) return nameCompare;
+                            // Sort by size first (smaller to bigger), then by product name
                             const numA = parseInt(a.size.split('x')[0]) || 0;
                             const numB = parseInt(b.size.split('x')[0]) || 0;
-                            return numA - numB;
+                            if (numA !== numB) return numA - numB;
+                            return a.productName.localeCompare(b.productName);
                           })
                           .map((sku, idx) => (
                             <div 
