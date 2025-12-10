@@ -39,7 +39,7 @@ const Artist = () => {
             In tanti mi hanno spinto a condividere le mie creazioni.
           </p>
           <p className="text-lg leading-relaxed text-foreground mt-4">
-            <strong>Mi hanno convinto con un'idea semplice:</strong> l'arte non è arte se resta chiusa in un cassetto. Va condivisa, vissuta, appesa al muro di qualcuno che la ama.
+            <strong>Mi hanno convinto con un'idea semplice:</strong> l'arte non è arte se resta chiusa in un cassetto. Va condivisa, vissuta, appesa al muro di qualcuno che se la può godere.
           </p>
         </section>
 
