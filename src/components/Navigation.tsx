@@ -8,6 +8,7 @@ const navItems = [
   { label: "Home", href: "/" },
   { label: "Autore", href: "/artist" },
   { label: "Regole di Spedizione", href: "/shipping" },
+  { label: "Politica Prezzi", href: "/pricing-policy" },
   { label: "Contatti", href: "/contact" },
 ];
 
