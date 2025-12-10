@@ -8,7 +8,7 @@ Ed ho le seguenti domande:
 
 `;
   const whatsappLink = `https://wa.me/393666295174?text=${encodeURIComponent(whatsappMessage)}`;
-  const emailLink = `mailto:me@octowonders.com?subject=${encodeURIComponent("Domanda Spedizione")}`;
+  const emailLink = `mailto:me@octowonders.com?subject=${encodeURIComponent("Domanda Spedizione")}&body=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div className="min-h-screen bg-background">
