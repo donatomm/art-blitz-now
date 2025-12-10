@@ -147,6 +147,41 @@ const Artist = () => {
             </a>
           </Button>
         </div>
+
+        {/* Work in Progress Section */}
+        <section className="mt-16 pt-8 border-t border-border">
+          <h2 className="text-2xl font-semibold text-primary mb-4">
+            🚧 WORK IN PROGRESS
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="py-2 pr-4 font-semibold text-foreground">File</th>
+                  <th className="py-2 font-semibold text-foreground">Descrizione</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                <tr className="border-b border-border/50">
+                  <td className="py-2 pr-4 font-mono text-sm">privacy-policy-octowonders.docx</td>
+                  <td className="py-2">Privacy Policy in formato Word</td>
+                </tr>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 pr-4 font-mono text-sm">privacy-policy-octowonders.html</td>
+                  <td className="py-2">Versione HTML pronta per il tuo sito</td>
+                </tr>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 pr-4 font-mono text-sm">termini-e-condizioni-vendita.docx</td>
+                  <td className="py-2">Termini e Condizioni conformi al Codice del Consumo</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-4 font-mono text-sm">cookie-policy-base.docx</td>
+                  <td className="py-2">Cookie Policy base (solo tecnici, no banner)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </div>
   );
