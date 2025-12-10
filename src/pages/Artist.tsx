@@ -60,8 +60,9 @@ const Artist = () => {
           <ul className="list-disc list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4">
             <li>Ogni opera è creata con tecniche manuali e digitali in sequenza</li>
             <li><strong>Zero AI, 0%</strong> — solo il mio occhio, le mie mani, la mia visione</li>
-            <li>Stampe professionali su tela HP Latex</li>
-            <li>Colori brillanti garantiti e resistenti alla luce</li>
+            <li>Stampe professionali su tela con tecnologia HP Latex</li>
+            <li>Colori brillanti garantiti 70 anni, e resistenti alla luce</li>
+            <li>Pronte da appendere!</li>
           </ul>
         </section>
 
