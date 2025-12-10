@@ -23,7 +23,10 @@ const Artist = () => {
             L'Arte che Non Si Ferma
           </h2>
           <p className="text-lg leading-relaxed text-foreground">
-            Da anni mi diletto a creare arte psichedelica ispirata al mare e alle sue creature.
+            Da anni mi diletto a creare elaborati scarabocchi. Poi per caso ho iniziato con le cose che amo, i polpi, i pesci, il mare e le sue creature.
+          </p>
+          <p className="text-lg leading-relaxed text-foreground mt-4">
+            Passaggio dopo passaggio, ne è venuta fuori qualcuna che ha impressionato i miei amici. Incredibile!
           </p>
           <p className="text-lg leading-relaxed text-foreground mt-4">
             Di giorno sono un Product Marketer nel mondo tech. Di notte (letteralmente) creo queste opere che vedete su OctoWonders.
