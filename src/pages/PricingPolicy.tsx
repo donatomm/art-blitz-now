@@ -20,7 +20,7 @@ const PricingPolicy = () => {
           
           <div className="prose prose-lg max-w-none">
             <p className="text-lg text-muted-foreground leading-relaxed">
-              I prezzi delle opere dipendono dallo sconto del fornitore (stampa ed intelaiatura) quindi sono soggetti a fluttuazioni. Quelli presenti sono validi sino al 12 Dicembre.
+              I prezzi delle opere dipendono dallo sconto del fornitore (stampa ed intelaiatura) quindi sono soggetti a fluttuazioni. Quelli presenti sono <strong className="text-foreground">MOLTO scontati</strong>, abbassando il prezzo delle opere di oltre il <strong className="text-foreground">30%</strong> e sono validi sino al <strong className="text-foreground">12 Dicembre</strong>.
             </p>
           </div>
         </div>
