@@ -433,15 +433,24 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
 
             <TabsContent value="skus" className="space-y-4">
               {(() => {
-                // Collect all SKUs and group by size
-                const allSkus: { size: string; price: number; productName: string; stripeId: string }[] = [];
+                // Collect all SKUs with product and size index references
+                const allSkus: { 
+                  size: string; 
+                  price: number; 
+                  productName: string; 
+                  productId: string;
+                  sizeIndex: number;
+                  stripeId: string;
+                }[] = [];
                 products.forEach(product => {
-                  product.sizes.forEach(size => {
+                  product.sizes.forEach((size, sizeIndex) => {
                     if (size.price > 0) {
                       allSkus.push({
                         size: size.dimensions,
                         price: size.price,
                         productName: product.name,
+                        productId: product.id,
+                        sizeIndex: sizeIndex,
                         stripeId: size.stripe_product_id || '-'
                       });
                     }
@@ -480,47 +489,112 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   });
                 };
 
+                const handlePriceChange = (productId: string, sizeIndex: number, newPrice: number) => {
+                  const updatedProducts = products.map(product => {
+                    if (product.id === productId) {
+                      const newSizes = [...product.sizes];
+                      newSizes[sizeIndex] = { ...newSizes[sizeIndex], price: newPrice };
+                      return { ...product, sizes: newSizes };
+                    }
+                    return product;
+                  });
+                  onProductsChange(updatedProducts);
+                };
+
                 return (
                   <>
                     <Button onClick={handleExportXLSX} variant="outline" className="w-full">
                       <FileSpreadsheet className="mr-2 h-4 w-4" />
                       Esporta Excel
                     </Button>
-                    <Tabs defaultValue={uniqueSizes[0] || ''} className="w-full">
-                    <TabsList className="flex flex-wrap h-auto gap-1">
-                      {uniqueSizes.map(size => (
-                        <TabsTrigger key={size} value={size} className="text-xs px-2 py-1">
-                          {size}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                    {uniqueSizes.map(size => (
-                      <TabsContent key={size} value={size} className="mt-3 space-y-1">
-                        <div className="text-xs font-medium text-muted-foreground mb-2 grid grid-cols-12 gap-2 px-2">
-                          <span className="col-span-1">Size</span>
-                          <span className="col-span-2">Price</span>
-                          <span className="col-span-4">Product</span>
-                          <span className="col-span-5">Stripe ID</span>
-                        </div>
+                    
+                    {/* All SKUs Table with inline editing */}
+                    <div className="border rounded-lg overflow-hidden">
+                      <div className="text-xs font-medium text-muted-foreground bg-muted grid grid-cols-12 gap-2 px-3 py-2 border-b">
+                        <span className="col-span-3">Prodotto</span>
+                        <span className="col-span-2">Size</span>
+                        <span className="col-span-3">Prezzo €</span>
+                        <span className="col-span-4">Stripe ID</span>
+                      </div>
+                      <div className="max-h-[400px] overflow-y-auto">
                         {allSkus
-                          .filter(sku => sku.size === size)
-                          .sort((a, b) => a.price - b.price)
+                          .sort((a, b) => {
+                            // Sort by product name first, then by size
+                            const nameCompare = a.productName.localeCompare(b.productName);
+                            if (nameCompare !== 0) return nameCompare;
+                            const numA = parseInt(a.size.split('x')[0]) || 0;
+                            const numB = parseInt(b.size.split('x')[0]) || 0;
+                            return numA - numB;
+                          })
                           .map((sku, idx) => (
                             <div 
-                              key={`${sku.productName}-${sku.size}-${idx}`}
-                              className="grid grid-cols-12 gap-2 p-2 bg-muted rounded text-sm items-center"
+                              key={`${sku.productId}-${sku.sizeIndex}-${idx}`}
+                              className="grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50"
                             >
-                              <span className="col-span-1 font-mono text-xs">{sku.size}</span>
-                              <span className="col-span-2 font-medium">€{sku.price}</span>
-                              <span className="col-span-4 truncate">{sku.productName}</span>
-                              <span className="col-span-5 font-mono text-xs text-muted-foreground truncate">
+                              <span className="col-span-3 truncate text-xs">{sku.productName}</span>
+                              <span className="col-span-2 font-mono text-xs">{sku.size}</span>
+                              <div className="col-span-3">
+                                <Input
+                                  type="number"
+                                  value={sku.price}
+                                  onChange={(e) => handlePriceChange(sku.productId, sku.sizeIndex, Number(e.target.value))}
+                                  className="h-7 text-sm w-20"
+                                  min={0}
+                                />
+                              </div>
+                              <span className="col-span-4 font-mono text-xs text-muted-foreground truncate">
                                 {sku.stripeId}
                               </span>
                             </div>
                           ))}
-                      </TabsContent>
-                    ))}
-                    </Tabs>
+                      </div>
+                    </div>
+
+                    {/* Size tabs for filtered view */}
+                    <div className="mt-4">
+                      <p className="text-xs text-muted-foreground mb-2">Vista per dimensione:</p>
+                      <Tabs defaultValue={uniqueSizes[0] || ''} className="w-full">
+                        <TabsList className="flex flex-wrap h-auto gap-1">
+                          {uniqueSizes.map(size => (
+                            <TabsTrigger key={size} value={size} className="text-xs px-2 py-1">
+                              {size}
+                            </TabsTrigger>
+                          ))}
+                        </TabsList>
+                        {uniqueSizes.map(size => (
+                          <TabsContent key={size} value={size} className="mt-3 space-y-1">
+                            <div className="text-xs font-medium text-muted-foreground mb-2 grid grid-cols-12 gap-2 px-2">
+                              <span className="col-span-4">Product</span>
+                              <span className="col-span-3">Prezzo €</span>
+                              <span className="col-span-5">Stripe ID</span>
+                            </div>
+                            {allSkus
+                              .filter(sku => sku.size === size)
+                              .sort((a, b) => a.price - b.price)
+                              .map((sku, idx) => (
+                                <div 
+                                  key={`${sku.productId}-${sku.size}-${idx}`}
+                                  className="grid grid-cols-12 gap-2 p-2 bg-muted rounded text-sm items-center"
+                                >
+                                  <span className="col-span-4 truncate">{sku.productName}</span>
+                                  <div className="col-span-3">
+                                    <Input
+                                      type="number"
+                                      value={sku.price}
+                                      onChange={(e) => handlePriceChange(sku.productId, sku.sizeIndex, Number(e.target.value))}
+                                      className="h-7 text-sm w-20"
+                                      min={0}
+                                    />
+                                  </div>
+                                  <span className="col-span-5 font-mono text-xs text-muted-foreground truncate">
+                                    {sku.stripeId}
+                                  </span>
+                                </div>
+                              ))}
+                          </TabsContent>
+                        ))}
+                      </Tabs>
+                    </div>
                   </>
                 );
               })()}
