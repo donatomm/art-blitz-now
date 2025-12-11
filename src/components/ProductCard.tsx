@@ -68,43 +68,61 @@ const ProductCard = ({
       </span>;
   };
 
-  return <div className="group overflow-hidden bg-card rounded-sm break-inside-avoid mb-1">
-      <Link to={`/product/${product.id}`} className="relative overflow-hidden block">
-        <img src={product.image_url} alt={product.name} className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" />
-        {/* Deal Label Badge - show if ANY size has deal enabled */}
-        {(() => {
-          const dealSize = product.sizes.find(s => s.deal_label_enabled && s.deal_label_text);
-          if (!dealSize) return null;
-          return (
-            <div className="absolute top-2 left-2 z-10">
-              <span className="inline-block bg-gold text-black font-bold text-xs px-2 py-1 rounded shadow-lg">
-                {dealSize.deal_label_text}
-              </span>
-            </div>
-          );
-        })()}
-        {editMode && <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-white text-xs bg-black/50 px-2 py-1 rounded">
-              Click to edit image
+  const isComingSoon = product.name.toLowerCase().includes("coming soon") || product.name.toLowerCase().includes("in arrivo");
+
+  const imageContent = (
+    <>
+      <img src={product.image_url} alt={product.name} className={`w-full h-auto object-cover transition-transform duration-500 ${!isComingSoon ? "group-hover:scale-105" : ""}`} />
+      {/* Deal Label Badge - show if ANY size has deal enabled */}
+      {(() => {
+        const dealSize = product.sizes.find(s => s.deal_label_enabled && s.deal_label_text);
+        if (!dealSize) return null;
+        return (
+          <div className="absolute top-2 left-2 z-10">
+            <span className="inline-block bg-gold text-black font-bold text-xs px-2 py-1 rounded shadow-lg">
+              {dealSize.deal_label_text}
             </span>
-          </div>}
-      </Link>
+          </div>
+        );
+      })()}
+      {editMode && <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="text-white text-xs bg-black/50 px-2 py-1 rounded">
+            Click to edit image
+          </span>
+        </div>}
+    </>
+  );
+
+  return <div className="group overflow-hidden bg-card rounded-sm break-inside-avoid mb-1">
+      {isComingSoon ? (
+        <div className="relative overflow-hidden block cursor-default">
+          {imageContent}
+        </div>
+      ) : (
+        <Link to={`/product/${product.id}`} className="relative overflow-hidden block">
+          {imageContent}
+        </Link>
+      )}
       <div className="px-2 py-2 bg-card/95 backdrop-blur-sm">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
           {renderEditableField("name", product.name, "font-semibold text-foreground")}
           <span className="text-muted-foreground">|</span>
           {renderEditableField("medium", product.medium, "text-muted-foreground")}
-          <span className="text-muted-foreground">|</span>
-          <span className="text-muted-foreground mx-px">{sizePrices}</span>
-          <span className="text-muted-foreground">|</span>
-          <Link to={`/product/${product.id}#acquista`}>
-            <Button 
-              size="sm" 
-              className="h-6 px-2 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
-            >
-              ACQUISTA
-            </Button>
-          </Link>
+          {!isComingSoon && (
+            <>
+              <span className="text-muted-foreground">|</span>
+              <span className="text-muted-foreground mx-px">{sizePrices}</span>
+              <span className="text-muted-foreground">|</span>
+              <Link to={`/product/${product.id}#acquista`}>
+                <Button 
+                  size="sm" 
+                  className="h-6 px-2 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
+                >
+                  ACQUISTA
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>;
