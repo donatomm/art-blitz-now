@@ -105,7 +105,10 @@ const Product = () => {
     ...size,
     originalIndex
   })).filter(size => size.price > 0);
-  const selectedSizeData = activeSizes[selectedSize] || activeSizes[0];
+  const selectedSizeData = activeSizes.length > 0 ? (activeSizes[selectedSize] || activeSizes[0]) : null;
+  
+  // Check if this is a "Coming Soon" product (no active sizes or name contains coming soon)
+  const isComingSoon = activeSizes.length === 0 || product.name.toLowerCase().includes("coming soon") || product.name.toLowerCase().includes("in arrivo");
   const getWhatsAppLink = () => {
     if (!selectedSizeData) return `https://wa.me/393666295174?text=${encodeURIComponent(`Ciao! Sono interessato a "${product.name}"`)}`;
     const message = `Ciao Marco,
@@ -301,52 +304,65 @@ Grazie!`);
               <ChristmasDeadlineText />
             </div>
 
-            {/* Size Selection */}
-            <div id="acquista" className="space-y-3">
-              <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
-              <div className="flex flex-wrap gap-2">
-                {activeSizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
-                    <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
-                    <div className="text-lg font-bold">€{size.price}</div>
-                  </button>)}
+            {/* Size Selection - Hide for Coming Soon */}
+            {!isComingSoon && (
+              <div id="acquista" className="space-y-3">
+                <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
+                <div className="flex flex-wrap gap-2">
+                  {activeSizes.map((size, index) => <button key={size.dimensions} onClick={() => setSelectedSize(index)} className={`px-4 py-3 rounded-lg border-2 transition-all ${selectedSize === index ? "border-gold bg-gold/10 text-foreground" : "border-border hover:border-gold/50 text-muted-foreground"}`}>
+                      <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
+                      <div className="text-lg font-bold">€{size.price}</div>
+                    </button>)}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Price and Buy Button */}
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="bg-card rounded-lg px-6 py-4 border border-border">
-                <span className="text-muted-foreground text-sm">Totale </span>
-                <span className="text-2xl font-bold text-green-600">€{selectedSizeData.price}</span>
-              </div>
-              
-              <Button onClick={handleCheckout} disabled={isCheckoutLoading} className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-                {isCheckoutLoading ? <>
-                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                    Caricamento...
-                  </> : <>
-                    <ShoppingCart className="mr-2 h-6 w-6 animate-bounce" />
-                    ACQUISTA ORA
-                  </>}
-              </Button>
-            </div>
-
-            {/* Contact/Support Section */}
-            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border">
-              <span className="text-sm text-muted-foreground">Contattami / Supporto </span>
-              <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer">
-                <Button size="sm" className="bg-gray-100 hover:bg-gray-200 text-black">
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  WhatsApp
+            {/* Price and Buy Button - Hide for Coming Soon */}
+            {!isComingSoon && selectedSizeData && (
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="bg-card rounded-lg px-6 py-4 border border-border">
+                  <span className="text-muted-foreground text-sm">Totale </span>
+                  <span className="text-2xl font-bold text-green-600">€{selectedSizeData.price}</span>
+                </div>
+                
+                <Button onClick={handleCheckout} disabled={isCheckoutLoading} className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                  {isCheckoutLoading ? <>
+                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                      Caricamento...
+                    </> : <>
+                      <ShoppingCart className="mr-2 h-6 w-6 animate-bounce" />
+                      ACQUISTA ORA
+                    </>}
                 </Button>
-              </a>
-              <a 
-                href={getEmailLink()}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 bg-gray-100 hover:bg-gray-200 text-black transition-colors"
-              >
-                <Mail className="mr-2 h-4 w-4" />
-                Email
-              </a>
-            </div>
+              </div>
+            )}
+
+            {/* Coming Soon Message */}
+            {isComingSoon && (
+              <div className="bg-muted/50 rounded-lg px-6 py-4 border border-border">
+                <span className="text-lg font-semibold text-muted-foreground">🚧 Coming Soon - In Arrivo</span>
+              </div>
+            )}
+
+            {/* Contact/Support Section - Hide for Coming Soon */}
+            {!isComingSoon && (
+              <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border">
+                <span className="text-sm text-muted-foreground">Contattami / Supporto </span>
+                <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer">
+                  <Button size="sm" className="bg-gray-100 hover:bg-gray-200 text-black">
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    WhatsApp
+                  </Button>
+                </a>
+                <a 
+                  href={getEmailLink()}
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 bg-gray-100 hover:bg-gray-200 text-black transition-colors"
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Email
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>
