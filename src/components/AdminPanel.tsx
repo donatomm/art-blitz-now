@@ -433,9 +433,21 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
 
             <TabsContent value="skus" className="space-y-4">
               {(() => {
+                // Normalize dimension to canonical form (smaller x larger)
+                const normalizeDimension = (dim: string): string => {
+                  const match = dim.match(/^(\d+)x(\d+)(.*)$/);
+                  if (!match) return dim;
+                  const [, a, b, suffix] = match;
+                  const numA = parseInt(a);
+                  const numB = parseInt(b);
+                  if (numA <= numB) return dim;
+                  return `${numB}x${numA}${suffix}`;
+                };
+
                 // Collect all SKUs with product and size index references
                 const allSkus: { 
                   size: string; 
+                  normalizedSize: string;
                   price: number; 
                   productName: string; 
                   productId: string;
@@ -447,6 +459,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                     if (size.price > 0) {
                       allSkus.push({
                         size: size.dimensions,
+                        normalizedSize: normalizeDimension(size.dimensions),
                         price: size.price,
                         productName: product.name,
                         productId: product.id,
@@ -457,8 +470,8 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   });
                 });
 
-                // Get unique sizes sorted numerically
-                const uniqueSizes = [...new Set(allSkus.map(s => s.size))].sort((a, b) => {
+                // Get unique normalized sizes sorted numerically
+                const uniqueSizes = [...new Set(allSkus.map(s => s.normalizedSize))].sort((a, b) => {
                   const numA = parseInt(a.split('x')[0]) || 0;
                   const numB = parseInt(b.split('x')[0]) || 0;
                   return numA - numB;
@@ -519,9 +532,9 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                       <div className="max-h-[400px] overflow-y-auto">
                         {allSkus
                           .sort((a, b) => {
-                            // Sort by size first (smaller to bigger), then by product name
-                            const numA = parseInt(a.size.split('x')[0]) || 0;
-                            const numB = parseInt(b.size.split('x')[0]) || 0;
+                            // Sort by normalized size first (smaller to bigger), then by product name
+                            const numA = parseInt(a.normalizedSize.split('x')[0]) || 0;
+                            const numB = parseInt(b.normalizedSize.split('x')[0]) || 0;
                             if (numA !== numB) return numA - numB;
                             return a.productName.localeCompare(b.productName);
                           })
@@ -568,7 +581,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                               <span className="col-span-5">Stripe ID</span>
                             </div>
                             {allSkus
-                              .filter(sku => sku.size === size)
+                              .filter(sku => sku.normalizedSize === size)
                               .sort((a, b) => a.price - b.price)
                               .map((sku, idx) => (
                                 <div 
