@@ -1,16 +1,54 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { MessageCircle, Mail, Gift, Truck } from 'lucide-react';
+import { MessageCircle, Mail, Gift, Truck, Clock } from 'lucide-react';
+
 const HelloBar = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
   const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
+  const [countdown, setCountdown] = useState({ hours: 0, minutes: 0, seconds: 0, expired: false });
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Countdown to midnight Rome time (CET/CEST)
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      // Get current time in Rome timezone
+      const now = new Date();
+      const romeTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Rome' }));
+      
+      // Set target to midnight tonight Rome time (end of Dec 12)
+      const midnight = new Date(romeTime);
+      midnight.setHours(24, 0, 0, 0);
+      
+      const diff = midnight.getTime() - romeTime.getTime();
+      
+      if (diff <= 0) {
+        return { hours: 0, minutes: 0, seconds: 0, expired: true };
+      }
+      
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      return { hours, minutes, seconds, expired: false };
+    };
+
+    setCountdown(calculateTimeLeft());
+    const interval = setInterval(() => {
+      setCountdown(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatTime = (n: number) => n.toString().padStart(2, '0');
+
   return <>
       {/* Green bar - Shipping & Christmas */}
       <div className={`fixed top-16 left-0 right-0 z-40 min-h-[45px] w-full bg-emerald-600 flex items-center justify-center px-4 py-2 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
@@ -33,11 +71,26 @@ const HelloBar = () => {
         </p>
       </div>
 
-      {/* Red bar - Discount */}
+      {/* Red bar - Discount with Countdown */}
       <div className={`fixed top-[125px] left-0 right-0 z-40 min-h-[45px] w-full bg-red-600 flex items-center justify-center px-4 py-2 transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}>
         <p className="text-sm font-bold flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-white text-center">
           <span className="animate-pulse">⚠️</span>
-          ATTENZIONE: Sconto del <span className="text-yellow-300 text-lg mx-1">42%</span> ATTIVO su TUTTE le opere, scade a mezzanotte di oggi <span className="underline">12 Dicembre</span>
+          SCONTO <span className="text-yellow-300 text-xl mx-1">42%</span> su TUTTE le opere
+          <span className="mx-2">•</span>
+          <span className="flex items-center gap-1.5 bg-black/30 px-3 py-1 rounded-lg">
+            <Clock className="h-4 w-4 animate-pulse" />
+            {countdown.expired ? (
+              <span className="text-yellow-300">SCADUTO!</span>
+            ) : (
+              <span className="font-mono text-lg tracking-wider">
+                <span className="text-yellow-300">{formatTime(countdown.hours)}</span>
+                <span className="animate-pulse">:</span>
+                <span className="text-yellow-300">{formatTime(countdown.minutes)}</span>
+                <span className="animate-pulse">:</span>
+                <span className="text-yellow-300">{formatTime(countdown.seconds)}</span>
+              </span>
+            )}
+          </span>
           <span className="animate-pulse">⚠️</span>
         </p>
       </div>
