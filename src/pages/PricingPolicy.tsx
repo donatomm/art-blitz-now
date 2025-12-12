@@ -16,7 +16,14 @@ const PricingPolicy = () => {
             Torna alla Galleria
           </Link>
 
-          <h1 className="text-3xl font-bold mb-8">Politica Prezzi</h1>
+          <h1 className="text-3xl font-bold mb-6">Politica Prezzi</h1>
+          
+          {/* Red discount bar */}
+          <div className="bg-red-600 text-white text-center py-3 px-4 rounded-lg mb-8 font-bold">
+            <span className="animate-pulse">⚠️</span>
+            {' '}SCONTO DEL <span className="text-yellow-300 text-xl">42%</span> SU TUTTI I FORMATI - Valido sino a mezzanotte di oggi <span className="underline">12 Dicembre</span>{' '}
+            <span className="animate-pulse">⚠️</span>
+          </div>
           
           <div className="prose prose-lg max-w-none space-y-8">
             <p className="text-lg text-muted-foreground leading-relaxed">
