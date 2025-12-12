@@ -12,6 +12,7 @@ const HelloBar = () => {
     return () => clearTimeout(timer);
   }, []);
   return <>
+      {/* Green bar - Shipping & Christmas */}
       <div className={`fixed top-16 left-0 right-0 z-40 min-h-[45px] w-full bg-emerald-600 flex items-center justify-center px-4 py-2 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
         <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-white text-center">
           <span className="flex items-center gap-1">
@@ -29,6 +30,15 @@ const HelloBar = () => {
               Dettagli
             </button>
           </span>
+        </p>
+      </div>
+
+      {/* Red bar - Discount */}
+      <div className={`fixed top-[109px] left-0 right-0 z-40 min-h-[45px] w-full bg-red-600 flex items-center justify-center px-4 py-2 transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}>
+        <p className="text-sm font-bold flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-white text-center">
+          <span className="animate-pulse">⚠️</span>
+          ATTENZIONE: Sconto del <span className="text-yellow-300 text-lg mx-1">42%</span> ATTIVO su TUTTE le opere, scade a mezzanotte di oggi <span className="underline">12 Dicembre</span>
+          <span className="animate-pulse">⚠️</span>
         </p>
       </div>
 
