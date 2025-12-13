@@ -11,7 +11,8 @@ const PricingPolicy = () => {
             Torna alla Galleria
           </Link>
 
-          <h1 className="text-3xl font-bold mb-6">Politica Prezzi</h1>
+          <h1 className="text-3xl font-bold mb-2">Politica Prezzi</h1>
+          <p className="text-muted-foreground mb-6">Tutti i prezzi sono IVA inclusa</p>
           
           {/* Red discount bar */}
           <div className="bg-red-600 text-white text-center py-3 px-4 rounded-lg mb-8 font-bold">
