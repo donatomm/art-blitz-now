@@ -16,6 +16,7 @@ const queryClient = new QueryClient();
 
 // Main app component
 const App = () => (
+  <div onContextMenu={(e) => e.preventDefault()}>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -35,7 +36,8 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
-  </QueryClientProvider>
+    </QueryClientProvider>
+  </div>
 );
 
 export default App;
