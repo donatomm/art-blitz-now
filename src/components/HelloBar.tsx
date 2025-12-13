@@ -58,7 +58,7 @@ const HelloBar = () => {
     return () => clearInterval(interval);
   }, []);
   const formatTime = (n: number) => n.toString().padStart(2, '0');
-    return <>
+  return <>
       {/* Green bar - Shipping & Christmas */}
       <div className={`fixed top-16 left-0 right-0 z-40 w-full bg-emerald-600 flex flex-col items-center justify-center px-4 py-1.5 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
         {/* Prima riga */}
@@ -76,7 +76,7 @@ const HelloBar = () => {
             <span className="block">CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘</span>
             <span className="block">GARANTITA SE ACQUISTI</span>
           </span>
-          <span className="px-2 py-0.5 bg-yellow-300 text-green-900 font-black text-base rounded shadow-lg animate-pulse leading-tight">
+          <span className="px-2 py-0.5 text-green-900 font-black text-base rounded shadow-lg animate-pulse leading-tight bg-gold">
             <span className="block">ENTRO</span>
             <span className="block">il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘</span>
           </span>
