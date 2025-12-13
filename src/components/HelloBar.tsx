@@ -6,7 +6,7 @@ const HelloBar = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
   const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
-  const [countdown, setCountdown] = useState({ hours: 0, minutes: 0, seconds: 0, expired: false });
+  const [countdown, setCountdown] = useState({ days: 1, hours: 22, minutes: 9, seconds: 0, expired: false });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -15,28 +15,29 @@ const HelloBar = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Countdown to midnight Rome time (CET/CEST)
+  // Countdown from fixed start time: 1 day, 22 hours, 9 minutes, 0 seconds
   useEffect(() => {
+    // Calculate target time: now + 1d 22h 9m 0s
+    const targetTime = new Date();
+    targetTime.setDate(targetTime.getDate() + 1);
+    targetTime.setHours(targetTime.getHours() + 22);
+    targetTime.setMinutes(targetTime.getMinutes() + 9);
+    targetTime.setSeconds(targetTime.getSeconds() + 0);
+
     const calculateTimeLeft = () => {
-      // Get current time in Rome timezone
       const now = new Date();
-      const romeTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Rome' }));
-      
-      // Set target to midnight tonight Rome time (end of Dec 12)
-      const midnight = new Date(romeTime);
-      midnight.setHours(24, 0, 0, 0);
-      
-      const diff = midnight.getTime() - romeTime.getTime();
+      const diff = targetTime.getTime() - now.getTime();
       
       if (diff <= 0) {
-        return { hours: 0, minutes: 0, seconds: 0, expired: true };
+        return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
       }
       
-      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       
-      return { hours, minutes, seconds, expired: false };
+      return { days, hours, minutes, seconds, expired: false };
     };
 
     setCountdown(calculateTimeLeft());
@@ -83,11 +84,14 @@ const HelloBar = () => {
               <span className="text-yellow-300">SCADUTO!</span>
             ) : (
               <span className="font-mono text-lg tracking-wider">
+                <span className="text-yellow-300">{countdown.days}</span>
+                <span className="text-xs mx-0.5">g</span>
                 <span className="text-yellow-300">{formatTime(countdown.hours)}</span>
-                <span className="animate-pulse">:</span>
+                <span className="text-xs mx-0.5">h</span>
                 <span className="text-yellow-300">{formatTime(countdown.minutes)}</span>
-                <span className="animate-pulse">:</span>
+                <span className="text-xs mx-0.5">m</span>
                 <span className="text-yellow-300">{formatTime(countdown.seconds)}</span>
+                <span className="text-xs mx-0.5">s</span>
               </span>
             )}
           </span>
