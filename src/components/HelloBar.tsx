@@ -61,17 +61,8 @@ const HelloBar = () => {
   return <>
       {/* Green bar - Shipping & Christmas */}
       <div className={`fixed top-16 left-0 right-0 z-40 w-full bg-green-600 flex flex-col items-center justify-center px-4 py-1.5 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
-        {/* Prima riga */}
-        <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-4 text-white text-center">
-          <span className="flex items-center gap-1">
-            SPEDIZIONE GRATUITA
-            <button onClick={() => setShippingDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-green-900">
-              Dettagli
-            </button>
-          </span>
-        </p>
-        {/* Seconda riga */}
-        <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-2 text-white text-center mt-0.5">
+        {/* Prima riga - Consegna Natale */}
+        <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-2 text-white text-center">
           <span className="text-center leading-tight">
             <span className="block">CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘</span>
             <span className="block">GARANTITA SE ACQUISTI</span>
@@ -90,6 +81,15 @@ const HelloBar = () => {
               <span className="text-white">{formatTime(countdown.minutes)}</span>
               <span className="text-white/70 text-sm">m</span>
             </>}
+          </span>
+        </p>
+        {/* Seconda riga - Spedizione */}
+        <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-4 text-white text-center mt-0.5">
+          <span className="flex items-center gap-1">
+            SPEDIZIONE GRATUITA
+            <button onClick={() => setShippingDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-green-900">
+              Dettagli
+            </button>
           </span>
         </p>
       </div>
