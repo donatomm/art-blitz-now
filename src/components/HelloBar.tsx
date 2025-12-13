@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { MessageCircle, Mail, Gift, Truck } from 'lucide-react';
+import { MessageCircle, Mail } from 'lucide-react';
 const HelloBar = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
@@ -58,41 +58,41 @@ const HelloBar = () => {
     return () => clearInterval(interval);
   }, []);
   const formatTime = (n: number) => n.toString().padStart(2, '0');
-  return <>
+    return <>
       {/* Green bar - Shipping & Christmas */}
-      <div className={`fixed top-16 left-0 right-0 z-40 min-h-[45px] w-full bg-emerald-600 flex items-center justify-center px-4 py-2 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
-        <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-white text-center">
+      <div className={`fixed top-16 left-0 right-0 z-40 w-full bg-emerald-600 flex flex-col items-center justify-center px-4 py-1.5 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
+        {/* Prima riga */}
+        <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-4 text-white text-center">
           <span className="flex items-center gap-1">
-            <Truck className="h-4 w-4 animate-pulse" />
             SPEDIZIONE GRATUITA
-            <button onClick={() => setShippingDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-gold-foreground">
+            <button onClick={() => setShippingDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-green-900">
               Dettagli
             </button>
           </span>
           <span className="hidden sm:inline">•</span>
-          <span className="flex items-center gap-1 text-inherit">
-            <Gift className="h-4 w-4 animate-spin" />
+          <span className="flex items-center gap-1">
             CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA SE ACQUISTI
-            <span className="mx-1 px-2 py-1 bg-yellow-300 text-green-900 font-black text-base sm:text-lg rounded shadow-lg animate-pulse">
-              ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘
-            </span>
-            : MANCANO
-            <span className="font-mono font-bold tracking-wider bg-black/20 px-2 py-0.5 rounded">
-              {countdown.expired ? <span className="text-yellow-300">SCADUTO!</span> : <>
-                <span className="text-yellow-300">{countdown.days}</span>
-                <span className="text-xs">g</span>
-                <span className="text-yellow-300">{formatTime(countdown.hours)}</span>
-                <span className="text-xs">h</span>
-                <span className="text-yellow-300">{formatTime(countdown.minutes)}</span>
-                <span className="text-xs">m</span>
-              </>}
-            </span>
-            <button onClick={() => setDeliveryDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-gold-foreground shadow-md">
-              Dettagli
-            </button>
-            <span className="ml-2 px-2 py-0.5 bg-red-500 text-white font-bold text-sm rounded shadow">
-              Sconto 44% fino al 14 Dicembre
-            </span>
+          </span>
+        </p>
+        {/* Seconda riga */}
+        <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-2 text-white text-center mt-0.5">
+          <span className="px-2 py-0.5 bg-yellow-300 text-green-900 font-black text-base rounded shadow-lg animate-pulse leading-tight">
+            <span className="block">ENTRO</span>
+            <span className="block">il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘</span>
+          </span>
+          <span className="font-medium">MANCANO</span>
+          <span className="font-mono font-bold text-lg bg-black/30 px-3 py-1 rounded">
+            {countdown.expired ? <span className="text-red-300">SCADUTO!</span> : <>
+              <span className="text-white">{countdown.days}</span>
+              <span className="text-white/70 text-sm">g </span>
+              <span className="text-white">{formatTime(countdown.hours)}</span>
+              <span className="text-white/70 text-sm">h </span>
+              <span className="text-white">{formatTime(countdown.minutes)}</span>
+              <span className="text-white/70 text-sm">m</span>
+            </>}
+          </span>
+          <span className="ml-2 px-2 py-0.5 bg-red-500 text-white font-bold text-sm rounded shadow">
+            Sconto 44% fino al 14 Dicembre
           </span>
         </p>
       </div>
@@ -109,6 +109,17 @@ const HelloBar = () => {
             <ul className="list-disc list-inside space-y-1">
               <li>𝙄𝙩𝙖𝙡𝙞𝙖 𝙋𝙚𝙣𝙞𝙣𝙨𝙪𝙡𝙖𝙧𝙚 𝙚 𝙎𝙞𝙘𝙞𝙡𝙞𝙖</li>
             </ul>
+            <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+              <p className="text-sm font-medium text-emerald-800">
+                Consegna Garantita entro Natale per acquisti entro il 14 dicembre.
+              </p>
+              <p className="text-sm text-emerald-700 mt-2">
+                Gli ordini effettuati dopo questa data difficilmente arriveranno in tempo per Natale.
+              </p>
+              <p className="text-sm text-emerald-700 mt-2">
+                A meno che per EMERGENZE non si usi un diverso fornitore che ha prezzi quasi doppi - ma consegna Express 24h. Contattatemi.
+              </p>
+            </div>
             <p className="text-sm text-muted-foreground mt-4">
               Per spedizioni in altre zone (Sardegna, isole minori, Paesi Europei), i costi di produzione sono significativamente più alti (diverso fornitore) mentre lo shipping rientra nella norma, a parte San Marino che ha costi impossibili (mah).
             </p>
