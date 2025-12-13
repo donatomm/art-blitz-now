@@ -88,9 +88,6 @@ const HelloBar = () => {
               <span className="text-white/70 text-sm">m</span>
             </>}
           </span>
-          <span className="ml-2 px-2 py-0.5 bg-red-500 text-white font-bold text-sm rounded shadow">
-            Sconto 44% fino al 14 Dicembre
-          </span>
         </p>
       </div>
 
