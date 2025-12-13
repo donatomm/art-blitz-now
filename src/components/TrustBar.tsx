@@ -7,7 +7,7 @@ const TrustBar = () => {
               {point}
             </div>)}
           <div className="px-5 border-l-2 border-yellow-400 text-sm font-bold tracking-wide whitespace-nowrap py-[5px] bg-gold-foreground text-gold">
-            Sconto 44% fino al 14 Dicembre
+            Sconto applicato del 44% fino al 14 Dicembre
           </div>
         </div>
       </div>
