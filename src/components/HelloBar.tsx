@@ -19,26 +19,9 @@ const HelloBar = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Countdown with localStorage persistence - starts at 1d 3h 59m
+  // Absolute countdown to December 14, 2025 23:59:59
   useEffect(() => {
-    const STORAGE_KEY = 'hellobar_countdown_target';
-    
-    // Check for existing target or create new one
-    let targetTime: Date;
-    const stored = localStorage.getItem(STORAGE_KEY);
-    
-    if (stored) {
-      targetTime = new Date(parseInt(stored, 10));
-      // If target has passed, reset it
-      if (targetTime.getTime() <= Date.now()) {
-        targetTime = new Date(Date.now() + (1 * 24 * 60 * 60 * 1000) + (3 * 60 * 60 * 1000) + (59 * 60 * 1000));
-        localStorage.setItem(STORAGE_KEY, targetTime.getTime().toString());
-      }
-    } else {
-      // First visit: set target to now + 1d 3h 59m
-      targetTime = new Date(Date.now() + (1 * 24 * 60 * 60 * 1000) + (3 * 60 * 60 * 1000) + (59 * 60 * 1000));
-      localStorage.setItem(STORAGE_KEY, targetTime.getTime().toString());
-    }
+    const targetTime = new Date(2025, 11, 14, 23, 59, 59); // Dec 14, 2025 23:59:59
 
     const calculateTimeLeft = () => {
       const now = new Date();
@@ -64,6 +47,7 @@ const HelloBar = () => {
         expired: false
       };
     };
+
     setCountdown(calculateTimeLeft());
     const interval = setInterval(() => {
       setCountdown(calculateTimeLeft());
