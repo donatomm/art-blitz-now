@@ -23,7 +23,10 @@ const ProductCard = ({
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
 
-  const sizePrices = product.sizes.map(s => `${s.dimensions} €${s.price}`).join(" | ");
+  const sizePrices = product.sizes
+    .filter((s) => s.price > 0)
+    .map((s) => `${s.dimensions} €${s.price}`)
+    .join(" | ");
 
   const handleEditStart = (field: string, value: string) => {
     if (!editMode) return;
