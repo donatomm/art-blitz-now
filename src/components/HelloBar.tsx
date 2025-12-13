@@ -60,7 +60,7 @@ const HelloBar = () => {
   const formatTime = (n: number) => n.toString().padStart(2, '0');
   return <>
       {/* Green bar - Shipping & Christmas */}
-      <div className={`fixed top-16 left-0 right-0 z-40 w-full bg-emerald-600 flex flex-col items-center justify-center px-4 py-1.5 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
+      <div className={`fixed top-16 left-0 right-0 z-40 w-full bg-green-600 flex flex-col items-center justify-center px-4 py-1.5 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
         {/* Prima riga */}
         <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-4 text-white text-center">
           <span className="flex items-center gap-1">

@@ -78,7 +78,7 @@ const Index = () => {
   };
   return <div className="min-h-screen bg-background">
       <Navigation isOverHero />
-      <HelloBar className="text-green-300" />
+      <HelloBar />
 
       <Hero imageUrl={heroImage} title={"Accendi Quella Stanza\nFalla Vibrare"} subtitle="Regalo di Natale Fatto. Ansia Zero. Risultato Memorabile." ctaText="Trova il Regalo Perfetto" onCtaClick={scrollToGallery} />
 
