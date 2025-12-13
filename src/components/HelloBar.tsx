@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { MessageCircle, Mail, Gift, Truck, Clock } from 'lucide-react';
+import { MessageCircle, Mail, Gift, Truck } from 'lucide-react';
 const HelloBar = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
@@ -8,7 +8,7 @@ const HelloBar = () => {
   const [countdown, setCountdown] = useState({
     days: 1,
     hours: 22,
-    minutes: 9,
+    minutes: 6,
     seconds: 0,
     expired: false
   });
@@ -19,13 +19,13 @@ const HelloBar = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Countdown from fixed start time: 1 day, 22 hours, 9 minutes, 0 seconds
+  // Countdown from fixed start time: 1 day, 22 hours, 6 minutes, 0 seconds
   useEffect(() => {
-    // Calculate target time: now + 1d 22h 9m 0s
+    // Calculate target time: now + 1d 22h 6m 0s
     const targetTime = new Date();
     targetTime.setDate(targetTime.getDate() + 1);
     targetTime.setHours(targetTime.getHours() + 22);
-    targetTime.setMinutes(targetTime.getMinutes() + 9);
+    targetTime.setMinutes(targetTime.getMinutes() + 6);
     targetTime.setSeconds(targetTime.getSeconds() + 0);
     const calculateTimeLeft = () => {
       const now = new Date();
@@ -72,7 +72,17 @@ const HelloBar = () => {
           <span className="hidden sm:inline">•</span>
           <span className="flex items-center gap-1 text-inherit">
             <Gift className="h-4 w-4 animate-spin" />
-            CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA SE ACQUISTI ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘
+            CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA SE ACQUISTI ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘: MANCANO
+            <span className="font-mono font-bold tracking-wider bg-black/20 px-2 py-0.5 rounded">
+              {countdown.expired ? <span className="text-yellow-300">SCADUTO!</span> : <>
+                <span className="text-yellow-300">{countdown.days}</span>
+                <span className="text-xs">g</span>
+                <span className="text-yellow-300">{formatTime(countdown.hours)}</span>
+                <span className="text-xs">h</span>
+                <span className="text-yellow-300">{formatTime(countdown.minutes)}</span>
+                <span className="text-xs">m</span>
+              </>}
+            </span>
             <button onClick={() => setDeliveryDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-gold-foreground shadow-md">
               Dettagli
             </button>
@@ -80,25 +90,11 @@ const HelloBar = () => {
         </p>
       </div>
 
-      {/* Red bar - Discount with Countdown */}
+      {/* Red bar - Discount */}
       <div className={`fixed top-[125px] left-0 right-0 z-40 min-h-[45px] w-full bg-red-600 flex items-center justify-center px-4 py-2 transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}>
         <p className="text-sm font-bold flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-white text-center">
           <span className="animate-pulse">⚠️</span>
           SCONTO <span className="text-yellow-300 text-xl mx-1">42%</span> su TUTTE le opere
-          <span className="mx-2">•</span>
-          <span className="flex items-center gap-1.5 bg-black/30 px-3 py-1 rounded-lg">
-            <Clock className="h-4 w-4 animate-pulse" />
-            {countdown.expired ? <span className="text-yellow-300">SCADUTO!</span> : <span className="font-mono text-lg tracking-wider">
-                <span className="text-yellow-300">{countdown.days}</span>
-                <span className="text-xs mx-0.5">g</span>
-                <span className="text-yellow-300">{formatTime(countdown.hours)}</span>
-                <span className="text-xs mx-0.5">h</span>
-                <span className="text-yellow-300">{formatTime(countdown.minutes)}</span>
-                <span className="text-xs mx-0.5">m</span>
-                <span className="text-yellow-300">{formatTime(countdown.seconds)}</span>
-                <span className="text-xs mx-0.5">s</span>
-              </span>}
-          </span>
           <span className="animate-pulse">⚠️</span>
         </p>
       </div>
