@@ -21,7 +21,7 @@ const PricingPolicy = () => {
           {/* Red discount bar */}
           <div className="bg-red-600 text-white text-center py-3 px-4 rounded-lg mb-8 font-bold">
             <span className="animate-pulse">⚠️</span>
-            {' '}SCONTO DEL <span className="text-yellow-300 text-xl">42%</span> SU TUTTI I FORMATI - Valido sino a mezzanotte di oggi <span className="underline">12 Dicembre</span>{' '}
+            {' '}SCONTO DEL <span className="text-yellow-300 text-xl">44%</span> SU TUTTI I FORMATI - Valido sino a mezzanotte di oggi <span className="underline">14 Dicembre</span>{' '}
             <span className="animate-pulse">⚠️</span>
           </div>
           
