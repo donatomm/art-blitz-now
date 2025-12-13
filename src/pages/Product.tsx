@@ -251,7 +251,8 @@ Grazie!`);
               transform: `translateX(-${carouselIndex * (50 + 8)}%)`
             }}>
                   {mockRooms.map(room => {
-                const matchingSize = product?.sizes.find(s => s.dimensions === room.sizeDimensions);
+                // Use customLabel directly from mock_rooms, find matching size for price
+                const matchingSize = room.customLabel ? product?.sizes.find(s => s.dimensions === room.customLabel) : null;
                 const price = matchingSize?.price;
                 return <div key={room.id} className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col">
                         <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
@@ -261,15 +262,12 @@ Grazie!`);
                             </div>}
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
-                          {room.sizeDimensions && <span className="text-xs font-medium px-3 py-1 rounded border border-border tracking-wider bg-gray-950 text-primary-foreground">
-                              {room.sizeDimensions}
+                          {room.customLabel && <span className="text-xs font-medium px-3 py-1 rounded border border-border tracking-wider bg-gray-950 text-primary-foreground">
+                              {room.customLabel}
                             </span>}
-                          {price && <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
+                          {price && price > 0 && <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
                               €{price}
                             </span>}
-                          {room.customLabel ? <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded tracking-wider">
-                              {room.customLabel}
-                            </span> : <span className="w-[10px]" />}
                           {room.note && <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
                               {room.note}
                             </span>}
