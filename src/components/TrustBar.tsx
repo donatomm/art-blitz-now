@@ -6,7 +6,7 @@ const TrustBar = () => {
           {trustPoints.map((point, index) => <div key={index} className="px-5 bg-gray-900/80 border-l-2 border-gold text-white text-sm font-light tracking-wide whitespace-nowrap py-[5px]">
               {point}
             </div>)}
-          <div className="px-5 bg-red-600 border-l-2 border-yellow-400 text-white text-sm font-bold tracking-wide whitespace-nowrap py-[5px]">
+          <div className="px-5 border-l-2 border-yellow-400 text-sm font-bold tracking-wide whitespace-nowrap py-[5px] bg-gold-foreground text-gold">
             Sconto 44% fino al 14 Dicembre
           </div>
         </div>
