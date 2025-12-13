@@ -1,17 +1,12 @@
 import Navigation from "@/components/Navigation";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-
 const PricingPolicy = () => {
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navigation />
       <div className="pt-24 pb-16 px-4">
         <div className="max-w-3xl mx-auto">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8"
-          >
+          <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="w-4 h-4" />
             Torna alla Galleria
           </Link>
@@ -42,23 +37,13 @@ const PricingPolicy = () => {
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mt-8">
-                <img 
-                  src="/images/spessori-telaio.jpg" 
-                  alt="Confronto spessori telaio: 2cm standard e 4cm su richiesta" 
-                  className="rounded-lg shadow-md w-full"
-                />
-                <img 
-                  src="/images/preview-tela-angolo.png" 
-                  alt="Dettaglio angolo tela e telaio" 
-                  className="rounded-lg shadow-md w-full object-cover"
-                />
+                <img src="/images/spessori-telaio.jpg" alt="Confronto spessori telaio: 2cm standard e 4cm su richiesta" className="rounded-lg shadow-md w-full" />
+                <img src="/images/preview-tela-angolo.png" alt="Dettaglio angolo tela e telaio" className="rounded-lg shadow-md w-full object-cover" />
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PricingPolicy;
