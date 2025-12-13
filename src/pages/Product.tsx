@@ -52,34 +52,66 @@ const Product = () => {
   }, [id]);
   const product = products?.find(p => p.id === id);
 
+  // Helper to normalize dimensions so AAxBB and BBxAA are treated as the same SKU
+  const normalizeDimension = (dim: string): string => {
+    const match = dim.match(/^(\d+)x(\d+)(.*)$/);
+    if (!match) return dim;
+    const [, a, b, suffix] = match;
+    const numA = parseInt(a);
+    const numB = parseInt(b);
+    if (numA <= numB) return dim;
+    return `${numB}x${numA}${suffix}`;
+  };
+
   // Use mock rooms from database, or generate placeholders
-  const mockRooms = product?.mock_rooms && product.mock_rooms.length > 0 ? product.mock_rooms.map((mockRoom, index) => {
-    // Handle both old string format and new object format
-    const isOldFormat = typeof mockRoom === 'string';
-    const imageUrl = isOldFormat ? mockRoom : mockRoom?.url || "";
-    const customLabel = isOldFormat ? "" : mockRoom?.label || "";
-    const sizeDimensions = product?.sizes[index]?.dimensions || "";
-    return {
-      id: index + 1,
-      image: imageUrl,
-      customLabel: customLabel,
-      // Only show if explicitly set, empty string = hidden
-      sizeDimensions: sizeDimensions,
-      note: ""
-    };
-  }) : [1, 2, 3].map(num => ({
-    id: num,
-    image: "",
-    customLabel: "",
-    sizeDimensions: "",
-    note: ""
-  }));
+  const mockRooms = product?.mock_rooms && product.mock_rooms.length > 0
+    ? product.mock_rooms
+        .map((mockRoom, index) => {
+          // Handle both old string format and new object format
+          const isOldFormat = typeof mockRoom === "string";
+          const imageUrl = isOldFormat ? mockRoom : mockRoom?.url || "";
+          const customLabel = isOldFormat ? "" : mockRoom?.label || "";
+
+          const sizeAtIndex = product?.sizes[index];
+          const baseLabel = customLabel || sizeAtIndex?.dimensions || "";
+
+          // Find matching size using dimension equivalence (AAxBB = BBxAA)
+          const matchingSize = baseLabel
+            ? product?.sizes.find(
+                (s) => normalizeDimension(s.dimensions) === normalizeDimension(baseLabel)
+              ) || sizeAtIndex
+            : sizeAtIndex;
+
+          // Hide mock room if it maps to a hidden size (price = 0)
+          if (matchingSize && matchingSize.price <= 0) {
+            return null;
+          }
+
+          return {
+            id: index + 1,
+            image: imageUrl,
+            displayLabel: baseLabel,
+            price: matchingSize?.price ?? 0,
+            note: "",
+          };
+        })
+        .filter((room): room is { id: number; image: string; displayLabel: string; price: number; note: string } => room !== null)
+    : [1, 2, 3].map((num) => ({
+        id: num,
+        image: "",
+        displayLabel: "",
+        price: 0,
+        note: "",
+      }));
+
+  // Max carousel index (show 2 mock rooms side by side)
   const maxIndex = Math.max(0, mockRooms.length - 2);
+
   const handlePrev = () => {
-    setCarouselIndex(prev => Math.max(0, prev - 1));
+    setCarouselIndex((prev) => Math.max(0, prev - 1));
   };
   const handleNext = () => {
-    setCarouselIndex(prev => Math.min(maxIndex, prev + 1));
+    setCarouselIndex((prev) => Math.min(maxIndex, prev + 1));
   };
   if (isLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
@@ -250,30 +282,41 @@ Grazie!`);
                 <div className="flex gap-4 transition-transform duration-300 ease-out" style={{
               transform: `translateX(-${carouselIndex * (50 + 8)}%)`
             }}>
-                  {mockRooms.map(room => {
-                // Use customLabel directly from mock_rooms, find matching size for price
-                const matchingSize = room.customLabel ? product?.sizes.find(s => s.dimensions === room.customLabel) : null;
-                const price = matchingSize?.price;
-                return <div key={room.id} className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col">
-                        <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
-                          {room.image ? <img src={room.image} alt={`${product?.name} in ambiente`} className="w-full h-full object-contain" /> : <div className="text-center text-muted-foreground p-4">
-                              <div className="text-4xl mb-2">🖼️</div>
-                              <div className="text-sm">Mockup {room.id}</div>
-                            </div>}
-                        </div>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {room.customLabel && <span className="text-xs font-medium px-3 py-1 rounded border border-border tracking-wider bg-gray-950 text-primary-foreground">
-                              {room.customLabel}
-                            </span>}
-                          {price && price > 0 && <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
-                              €{price}
-                            </span>}
-                          {room.note && <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
-                              {room.note}
-                            </span>}
-                        </div>
-                      </div>;
-              })}
+                  {mockRooms.map((room) => (
+                    <div key={room.id} className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col">
+                      <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
+                        {room.image ? (
+                          <img
+                            src={room.image}
+                            alt={`${product?.name} in ambiente`}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <div className="text-center text-muted-foreground p-4">
+                            <div className="text-4xl mb-2">🖼️</div>
+                            <div className="text-sm">Mockup {room.id}</div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {room.displayLabel && (
+                          <span className="text-xs font-medium px-3 py-1 rounded border border-border tracking-wider bg-gray-950 text-primary-foreground">
+                            {room.displayLabel}
+                          </span>
+                        )}
+                        {room.price > 0 && (
+                          <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
+                            €{room.price}
+                          </span>
+                        )}
+                        {room.note && (
+                          <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
+                            {room.note}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
               
