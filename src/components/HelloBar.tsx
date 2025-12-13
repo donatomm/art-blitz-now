@@ -72,7 +72,10 @@ const HelloBar = () => {
         </p>
         {/* Seconda riga */}
         <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-2 text-white text-center mt-0.5">
-          <span>CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA SE ACQUISTI</span>
+          <span className="text-center leading-tight">
+            <span className="block">CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘</span>
+            <span className="block">GARANTITA SE ACQUISTI</span>
+          </span>
           <span className="px-2 py-0.5 bg-yellow-300 text-green-900 font-black text-base rounded shadow-lg animate-pulse leading-tight">
             <span className="block">ENTRO</span>
             <span className="block">il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘</span>
