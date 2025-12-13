@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { MessageCircle, Mail, Gift, Truck, Clock } from 'lucide-react';
-
 const HelloBar = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
   const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
-  const [countdown, setCountdown] = useState({ days: 1, hours: 22, minutes: 9, seconds: 0, expired: false });
-
+  const [countdown, setCountdown] = useState({
+    days: 1,
+    hours: 22,
+    minutes: 9,
+    seconds: 0,
+    expired: false
+  });
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
@@ -23,33 +27,37 @@ const HelloBar = () => {
     targetTime.setHours(targetTime.getHours() + 22);
     targetTime.setMinutes(targetTime.getMinutes() + 9);
     targetTime.setSeconds(targetTime.getSeconds() + 0);
-
     const calculateTimeLeft = () => {
       const now = new Date();
       const diff = targetTime.getTime() - now.getTime();
-      
       if (diff <= 0) {
-        return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
+        return {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          expired: true
+        };
       }
-      
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      
-      return { days, hours, minutes, seconds, expired: false };
+      const hours = Math.floor(diff % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
+      const minutes = Math.floor(diff % (1000 * 60 * 60) / (1000 * 60));
+      const seconds = Math.floor(diff % (1000 * 60) / 1000);
+      return {
+        days,
+        hours,
+        minutes,
+        seconds,
+        expired: false
+      };
     };
-
     setCountdown(calculateTimeLeft());
     const interval = setInterval(() => {
       setCountdown(calculateTimeLeft());
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
-
   const formatTime = (n: number) => n.toString().padStart(2, '0');
-
   return <>
       {/* Green bar - Shipping & Christmas */}
       <div className={`fixed top-16 left-0 right-0 z-40 min-h-[45px] w-full bg-emerald-600 flex items-center justify-center px-4 py-2 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
@@ -62,9 +70,9 @@ const HelloBar = () => {
             </button>
           </span>
           <span className="hidden sm:inline">•</span>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1 text-inherit">
             <Gift className="h-4 w-4 animate-spin" />
-            CONSEGNA ENTRO 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA PER ACQUISTI ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘
+            CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA PER ACQUISTI ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘
             <button onClick={() => setDeliveryDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-gold-foreground shadow-md">
               Dettagli
             </button>
@@ -80,10 +88,7 @@ const HelloBar = () => {
           <span className="mx-2">•</span>
           <span className="flex items-center gap-1.5 bg-black/30 px-3 py-1 rounded-lg">
             <Clock className="h-4 w-4 animate-pulse" />
-            {countdown.expired ? (
-              <span className="text-yellow-300">SCADUTO!</span>
-            ) : (
-              <span className="font-mono text-lg tracking-wider">
+            {countdown.expired ? <span className="text-yellow-300">SCADUTO!</span> : <span className="font-mono text-lg tracking-wider">
                 <span className="text-yellow-300">{countdown.days}</span>
                 <span className="text-xs mx-0.5">g</span>
                 <span className="text-yellow-300">{formatTime(countdown.hours)}</span>
@@ -92,8 +97,7 @@ const HelloBar = () => {
                 <span className="text-xs mx-0.5">m</span>
                 <span className="text-yellow-300">{formatTime(countdown.seconds)}</span>
                 <span className="text-xs mx-0.5">s</span>
-              </span>
-            )}
+              </span>}
           </span>
           <span className="animate-pulse">⚠️</span>
         </p>
