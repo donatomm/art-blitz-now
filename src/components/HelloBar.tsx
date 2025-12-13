@@ -72,7 +72,11 @@ const HelloBar = () => {
           <span className="hidden sm:inline">•</span>
           <span className="flex items-center gap-1 text-inherit">
             <Gift className="h-4 w-4 animate-spin" />
-            CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA SE ACQUISTI ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘: MANCANO
+            CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘 GARANTITA SE ACQUISTI
+            <span className="mx-1 px-2 py-1 bg-yellow-300 text-green-900 font-black text-base sm:text-lg rounded shadow-lg animate-pulse">
+              ENTRO il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘
+            </span>
+            : MANCANO
             <span className="font-mono font-bold tracking-wider bg-black/20 px-2 py-0.5 rounded">
               {countdown.expired ? <span className="text-yellow-300">SCADUTO!</span> : <>
                 <span className="text-yellow-300">{countdown.days}</span>
@@ -86,6 +90,9 @@ const HelloBar = () => {
             <button onClick={() => setDeliveryDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-gold-foreground shadow-md">
               Dettagli
             </button>
+            <span className="ml-2 px-2 py-0.5 bg-red-500 text-white font-bold text-sm rounded shadow">
+              Sconto 44% fino al 14 Dicembre
+            </span>
           </span>
         </p>
       </div>
