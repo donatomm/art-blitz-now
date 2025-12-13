@@ -7,8 +7,8 @@ const HelloBar = () => {
   const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
   const [countdown, setCountdown] = useState({
     days: 1,
-    hours: 22,
-    minutes: 6,
+    hours: 3,
+    minutes: 59,
     seconds: 0,
     expired: false
   });
@@ -19,14 +19,27 @@ const HelloBar = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Countdown from fixed start time: 1 day, 22 hours, 6 minutes, 0 seconds
+  // Countdown with localStorage persistence - starts at 1d 3h 59m
   useEffect(() => {
-    // Calculate target time: now + 1d 22h 6m 0s
-    const targetTime = new Date();
-    targetTime.setDate(targetTime.getDate() + 1);
-    targetTime.setHours(targetTime.getHours() + 22);
-    targetTime.setMinutes(targetTime.getMinutes() + 6);
-    targetTime.setSeconds(targetTime.getSeconds() + 0);
+    const STORAGE_KEY = 'hellobar_countdown_target';
+    
+    // Check for existing target or create new one
+    let targetTime: Date;
+    const stored = localStorage.getItem(STORAGE_KEY);
+    
+    if (stored) {
+      targetTime = new Date(parseInt(stored, 10));
+      // If target has passed, reset it
+      if (targetTime.getTime() <= Date.now()) {
+        targetTime = new Date(Date.now() + (1 * 24 * 60 * 60 * 1000) + (3 * 60 * 60 * 1000) + (59 * 60 * 1000));
+        localStorage.setItem(STORAGE_KEY, targetTime.getTime().toString());
+      }
+    } else {
+      // First visit: set target to now + 1d 3h 59m
+      targetTime = new Date(Date.now() + (1 * 24 * 60 * 60 * 1000) + (3 * 60 * 60 * 1000) + (59 * 60 * 1000));
+      localStorage.setItem(STORAGE_KEY, targetTime.getTime().toString());
+    }
+
     const calculateTimeLeft = () => {
       const now = new Date();
       const diff = targetTime.getTime() - now.getTime();
