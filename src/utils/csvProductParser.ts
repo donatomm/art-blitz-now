@@ -1,5 +1,7 @@
 import { Product, ProductSize, MockRoom } from "@/types/product";
 
+export type CSVImportMode = 'create' | 'update' | 'merge';
+
 export interface CSVProductRow {
   nome: string;
   tecnica: string;
@@ -189,4 +191,68 @@ export function generateCSVTemplate(): string {
   return `Nome,Tecnica,Dim1,Prezzo1,Mock1,Dim2,Prezzo2,Mock2,Dim3,Prezzo3,Mock3,Descrizione,Stripe_ID
 NuovaOpera,Stampa su Tela,40x60,119,Soggiorno,75x100,149,Camera,80x120,185,Studio,Descrizione...,prod_xxxxx
 AltraOpera,Stampa su Tela,60x60,145,Salotto,80x80,195,Ingresso,,,,,prod_yyyyy`;
+}
+
+/**
+ * Export products to CSV format with column-based structure
+ */
+export function exportProductsToCSV(products: Product[]): string {
+  // Find max number of sizes across all products
+  const maxSizes = Math.max(...products.map(p => p.sizes.length), 1);
+  
+  // Build header
+  const headerParts = ['Nome', 'Tecnica'];
+  for (let i = 1; i <= maxSizes; i++) {
+    headerParts.push(`Dim${i}`, `Prezzo${i}`, `Mock${i}`);
+  }
+  headerParts.push('Descrizione', 'Stripe_ID');
+  
+  const lines = [headerParts.join(',')];
+  
+  // Build data rows
+  for (const product of products) {
+    const rowParts: string[] = [
+      escapeCSVValue(product.name),
+      escapeCSVValue(product.medium),
+    ];
+    
+    // Add size/price/mock columns
+    for (let i = 0; i < maxSizes; i++) {
+      const size = product.sizes[i];
+      const mockRoom = product.mock_rooms?.[i];
+      
+      if (size) {
+        rowParts.push(
+          escapeCSVValue(size.dimensions),
+          String(size.price),
+          escapeCSVValue(mockRoom?.label || '')
+        );
+      } else {
+        rowParts.push('', '', '');
+      }
+    }
+    
+    // Get stripe_product_id from first size (they're typically the same)
+    const stripeId = product.sizes[0]?.stripe_product_id || '';
+    
+    rowParts.push(
+      escapeCSVValue(product.description || ''),
+      escapeCSVValue(stripeId)
+    );
+    
+    lines.push(rowParts.join(','));
+  }
+  
+  return lines.join('\n');
+}
+
+/**
+ * Escape a value for CSV (wrap in quotes if contains comma, quote, or newline)
+ */
+function escapeCSVValue(value: string): string {
+  if (!value) return '';
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
 }

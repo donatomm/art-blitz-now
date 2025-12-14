@@ -25,7 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
 import ImageUpload from "./ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
-import { parseCSVProducts, generateCSVTemplate, ParseResult } from "@/utils/csvProductParser";
+import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult, CSVImportMode } from "@/utils/csvProductParser";
 
 interface AdminPanelProps {
   products: Product[];
@@ -45,6 +45,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const [stripeImportJson, setStripeImportJson] = useState("");
   const [isCSVImportDialogOpen, setIsCSVImportDialogOpen] = useState(false);
   const [csvParseResult, setCSVParseResult] = useState<ParseResult | null>(null);
+  const [csvImportMode, setCSVImportMode] = useState<CSVImportMode>('merge');
   const csvInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
@@ -318,21 +319,68 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const handleCSVImportConfirm = () => {
     if (!csvParseResult || csvParseResult.products.length === 0) return;
 
-    // Create new products with generated IDs
-    const newProducts = csvParseResult.products.map(p => ({
-      ...p,
-      id: crypto.randomUUID(),
-    }));
+    let updatedProducts = [...products];
+    let createdCount = 0;
+    let updatedCount = 0;
 
-    onProductsChange([...products, ...newProducts]);
+    for (const csvProduct of csvParseResult.products) {
+      const existingIndex = updatedProducts.findIndex(
+        p => p.name.toLowerCase() === csvProduct.name.toLowerCase()
+      );
+
+      if (existingIndex >= 0) {
+        // Update existing product (merge sizes, keep existing data like image_url)
+        const existing = updatedProducts[existingIndex];
+        updatedProducts[existingIndex] = {
+          ...existing,
+          medium: csvProduct.medium,
+          description: csvProduct.description || existing.description,
+          sizes: csvProduct.sizes,
+          mock_rooms: csvProduct.mock_rooms.map((mr, idx) => ({
+            ...mr,
+            url: existing.mock_rooms?.[idx]?.url || mr.url,
+          })),
+        };
+        updatedCount++;
+      } else {
+        // Create new product
+        updatedProducts.push({
+          ...csvProduct,
+          id: crypto.randomUUID(),
+        } as Product);
+        createdCount++;
+      }
+    }
+
+    onProductsChange(updatedProducts);
+    
+    const messages = [];
+    if (createdCount > 0) messages.push(`${createdCount} nuovi`);
+    if (updatedCount > 0) messages.push(`${updatedCount} aggiornati`);
     
     toast({
-      title: "Prodotti importati!",
-      description: `${newProducts.length} nuovi prodotti aggiunti.`,
+      title: "Import completato!",
+      description: `Prodotti: ${messages.join(', ')}.`,
     });
 
     setIsCSVImportDialogOpen(false);
     setCSVParseResult(null);
+  };
+
+  const handleExportCSV = () => {
+    const csv = exportProductsToCSV(products);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'octowonders-prodotti.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "CSV esportato!",
+      description: `${products.length} prodotti esportati.`,
+    });
   };
 
   const handleDownloadCSVTemplate = () => {
@@ -429,8 +477,9 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   onChange={handleCSVFileSelect}
                   className="hidden"
                 />
-                <Button onClick={handleExportJSON} variant="outline" size="icon" title="Esporta JSON">
-                  <Download className="h-4 w-4" />
+                <Button onClick={handleExportCSV} variant="outline" title="Esporta CSV">
+                  <Download className="mr-2 h-4 w-4" />
+                  CSV
                 </Button>
                 <Button onClick={() => setIsStripeImportDialogOpen(true)} variant="outline" size="icon" title="Stripe IDs">
                   <Upload className="h-4 w-4" />
