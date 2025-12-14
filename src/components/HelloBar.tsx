@@ -55,35 +55,13 @@ const HelloBar = () => {
   }, []);
   const formatTime = (n: number) => n.toString().padStart(2, '0');
   return <>
-      {/* Green bar - Shipping & Christmas */}
-      <div className={`fixed top-16 left-0 right-0 z-40 w-full bg-green-600 flex flex-col items-center justify-center px-4 py-1.5 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
-        {/* Riga unica */}
-        <p className="text-sm font-medium flex flex-wrap items-center justify-center gap-x-2 text-white text-center">
-          <span className="text-center leading-tight">
-            <span className="block">CONSEGNA PER 𝗡𝗔𝗧𝗔𝗟𝗘</span>
-            <span className="block">GARANTITA SE ACQUISTI</span>
-          </span>
-          <span className="px-2 py-0.5 text-green-900 font-black text-base rounded shadow-lg animate-pulse leading-tight bg-gold">
-            <span className="block">ENTRO</span>
-            <span className="block">il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘</span>
-          </span>
-          <span className="font-medium">MANCANO</span>
-          <span className="font-mono font-bold text-lg bg-red-600 px-3 py-1 rounded">
-            {countdown.expired ? <span className="text-red-300">SCADUTO!</span> : <>
-              <span className="text-white">{countdown.days}</span>
-              <span className="text-white/70 text-sm">g </span>
-              <span className="text-white">{formatTime(countdown.hours)}</span>
-              <span className="text-white/70 text-sm">h </span>
-              <span className="text-white">{formatTime(countdown.minutes)}</span>
-              <span className="text-white/70 text-sm">m</span>
-            </>}
-          </span>
-          <span className="flex items-center gap-1 ml-2">
-            SPEDIZIONE GRATUITA
-            <button onClick={() => setShippingDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-green-900">
-              Dettagli
-            </button>
-          </span>
+      {/* Green bar - Shipping only */}
+      <div className={`fixed top-16 left-0 right-0 z-40 w-full bg-green-600 flex items-center justify-center px-4 py-1.5 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
+        <p className="text-sm font-medium flex items-center gap-2 text-white">
+          SPEDIZIONE GRATUITA
+          <button onClick={() => setShippingDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-green-900">
+            Dettagli
+          </button>
         </p>
       </div>
 
