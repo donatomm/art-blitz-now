@@ -69,7 +69,7 @@ const HelloBar = () => {
             <span className="block">il 𝟭𝟰 𝗗𝗜𝗖𝗘𝗠𝗕𝗥𝗘</span>
           </span>
           <span className="font-medium">MANCANO</span>
-          <span className="font-mono font-bold text-lg bg-black/30 px-3 py-1 rounded">
+          <span className="font-mono font-bold text-lg bg-red-600 px-3 py-1 rounded">
             {countdown.expired ? <span className="text-red-300">SCADUTO!</span> : <>
               <span className="text-white">{countdown.days}</span>
               <span className="text-white/70 text-sm">g </span>
