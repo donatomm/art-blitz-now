@@ -100,15 +100,9 @@ const HelloBar = () => {
               <li>𝙄𝙩𝙖𝙡𝙞𝙖 𝙋𝙚𝙣𝙞𝙣𝙨𝙪𝙡𝙖𝙧𝙚 𝙚 𝙎𝙞𝙘𝙞𝙡𝙞𝙖</li>
             </ul>
             <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
-              <p className="text-sm font-medium text-emerald-800">
-                Consegna Garantita entro Natale per acquisti entro il 14 dicembre.
-              </p>
-              <p className="text-sm text-emerald-700 mt-2">
-                Gli ordini effettuati dopo questa data difficilmente arriveranno in tempo per Natale.
-              </p>
-              <p className="text-sm text-emerald-700 mt-2">
-                A meno che per EMERGENZE non si usi un diverso fornitore che ha prezzi quasi doppi - ma consegna Express 24h. Contattatemi.
-              </p>
+              
+              
+              
             </div>
             <p className="text-sm text-muted-foreground mt-4">Per spedizioni in altre zone (Sardegna, isole minori, Paesi Europei), i costi di produzione sono significativamente più alti (diverso fornitore) mentre lo shipping rientra nella norma, ed offre consegna ESPRESSA 24h</p>
             <p className="text-sm text-muted-foreground mt-2">
