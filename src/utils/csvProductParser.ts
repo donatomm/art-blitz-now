@@ -43,13 +43,14 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
   const descrizioneIdx = findColumnIndex(headers, ['descrizione', 'description']);
   const stripeIdx = findColumnIndex(headers, ['stripe_id', 'stripeid', 'stripe id', 'stripe']);
 
-  // Find dimension/price column pairs (Dim1/Prezzo1 through Dim6/Prezzo6)
-  const dimPriceColumns: { dimIdx: number; prezzoIdx: number }[] = [];
+  // Find dimension/price/mock column sets (Dim1/Prezzo1/Mock1 through Dim6/Prezzo6/Mock6)
+  const dimPriceMockColumns: { dimIdx: number; prezzoIdx: number; mockIdx: number }[] = [];
   for (let i = 1; i <= 6; i++) {
     const dimIdx = findColumnIndex(headers, [`dim${i}`, `dimensione${i}`, `size${i}`]);
     const prezzoIdx = findColumnIndex(headers, [`prezzo${i}`, `price${i}`, `p${i}`]);
+    const mockIdx = findColumnIndex(headers, [`mock${i}`, `mockroom${i}`, `label${i}`]);
     if (dimIdx !== -1 && prezzoIdx !== -1) {
-      dimPriceColumns.push({ dimIdx, prezzoIdx });
+      dimPriceMockColumns.push({ dimIdx, prezzoIdx, mockIdx });
     }
   }
 
@@ -57,7 +58,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
   if (nomeIdx === -1) {
     errors.push("Colonna 'Nome' non trovata");
   }
-  if (dimPriceColumns.length === 0) {
+  if (dimPriceMockColumns.length === 0) {
     errors.push("Nessuna coppia Dim/Prezzo trovata (es. Dim1, Prezzo1)");
   }
 
@@ -88,9 +89,10 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
       const sizes: ProductSize[] = [];
       const mock_rooms: MockRoom[] = [];
 
-      for (const { dimIdx, prezzoIdx } of dimPriceColumns) {
+      for (const { dimIdx, prezzoIdx, mockIdx } of dimPriceMockColumns) {
         const dim = values[dimIdx]?.trim() || "";
         const prezzoRaw = values[prezzoIdx]?.trim() || "";
+        const mockLabel = mockIdx !== -1 ? (values[mockIdx]?.trim() || "") : "";
         
         if (dim && prezzoRaw) {
           const prezzo = parseFloat(prezzoRaw);
@@ -109,7 +111,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
 
           mock_rooms.push({
             url: "",
-            label: `Mock ${dim}`,
+            label: mockLabel || `Mock ${dim}`,
           });
         }
       }
@@ -184,7 +186,7 @@ function findColumnIndex(headers: string[], possibleNames: string[]): number {
  * Generate sample CSV template with column-based format
  */
 export function generateCSVTemplate(): string {
-  return `Nome,Tecnica,Dim1,Prezzo1,Dim2,Prezzo2,Dim3,Prezzo3,Descrizione,Stripe_ID
-NuovaOpera,Stampa su Tela,40x60,119,75x100,149,80x120,185,Descrizione dell'opera...,prod_xxxxx
-AltraOpera,Stampa su Tela,60x60,145,80x80,195,,,Altra descrizione...,prod_yyyyy`;
+  return `Nome,Tecnica,Dim1,Prezzo1,Mock1,Dim2,Prezzo2,Mock2,Dim3,Prezzo3,Mock3,Descrizione,Stripe_ID
+NuovaOpera,Stampa su Tela,40x60,119,Soggiorno,75x100,149,Camera,80x120,185,Studio,Descrizione...,prod_xxxxx
+AltraOpera,Stampa su Tela,60x60,145,Salotto,80x80,195,Ingresso,,,,,prod_yyyyy`;
 }
