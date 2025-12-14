@@ -19,7 +19,7 @@ export interface ParseResult {
 
 /**
  * Parse CSV content with column-based format:
- * Nome,Tecnica,Dim1,Prezzo1,Dim2,Prezzo2,Dim3,Prezzo3,Descrizione,Stripe_ID
+ * Nome,Stripe_ID,Tecnica,Dim1,Prezzo1,Mock1,Dim2,Prezzo2,Mock2,...,Descrizione
  * 
  * Supports up to 6 dimension/price pairs (Dim1-Dim6, Prezzo1-Prezzo6)
  */
@@ -188,9 +188,9 @@ function findColumnIndex(headers: string[], possibleNames: string[]): number {
  * Generate sample CSV template with column-based format
  */
 export function generateCSVTemplate(): string {
-  return `Nome,Tecnica,Dim1,Prezzo1,Mock1,Dim2,Prezzo2,Mock2,Dim3,Prezzo3,Mock3,Descrizione,Stripe_ID
-NuovaOpera,Stampa su Tela,40x60,119,Soggiorno,75x100,149,Camera,80x120,185,Studio,Descrizione...,prod_xxxxx
-AltraOpera,Stampa su Tela,60x60,145,Salotto,80x80,195,Ingresso,,,,,prod_yyyyy`;
+  return `Nome,Stripe_ID,Tecnica,Dim1,Prezzo1,Mock1,Dim2,Prezzo2,Mock2,Dim3,Prezzo3,Mock3,Descrizione
+NuovaOpera,prod_xxxxx,Stampa su Tela,40x60,119,Soggiorno,75x100,149,Camera,80x120,185,Studio,Descrizione...
+AltraOpera,prod_yyyyy,Stampa su Tela,60x60,145,Salotto,80x80,195,Ingresso,,,,`;
 }
 
 /**
@@ -200,19 +200,23 @@ export function exportProductsToCSV(products: Product[]): string {
   // Find max number of sizes across all products
   const maxSizes = Math.max(...products.map(p => p.sizes.length), 1);
   
-  // Build header
-  const headerParts = ['Nome', 'Tecnica'];
+  // Build header: Nome, Stripe_ID, Tecnica, Dim1, Prezzo1, Mock1, ..., Descrizione
+  const headerParts = ['Nome', 'Stripe_ID', 'Tecnica'];
   for (let i = 1; i <= maxSizes; i++) {
     headerParts.push(`Dim${i}`, `Prezzo${i}`, `Mock${i}`);
   }
-  headerParts.push('Descrizione', 'Stripe_ID');
+  headerParts.push('Descrizione');
   
   const lines = [headerParts.join(',')];
   
   // Build data rows
   for (const product of products) {
+    // Get stripe_product_id from first size (they're typically the same)
+    const stripeId = product.sizes[0]?.stripe_product_id || '';
+    
     const rowParts: string[] = [
       escapeCSVValue(product.name),
+      escapeCSVValue(stripeId),
       escapeCSVValue(product.medium),
     ];
     
@@ -232,13 +236,7 @@ export function exportProductsToCSV(products: Product[]): string {
       }
     }
     
-    // Get stripe_product_id from first size (they're typically the same)
-    const stripeId = product.sizes[0]?.stripe_product_id || '';
-    
-    rowParts.push(
-      escapeCSVValue(product.description || ''),
-      escapeCSVValue(stripeId)
-    );
+    rowParts.push(escapeCSVValue(product.description || ''));
     
     lines.push(rowParts.join(','));
   }
