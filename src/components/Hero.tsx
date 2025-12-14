@@ -25,7 +25,7 @@ const Hero = ({
       {/* Main Content */}
       <div className="relative z-10 flex flex-col">
         {/* Hero Text Area - increased height by 70px */}
-        <div className="flex h-[calc(65vh-130px)] min-h-[320px] flex-col items-center justify-end px-4 text-center pb-[52px]">
+        <div className="flex h-[calc(65vh-10px)] min-h-[440px] flex-col items-center justify-end px-4 text-center pb-[52px]">
           <div className="bg-blue-500/40 backdrop-blur-sm px-8 py-6 rounded-lg border border-white/10">
             <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl md:text-6xl lg:text-7xl whitespace-pre-line">
               {title}
