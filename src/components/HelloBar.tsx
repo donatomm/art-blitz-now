@@ -47,7 +47,6 @@ const HelloBar = () => {
         expired: false
       };
     };
-
     setCountdown(calculateTimeLeft());
     const interval = setInterval(() => {
       setCountdown(calculateTimeLeft());
@@ -111,9 +110,7 @@ const HelloBar = () => {
                 A meno che per EMERGENZE non si usi un diverso fornitore che ha prezzi quasi doppi - ma consegna Express 24h. Contattatemi.
               </p>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              Per spedizioni in altre zone (Sardegna, isole minori, Paesi Europei), i costi di produzione sono significativamente più alti (diverso fornitore) mentre lo shipping rientra nella norma, a parte San Marino che ha costi impossibili (mah).
-            </p>
+            <p className="text-sm text-muted-foreground mt-4">Per spedizioni in altre zone (Sardegna, isole minori, Paesi Europei), i costi di produzione sono significativamente più alti (diverso fornitore) mentre lo shipping rientra nella norma, ed offre consegna ESPRESSA 24h</p>
             <p className="text-sm text-muted-foreground mt-2">
               Paesi inclusi: DE, AT, CH, LU, GB, IE, FR, BE, ES, SE, DK, FI, NL, PL, PT, CZ, HU, SK.
             </p>
