@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
-
 import { MessageCircle, Mail, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 const Shipping = () => {
   const whatsappMessage = `Ciao, mi chiamo .......
 Ed ho le seguenti domande:
@@ -10,9 +8,7 @@ Ed ho le seguenti domande:
 `;
   const whatsappLink = `https://wa.me/393666295174?text=${encodeURIComponent(whatsappMessage)}`;
   const emailLink = `mailto:me@octowonders.com?subject=${encodeURIComponent("Domanda Spedizione")}&body=${encodeURIComponent(whatsappMessage)}`;
-
-  return (
-    <div className="min-h-screen bg-background pt-24 pb-16">
+  return <div className="min-h-screen bg-background pt-24 pb-16">
       {/* Back to Gallery button */}
       <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
         <ArrowLeft className="h-5 w-5" />
@@ -26,9 +22,7 @@ Ed ho le seguenti domande:
 
         {/* Christmas Deadline Section */}
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-foreground mb-4">
-            Consegna Garantita per Natale SE:
-          </h2>
+          <h2 className="text-2xl font-semibold text-foreground mb-4">Consegna NON Garantita per Natale</h2>
           <p className="text-2xl leading-relaxed text-foreground font-bold">
             ✅ COMPLETA L'ACQUISTO <span className="text-red-600">ENTRO IL 14 DICEMBRE 2025</span>
           </p>
@@ -113,23 +107,14 @@ Ed ho le seguenti domande:
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button
-              asChild
-              size="lg"
-              className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold h-14 text-lg"
-            >
+            <Button asChild size="lg" className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold h-14 text-lg">
               <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-2 h-5 w-5" />
                 WhatsApp
               </a>
             </Button>
             
-            <Button
-              asChild
-              size="lg"
-              variant="secondary"
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-black font-bold h-14 text-lg"
-            >
+            <Button asChild size="lg" variant="secondary" className="flex-1 bg-gray-100 hover:bg-gray-200 text-black font-bold h-14 text-lg">
               <a href={emailLink}>
                 <Mail className="mr-2 h-5 w-5" />
                 Email
@@ -138,8 +123,6 @@ Ed ho le seguenti domande:
           </div>
         </section>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default Shipping;
