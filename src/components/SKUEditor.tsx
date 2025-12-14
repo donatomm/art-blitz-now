@@ -135,7 +135,8 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
 
   const filteredProducts = selectedDimension ? getProductsForDimension(selectedDimension) : [];
 
-  // All SKUs sorted by size
+  // Group SKUs by normalized dimension
+  const skusByDimension = new Map<string, typeof allSkus>();
   const allSkus = products.flatMap(product =>
     product.sizes
       .map((size, sizeIndex) => ({
@@ -150,12 +151,18 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
       .filter(sku => sku.price > 0)
   );
 
-  const sortedSkus = [...allSkus].sort((a, b) => {
-    const numA = parseInt(a.normalizedSize.split('x')[0]) || 0;
-    const numB = parseInt(b.normalizedSize.split('x')[0]) || 0;
-    if (numA !== numB) return numA - numB;
-    return a.productName.localeCompare(b.productName);
+  // Group by normalized dimension
+  allSkus.forEach(sku => {
+    const existing = skusByDimension.get(sku.normalizedSize) || [];
+    existing.push(sku);
+    skusByDimension.set(sku.normalizedSize, existing);
   });
+
+  // Sort dimensions and products within each dimension
+  const groupedSkus = sortedDimensions.map(dim => ({
+    dimension: dim,
+    items: (skusByDimension.get(dim) || []).sort((a, b) => a.productName.localeCompare(b.productName))
+  })).filter(g => g.items.length > 0);
 
   return (
     <div className="space-y-4">
@@ -221,35 +228,34 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
         </div>
       )}
 
-      {/* Full SKU list sorted by size */}
+      {/* Full SKU list grouped by dimension */}
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">Lista completa (ordinata per Size):</p>
-        <div className="border rounded-lg overflow-hidden">
-          <div className="text-xs font-medium text-muted-foreground bg-muted grid grid-cols-12 gap-2 px-3 py-2 border-b">
-            <span className="col-span-2">Size</span>
-            <span className="col-span-6">Prodotto</span>
-            <span className="col-span-4 text-right">Prezzo €</span>
-          </div>
-          <div className="max-h-[400px] overflow-y-auto">
-            {sortedSkus.map((sku, idx) => (
-              <div 
-                key={`${sku.productId}-${sku.sizeIndex}-${idx}`}
-                className="grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50"
-              >
-                <span className="col-span-2 font-mono text-xs font-medium">{sku.size}</span>
-                <span className="col-span-6 truncate text-xs">{sku.productName}</span>
-                <div className="col-span-4 flex justify-end">
-                  <Input
-                    type="number"
-                    value={sku.price}
-                    onChange={(e) => handleLocalPriceChange(sku.productId, sku.sizeIndex, Number(e.target.value))}
-                    className="h-7 text-sm w-20 text-right"
-                    min={0}
-                  />
-                </div>
+        <p className="text-sm text-muted-foreground">Lista completa (raggruppata per SKU):</p>
+        <div className="border rounded-lg overflow-hidden max-h-[500px] overflow-y-auto">
+          {groupedSkus.map(group => (
+            <div key={group.dimension}>
+              <div className="bg-muted px-3 py-1.5 text-xs font-semibold text-foreground border-b sticky top-0">
+                {group.dimension}
               </div>
-            ))}
-          </div>
+              {group.items.map((sku, idx) => (
+                <div 
+                  key={`${sku.productId}-${sku.sizeIndex}-${idx}`}
+                  className="grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50"
+                >
+                  <span className="col-span-7 truncate text-xs">{sku.productName}</span>
+                  <div className="col-span-5 flex justify-end">
+                    <Input
+                      type="number"
+                      value={sku.price}
+                      onChange={(e) => handleLocalPriceChange(sku.productId, sku.sizeIndex, Number(e.target.value))}
+                      className="h-7 text-sm w-20 text-right"
+                      min={0}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 
