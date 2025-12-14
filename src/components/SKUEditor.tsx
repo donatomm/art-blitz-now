@@ -135,6 +135,28 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
 
   const filteredProducts = selectedDimension ? getProductsForDimension(selectedDimension) : [];
 
+  // All SKUs sorted by size
+  const allSkus = products.flatMap(product =>
+    product.sizes
+      .map((size, sizeIndex) => ({
+        size: size.dimensions,
+        normalizedSize: normalizeDimension(size.dimensions),
+        price: localPrices.get(getSkuKey(product.id, sizeIndex)) ?? size.price,
+        productName: product.name,
+        productId: product.id,
+        sizeIndex: sizeIndex,
+        stripeId: size.stripe_product_id || '-'
+      }))
+      .filter(sku => sku.price > 0)
+  );
+
+  const sortedSkus = [...allSkus].sort((a, b) => {
+    const numA = parseInt(a.normalizedSize.split('x')[0]) || 0;
+    const numB = parseInt(b.normalizedSize.split('x')[0]) || 0;
+    if (numA !== numB) return numA - numB;
+    return a.productName.localeCompare(b.productName);
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
@@ -176,7 +198,7 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
             <span className="col-span-3">Prezzo €</span>
             <span className="col-span-4">Stripe ID</span>
           </div>
-          <div className="max-h-[400px] overflow-y-auto">
+          <div className="max-h-[300px] overflow-y-auto">
             {filteredProducts.map((item, idx) => (
               <div 
                 key={`${item.productId}-${item.sizeIndex}-${idx}`}
@@ -198,6 +220,38 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
           </div>
         </div>
       )}
+
+      {/* Full SKU list sorted by size */}
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">Lista completa (ordinata per Size):</p>
+        <div className="border rounded-lg overflow-hidden">
+          <div className="text-xs font-medium text-muted-foreground bg-muted grid grid-cols-12 gap-2 px-3 py-2 border-b">
+            <span className="col-span-2">Size</span>
+            <span className="col-span-6">Prodotto</span>
+            <span className="col-span-4 text-right">Prezzo €</span>
+          </div>
+          <div className="max-h-[400px] overflow-y-auto">
+            {sortedSkus.map((sku, idx) => (
+              <div 
+                key={`${sku.productId}-${sku.sizeIndex}-${idx}`}
+                className="grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50"
+              >
+                <span className="col-span-2 font-mono text-xs font-medium">{sku.size}</span>
+                <span className="col-span-6 truncate text-xs">{sku.productName}</span>
+                <div className="col-span-4 flex justify-end">
+                  <Input
+                    type="number"
+                    value={sku.price}
+                    onChange={(e) => handleLocalPriceChange(sku.productId, sku.sizeIndex, Number(e.target.value))}
+                    className="h-7 text-sm w-20 text-right"
+                    min={0}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {hasChanges && (
         <p className="text-xs text-amber-600 text-center">
