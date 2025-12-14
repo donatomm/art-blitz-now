@@ -715,11 +715,33 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                     </div>
                   </div>
                 ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs mt-2"
+                  onClick={() => {
+                    if (!editProduct) return;
+                    const newSizes: ProductSize[] = [
+                      ...editProduct.sizes,
+                      {
+                        dimensions: "",
+                        price: 0,
+                        stripe_product_id: "",
+                        deal_label_enabled: false,
+                        deal_label_text: "",
+                      },
+                    ];
+                    setEditProduct({ ...editProduct, sizes: newSizes });
+                  }}
+                >
+                  + Aggiungi dimensione
+                </Button>
               </div>
-
-              <Button onClick={handleSaveProduct} className="w-full">
-                Salva
-              </Button>
+ 
+               <Button onClick={handleSaveProduct} className="w-full">
+                 Salva
+               </Button>
             </div>
           )}
         </DialogContent>
