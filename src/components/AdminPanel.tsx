@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Product, ProductSize, MockRoom } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2, Upload, FileSpreadsheet } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2, Upload, FileSpreadsheet, FileUp, AlertCircle, CheckCircle } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
 import ImageUpload from "./ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
+import { parseCSVProducts, generateCSVTemplate, ParseResult } from "@/utils/csvProductParser";
 
 interface AdminPanelProps {
   products: Product[];
@@ -42,6 +43,9 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const [isPageDialogOpen, setIsPageDialogOpen] = useState(false);
   const [isStripeImportDialogOpen, setIsStripeImportDialogOpen] = useState(false);
   const [stripeImportJson, setStripeImportJson] = useState("");
+  const [isCSVImportDialogOpen, setIsCSVImportDialogOpen] = useState(false);
+  const [csvParseResult, setCSVParseResult] = useState<ParseResult | null>(null);
+  const csvInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
   const { data: pages = [] } = usePages();
@@ -293,6 +297,55 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
     }
   };
 
+  // CSV Import handlers
+  const handleCSVFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      const result = parseCSVProducts(content, products.length);
+      setCSVParseResult(result);
+      setIsCSVImportDialogOpen(true);
+    };
+    reader.readAsText(file);
+    
+    // Reset input so same file can be selected again
+    event.target.value = '';
+  };
+
+  const handleCSVImportConfirm = () => {
+    if (!csvParseResult || csvParseResult.products.length === 0) return;
+
+    // Create new products with generated IDs
+    const newProducts = csvParseResult.products.map(p => ({
+      ...p,
+      id: crypto.randomUUID(),
+    }));
+
+    onProductsChange([...products, ...newProducts]);
+    
+    toast({
+      title: "Prodotti importati!",
+      description: `${newProducts.length} nuovi prodotti aggiunti.`,
+    });
+
+    setIsCSVImportDialogOpen(false);
+    setCSVParseResult(null);
+  };
+
+  const handleDownloadCSVTemplate = () => {
+    const template = generateCSVTemplate();
+    const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'template-prodotti.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <Sheet>
@@ -365,13 +418,22 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   <Plus className="mr-2 h-4 w-4" />
                   Aggiungi
                 </Button>
-                <Button onClick={handleExportJSON} variant="secondary">
-                  <Download className="mr-2 h-4 w-4" />
-                  Esporta
+                <Button onClick={() => csvInputRef.current?.click()} variant="secondary">
+                  <FileUp className="mr-2 h-4 w-4" />
+                  Importa CSV
                 </Button>
-                <Button onClick={() => setIsStripeImportDialogOpen(true)} variant="outline">
-                  <Upload className="mr-2 h-4 w-4" />
-                  Stripe IDs
+                <input
+                  ref={csvInputRef}
+                  type="file"
+                  accept=".csv"
+                  onChange={handleCSVFileSelect}
+                  className="hidden"
+                />
+                <Button onClick={handleExportJSON} variant="outline" size="icon" title="Esporta JSON">
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button onClick={() => setIsStripeImportDialogOpen(true)} variant="outline" size="icon" title="Stripe IDs">
+                  <Upload className="h-4 w-4" />
                 </Button>
               </div>
 
@@ -864,6 +926,90 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
               Importa
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* CSV Import Dialog */}
+      <Dialog open={isCSVImportDialogOpen} onOpenChange={setIsCSVImportDialogOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Importa Prodotti da CSV</DialogTitle>
+          </DialogHeader>
+          {csvParseResult && (
+            <div className="space-y-4">
+              {/* Errors */}
+              {csvParseResult.errors.length > 0 && (
+                <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-destructive mb-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <span className="font-medium">Errori</span>
+                  </div>
+                  <ul className="text-sm text-destructive space-y-1">
+                    {csvParseResult.errors.map((err, i) => (
+                      <li key={i}>• {err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Warnings */}
+              {csvParseResult.warnings.length > 0 && (
+                <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-yellow-600 mb-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <span className="font-medium">Avvisi</span>
+                  </div>
+                  <ul className="text-sm text-yellow-600 space-y-1">
+                    {csvParseResult.warnings.map((warn, i) => (
+                      <li key={i}>• {warn}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Success preview */}
+              {csvParseResult.products.length > 0 && (
+                <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-green-600 mb-2">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium">{csvParseResult.products.length} prodotti pronti</span>
+                  </div>
+                  <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                    {csvParseResult.products.map((product, i) => (
+                      <div key={i} className="text-sm bg-background/50 p-2 rounded">
+                        <p className="font-medium">{product.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {product.sizes.map(s => `${s.dimensions} €${s.price}`).join(' | ')}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleCSVImportConfirm} 
+                  className="flex-1"
+                  disabled={csvParseResult.products.length === 0}
+                >
+                  Importa {csvParseResult.products.length} prodotti
+                </Button>
+                <Button 
+                  onClick={handleDownloadCSVTemplate} 
+                  variant="outline"
+                  title="Scarica template CSV"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <p className="text-xs text-muted-foreground">
+                Formato CSV: Nome,Tecnica,Dimensioni,Prezzi,Descrizione,Stripe_ID<br />
+                Dimensioni e Prezzi separati da virgola (es. "40x60,75x100" e "119,149")
+              </p>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>
