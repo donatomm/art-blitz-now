@@ -16,10 +16,10 @@ export interface ParseResult {
 }
 
 /**
- * Parse CSV content with format:
- * Nome,Tecnica,Dimensioni,Prezzi,Descrizione,Stripe_ID
+ * Parse CSV content with column-based format:
+ * Nome,Tecnica,Dim1,Prezzo1,Dim2,Prezzo2,Dim3,Prezzo3,Descrizione,Stripe_ID
  * 
- * Dimensioni and Prezzi are comma-separated (e.g., "40x60,75x100,80x120" and "119,149,185")
+ * Supports up to 6 dimension/price pairs (Dim1-Dim6, Prezzo1-Prezzo6)
  */
 export function parseCSVProducts(csvContent: string, startingDisplayOrder: number = 0): ParseResult {
   const errors: string[] = [];
@@ -37,23 +37,28 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
   const headerLine = lines[0];
   const headers = parseCSVLine(headerLine).map(h => h.toLowerCase().trim());
   
-  // Expected columns (flexible naming)
+  // Find column indices
   const nomeIdx = findColumnIndex(headers, ['nome', 'nome prodotto', 'name', 'product name']);
   const tecnicaIdx = findColumnIndex(headers, ['tecnica', 'medium', 'technique']);
-  const dimensioniIdx = findColumnIndex(headers, ['dimensioni', 'dimensions', 'sizes']);
-  const prezziIdx = findColumnIndex(headers, ['prezzi', 'prices', 'prezzo', 'price']);
   const descrizioneIdx = findColumnIndex(headers, ['descrizione', 'description']);
   const stripeIdx = findColumnIndex(headers, ['stripe_id', 'stripeid', 'stripe id', 'stripe']);
+
+  // Find dimension/price column pairs (Dim1/Prezzo1 through Dim6/Prezzo6)
+  const dimPriceColumns: { dimIdx: number; prezzoIdx: number }[] = [];
+  for (let i = 1; i <= 6; i++) {
+    const dimIdx = findColumnIndex(headers, [`dim${i}`, `dimensione${i}`, `size${i}`]);
+    const prezzoIdx = findColumnIndex(headers, [`prezzo${i}`, `price${i}`, `p${i}`]);
+    if (dimIdx !== -1 && prezzoIdx !== -1) {
+      dimPriceColumns.push({ dimIdx, prezzoIdx });
+    }
+  }
 
   // Validate required columns
   if (nomeIdx === -1) {
     errors.push("Colonna 'Nome' non trovata");
   }
-  if (dimensioniIdx === -1) {
-    errors.push("Colonna 'Dimensioni' non trovata");
-  }
-  if (prezziIdx === -1) {
-    errors.push("Colonna 'Prezzi' non trovata");
+  if (dimPriceColumns.length === 0) {
+    errors.push("Nessuna coppia Dim/Prezzo trovata (es. Dim1, Prezzo1)");
   }
 
   if (errors.length > 0) {
@@ -71,8 +76,6 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
     try {
       const nome = values[nomeIdx]?.trim() || "";
       const tecnica = tecnicaIdx !== -1 ? (values[tecnicaIdx]?.trim() || "Stampa su Tela") : "Stampa su Tela";
-      const dimensioniRaw = values[dimensioniIdx]?.trim() || "";
-      const prezziRaw = values[prezziIdx]?.trim() || "";
       const descrizione = descrizioneIdx !== -1 ? (values[descrizioneIdx]?.trim() || "") : "";
       const stripeId = stripeIdx !== -1 ? (values[stripeIdx]?.trim() || "") : "";
 
@@ -81,36 +84,40 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
         continue;
       }
 
-      // Parse dimensions and prices
-      const dimensioni = dimensioniRaw.split(',').map(d => d.trim()).filter(d => d);
-      const prezzi = prezziRaw.split(',').map(p => {
-        const num = parseFloat(p.trim());
-        return isNaN(num) ? 0 : num;
-      });
+      // Extract dimension/price pairs from columns
+      const sizes: ProductSize[] = [];
+      const mock_rooms: MockRoom[] = [];
 
-      if (dimensioni.length === 0) {
-        warnings.push(`Riga ${rowNum} (${nome}): Nessuna dimensione trovata, riga saltata`);
+      for (const { dimIdx, prezzoIdx } of dimPriceColumns) {
+        const dim = values[dimIdx]?.trim() || "";
+        const prezzoRaw = values[prezzoIdx]?.trim() || "";
+        
+        if (dim && prezzoRaw) {
+          const prezzo = parseFloat(prezzoRaw);
+          if (isNaN(prezzo)) {
+            warnings.push(`Riga ${rowNum} (${nome}): Prezzo non valido "${prezzoRaw}" per dimensione ${dim}`);
+            continue;
+          }
+          
+          sizes.push({
+            dimensions: dim,
+            price: prezzo,
+            stripe_product_id: stripeId || undefined,
+            deal_label_enabled: false,
+            deal_label_text: "",
+          });
+
+          mock_rooms.push({
+            url: "",
+            label: `Mock ${dim}`,
+          });
+        }
+      }
+
+      if (sizes.length === 0) {
+        warnings.push(`Riga ${rowNum} (${nome}): Nessuna dimensione/prezzo valida trovata, riga saltata`);
         continue;
       }
-
-      if (dimensioni.length !== prezzi.length) {
-        warnings.push(`Riga ${rowNum} (${nome}): ${dimensioni.length} dimensioni ma ${prezzi.length} prezzi - usando prezzi disponibili`);
-      }
-
-      // Create sizes array
-      const sizes: ProductSize[] = dimensioni.map((dim, idx) => ({
-        dimensions: dim,
-        price: prezzi[idx] ?? 0,
-        stripe_product_id: stripeId || undefined,
-        deal_label_enabled: false,
-        deal_label_text: "",
-      }));
-
-      // Auto-generate mock_rooms from dimensions
-      const mock_rooms: MockRoom[] = dimensioni.map(dim => ({
-        url: "",
-        label: `Mock ${dim}`,
-      }));
 
       products.push({
         name: nome,
@@ -174,10 +181,10 @@ function findColumnIndex(headers: string[], possibleNames: string[]): number {
 }
 
 /**
- * Generate sample CSV template
+ * Generate sample CSV template with column-based format
  */
 export function generateCSVTemplate(): string {
-  return `Nome,Tecnica,Dimensioni,Prezzi,Descrizione,Stripe_ID
-NuovaOpera,Stampa su Tela,"40x60,75x100,80x120","119,149,185","Descrizione dell'opera...",prod_xxxxx
-AltraOpera,Stampa su Tela,"60x60,80x80","145,195","Altra descrizione...",prod_yyyyy`;
+  return `Nome,Tecnica,Dim1,Prezzo1,Dim2,Prezzo2,Dim3,Prezzo3,Descrizione,Stripe_ID
+NuovaOpera,Stampa su Tela,40x60,119,75x100,149,80x120,185,Descrizione dell'opera...,prod_xxxxx
+AltraOpera,Stampa su Tela,60x60,145,80x80,195,,,Altra descrizione...,prod_yyyyy`;
 }
