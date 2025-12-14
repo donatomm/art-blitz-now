@@ -11,33 +11,14 @@ interface SKUEditorProps {
   onProductsChange: (products: Product[]) => void;
 }
 
-interface LocalPrice {
-  productId: string;
-  sizeIndex: number;
-  price: number;
-}
-
 const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
   const { toast } = useToast();
   
-  // Local state for prices - allows editing without triggering DB save on every keystroke
   const [localPrices, setLocalPrices] = useState<Map<string, number>>(new Map());
   const [hasChanges, setHasChanges] = useState(false);
+  const [selectedDimension, setSelectedDimension] = useState<string | null>(null);
 
-  // Generate a unique key for each SKU
   const getSkuKey = (productId: string, sizeIndex: number) => `${productId}-${sizeIndex}`;
-
-  // Initialize local prices from products
-  useEffect(() => {
-    const priceMap = new Map<string, number>();
-    products.forEach(product => {
-      product.sizes.forEach((size, sizeIndex) => {
-        priceMap.set(getSkuKey(product.id, sizeIndex), size.price);
-      });
-    });
-    setLocalPrices(priceMap);
-    setHasChanges(false);
-  }, [products]);
 
   // Normalize dimension to canonical form (smaller x larger)
   const normalizeDimension = (dim: string): string => {
@@ -50,28 +31,50 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     return `${numB}x${numA}${suffix}`;
   };
 
-  // Collect all SKUs with product and size index references
-  const allSkus = products.flatMap(product =>
-    product.sizes
-      .map((size, sizeIndex) => ({
-        size: size.dimensions,
-        normalizedSize: normalizeDimension(size.dimensions),
-        price: localPrices.get(getSkuKey(product.id, sizeIndex)) ?? size.price,
-        productName: product.name,
-        productId: product.id,
-        sizeIndex: sizeIndex,
-        stripeId: size.stripe_product_id || '-'
-      }))
-      .filter(sku => sku.price > 0)
-  );
+  useEffect(() => {
+    const priceMap = new Map<string, number>();
+    products.forEach(product => {
+      product.sizes.forEach((size, sizeIndex) => {
+        priceMap.set(getSkuKey(product.id, sizeIndex), size.price);
+      });
+    });
+    setLocalPrices(priceMap);
+    setHasChanges(false);
+  }, [products]);
 
-  // Sort by normalized size then product name
-  const sortedSkus = [...allSkus].sort((a, b) => {
-    const numA = parseInt(a.normalizedSize.split('x')[0]) || 0;
-    const numB = parseInt(b.normalizedSize.split('x')[0]) || 0;
-    if (numA !== numB) return numA - numB;
-    return a.productName.localeCompare(b.productName);
+  // Collect all unique dimensions
+  const allDimensions = new Set<string>();
+  products.forEach(product => {
+    product.sizes.forEach(size => {
+      if (size.price > 0) {
+        allDimensions.add(normalizeDimension(size.dimensions));
+      }
+    });
   });
+  const sortedDimensions = [...allDimensions].sort((a, b) => {
+    const numA = parseInt(a.split('x')[0]) || 0;
+    const numB = parseInt(b.split('x')[0]) || 0;
+    return numA - numB;
+  });
+
+  // Get products for selected dimension
+  const getProductsForDimension = (dim: string) => {
+    const result: { productId: string; productName: string; sizeIndex: number; price: number; stripeId: string }[] = [];
+    products.forEach(product => {
+      product.sizes.forEach((size, sizeIndex) => {
+        if (normalizeDimension(size.dimensions) === dim && size.price > 0) {
+          result.push({
+            productId: product.id,
+            productName: product.name,
+            sizeIndex,
+            price: localPrices.get(getSkuKey(product.id, sizeIndex)) ?? size.price,
+            stripeId: size.stripe_product_id || '-'
+          });
+        }
+      });
+    });
+    return result.sort((a, b) => a.productName.localeCompare(b.productName));
+  };
 
   const handleLocalPriceChange = (productId: string, sizeIndex: number, newPrice: number) => {
     const key = getSkuKey(productId, sizeIndex);
@@ -94,10 +97,25 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     
     onProductsChange(updatedProducts);
     setHasChanges(false);
+    toast({
+      title: "Prodotti aggiornati",
+      description: "Modifiche salvate con successo.",
+    });
   };
 
   const handleExportXLSX = () => {
-    const exportData = sortedSkus.map(sku => ({
+    const allSkus = products.flatMap(product =>
+      product.sizes
+        .map((size, sizeIndex) => ({
+          size: size.dimensions,
+          price: localPrices.get(getSkuKey(product.id, sizeIndex)) ?? size.price,
+          productName: product.name,
+          stripeId: size.stripe_product_id || '-'
+        }))
+        .filter(sku => sku.price > 0)
+    );
+    
+    const exportData = allSkus.map(sku => ({
       'Size': sku.size,
       'Price (€)': sku.price,
       'Product Name': sku.productName,
@@ -115,6 +133,8 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     });
   };
 
+  const filteredProducts = selectedDimension ? getProductsForDimension(selectedDimension) : [];
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
@@ -130,34 +150,54 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
         )}
       </div>
 
-      {/* SKU List - Simple vertical layout */}
-      <div className="border rounded-lg overflow-hidden">
-        <div className="text-xs font-medium text-muted-foreground bg-muted grid grid-cols-12 gap-2 px-3 py-2 border-b">
-          <span className="col-span-2">Size</span>
-          <span className="col-span-6">Prodotto</span>
-          <span className="col-span-4 text-right">Prezzo €</span>
-        </div>
-        <div className="max-h-[500px] overflow-y-auto">
-          {sortedSkus.map((sku, idx) => (
-            <div 
-              key={`${sku.productId}-${sku.sizeIndex}-${idx}`}
-              className="grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50"
+      {/* Vista per dimensione */}
+      <div className="space-y-3">
+        <p className="text-sm text-muted-foreground">Vista per dimensione:</p>
+        <div className="flex flex-wrap gap-2">
+          {sortedDimensions.map(dim => (
+            <Button
+              key={dim}
+              variant={selectedDimension === dim ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedDimension(selectedDimension === dim ? null : dim)}
+              className="text-xs"
             >
-              <span className="col-span-2 font-mono text-xs font-medium">{sku.size}</span>
-              <span className="col-span-6 truncate text-xs">{sku.productName}</span>
-              <div className="col-span-4 flex justify-end">
-                <Input
-                  type="number"
-                  value={sku.price}
-                  onChange={(e) => handleLocalPriceChange(sku.productId, sku.sizeIndex, Number(e.target.value))}
-                  className="h-7 text-sm w-20 text-right"
-                  min={0}
-                />
-              </div>
-            </div>
+              {dim}
+            </Button>
           ))}
         </div>
       </div>
+
+      {/* Products for selected dimension */}
+      {selectedDimension && (
+        <div className="border rounded-lg overflow-hidden">
+          <div className="text-xs font-medium text-muted-foreground bg-muted grid grid-cols-12 gap-2 px-3 py-2 border-b">
+            <span className="col-span-5">Product</span>
+            <span className="col-span-3">Prezzo €</span>
+            <span className="col-span-4">Stripe ID</span>
+          </div>
+          <div className="max-h-[400px] overflow-y-auto">
+            {filteredProducts.map((item, idx) => (
+              <div 
+                key={`${item.productId}-${item.sizeIndex}-${idx}`}
+                className="grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50"
+              >
+                <span className="col-span-5 font-medium truncate">{item.productName}</span>
+                <div className="col-span-3">
+                  <Input
+                    type="number"
+                    value={item.price}
+                    onChange={(e) => handleLocalPriceChange(item.productId, item.sizeIndex, Number(e.target.value))}
+                    className="h-7 text-sm w-20"
+                    min={0}
+                  />
+                </div>
+                <span className="col-span-4 text-xs text-muted-foreground truncate">{item.stripeId}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {hasChanges && (
         <p className="text-xs text-amber-600 text-center">
