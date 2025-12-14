@@ -2,8 +2,12 @@ import { Product, ProductSize, MockRoom } from "@/types/product";
 
 export type CSVImportMode = 'create' | 'update' | 'merge';
 
+export interface ParsedProduct extends Omit<Product, "id" | "created_at" | "updated_at"> {
+  id?: string; // Optional ID for updating existing products
+}
+
 export interface ParseResult {
-  products: Omit<Product, "id" | "created_at" | "updated_at">[];
+  products: ParsedProduct[];
   errors: string[];
   warnings: string[];
 }
@@ -18,7 +22,7 @@ export interface ParseResult {
 export function parseCSVProducts(csvContent: string, startingDisplayOrder: number = 0): ParseResult {
   const errors: string[] = [];
   const warnings: string[] = [];
-  const products: Omit<Product, "id" | "created_at" | "updated_at">[] = [];
+  const products: ParsedProduct[] = [];
 
   const lines = csvContent.trim().split('\n');
   
@@ -32,6 +36,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
   const headers = parseCSVLine(headerLine).map(h => h.toLowerCase().trim());
   
   // Find column indices for vertical format
+  const idIdx = findColumnIndex(headers, ['id', 'uuid', 'product_id', 'productid']);
   const nomeIdx = findColumnIndex(headers, ['nome prodotto', 'nome', 'name', 'product name']);
   const dimIdx = findColumnIndex(headers, ['dimensioni', 'dimensione', 'dim', 'size', 'sizes']);
   const prezzoIdx = findColumnIndex(headers, ['prezzi', 'prezzo', 'price', 'prices']);
@@ -56,6 +61,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
 
   // Parse data rows - group by product
   let currentProduct: {
+    id?: string;
     name: string;
     medium: string;
     description: string;
@@ -72,6 +78,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
     const rowNum = i + 1;
 
     try {
+      const productId = idIdx !== -1 ? (values[idIdx]?.trim() || "") : "";
       const nome = values[nomeIdx]?.trim() || "";
       const dim = values[dimIdx]?.trim() || "";
       const prezzoRaw = values[prezzoIdx]?.trim() || "";
@@ -80,7 +87,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
       if (nome) {
         // Save previous product if exists
         if (currentProduct && currentProduct.sizes.length > 0) {
-          products.push({
+          const productData: ParsedProduct = {
             name: currentProduct.name,
             medium: currentProduct.medium,
             description: currentProduct.description,
@@ -90,7 +97,11 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
             deal_label_enabled: false,
             deal_label_text: "OFFERTA DEL GIORNO, scade h20:00",
             mock_rooms: currentProduct.mock_rooms,
-          });
+          };
+          if (currentProduct.id) {
+            productData.id = currentProduct.id;
+          }
+          products.push(productData);
         }
 
         // Start new product
@@ -99,6 +110,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
         const stripeId = stripeIdx !== -1 ? (values[stripeIdx]?.trim() || "") : "";
 
         currentProduct = {
+          id: productId || undefined,
           name: nome,
           medium: tecnica,
           description: descrizione,
@@ -140,7 +152,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
 
   // Don't forget the last product
   if (currentProduct && currentProduct.sizes.length > 0) {
-    products.push({
+    const productData: ParsedProduct = {
       name: currentProduct.name,
       medium: currentProduct.medium,
       description: currentProduct.description,
@@ -150,7 +162,11 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
       deal_label_enabled: false,
       deal_label_text: "OFFERTA DEL GIORNO, scade h20:00",
       mock_rooms: currentProduct.mock_rooms,
-    });
+    };
+    if (currentProduct.id) {
+      productData.id = currentProduct.id;
+    }
+    products.push(productData);
   }
 
   if (products.length === 0) {
@@ -205,19 +221,19 @@ function findColumnIndex(headers: string[], possibleNames: string[]): number {
  * Generate sample CSV template with vertical format
  */
 export function generateCSVTemplate(): string {
-  return `Nome Prodotto,Dimensioni,Prezzi,Descrizione,Stripe ID,Tecnica
-NuovaOpera,40x60,119,Descrizione dell'opera...,prod_xxxxx,Stampa su Tela
-,75x100,149,,,
-,80x120,185,,,
-AltraOpera,60x60,145,Un'altra descrizione...,prod_yyyyy,Stampa su Tela
-,80x80,195,,,`;
+  return `ID,Nome Prodotto,Dimensioni,Prezzi,Descrizione,Stripe ID,Tecnica
+,NuovaOpera,40x60,119,Descrizione dell'opera...,prod_xxxxx,Stampa su Tela
+,,75x100,149,,,,
+,,80x120,185,,,,
+abc-123-uuid,OperaEsistente,60x60,145,Aggiorna prodotto esistente...,prod_yyyyy,Stampa su Tela
+,,80x80,195,,,,`;
 }
 
 /**
  * Export products to CSV format with vertical structure
  */
 export function exportProductsToCSV(products: Product[]): string {
-  const lines = ['Nome Prodotto,Dimensioni,Prezzi,Descrizione,Stripe ID,Tecnica'];
+  const lines = ['ID,Nome Prodotto,Dimensioni,Prezzi,Descrizione,Stripe ID,Tecnica'];
   
   for (const product of products) {
     const stripeId = product.sizes[0]?.stripe_product_id || '';
@@ -226,8 +242,9 @@ export function exportProductsToCSV(products: Product[]): string {
       const size = product.sizes[i];
       
       if (i === 0) {
-        // First row has all product info
+        // First row has all product info including ID
         lines.push([
+          escapeCSVValue(product.id),
           escapeCSVValue(product.name),
           escapeCSVValue(size.dimensions),
           String(size.price),
@@ -238,6 +255,7 @@ export function exportProductsToCSV(products: Product[]): string {
       } else {
         // Subsequent rows only have dimension and price
         lines.push([
+          '',
           '',
           escapeCSVValue(size.dimensions),
           String(size.price),
