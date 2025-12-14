@@ -14,13 +14,6 @@ const PricingPolicy = () => {
           <h1 className="text-3xl font-bold mb-2">Politica Prezzi</h1>
           <p className="text-muted-foreground mb-6 font-bold">Tutti i prezzi sono IVA inclusa</p>
           
-          {/* Red discount bar */}
-          <div className="bg-red-600 text-white text-center py-3 px-4 rounded-lg mb-8 font-bold">
-            <span className="animate-pulse">⚠️</span>
-            {' '}SCONTO DEL <span className="text-yellow-300 text-xl">44%</span> SU TUTTI I FORMATI - Valido sino a mezzanotte di oggi <span className="underline">14 Dicembre</span>{' '}
-            
-          </div>
-          
           <div className="prose prose-lg max-w-none space-y-8">
             <p className="text-lg text-muted-foreground leading-relaxed">
               I prezzi delle opere dipendono dallo sconto del fornitore (stampa ed intelaiatura) quindi sono soggetti a fluttuazioni. Non appena ricevo uno sconto ve lo passo, lo applico subito al prezzo delle opere.
