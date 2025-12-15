@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import NotaClienti from "./pages/NotaClienti";
 import NotFound from "./pages/NotFound";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
+import Privacy from "./pages/Privacy";
 const queryClient = new QueryClient();
 
 // Main app component
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/pricing-policy" element={<PricingPolicy />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
+          <Route path="/privacy" element={<Privacy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
