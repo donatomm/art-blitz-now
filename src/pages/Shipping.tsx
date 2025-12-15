@@ -22,9 +22,9 @@ Ed ho le seguenti domande:
 
         {/* Christmas Deadline Section */}
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-foreground mb-4">Consegna NON Garantita per Natale</h2>
+          <h2 className="text-2xl font-semibold text-foreground mb-4">Consegna Garantita entro Natale se:</h2>
           <p className="text-2xl leading-relaxed text-foreground font-bold">
-            ✅ COMPLETA L'ACQUISTO <span className="text-red-600">ENTRO IL 15 DICEMBRE 2025</span>
+            ✅ COMPLETI L'ACQUISTO <span className="text-red-600">ENTRO IL 15 DICEMBRE 2025</span>
           </p>
           <p className="text-lg leading-relaxed text-foreground mt-2">
             ✅ <strong className="font-bold">Inserisci l'indirizzo di spedizione con precisione</strong> - controlla due volte prima di confermare
