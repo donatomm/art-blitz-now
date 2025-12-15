@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2, Upload, FileSpreadsheet, FileUp, AlertCircle, CheckCircle } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2, Upload, FileSpreadsheet, FileUp, AlertCircle, CheckCircle, ImageIcon } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -47,6 +47,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const [isCSVImportDialogOpen, setIsCSVImportDialogOpen] = useState(false);
   const [csvParseResult, setCSVParseResult] = useState<ParseResult | null>(null);
   const [csvImportMode, setCSVImportMode] = useState<CSVImportMode>('merge');
+  const [isMigratingImages, setIsMigratingImages] = useState(false);
   const csvInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
@@ -395,6 +396,99 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
     URL.revokeObjectURL(url);
   };
 
+  // Migrate local images to Supabase Storage
+  const handleMigrateLocalImages = async () => {
+    const localImageProducts = products.filter(p => 
+      p.image_url.startsWith('/artworks/') || p.image_url.startsWith('artworks/')
+    );
+
+    if (localImageProducts.length === 0) {
+      toast({
+        title: "Nessuna immagine locale",
+        description: "Tutte le immagini sono già su Supabase Storage.",
+      });
+      return;
+    }
+
+    setIsMigratingImages(true);
+    let migratedCount = 0;
+    const errors: string[] = [];
+
+    for (const product of localImageProducts) {
+      try {
+        // Normalize path
+        const imagePath = product.image_url.startsWith('/') 
+          ? product.image_url 
+          : `/${product.image_url}`;
+        
+        // Fetch the local image
+        const response = await fetch(imagePath);
+        if (!response.ok) {
+          errors.push(`${product.name}: file non trovato`);
+          continue;
+        }
+        
+        const blob = await response.blob();
+        const fileName = imagePath.split('/').pop() || 'image.jpg';
+        const fileExtension = fileName.split('.').pop() || 'jpg';
+        const uniqueFileName = `artworks/${Date.now()}-${fileName}`;
+        
+        // Upload to Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(uniqueFileName, blob, {
+            contentType: `image/${fileExtension === 'png' ? 'png' : 'jpeg'}`,
+            upsert: false
+          });
+
+        if (uploadError) {
+          errors.push(`${product.name}: ${uploadError.message}`);
+          continue;
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(uniqueFileName);
+
+        // Update product in database
+        const { error: updateError } = await supabase
+          .from('products')
+          .update({ image_url: urlData.publicUrl })
+          .eq('id', product.id);
+
+        if (updateError) {
+          errors.push(`${product.name}: aggiornamento DB fallito`);
+          continue;
+        }
+
+        migratedCount++;
+      } catch (err) {
+        errors.push(`${product.name}: errore imprevisto`);
+      }
+    }
+
+    setIsMigratingImages(false);
+
+    if (migratedCount > 0) {
+      // Refresh products by triggering a re-fetch
+      window.location.reload();
+    }
+
+    if (errors.length > 0) {
+      toast({
+        title: `Migrazione parziale: ${migratedCount}/${localImageProducts.length}`,
+        description: errors.join(', '),
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Migrazione completata!",
+        description: `${migratedCount} immagini migrate su Supabase Storage.`,
+      });
+    }
+  };
+
   return (
     <>
       <Sheet>
@@ -484,6 +578,19 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                 </Button>
                 <Button onClick={() => setIsStripeImportDialogOpen(true)} variant="outline" size="icon" title="Stripe IDs">
                   <Upload className="h-4 w-4" />
+                </Button>
+                <Button 
+                  onClick={handleMigrateLocalImages} 
+                  variant="outline" 
+                  size="icon" 
+                  title="Migra immagini locali"
+                  disabled={isMigratingImages}
+                >
+                  {isMigratingImages ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ImageIcon className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
 
