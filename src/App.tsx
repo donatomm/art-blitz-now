@@ -13,6 +13,7 @@ import NotaClienti from "./pages/NotaClienti";
 import NotFound from "./pages/NotFound";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import Privacy from "./pages/Privacy";
+import Cookies from "./pages/Cookies";
 const queryClient = new QueryClient();
 
 // Main app component
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/cookies" element={<Cookies />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
