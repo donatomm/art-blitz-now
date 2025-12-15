@@ -7,6 +7,7 @@ import Hero from "@/components/Hero";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
 import AdminPanel from "@/components/AdminPanel";
+import Footer from "@/components/Footer";
 import { toast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-image.jpg";
 const Index = () => {
@@ -91,6 +92,8 @@ const Index = () => {
       <BuyDialog product={selectedProduct} open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen} />
 
       <AdminPanel products={products} onProductsChange={handleProductsChange} />
+      
+      <Footer />
     </div>;
 };
 export default Index;

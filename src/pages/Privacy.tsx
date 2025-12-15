@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const Privacy = () => {
   const [content, setContent] = useState("");
@@ -14,7 +15,7 @@ const Privacy = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
       
       <Link
@@ -25,12 +26,14 @@ const Privacy = () => {
         Torna alla Galleria
       </Link>
 
-      <main className="pt-24 pb-16 px-4 md:px-8 max-w-4xl mx-auto">
+      <main className="pt-24 pb-16 px-4 md:px-8 max-w-4xl mx-auto flex-1">
         <div 
           className="prose prose-sm max-w-none bg-card p-6 md:p-8 rounded-lg border border-border"
           dangerouslySetInnerHTML={{ __html: content }}
         />
       </main>
+      
+      <Footer />
     </div>
   );
 };
