@@ -582,15 +582,16 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                 <Button 
                   onClick={handleMigrateLocalImages} 
                   variant="outline" 
-                  size="icon" 
-                  title="Migra immagini locali"
+                  title="Migra local to DB"
                   disabled={isMigratingImages}
+                  className="gap-1"
                 >
                   {isMigratingImages ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <ImageIcon className="h-4 w-4" />
                   )}
+                  <span className="text-xs">Migra local to DB</span>
                 </Button>
               </div>
 
