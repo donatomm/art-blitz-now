@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { TreePine } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Christmas deadline inline text component
 const ChristmasDeadlineText = () => {
@@ -34,6 +35,7 @@ const Product = () => {
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const {
     toast
   } = useToast();
@@ -360,13 +362,39 @@ Grazie!`);
 
             {/* Price and Buy Button - Hide for Coming Soon */}
             {!isComingSoon && selectedSizeData && (
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="bg-card rounded-lg px-6 py-4 border border-border">
-                  <span className="text-muted-foreground text-sm">Totale </span>
-                  <span className="text-2xl font-bold text-green-600">€{selectedSizeData.price}</span>
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="bg-card rounded-lg px-6 py-4 border border-border">
+                    <span className="text-muted-foreground text-sm">Totale </span>
+                    <span className="text-2xl font-bold text-green-600">€{selectedSizeData.price}</span>
+                  </div>
+                </div>
+
+                {/* Terms Acceptance Checkbox */}
+                <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg border border-border">
+                  <Checkbox 
+                    id="terms-acceptance" 
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <label htmlFor="terms-acceptance" className="text-sm text-foreground cursor-pointer leading-relaxed">
+                    Dichiaro di aver letto e accettato i{" "}
+                    <Link 
+                      to="/terms" 
+                      target="_blank"
+                      className="text-gold hover:underline font-medium"
+                    >
+                      Termini e Condizioni di Vendita
+                    </Link>
+                  </label>
                 </div>
                 
-                <Button onClick={handleCheckout} disabled={isCheckoutLoading} className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                <Button 
+                  onClick={handleCheckout} 
+                  disabled={isCheckoutLoading || !termsAccepted} 
+                  className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
                   {isCheckoutLoading ? <>
                       <Loader2 className="mr-2 h-6 w-6 animate-spin" />
                       Caricamento...
