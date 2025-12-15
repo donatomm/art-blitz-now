@@ -55,10 +55,19 @@ const HelloBar = () => {
   }, []);
   const formatTime = (n: number) => n.toString().padStart(2, '0');
   return <>
-      {/* Green bar - Shipping only */}
+      {/* Green bar - Shipping + Christmas countdown */}
       <div className={`fixed top-16 left-0 right-0 z-40 w-full bg-green-600 flex items-center justify-center px-4 py-1.5 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0 animate-vibrate' : 'opacity-0 -translate-y-full'}`}>
-        <p className="text-sm font-medium flex items-center gap-2 text-white">
-          SPEDIZIONE GRATUITA
+        <p className="text-sm font-medium flex items-center gap-2 text-white flex-wrap justify-center">
+          <span>Consegna Garantita per Natale per ordini entro</span>
+          {!countdown.expired ? (
+            <span className="bg-red-600 px-2 py-0.5 rounded font-bold">
+              {formatTime(countdown.hours)}:{formatTime(countdown.minutes)}:{formatTime(countdown.seconds)}
+            </span>
+          ) : (
+            <span className="bg-red-600 px-2 py-0.5 rounded font-bold">Scaduto</span>
+          )}
+          <span className="mx-1">|</span>
+          <span>SPEDIZIONE GRATUITA</span>
           <button onClick={() => setShippingDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-green-900">
             Dettagli
           </button>
