@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon, Save } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -27,6 +27,119 @@ import ImageUpload from "./ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult, CSVImportMode } from "@/utils/csvProductParser";
 import SKUEditor from "./SKUEditor";
+import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
+
+// Pages Editor sub-component
+const PagesTabContent = () => {
+  const { data: pages, isLoading: pagesLoading } = usePages();
+  const updatePage = useUpdatePage();
+  const [editingPage, setEditingPage] = useState<Page | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const { toast } = useToast();
+
+  const handleEditPage = (page: Page) => {
+    setEditingPage(page);
+    setEditTitle(page.title);
+    setEditContent(page.content);
+  };
+
+  const handleSavePage = async () => {
+    if (!editingPage) return;
+    
+    try {
+      await updatePage.mutateAsync({
+        id: editingPage.id,
+        title: editTitle,
+        content: editContent,
+      });
+      toast({
+        title: "Pagina salvata!",
+        description: `"${editTitle}" aggiornata con successo.`,
+      });
+      setEditingPage(null);
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Impossibile salvare la pagina.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (pagesLoading) {
+    return (
+      <TabsContent value="pages" className="space-y-4">
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      </TabsContent>
+    );
+  }
+
+  if (editingPage) {
+    return (
+      <TabsContent value="pages" className="space-y-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium">Modifica: {editingPage.slug}</h3>
+            <Button variant="ghost" size="sm" onClick={() => setEditingPage(null)}>
+              Annulla
+            </Button>
+          </div>
+          <div>
+            <Label>Titolo</Label>
+            <Input
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label>Contenuto (Markdown)</Label>
+            <Textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              rows={12}
+              className="font-mono text-sm"
+            />
+          </div>
+          <Button onClick={handleSavePage} disabled={updatePage.isPending} className="w-full">
+            {updatePage.isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
+            Salva Pagina
+          </Button>
+        </div>
+      </TabsContent>
+    );
+  }
+
+  return (
+    <TabsContent value="pages" className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Modifica i contenuti delle pagine del sito.
+      </p>
+      <div className="space-y-2">
+        {pages?.map((page) => (
+          <div
+            key={page.id}
+            className="flex items-center justify-between p-3 bg-muted rounded-md"
+          >
+            <div>
+              <p className="font-medium">{page.title}</p>
+              <p className="text-xs text-muted-foreground">/{page.slug}</p>
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => handleEditPage(page)}>
+              <Edit className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+      </div>
+    </TabsContent>
+  );
+};
 
 interface AdminPanelProps {
   products: Product[];
@@ -509,9 +622,10 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
             </div>
           ) : (
           <Tabs defaultValue="products" className="mt-4">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
               <TabsTrigger value="skus">SKUs</TabsTrigger>
+              <TabsTrigger value="pages">Pagine</TabsTrigger>
             </TabsList>
             
             <TabsContent value="products" className="space-y-4">
@@ -613,6 +727,8 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
             <TabsContent value="skus" className="space-y-4">
               <SKUEditor products={products} onProductsChange={onProductsChange} />
             </TabsContent>
+
+            <PagesTabContent />
             
           </Tabs>
           )}
