@@ -381,14 +381,14 @@ Grazie!`);
                         setTermsAccepted(checked === true);
                         if (checked) setShowTermsError(false);
                       }}
-                      className="mt-1 h-5 w-5 border-2 border-gold data-[state=checked]:bg-gold data-[state=checked]:border-gold"
+                      className="mt-1 h-5 w-5 border-2 border-foreground data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
                     />
                     <label htmlFor="accetta-condizioni" className="text-base text-foreground cursor-pointer leading-relaxed">
                       Confermando il tuo ordine accetti i{" "}
                       <Link 
                         to="/terms" 
                         target="_blank"
-                        className="text-gold hover:underline font-semibold"
+                        className="text-blue-500 hover:underline font-semibold"
                       >
                         Termini e Condizioni di Vendita
                       </Link>
