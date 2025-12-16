@@ -24,7 +24,7 @@ Ed ho le seguenti domande:
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-rose-600">Consegna Garantita entro Natale se:</h2>
           <p className="text-2xl leading-relaxed text-foreground font-bold">
-            ✅ COMPLETI L'ACQUISTO <span className="text-red-600">ENTRO IL 15 DICEMBRE 2025</span>
+            ✅ COMPLETI L'ACQUISTO <span className="text-red-600">ENTRO IL 16 DICEMBRE 2025</span>
           </p>
           <p className="text-lg leading-relaxed text-foreground mt-2">
             ✅ <strong className="font-bold">Inserisci l'indirizzo di spedizione con precisione</strong> - controlla due volte prima di confermare
