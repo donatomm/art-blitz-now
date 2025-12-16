@@ -15,9 +15,8 @@ const PricingPolicy = () => {
           <p className="text-muted-foreground mb-6 font-bold">Tutti i prezzi sono IVA inclusa</p>
           
           <div className="prose prose-lg max-w-none space-y-8">
-            <p className="text-lg leading-relaxed text-red-600">
-              I prezzi delle opere dipendono dallo sconto del fornitore (stampa ed intelaiatura) quindi sono soggetti a fluttuazioni. Non appena ricevo uno sconto ve lo passo, lo applico subito al prezzo delle opere.
-OGGI AD ESEMPIO E' ATTIVO UNO SCONTO DEL 40% SU TUTTE LE OPERE            
+            <p className="text-lg leading-relaxed text-gold-foreground">
+              I prezzi delle opere dipendono dallo sconto del fornitore (stampa ed intelaiatura) quindi sono soggetti a fluttuazioni. Non appena ricevo uno sconto ve lo passo, lo applico subito al prezzo delle opere.             
 
             </p>
 
