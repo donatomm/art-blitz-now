@@ -21,7 +21,7 @@ const HelloBar = () => {
 
   // Absolute countdown to December 14, 2025 23:59:59
   useEffect(() => {
-    const targetTime = new Date(2025, 11, 15, 23, 59, 59); // Dec 15, 2025 23:59:59
+    const targetTime = new Date(2025, 11, 16, 23, 59, 59); // Dec 16, 2025 23:59:59
 
     const calculateTimeLeft = () => {
       const now = new Date();
