@@ -1,118 +1,91 @@
 import { Link } from "react-router-dom";
 import { Mail, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePage } from "@/hooks/usePages";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Artist = () => {
+  const { data: pageData, isLoading } = usePage("artista");
+  
   const whatsappNumber = "+393666295174";
   const whatsappMessage = encodeURIComponent("Ciao! Ho una domanda");
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
   const emailLink = `mailto:me@octowonders.com?subject=Domanda`;
 
+  const renderContent = (content: string) => {
+    const lines = content.split('\n');
+    const elements: JSX.Element[] = [];
+    let listItems: string[] = [];
+    let listType: 'ul' | 'ol' | null = null;
+
+    const flushList = () => {
+      if (listItems.length > 0 && listType) {
+        const ListTag = listType === 'ul' ? 'ul' : 'ol';
+        elements.push(
+          <ListTag key={elements.length} className={`${listType === 'ul' ? 'list-disc' : 'list-decimal'} list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4 mb-4`}>
+            {listItems.map((item, i) => <li key={i} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />)}
+          </ListTag>
+        );
+        listItems = [];
+        listType = null;
+      }
+    };
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      if (trimmedLine.startsWith('## ')) {
+        flushList();
+        elements.push(<h2 key={index} className="text-2xl font-semibold text-primary mb-4 mt-8">{trimmedLine.substring(3)}</h2>);
+      } else if (trimmedLine.startsWith('# ')) {
+        flushList();
+        elements.push(<h1 key={index} className="text-4xl font-bold text-black mb-8">{trimmedLine.substring(2)}</h1>);
+      } else if (trimmedLine.startsWith('- ')) {
+        if (listType !== 'ul') flushList();
+        listType = 'ul';
+        listItems.push(trimmedLine.substring(2));
+      } else if (/^\d+\.\s/.test(trimmedLine)) {
+        if (listType !== 'ol') flushList();
+        listType = 'ol';
+        listItems.push(trimmedLine.replace(/^\d+\.\s/, ''));
+      } else if (trimmedLine === '---') {
+        flushList();
+        elements.push(<hr key={index} className="my-8 border-border" />);
+      } else if (trimmedLine) {
+        flushList();
+        const processedLine = trimmedLine
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary underline hover:text-primary/80" target="_blank" rel="noopener noreferrer">$1</a>');
+        elements.push(<p key={index} className="text-lg leading-relaxed text-foreground mb-4" dangerouslySetInnerHTML={{ __html: processedLine }} />);
+      }
+    });
+    
+    flushList();
+    return elements;
+  };
+
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">
-      {/* Back to Gallery button */}
       <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
         <ArrowLeft className="h-5 w-5" />
         <span className="hidden sm:inline">Torna alla Galleria</span>
       </Link>
       
       <div className="max-w-[700px] mx-auto px-4 sm:px-8 md:px-16">
-        
-        <h1 className="text-4xl font-bold text-black mb-8">Chi Sono</h1>
-        
-        <p className="text-lg leading-relaxed text-foreground mb-8">
-          Ciao, sono <strong>Marco De Francesco</strong> — che è uno pseudonimo :-)
-        </p>
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-3/4" />
+          </div>
+        ) : pageData?.content ? (
+          <div>{renderContent(pageData.content)}</div>
+        ) : (
+          <p className="text-muted-foreground">Contenuto non disponibile.</p>
+        )}
 
-        {/* L'Arte che Non Si Ferma */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary mb-4">
-            L'Arte che Non Si Ferma
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground">
-            Da anni mi diletto a creare elaborati scarabocchi. Poi per caso ho iniziato con le cose che amo, i polpi, i pesci, il mare e le sue creature.
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mt-4">
-            Passaggio dopo passaggio, ne è venuta fuori qualcuna che ha impressionato i miei amici. Incredibile!
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mt-4">
-            Di giorno sono un Product Marketer nel mondo tech. Di notte (letteralmente) creo queste opere che vedete su OctoWonders.
-          </p>
-        </section>
-
-        {/* Perché Condividere */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary mb-4">
-            Perché Condividere
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground">
-            In tanti mi hanno spinto a condividere le mie creazioni.
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mt-4">
-            <strong>Mi hanno convinto con un'idea semplice:</strong> l'arte non è arte se resta chiusa in un cassetto. Va condivisa, vissuta, appesa al muro di qualcuno che se la può godere.
-          </p>
-        </section>
-
-        {/* Un'Operazione Artigianale */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary mb-4">
-            Un'Operazione Artigianale
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground mb-4">
-            Questa è un'operazione artigianale al 100%.
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mb-4">
-            Ho messo su questo sito facendo le ore piccole, tra una call di lavoro e l'altra. Perdonatemi per qualche problemino tecnico — sono un marketer, non uno sviluppatore :-)
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mb-4">
-            Mancherà qualche parte, ma ci sto già lavorando su
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mb-2">
-            <strong>Ma sulla qualità non scendo a compromessi:</strong>
-          </p>
-          <ul className="list-disc list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4">
-            <li>Ogni opera è creata con tecniche manuali e digitali in sequenza</li>
-            <li><strong>Zero AI, 0%</strong> — solo il mio occhio, le mie mani, la mia visione</li>
-            <li>Stampe professionali su tela con tecnologia HP Latex</li>
-            <li>Colori brillanti garantiti 70 anni, e resistenti alla luce</li>
-            <li>Pronte da appendere!</li>
-          </ul>
-        </section>
-
-        {/* Pagamenti Sicuri */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary mb-4">
-            Pagamenti Sicuri
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground">
-            Niente preoccupazione per i pagamenti: uso <strong>Stripe</strong>, lo standard mondiale per transazioni online sicure. Le stesse tecnologie che usano Amazon, Shopify, e migliaia di aziende globali.
-          </p>
-        </section>
-
-        {/* Chi Ha Già Le Mie Opere */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary mb-4">
-            Chi Ha Già Le Mie Opere
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground">
-            Sto creando una sezione per recensioni, ma posso anticiparti che chi ha le mie opere in giro per l'Italia e l'Europa è rimasto molto contento/a.
-          </p>
-        </section>
-
-        {/* Divider */}
-        <hr className="my-8 border-border" />
-
-        {/* Enjoy e Buone Feste */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-primary mb-4">
-            Enjoy e Buone Feste! 🎄
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground">
-            Se hai domande, dubbi, o vuoi semplicemente dirmi cosa ne pensi — scrivimi. Rispondo sempre.
-          </p>
-        </section>
-
-        {/* Contact Buttons */}
+        {/* Contact Buttons - Always visible */}
         <div className="flex flex-wrap gap-4 mt-8">
           <Button
             asChild
@@ -147,41 +120,6 @@ const Artist = () => {
             </a>
           </Button>
         </div>
-
-        {/* Work in Progress Section */}
-        <section className="mt-16 pt-8 border-t border-border">
-          <h2 className="text-2xl font-semibold text-primary mb-4">
-            🚧 WORK IN PROGRESS
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="py-2 pr-4 font-semibold text-foreground">File</th>
-                  <th className="py-2 font-semibold text-foreground">Descrizione</th>
-                </tr>
-              </thead>
-              <tbody className="text-muted-foreground">
-                <tr className="border-b border-border/50">
-                  <td className="py-2 pr-4 font-mono text-sm">privacy-policy-octowonders.docx</td>
-                  <td className="py-2">Privacy Policy in formato Word</td>
-                </tr>
-                <tr className="border-b border-border/50">
-                  <td className="py-2 pr-4 font-mono text-sm">privacy-policy-octowonders.html</td>
-                  <td className="py-2">Versione HTML pronta per il tuo sito</td>
-                </tr>
-                <tr className="border-b border-border/50">
-                  <td className="py-2 pr-4 font-mono text-sm">termini-e-condizioni-vendita.docx</td>
-                  <td className="py-2">Termini e Condizioni conformi al Codice del Consumo</td>
-                </tr>
-                <tr>
-                  <td className="py-2 pr-4 font-mono text-sm">cookie-policy-base.docx</td>
-                  <td className="py-2">Cookie Policy base (solo tecnici, no banner)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
       </div>
     </div>
   );
