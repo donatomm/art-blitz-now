@@ -36,6 +36,7 @@ const Product = () => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showTermsError, setShowTermsError] = useState(false);
   const {
     toast
   } = useToast();
@@ -371,28 +372,45 @@ Grazie!`);
                 </div>
 
                 {/* Terms Acceptance Checkbox */}
-                <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg border border-border">
-                  <Checkbox 
-                    id="terms-acceptance" 
-                    checked={termsAccepted}
-                    onCheckedChange={(checked) => setTermsAccepted(checked === true)}
-                    className="mt-0.5"
-                  />
-                  <label htmlFor="terms-acceptance" className="text-sm text-foreground cursor-pointer leading-relaxed">
-                    Dichiaro di aver letto e accettato i{" "}
-                    <Link 
-                      to="/terms" 
-                      target="_blank"
-                      className="text-gold hover:underline font-medium"
-                    >
-                      Termini e Condizioni di Vendita
-                    </Link>
-                  </label>
+                <div className="p-4 bg-card rounded-lg border-2 border-gold/30">
+                  <div className="flex items-start gap-3">
+                    <Checkbox 
+                      id="accetta-condizioni" 
+                      checked={termsAccepted}
+                      onCheckedChange={(checked) => {
+                        setTermsAccepted(checked === true);
+                        if (checked) setShowTermsError(false);
+                      }}
+                      className="mt-1 h-5 w-5 border-2 border-gold data-[state=checked]:bg-gold data-[state=checked]:border-gold"
+                    />
+                    <label htmlFor="accetta-condizioni" className="text-base text-foreground cursor-pointer leading-relaxed">
+                      Confermando il tuo ordine accetti i{" "}
+                      <Link 
+                        to="/terms" 
+                        target="_blank"
+                        className="text-gold hover:underline font-semibold"
+                      >
+                        Termini e Condizioni di Vendita
+                      </Link>
+                      {" "}e dichiari di essere consapevole che l'ordine comporta un obbligo di pagamento.
+                    </label>
+                  </div>
+                  {showTermsError && (
+                    <p className="text-red-500 text-sm font-medium mt-3 ml-8">
+                      Per continuare devi accettare i Termini e Condizioni e l'obbligo di pagamento.
+                    </p>
+                  )}
                 </div>
                 
                 <Button 
-                  onClick={handleCheckout} 
-                  disabled={isCheckoutLoading || !termsAccepted} 
+                  onClick={() => {
+                    if (!termsAccepted) {
+                      setShowTermsError(true);
+                      return;
+                    }
+                    handleCheckout();
+                  }} 
+                  disabled={isCheckoutLoading} 
                   className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   {isCheckoutLoading ? <>
