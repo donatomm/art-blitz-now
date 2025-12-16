@@ -5,32 +5,19 @@ import { Button } from "@/components/ui/button";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Simple markdown-like renderer for page content
+// Simple markdown-like renderer for page content (aligned with Artist.tsx)
 const renderContent = (content: string) => {
   const lines = content.split('\n');
-  const elements: React.ReactNode[] = [];
+  const elements: JSX.Element[] = [];
   let listItems: string[] = [];
   let listType: 'ul' | 'ol' | null = null;
 
-  const processText = (text: string) => {
-    // Process bold text
-    const parts = text.split(/(\*\*[^*]+\*\*)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i} className="font-bold">{part.slice(2, -2)}</strong>;
-      }
-      return part;
-    });
-  };
-
   const flushList = () => {
     if (listItems.length > 0 && listType) {
-      const ListTag = listType;
+      const ListTag = listType === 'ul' ? 'ul' : 'ol';
       elements.push(
-        <ListTag key={elements.length} className="list-disc list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4 mb-4">
-          {listItems.map((item, i) => (
-            <li key={i}>{processText(item)}</li>
-          ))}
+        <ListTag key={elements.length} className={`${listType === 'ul' ? 'list-disc' : 'list-decimal'} list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4 mb-4`}>
+          {listItems.map((item, i) => <li key={i} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />)}
         </ListTag>
       );
       listItems = [];
@@ -41,48 +28,32 @@ const renderContent = (content: string) => {
   lines.forEach((line, index) => {
     const trimmedLine = line.trim();
     
-    if (!trimmedLine) {
-      flushList();
-      return;
-    }
-
-    // Headings
     if (trimmedLine.startsWith('## ')) {
       flushList();
-      elements.push(
-        <h2 key={index} className="text-2xl font-semibold text-foreground mb-4 mt-8">
-          {processText(trimmedLine.slice(3))}
-        </h2>
-      );
-      return;
-    }
-
-    // Horizontal rule
-    if (trimmedLine === '---') {
+      elements.push(<h2 key={index} className="text-2xl font-semibold text-foreground mb-4 mt-8">{trimmedLine.substring(3)}</h2>);
+    } else if (trimmedLine.startsWith('# ')) {
       flushList();
-      elements.push(<hr key={index} className="border-border my-8" />);
-      return;
+      elements.push(<h1 key={index} className="text-4xl font-bold text-foreground mb-8">{trimmedLine.substring(2)}</h1>);
+    } else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+      if (listType !== 'ul') flushList();
+      listType = 'ul';
+      listItems.push(trimmedLine.substring(2));
+    } else if (/^\d+\.\s/.test(trimmedLine)) {
+      if (listType !== 'ol') flushList();
+      listType = 'ol';
+      listItems.push(trimmedLine.replace(/^\d+\.\s/, ''));
+    } else if (trimmedLine === '---') {
+      flushList();
+      elements.push(<hr key={index} className="my-8 border-border" />);
+    } else if (trimmedLine) {
+      flushList();
+      const processedLine = trimmedLine
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary underline hover:text-primary/80" target="_blank" rel="noopener noreferrer">$1</a>');
+      elements.push(<p key={index} className="text-lg leading-relaxed text-foreground mb-3" dangerouslySetInnerHTML={{ __html: processedLine }} />);
     }
-
-    // List items
-    if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-      if (listType !== 'ul') {
-        flushList();
-        listType = 'ul';
-      }
-      listItems.push(trimmedLine.slice(2));
-      return;
-    }
-
-    // Regular paragraph
-    flushList();
-    elements.push(
-      <p key={index} className="text-lg leading-relaxed text-foreground mb-3">
-        {processText(trimmedLine)}
-      </p>
-    );
   });
-
+  
   flushList();
   return elements;
 };
