@@ -17,12 +17,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, FileText, Loader2, Upload, FileSpreadsheet, FileUp, AlertCircle, CheckCircle, ImageIcon } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
+
 import ImageUpload from "./ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult, CSVImportMode } from "@/utils/csvProductParser";
@@ -40,8 +40,6 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const [passwordInput, setPasswordInput] = useState("");
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editPage, setEditPage] = useState<Page | null>(null);
-  const [isPageDialogOpen, setIsPageDialogOpen] = useState(false);
   const [isStripeImportDialogOpen, setIsStripeImportDialogOpen] = useState(false);
   const [stripeImportJson, setStripeImportJson] = useState("");
   const [isCSVImportDialogOpen, setIsCSVImportDialogOpen] = useState(false);
@@ -51,8 +49,6 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const csvInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
-  const { data: pages = [] } = usePages();
-  const updatePageMutation = useUpdatePage();
 
   // Check if already authenticated via Supabase session and has admin role
   useEffect(() => {
@@ -223,42 +219,6 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
     const newSizes = [...editProduct.sizes];
     newSizes[sizeIndex] = { ...newSizes[sizeIndex], [field]: value };
     setEditProduct({ ...editProduct, sizes: newSizes });
-  };
-
-  const handleEditPage = (page: Page) => {
-    setEditPage({ ...page });
-    setIsPageDialogOpen(true);
-  };
-
-  const handleSavePage = async () => {
-    if (!editPage) return;
-
-    try {
-      await updatePageMutation.mutateAsync({
-        id: editPage.id,
-        title: editPage.title,
-        content: editPage.content,
-      });
-      toast({
-        title: "Pagina salvata!",
-        description: `"${editPage.title}" è stata aggiornata.`,
-      });
-      setIsPageDialogOpen(false);
-      setEditPage(null);
-    } catch (error) {
-      toast({
-        title: "Errore",
-        description: "Impossibile salvare la pagina. Verifica di essere admin.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const pageLabels: Record<string, string> = {
-    artista: "Artista",
-    "nota-clienti": "Nota per i Clienti",
-    spedizione: "Regole di Spedizione",
-    contatti: "Contatti",
   };
 
   const handleImportStripeIds = () => {
@@ -549,10 +509,9 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
             </div>
           ) : (
           <Tabs defaultValue="products" className="mt-4">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
               <TabsTrigger value="skus">SKUs</TabsTrigger>
-              <TabsTrigger value="pages">Pagine</TabsTrigger>
             </TabsList>
             
             <TabsContent value="products" className="space-y-4">
@@ -655,27 +614,6 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
               <SKUEditor products={products} onProductsChange={onProductsChange} />
             </TabsContent>
             
-            <TabsContent value="pages" className="space-y-2">
-              {pages.map((page) => (
-                <div
-                  key={page.id}
-                  className="flex items-center gap-3 p-3 bg-muted rounded-md"
-                >
-                  <FileText className="h-5 w-5 text-muted-foreground" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium">{pageLabels[page.slug] || page.title}</p>
-                    <p className="text-xs text-muted-foreground">/{page.slug}</p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEditPage(page)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </TabsContent>
           </Tabs>
           )}
         </SheetContent>
@@ -855,51 +793,6 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
         </DialogContent>
       </Dialog>
 
-      {/* Page Edit Dialog */}
-      <Dialog open={isPageDialogOpen} onOpenChange={setIsPageDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              Modifica Pagina: {editPage && (pageLabels[editPage.slug] || editPage.title)}
-            </DialogTitle>
-          </DialogHeader>
-          {editPage && (
-            <div className="space-y-4">
-              <div>
-                <Label>Titolo</Label>
-                <Input
-                  value={editPage.title}
-                  onChange={(e) =>
-                    setEditPage({ ...editPage, title: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <Label>Contenuto (Markdown)</Label>
-                <textarea
-                  value={editPage.content}
-                  onChange={(e) =>
-                    setEditPage({ ...editPage, content: e.target.value })
-                  }
-                  className="w-full min-h-[300px] px-3 py-2 text-sm rounded-md border border-input bg-background font-mono"
-                  placeholder="## Titolo sezione&#10;&#10;Contenuto della pagina..."
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Usa ## per titoli, **testo** per grassetto, - per liste
-                </p>
-              </div>
-
-              <Button 
-                onClick={handleSavePage} 
-                className="w-full"
-                disabled={updatePageMutation.isPending}
-              >
-                {updatePageMutation.isPending ? "Salvataggio..." : "Salva Pagina"}
-              </Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* Stripe IDs Import Dialog */}
       <Dialog open={isStripeImportDialogOpen} onOpenChange={setIsStripeImportDialogOpen}>
