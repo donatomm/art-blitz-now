@@ -385,13 +385,13 @@ Grazie!`);
                     />
                     <label htmlFor="accetta-condizioni" className="text-base text-foreground cursor-pointer leading-relaxed">
                       Confermando il tuo ordine accetti i{" "}
-                      <Link 
-                        to="/terms" 
-                        target="_blank"
+                      <a 
+                        href="/docs/termini-e-condizioni.pdf" 
+                        download
                         className="text-blue-500 hover:underline font-semibold"
                       >
-                        Termini e Condizioni di Vendita
-                      </Link>
+                        Termini e Condizioni di Vendita (PDF)
+                      </a>
                       {" "}e dichiari di essere consapevole che l'ordine comporta un obbligo di pagamento.
                     </label>
                   </div>
