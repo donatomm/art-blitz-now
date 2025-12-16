@@ -148,7 +148,9 @@ Ed ho le seguenti domande:
           </div>
         </section>
       </main>
-      <Footer />
+      <div className="mt-16">
+        <Footer />
+      </div>
     </div>
   );
 };
