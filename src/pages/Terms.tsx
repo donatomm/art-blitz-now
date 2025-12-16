@@ -18,8 +18,8 @@ const Terms = () => {
         </Link>
 
         <article className="prose prose-lg max-w-none">
-          <h1 className="text-3xl font-bold text-foreground mb-2">TERMINI E CONDIZIONI DI VENDITA</h1>
-          <p className="text-muted-foreground mb-8">Ultimo aggiornamento: 16 Dicembre 2025</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">📄 TERMINI E CONDIZIONI DI VENDITA</h1>
+          <p className="text-muted-foreground mb-8">Ultimo aggiornamento: 16 Dic 2025 h15:00 GMT-1</p>
 
           <section className="mb-8">
             <h2 className="text-xl font-bold text-foreground mb-4">1. INFORMAZIONI GENERALI</h2>
@@ -52,8 +52,11 @@ const Terms = () => {
 
           <section className="mb-8">
             <h2 className="text-xl font-bold text-foreground mb-4">3. CARATTERISTICHE DEI PRODOTTI</h2>
-            <p className="text-foreground">
+            <p className="text-foreground mb-4">
               I Prodotti sono descritti nelle relative pagine del Sito. Le immagini hanno finalità puramente illustrative e possono non essere perfettamente rappresentative delle caratteristiche reali.
+            </p>
+            <p className="text-foreground">
+              Non costituiscono difetti di conformità eventuali variazioni cromatiche tra l'anteprima digitale e la stampa finale, né eventuali imperfezioni dovute alla bassa qualità dei file forniti dal cliente (es. risoluzione insufficiente).
             </p>
           </section>
 
@@ -83,18 +86,34 @@ const Terms = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold text-foreground mb-4">6. MODALITÀ DI CONSEGNA</h2>
+            <h2 className="text-xl font-bold text-foreground mb-4">6. SPEDIZIONE E CONSEGNA</h2>
             <p className="text-foreground mb-4">
-              I Prodotti saranno consegnati all'indirizzo fornito dal cliente in fase d'ordine. I tempi di spedizione sono indicati durante la procedura di acquisto.
+              I prodotti vengono spediti all'indirizzo indicato dal cliente al momento dell'ordine. Octowonders si impegna a spedire i prodotti entro i tempi indicati nella pagina prodotto o nel riepilogo dell'ordine, salvo cause di forza maggiore o eventi eccezionali non imputabili al venditore.
+            </p>
+            <p className="text-foreground mb-4">
+              Le spese di spedizione sono indicate chiaramente prima della conferma dell'ordine e possono variare in base alla destinazione e al tipo di prodotto.
+            </p>
+            <p className="text-foreground mb-4">
+              È responsabilità del cliente fornire un indirizzo corretto e presidiato. In caso di assenza al momento della consegna, il corriere lascerà un avviso. Il cliente è tenuto a ritirare il pacco entro i termini previsti dal servizio di spedizione.
+            </p>
+            <p className="text-foreground mb-4">
+              Se il pacco non viene ritirato, viene restituito al mittente. In tal caso, il cliente potrà:
+            </p>
+            <ul className="list-disc pl-6 text-foreground mb-4">
+              <li>richiedere una nuova spedizione (a proprie spese), oppure</li>
+              <li>ottenere un rimborso, al netto delle spese di spedizione sostenute e dei costi di giacenza o rientro.</li>
+            </ul>
+            <p className="text-foreground mb-4">
+              Octowonders non è responsabile per ritardi causati da eventi esterni al proprio controllo (es. scioperi, maltempo, pandemie, blocchi logistici o doganali).
             </p>
             <div className="bg-muted p-4 rounded-lg mb-4">
               <p className="text-foreground font-semibold mb-2">📦 Controllo all'arrivo</p>
               <p className="text-foreground">
-                Il cliente è tenuto a verificare l'integrità del pacco alla consegna e a segnalare eventuali danni entro 48 ore, allegando prova fotografica.
+                In caso di prodotti danneggiati durante la spedizione, il cliente è tenuto a comunicarlo entro 48 ore dalla consegna, allegando documentazione fotografica. Dopo tale termine, eventuali danni non potranno essere imputati al trasporto.
               </p>
             </div>
             <p className="text-foreground">
-              Il rischio di danneggiamento o perdita si trasferisce al consumatore solo al momento della consegna fisica del bene.
+              Octowonders si riserva il diritto di effettuare consegne parziali qualora necessario, senza costi aggiuntivi per il cliente.
             </p>
           </section>
 
@@ -107,23 +126,10 @@ const Terms = () => {
               Il recesso deve essere comunicato via email a: <a href="mailto:donatomm@gmail.com" className="text-gold hover:underline">donatomm@gmail.com</a>, anche utilizzando il modulo tipo riportato in fondo a questo documento.
             </p>
             
-            <h3 className="text-lg font-semibold text-foreground mb-2">Restituzione dei prodotti</h3>
-            <p className="text-foreground mb-4">
-              Il cliente deve restituire i prodotti entro 14 giorni dalla comunicazione del recesso. Le spese di restituzione sono a carico del cliente.
+            <h3 className="text-lg font-semibold text-foreground mb-2">Prodotti personalizzati</h3>
+            <p className="text-foreground">
+              Ai sensi dell'art. 59, comma 1, lett. c) del Codice del Consumo, il diritto di recesso è escluso per la fornitura di beni personalizzati, come le stampe su misura realizzate a partire da immagini caricate dal cliente.
             </p>
-            <p className="text-foreground mb-4">
-              Il rimborso avverrà entro 14 giorni dalla ricezione della comunicazione di recesso, ma potrà essere trattenuto fino alla ricezione del prodotto o alla prova dell'avvenuta spedizione.
-            </p>
-            
-            <h3 className="text-lg font-semibold text-foreground mb-2">Responsabilità per uso improprio o danni</h3>
-            <p className="text-foreground mb-4">
-              Il cliente è responsabile della diminuzione di valore del bene se usato in modo incompatibile con la sua natura o destinazione d'uso.
-            </p>
-            <p className="text-foreground mb-2">In caso di restituzione di prodotto danneggiato o non rivendibile, il venditore si riserva il diritto di:</p>
-            <ul className="list-disc pl-6 text-foreground">
-              <li>ridurre proporzionalmente il rimborso;</li>
-              <li>oppure, nei casi gravi, rifiutare il rimborso, fornendo documentazione.</li>
-            </ul>
           </section>
 
           <section className="mb-8">
@@ -142,7 +148,7 @@ const Terms = () => {
 
           <section className="mb-8">
             <h2 className="text-xl font-bold text-foreground mb-4">9. LIMITAZIONE DI RESPONSABILITÀ</h2>
-            <p className="text-foreground mb-2">Il venditore non è responsabile per:</p>
+            <p className="text-foreground mb-2">Octowonders non è responsabile per:</p>
             <ul className="list-disc pl-6 text-foreground mb-4">
               <li>uso improprio dei prodotti da parte del cliente,</li>
               <li>ritardi non imputabili al venditore (es. problemi del corriere),</li>
@@ -154,7 +160,7 @@ const Terms = () => {
           <section className="mb-8">
             <h2 className="text-xl font-bold text-foreground mb-4">10. LEGGE APPLICABILE E FORO COMPETENTE</h2>
             <p className="text-foreground">
-              Il contratto è disciplinato dalla legge italiana. Per qualsiasi controversia è competente il foro del consumatore, come previsto dall'art. 66-bis del Codice del Consumo.
+              Il contratto è disciplinato dalla legge italiana. Per ogni controversia è competente il foro del consumatore, come previsto dall'art. 66-bis del Codice del Consumo.
             </p>
           </section>
 
@@ -163,7 +169,7 @@ const Terms = () => {
             <p className="text-foreground">
               Ai sensi del Regolamento UE 524/2013, il cliente può presentare un reclamo attraverso la piattaforma ODR:{" "}
               <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">
-                https://ec.europa.eu/consumers/odr
+                🌐 https://ec.europa.eu/consumers/odr
               </a>
             </p>
           </section>
@@ -184,7 +190,7 @@ const Terms = () => {
 
           <section className="mb-8 bg-muted p-6 rounded-lg">
             <h2 className="text-xl font-bold text-foreground mb-4">📝 MODULO DI RECESSO TIPO</h2>
-            <p className="text-muted-foreground mb-4 italic">Da compilare e inviare solo in caso di recesso dal contratto (entro 14 giorni)</p>
+            <p className="text-muted-foreground mb-4 italic">Da compilare e inviare solo in caso di recesso dal contratto (entro 14 giorni), solo se applicabile (non per prodotti personalizzati).</p>
             
             <p className="text-foreground mb-4">(ai sensi dell'art. 49, comma 1, lett. h del Codice del Consumo)</p>
             
