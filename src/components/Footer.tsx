@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
-
 const Footer = () => {
-  return (
-    <footer className="bg-slate-900 text-slate-300 py-8 mt-auto">
+  return <footer className="bg-slate-900 text-slate-300 py-8 mt-auto">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
@@ -30,7 +28,7 @@ const Footer = () => {
               Cookie Policy
             </Link>
             <a href="/docs/termini-e-condizioni.pdf" download className="hover:text-white transition-colors">
-              Termini e Condizioni (PDF)
+              Termini e Condizioni di Vendita (PDF)
             </a>
           </div>
         </div>
@@ -39,8 +37,6 @@ const Footer = () => {
           © {new Date().getFullYear()} OctoWonders. Tutti i diritti riservati.
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
