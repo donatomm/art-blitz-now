@@ -24,10 +24,10 @@ Ed ho le seguenti domande:
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-rose-600">Consegna Garantita entro Natale se:</h2>
           <p className="text-2xl leading-relaxed text-foreground font-bold">
-            ✅ COMPLETI L'ACQUISTO <span className="text-red-600">ENTRO IL 16 DICEMBRE 2025</span>
+            COMPLETI L'ACQUISTO <span className="text-red-600">ENTRO IL 16 DICEMBRE 2025</span>
           </p>
           <p className="text-lg leading-relaxed text-foreground mt-2">
-            ✅ <strong className="font-bold">Inserisci l'indirizzo di spedizione con precisione</strong> - controlla due volte prima di confermare
+            <strong className="font-bold">Inserisci l'indirizzo di spedizione con precisione</strong> - controlla due volte prima di confermare
           </p>
         </section>
 
@@ -36,7 +36,7 @@ Ed ho le seguenti domande:
         {/* Delivery Times Section */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-foreground mb-4">
-            ⏱️ Tempi di Consegna
+            Tempi di Consegna
           </h2>
           <p className="text-lg leading-relaxed text-foreground mb-3">
             <strong className="font-bold">La tua opera sarà:</strong>
@@ -55,7 +55,7 @@ Ed ho le seguenti domande:
         {/* Shipping Costs Section */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-foreground mb-4">
-            🚚 Costi di Spedizione
+            Costi di Spedizione
           </h2>
           <p className="text-lg leading-relaxed text-foreground mb-3">
             <strong className="font-bold">GRATIS</strong> per Italia Peninsulare e Sicilia
@@ -78,7 +78,7 @@ Ed ho le seguenti domande:
         {/* Refunds Section */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-foreground mb-4">
-            🔄 Rimborsi
+            Rimborsi
           </h2>
           <p className="text-lg leading-relaxed text-foreground mb-3">
             Vogliamo che tu ami la tua opera.
@@ -100,7 +100,7 @@ Ed ho le seguenti domande:
         {/* Contact Section */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-foreground mb-4">
-            📞 Hai Domande?
+            Hai Domande?
           </h2>
           <p className="text-lg leading-relaxed text-muted-foreground mb-6">
             Rispondiamo al più presto, e comunque entro 24 ore.
