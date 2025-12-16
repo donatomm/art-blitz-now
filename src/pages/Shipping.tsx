@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { MessageCircle, Mail, ArrowLeft } from "lucide-react";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -97,7 +98,7 @@ Ed ho le seguenti domande:
   const emailLink = `mailto:me@octowonders.com?subject=${encodeURIComponent("Domanda Spedizione")}&body=${encodeURIComponent(whatsappMessage)}`;
   
   return (
-    <div className="min-h-screen bg-background pt-24 pb-16">
+    <div className="min-h-screen bg-background pt-24 pb-16 flex flex-col">
       {/* Back to Gallery button */}
       <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
         <ArrowLeft className="h-5 w-5" />
@@ -147,6 +148,7 @@ Ed ho le seguenti domande:
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 };
