@@ -1,14 +1,103 @@
 import { Link } from "react-router-dom";
 import { MessageCircle, Mail, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePage } from "@/hooks/usePages";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Simple markdown-like renderer for page content
+const renderContent = (content: string) => {
+  const lines = content.split('\n');
+  const elements: React.ReactNode[] = [];
+  let listItems: string[] = [];
+  let listType: 'ul' | 'ol' | null = null;
+
+  const processText = (text: string) => {
+    // Process bold text
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="font-bold">{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
+  const flushList = () => {
+    if (listItems.length > 0 && listType) {
+      const ListTag = listType;
+      elements.push(
+        <ListTag key={elements.length} className="list-disc list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4 mb-4">
+          {listItems.map((item, i) => (
+            <li key={i}>{processText(item)}</li>
+          ))}
+        </ListTag>
+      );
+      listItems = [];
+      listType = null;
+    }
+  };
+
+  lines.forEach((line, index) => {
+    const trimmedLine = line.trim();
+    
+    if (!trimmedLine) {
+      flushList();
+      return;
+    }
+
+    // Headings
+    if (trimmedLine.startsWith('## ')) {
+      flushList();
+      elements.push(
+        <h2 key={index} className="text-2xl font-semibold text-foreground mb-4 mt-8">
+          {processText(trimmedLine.slice(3))}
+        </h2>
+      );
+      return;
+    }
+
+    // Horizontal rule
+    if (trimmedLine === '---') {
+      flushList();
+      elements.push(<hr key={index} className="border-border my-8" />);
+      return;
+    }
+
+    // List items
+    if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+      if (listType !== 'ul') {
+        flushList();
+        listType = 'ul';
+      }
+      listItems.push(trimmedLine.slice(2));
+      return;
+    }
+
+    // Regular paragraph
+    flushList();
+    elements.push(
+      <p key={index} className="text-lg leading-relaxed text-foreground mb-3">
+        {processText(trimmedLine)}
+      </p>
+    );
+  });
+
+  flushList();
+  return elements;
+};
+
 const Shipping = () => {
+  const { data: page, isLoading } = usePage("spedizione");
+  
   const whatsappMessage = `Ciao, mi chiamo .......
 Ed ho le seguenti domande:
 
 `;
   const whatsappLink = `https://wa.me/393666295174?text=${encodeURIComponent(whatsappMessage)}`;
   const emailLink = `mailto:me@octowonders.com?subject=${encodeURIComponent("Domanda Spedizione")}&body=${encodeURIComponent(whatsappMessage)}`;
-  return <div className="min-h-screen bg-background pt-24 pb-16">
+  
+  return (
+    <div className="min-h-screen bg-background pt-24 pb-16">
       {/* Back to Gallery button */}
       <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
         <ArrowLeft className="h-5 w-5" />
@@ -17,88 +106,23 @@ Ed ho le seguenti domande:
       
       <main className="max-w-[800px] mx-auto px-4 sm:px-8 md:px-16">
         <h1 className="text-4xl font-bold text-foreground mb-8">
-          Regole di Spedizione
+          {page?.title || "Regole di Spedizione"}
         </h1>
 
-        {/* Christmas Deadline Section */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-rose-600">Consegna Garantita entro Natale se:</h2>
-          <p className="text-2xl leading-relaxed text-foreground font-bold">
-            COMPLETI L'ACQUISTO <span className="text-red-600">ENTRO IL 16 DICEMBRE 2025</span>
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mt-2">
-            <strong className="font-bold">Inserisci l'indirizzo di spedizione con precisione</strong> - controlla due volte prima di confermare
-          </p>
-        </section>
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-2/3" />
+          </div>
+        ) : (
+          <div className="prose prose-lg max-w-none">
+            {page?.content && renderContent(page.content)}
+          </div>
+        )}
 
-        <hr className="border-border my-8" />
-
-        {/* Delivery Times Section */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-foreground mb-4">
-            Tempi di Consegna
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground mb-3">
-            <strong className="font-bold">La tua opera sarà:</strong>
-          </p>
-          <ul className="list-disc list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4">
-            <li>Stampata su tela in <strong className="font-bold">24 ore</strong></li>
-            <li>Consegnata in <strong className="font-bold">3-5 giorni lavorativi</strong></li>
-          </ul>
-          <p className="text-lg leading-relaxed text-muted-foreground mt-4">
-            Ogni stampa è imballata professionalmente con materiali protettivi per garantire che arrivi in perfette condizioni.
-          </p>
-        </section>
-
-        <hr className="border-border my-8" />
-
-        {/* Shipping Costs Section */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-foreground mb-4">
-            Costi di Spedizione
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground mb-3">
-            <strong className="font-bold">GRATIS</strong> per Italia Peninsulare e Sicilia
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mb-3">
-            <strong className="font-bold">Sardegna:</strong> Ci stiamo attrezzando - contattaci per verificare disponibilità
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mb-2">
-            <strong className="font-bold">Altri Paesi UE:</strong> Contattaci prima dell'acquisto in quanto:
-          </p>
-          <ul className="list-disc list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4">
-            <li>Corriere diverso richiesto</li>
-            <li>Costi maggiorati (circa il doppio)</li>
-            <li>Disponibile UPS EXPRESS (consegna in 24h)</li>
-          </ul>
-        </section>
-
-        <hr className="border-border my-8" />
-
-        {/* Refunds Section */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-foreground mb-4">
-            Rimborsi
-          </h2>
-          <p className="text-lg leading-relaxed text-foreground mb-3">
-            Vogliamo che tu ami la tua opera.
-          </p>
-          <p className="text-lg leading-relaxed text-foreground mb-2">
-            <strong className="font-bold">Se non sei soddisfatto:</strong>
-          </p>
-          <ul className="list-disc list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4">
-            <li>Contattaci entro <strong className="font-bold">14 giorni dalla consegna</strong></li>
-            <li>Ti rimborseremo o sostituiremo l'opera</li>
-          </ul>
-          <p className="text-lg leading-relaxed text-muted-foreground mt-4">
-            <strong className="font-bold">Nota:</strong> Gli ordini personalizzati (dimensioni non standard) non sono rimborsabili.
-          </p>
-        </section>
-
-        <hr className="border-border my-8" />
-
-        {/* Contact Section */}
-        <section className="mb-8">
+        {/* Contact Section - always visible */}
+        <section className="mt-8">
           <h2 className="text-2xl font-semibold text-foreground mb-4">
             Hai Domande?
           </h2>
@@ -123,6 +147,8 @@ Ed ho le seguenti domande:
           </div>
         </section>
       </main>
-    </div>;
+    </div>
+  );
 };
+
 export default Shipping;
