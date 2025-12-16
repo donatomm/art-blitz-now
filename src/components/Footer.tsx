@@ -29,6 +29,9 @@ const Footer = () => {
             <Link to="/cookies" className="hover:text-white transition-colors">
               Cookie Policy
             </Link>
+            <Link to="/terms" className="hover:text-white transition-colors">
+              Termini e Condizioni
+            </Link>
           </div>
         </div>
         
