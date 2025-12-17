@@ -5,6 +5,7 @@ export interface ProductSize {
   deal_label_enabled?: boolean;
   deal_label_text?: string;
   mock_room_url?: string;
+  mock_room_label?: string;
 }
 
 export interface MockRoom {

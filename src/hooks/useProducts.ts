@@ -14,6 +14,20 @@ const normalizeMockRooms = (mockRooms: unknown): MockRoom[] => {
   });
 };
 
+// Normalize sizes to ensure all fields have defaults
+const normalizeSizes = (sizes: unknown): ProductSize[] => {
+  if (!Array.isArray(sizes)) return [];
+  return sizes.map((size) => ({
+    dimensions: size.dimensions || '',
+    price: size.price || 0,
+    stripe_product_id: size.stripe_product_id || '',
+    deal_label_enabled: size.deal_label_enabled ?? false,
+    deal_label_text: size.deal_label_text || '',
+    mock_room_url: size.mock_room_url || '',
+    mock_room_label: size.mock_room_label || '',
+  }));
+};
+
 export const useProducts = () => {
   return useQuery({
     queryKey: ["products"],
@@ -27,7 +41,7 @@ export const useProducts = () => {
       
       return (data || []).map((item) => ({
         ...item,
-        sizes: (item.sizes as unknown as ProductSize[]) || [],
+        sizes: normalizeSizes(item.sizes),
         deal_label_enabled: item.deal_label_enabled ?? false,
         deal_label_text: item.deal_label_text ?? '',
         description: item.description ?? '',
