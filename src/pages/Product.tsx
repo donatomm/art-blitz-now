@@ -66,30 +66,31 @@ const Product = () => {
     return `${numB}x${numA}${suffix}`;
   };
 
-  // Use mock rooms from database, or generate placeholders
-  const mockRooms = product?.mock_rooms && product.mock_rooms.length > 0
+  // Use mock rooms from sizes array (new unified approach) or fallback to legacy mock_rooms
+  const mockRooms = product?.sizes
+    .filter(size => size.price > 0) // Only active sizes
+    .filter(size => size.mock_room_url) // Only sizes with mock room images
+    .map((size, index) => ({
+      id: index + 1,
+      image: size.mock_room_url || "",
+      displayLabel: size.dimensions,
+      price: size.price,
+      note: "",
+    }));
+
+  // Fallback to legacy mock_rooms if no sizes have mock_room_url
+  const legacyMockRooms = (!mockRooms || mockRooms.length === 0) && product?.mock_rooms && product.mock_rooms.length > 0
     ? product.mock_rooms
         .map((mockRoom, index) => {
-          // Handle both old string format and new object format
           const isOldFormat = typeof mockRoom === "string";
           const imageUrl = isOldFormat ? mockRoom : mockRoom?.url || "";
           const customLabel = isOldFormat ? "" : mockRoom?.label || "";
-
           const sizeAtIndex = product?.sizes[index];
           const baseLabel = customLabel || sizeAtIndex?.dimensions || "";
-
-          // Find matching size using dimension equivalence (AAxBB = BBxAA)
           const matchingSize = baseLabel
-            ? product?.sizes.find(
-                (s) => normalizeDimension(s.dimensions) === normalizeDimension(baseLabel)
-              ) || sizeAtIndex
+            ? product?.sizes.find(s => normalizeDimension(s.dimensions) === normalizeDimension(baseLabel)) || sizeAtIndex
             : sizeAtIndex;
-
-          // Hide mock room if it maps to a hidden size (price = 0)
-          if (matchingSize && matchingSize.price <= 0) {
-            return null;
-          }
-
+          if (matchingSize && matchingSize.price <= 0) return null;
           return {
             id: index + 1,
             image: imageUrl,
@@ -99,16 +100,12 @@ const Product = () => {
           };
         })
         .filter((room): room is { id: number; image: string; displayLabel: string; price: number; note: string } => room !== null)
-    : [1, 2, 3].map((num) => ({
-        id: num,
-        image: "",
-        displayLabel: "",
-        price: 0,
-        note: "",
-      }));
+    : [];
+
+  const finalMockRooms = (mockRooms && mockRooms.length > 0) ? mockRooms : legacyMockRooms;
 
   // Max carousel index (show 2 mock rooms side by side)
-  const maxIndex = Math.max(0, mockRooms.length - 2);
+  const maxIndex = Math.max(0, finalMockRooms.length - 2);
 
   const handlePrev = () => {
     setCarouselIndex((prev) => Math.max(0, prev - 1));
@@ -273,7 +270,7 @@ Grazie!`);
           </div>}
 
         {/* Mock Room Carousel - Full width at top */}
-        {mockRooms.length > 0 && <div className="relative mb-8">
+        {finalMockRooms.length > 0 && <div className="relative mb-8">
             <div className="flex items-center gap-3">
               {/* Left Arrow */}
               <button onClick={handlePrev} disabled={carouselIndex === 0} className="flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
@@ -285,7 +282,7 @@ Grazie!`);
                 <div className="flex gap-4 transition-transform duration-300 ease-out" style={{
               transform: `translateX(-${carouselIndex * (50 + 8)}%)`
             }}>
-                  {mockRooms.map((room) => (
+                  {finalMockRooms.map((room) => (
                     <div key={room.id} className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col">
                       <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
                         {room.image ? (

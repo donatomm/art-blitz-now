@@ -772,55 +772,6 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                 folder="artworks"
               />
               
-              {/* Mock Room Images */}
-              <div className="space-y-3 border-t pt-4">
-                <Label>Immagini Mock Room</Label>
-                <div className="space-y-4">
-                  {[0, 1, 2, 3].map((index) => {
-                    const mockRoom = editProduct.mock_rooms?.[index];
-                    const currentUrl = typeof mockRoom === 'string' ? mockRoom : mockRoom?.url || "";
-                    const currentLabel = typeof mockRoom === 'string' ? "" : mockRoom?.label || "";
-                    
-                    return (
-                      <div key={index} className="p-3 bg-muted/50 rounded-lg space-y-2">
-                        <ImageUpload
-                          label={`Mock ${index + 1}`}
-                          currentUrl={currentUrl}
-                          onUpload={(url) => {
-                            const newMockRooms: MockRoom[] = [...(editProduct.mock_rooms || [])].map(mr => 
-                              typeof mr === 'string' ? { url: mr, label: '' } : mr
-                            );
-                            while (newMockRooms.length <= index) {
-                              newMockRooms.push({ url: '', label: '' });
-                            }
-                            newMockRooms[index] = { ...newMockRooms[index], url: url || '' };
-                            setEditProduct({ ...editProduct, mock_rooms: newMockRooms });
-                          }}
-                          folder="mockrooms"
-                        />
-                        <div>
-                          <Label className="text-xs text-muted-foreground">Etichetta (opzionale)</Label>
-                          <Input
-                            placeholder={editProduct.sizes[index]?.dimensions || `Mock ${index + 1}`}
-                            value={currentLabel}
-                            onChange={(e) => {
-                              const newMockRooms: MockRoom[] = [...(editProduct.mock_rooms || [])].map(mr => 
-                                typeof mr === 'string' ? { url: mr, label: '' } : mr
-                              );
-                              while (newMockRooms.length <= index) {
-                                newMockRooms.push({ url: '', label: '' });
-                              }
-                              newMockRooms[index] = { ...newMockRooms[index], label: e.target.value };
-                              setEditProduct({ ...editProduct, mock_rooms: newMockRooms });
-                            }}
-                            className="mt-1"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
               <div>
                 <Label>Descrizione</Label>
                 <textarea
@@ -833,48 +784,40 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Dimensioni, Prezzi & Offerta del Giorno</Label>
+              {/* SIZE + PRICE Table */}
+              <div className="space-y-2 border-t pt-4">
+                <Label>Dimensioni & Prezzi</Label>
+                <div className="grid grid-cols-[1fr_80px_40px] gap-2 text-xs font-medium text-muted-foreground px-1">
+                  <span>SIZE</span>
+                  <span>PRICE €</span>
+                  <span></span>
+                </div>
                 {editProduct.sizes.map((size, i) => (
-                  <div key={i} className="flex flex-col gap-2 p-3 bg-muted/50 rounded-lg">
-                    <div className="flex gap-2 items-center">
-                      <Input
-                        placeholder="NNxNN"
-                        value={size.dimensions}
-                        onChange={(e) => updateEditSize(i, "dimensions", e.target.value)}
-                        className="flex-1"
-                      />
-                      <span className="text-muted-foreground">€</span>
-                      <Input
-                        placeholder="Prezzo"
-                        type="number"
-                        value={size.price}
-                        onChange={(e) => updateEditSize(i, "price", Number(e.target.value))}
-                        className="w-24"
-                      />
-                    </div>
+                  <div key={i} className="grid grid-cols-[1fr_80px_40px] gap-2 items-center">
                     <Input
-                      placeholder="Stripe Product ID (es. prod_ABC123)"
-                      value={size.stripe_product_id || ""}
-                      onChange={(e) => updateEditSize(i, "stripe_product_id", e.target.value)}
-                      className="text-xs font-mono"
+                      placeholder="NNxNN"
+                      value={size.dimensions}
+                      onChange={(e) => updateEditSize(i, "dimensions", e.target.value)}
                     />
-                    {/* Per-size Deal Label */}
-                    <div className="flex items-center gap-2 pt-1 border-t border-border/50">
-                      <Switch
-                        checked={size.deal_label_enabled || false}
-                        onCheckedChange={(checked) => updateEditSize(i, "deal_label_enabled", checked)}
-                      />
-                      <span className="text-xs text-muted-foreground">Offerta</span>
-                      {size.deal_label_enabled && (
-                        <Input
-                          placeholder="OFFERTA DEL GIORNO"
-                          value={size.deal_label_text || ""}
-                          onChange={(e) => updateEditSize(i, "deal_label_text", e.target.value)}
-                          className="flex-1 text-xs"
-                        />
-                      )}
-                    </div>
+                    <Input
+                      placeholder="0"
+                      type="number"
+                      value={size.price || ""}
+                      onChange={(e) => updateEditSize(i, "price", Number(e.target.value))}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => {
+                        if (!editProduct) return;
+                        const newSizes = editProduct.sizes.filter((_, idx) => idx !== i);
+                        setEditProduct({ ...editProduct, sizes: newSizes });
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
                 <Button
@@ -892,13 +835,73 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                         stripe_product_id: "",
                         deal_label_enabled: false,
                         deal_label_text: "",
+                        mock_room_url: "",
                       },
                     ];
                     setEditProduct({ ...editProduct, sizes: newSizes });
                   }}
                 >
-                  + Aggiungi dimensione
+                  + Aggiungi Size
                 </Button>
+              </div>
+
+              {/* Mock Room Images - linked to sizes */}
+              <div className="space-y-3 border-t pt-4">
+                <Label>Mock Room per Size</Label>
+                <p className="text-xs text-muted-foreground">Ogni size può avere un'immagine mock room associata</p>
+                <div className="space-y-3">
+                  {editProduct.sizes.map((size, i) => (
+                    <div key={i} className="flex gap-2 items-center p-2 bg-muted/50 rounded-lg">
+                      <Input
+                        placeholder="SIZE"
+                        value={size.dimensions}
+                        onChange={(e) => updateEditSize(i, "dimensions", e.target.value)}
+                        className="w-24 bg-yellow-100 dark:bg-yellow-900/30 font-medium"
+                      />
+                      <div className="flex-1">
+                        <ImageUpload
+                          label=""
+                          currentUrl={size.mock_room_url || ""}
+                          onUpload={(url) => updateEditSize(i, "mock_room_url", url || "")}
+                          folder="mockrooms"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stripe IDs & Offerte - collapsed section */}
+              <div className="space-y-2 border-t pt-4">
+                <Label>Stripe IDs & Offerte del Giorno</Label>
+                {editProduct.sizes.map((size, i) => (
+                  <div key={i} className="p-2 bg-muted/30 rounded-lg space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium w-20">{size.dimensions || "—"}</span>
+                      <Input
+                        placeholder="Stripe Product ID (es. prod_ABC123)"
+                        value={size.stripe_product_id || ""}
+                        onChange={(e) => updateEditSize(i, "stripe_product_id", e.target.value)}
+                        className="text-xs font-mono flex-1"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={size.deal_label_enabled || false}
+                        onCheckedChange={(checked) => updateEditSize(i, "deal_label_enabled", checked)}
+                      />
+                      <span className="text-xs text-muted-foreground">Offerta</span>
+                      {size.deal_label_enabled && (
+                        <Input
+                          placeholder="OFFERTA DEL GIORNO"
+                          value={size.deal_label_text || ""}
+                          onChange={(e) => updateEditSize(i, "deal_label_text", e.target.value)}
+                          className="flex-1 text-xs"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
  
                <Button onClick={handleSaveProduct} className="w-full">
