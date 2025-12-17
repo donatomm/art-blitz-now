@@ -892,12 +892,21 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                       />
                       <span className="text-xs text-muted-foreground">Offerta</span>
                       {size.deal_label_enabled && (
-                        <Input
-                          placeholder="OFFERTA DEL GIORNO"
-                          value={size.deal_label_text || ""}
-                          onChange={(e) => updateEditSize(i, "deal_label_text", e.target.value)}
-                          className="flex-1 text-xs"
-                        />
+                        <>
+                          <Input
+                            placeholder="Prezzo Offerta €"
+                            type="number"
+                            value={size.deal_price || ""}
+                            onChange={(e) => updateEditSize(i, "deal_price", Number(e.target.value))}
+                            className="w-24 text-xs"
+                          />
+                          <Input
+                            placeholder="OFFERTA DEL GIORNO"
+                            value={size.deal_label_text || ""}
+                            onChange={(e) => updateEditSize(i, "deal_label_text", e.target.value)}
+                            className="flex-1 text-xs"
+                          />
+                        </>
                       )}
                     </div>
                   </div>

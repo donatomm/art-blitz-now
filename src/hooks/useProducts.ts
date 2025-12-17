@@ -23,6 +23,7 @@ const normalizeSizes = (sizes: unknown): ProductSize[] => {
     stripe_product_id: size.stripe_product_id || '',
     deal_label_enabled: size.deal_label_enabled ?? false,
     deal_label_text: size.deal_label_text || '',
+    deal_price: size.deal_price || 0,
     mock_room_url: size.mock_room_url || '',
     mock_room_label: size.mock_room_label || '',
   }));
