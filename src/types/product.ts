@@ -4,6 +4,7 @@ export interface ProductSize {
   stripe_product_id?: string;
   deal_label_enabled?: boolean;
   deal_label_text?: string;
+  mock_room_url?: string;
 }
 
 export interface MockRoom {
@@ -21,7 +22,7 @@ export interface Product {
   display_order: number;
   deal_label_enabled: boolean;
   deal_label_text: string;
-  mock_rooms?: MockRoom[];
+  mock_rooms?: MockRoom[]; // deprecated - kept for backward compatibility
   created_at?: string;
   updated_at?: string;
 }
