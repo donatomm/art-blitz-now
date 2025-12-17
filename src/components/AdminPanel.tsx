@@ -16,6 +16,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon, Save } from "lucide-react";
 import * as XLSX from "xlsx";
@@ -159,6 +169,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const [csvParseResult, setCSVParseResult] = useState<ParseResult | null>(null);
   const [csvImportMode, setCSVImportMode] = useState<CSVImportMode>('merge');
   const [isMigratingImages, setIsMigratingImages] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
@@ -307,8 +318,15 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
     setEditProduct(null);
   };
 
-  const handleDeleteProduct = (id: string) => {
-    onProductsChange(products.filter((p) => p.id !== id));
+  const handleDeleteProduct = (product: Product) => {
+    setProductToDelete(product);
+  };
+
+  const confirmDeleteProduct = () => {
+    if (productToDelete) {
+      onProductsChange(products.filter((p) => p.id !== productToDelete.id));
+      setProductToDelete(null);
+    }
   };
 
   const handleMoveProduct = (index: number, direction: "up" | "down") => {
@@ -710,7 +728,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDeleteProduct(product.id)}
+                        onClick={() => handleDeleteProduct(product)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -1031,6 +1049,24 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Conferma eliminazione</AlertDialogTitle>
+            <AlertDialogDescription>
+              Sei sicuro di voler eliminare "{productToDelete?.name}"? Questa azione non può essere annullata.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteProduct} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Elimina
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
