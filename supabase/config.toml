@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.create-checkout]
 verify_jwt = false
+
+[functions.sitemap]
+verify_jwt = false
