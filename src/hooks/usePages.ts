@@ -6,6 +6,8 @@ export interface Page {
   slug: string;
   title: string;
   content: string;
+  seo_title?: string | null;
+  seo_description?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -45,10 +47,22 @@ export const useUpdatePage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, title, content }: { id: string; title: string; content: string }) => {
+    mutationFn: async ({ 
+      id, 
+      title, 
+      content,
+      seo_title,
+      seo_description 
+    }: { 
+      id: string; 
+      title: string; 
+      content: string;
+      seo_title?: string | null;
+      seo_description?: string | null;
+    }) => {
       const { data, error } = await supabase
         .from("pages")
-        .update({ title, content })
+        .update({ title, content, seo_title, seo_description })
         .eq("id", id)
         .select()
         .single();

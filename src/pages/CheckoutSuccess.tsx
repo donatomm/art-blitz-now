@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Home, ShoppingBag, MessageCircle, Mail } from "lucide-react";
 
 const CheckoutSuccess = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Ordine Completato"
+        description="Grazie per il tuo ordine su OctoWonders."
+        noindex={true}
+      />
       <Navigation />
 
       <div className="container mx-auto px-4 pt-32 pb-12">

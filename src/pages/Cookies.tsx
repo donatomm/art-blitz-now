@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 
 const Cookies = () => {
   const [content, setContent] = useState("");
@@ -16,6 +17,11 @@ const Cookies = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO 
+        title="Cookie Policy"
+        description="Informativa sui cookie di OctoWonders. Come utilizziamo i cookie e come gestire le tue preferenze."
+        url="/cookies"
+      />
       <Navigation />
       
       <Link

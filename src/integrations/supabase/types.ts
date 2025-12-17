@@ -19,6 +19,8 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          seo_description: string | null
+          seo_title: string | null
           slug: string
           title: string
           updated_at: string
@@ -27,6 +29,8 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          seo_description?: string | null
+          seo_title?: string | null
           slug: string
           title: string
           updated_at?: string
@@ -35,6 +39,8 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          seo_description?: string | null
+          seo_title?: string | null
           slug?: string
           title?: string
           updated_at?: string

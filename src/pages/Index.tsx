@@ -8,6 +8,7 @@ import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
 import AdminPanel from "@/components/AdminPanel";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { toast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-image.jpg";
 const Index = () => {
@@ -78,6 +79,7 @@ const Index = () => {
     }
   };
   return <div className="min-h-screen bg-background">
+      <SEO />
       <Navigation isOverHero />
       <HelloBar />
 

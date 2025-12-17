@@ -28,6 +28,8 @@ const PagesTabContent = () => {
   const [editingPage, setEditingPage] = useState<Page | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
+  const [editSeoTitle, setEditSeoTitle] = useState("");
+  const [editSeoDescription, setEditSeoDescription] = useState("");
   const {
     toast
   } = useToast();
@@ -35,6 +37,8 @@ const PagesTabContent = () => {
     setEditingPage(page);
     setEditTitle(page.title);
     setEditContent(page.content);
+    setEditSeoTitle(page.seo_title || "");
+    setEditSeoDescription(page.seo_description || "");
   };
   const handleSavePage = async () => {
     if (!editingPage) return;
@@ -42,7 +46,9 @@ const PagesTabContent = () => {
       await updatePage.mutateAsync({
         id: editingPage.id,
         title: editTitle,
-        content: editContent
+        content: editContent,
+        seo_title: editSeoTitle || null,
+        seo_description: editSeoDescription || null
       });
       toast({
         title: "Pagina salvata!",
@@ -81,6 +87,35 @@ const PagesTabContent = () => {
             <Label>Contenuto (Markdown)</Label>
             <Textarea value={editContent} onChange={e => setEditContent(e.target.value)} rows={12} className="font-mono text-sm" />
           </div>
+          
+          {/* SEO Fields */}
+          <div className="border-t pt-4 mt-4">
+            <h4 className="font-medium text-sm mb-3 text-muted-foreground">🔍 SEO (per Google)</h4>
+            <div className="space-y-3">
+              <div>
+                <Label>SEO Title <span className="text-xs text-muted-foreground ml-1">(max 60 caratteri)</span></Label>
+                <Input 
+                  value={editSeoTitle} 
+                  onChange={e => setEditSeoTitle(e.target.value)} 
+                  placeholder="Es: Marco De Francesco - Artista | OctoWonders"
+                  maxLength={60}
+                />
+                <p className="text-xs text-muted-foreground mt-1">{editSeoTitle.length}/60 caratteri</p>
+              </div>
+              <div>
+                <Label>SEO Description <span className="text-xs text-muted-foreground ml-1">(max 160 caratteri)</span></Label>
+                <Textarea 
+                  value={editSeoDescription} 
+                  onChange={e => setEditSeoDescription(e.target.value)} 
+                  placeholder="Es: Scopri l'artista Marco De Francesco. Stampe su tela originali a tema marino."
+                  rows={2}
+                  maxLength={160}
+                />
+                <p className="text-xs text-muted-foreground mt-1">{editSeoDescription.length}/160 caratteri</p>
+              </div>
+            </div>
+          </div>
+          
           <Button onClick={handleSavePage} disabled={updatePage.isPending} className="w-full">
             {updatePage.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             Salva Pagina
@@ -90,13 +125,14 @@ const PagesTabContent = () => {
   }
   return <TabsContent value="pages" className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Modifica i contenuti delle pagine del sito.
+        Modifica i contenuti delle pagine del sito e le impostazioni SEO.
       </p>
       <div className="space-y-2">
         {pages?.map(page => <div key={page.id} className="flex items-center justify-between p-3 bg-muted rounded-md">
             <div>
               <p className="font-medium">{page.title}</p>
               <p className="text-xs text-muted-foreground">/{page.slug}</p>
+              {page.seo_title && <p className="text-xs text-green-600 mt-1">🔍 SEO configurato</p>}
             </div>
             <Button variant="ghost" size="icon" onClick={() => handleEditPage(page)}>
               <Edit className="h-4 w-4" />

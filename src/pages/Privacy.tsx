@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 
 const Privacy = () => {
   const [content, setContent] = useState("");
@@ -16,6 +17,11 @@ const Privacy = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO 
+        title="Privacy Policy"
+        description="Informativa sulla privacy di OctoWonders. Come raccogliamo, utilizziamo e proteggiamo i tuoi dati personali."
+        url="/privacy"
+      />
       <Navigation />
       
       <Link

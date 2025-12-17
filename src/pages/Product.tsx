@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingCart, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -251,7 +252,19 @@ Grazie!`);
     const body = `Ciao!\n\nVorrei richiedere un FORMATO PERSONALIZZATO per:\n- Opera: ${product.name}\n- Tecnica: ${product.medium}\n\nPer favore contattatemi per discutere dimensioni e preventivo.\n\nGrazie!`;
     return `mailto:info@octowonders.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
+  // Get min/max prices for SEO
+  const activePrices = activeSizes.map(s => getEffectivePrice(s)).filter(p => p > 0);
+  const minPrice = activePrices.length > 0 ? Math.min(...activePrices) : 0;
+  
   return <div className="min-h-screen bg-background">
+      <SEO 
+        title={product.name}
+        description={product.description || `${product.name} - ${product.medium}. Stampa su tela di alta qualità. Da €${minPrice}. Spedizione gratuita in Italia.`}
+        image={product.image_url}
+        url={`/product/${product.id}`}
+        type="product"
+        product={product}
+      />
       <Navigation />
       
       {/* Fixed back button */}
