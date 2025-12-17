@@ -1,4 +1,6 @@
 import TrustBar from "./TrustBar";
+import heroImage from "@/assets/hero-image.jpg";
+
 interface HeroProps {
   imageUrl?: string;
   title?: string;
@@ -6,18 +8,24 @@ interface HeroProps {
   ctaText?: string;
   onCtaClick?: () => void;
 }
+
 const Hero = ({
-  imageUrl = "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=1920&q=80",
+  imageUrl = heroImage,
   title = "Your Hero Title Here",
   subtitle = "Your inspiring subtitle goes here",
   ctaText,
   onCtaClick
 }: HeroProps) => {
-  return <section className="relative w-full overflow-hidden">
-      {/* Background Image - extends full height including trust bar */}
-      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
-      backgroundImage: `url(${imageUrl})`
-    }} />
+  return (
+    <section className="relative w-full overflow-hidden">
+      {/* Background Image with fetchpriority for better LCP */}
+      <img
+        src={imageUrl}
+        alt="OctoWonders Hero"
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 w-full h-full object-cover object-center"
+      />
 
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/50" />
@@ -33,9 +41,14 @@ const Hero = ({
             <p className="max-w-2xl mx-auto text-center text-lg italic text-gold sm:text-xl md:text-2xl">
               {subtitle}
             </p>
-            {ctaText && <button onClick={onCtaClick} className="mt-6 px-8 py-3 font-semibold rounded-full transition-all duration-200 hover:scale-105 text-lg text-primary-foreground bg-green-600 hover:bg-green-500">
+            {ctaText && (
+              <button
+                onClick={onCtaClick}
+                className="mt-6 px-8 py-3 font-semibold rounded-full transition-all duration-200 hover:scale-105 text-lg text-primary-foreground bg-green-600 hover:bg-green-500"
+              >
                 {ctaText}
-              </button>}
+              </button>
+            )}
           </div>
         </div>
 
@@ -44,6 +57,8 @@ const Hero = ({
           <TrustBar />
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default Hero;
