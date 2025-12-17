@@ -164,6 +164,26 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     items: (skusByDimension.get(dim) || []).sort((a, b) => a.productName.localeCompare(b.productName))
   })).filter(g => g.items.length > 0);
 
+  // Master price table - get unique price per dimension
+  const masterPrices = new Map<string, number>();
+  sortedDimensions.forEach(dim => {
+    const skusForDim = skusByDimension.get(dim) || [];
+    if (skusForDim.length > 0) {
+      masterPrices.set(dim, skusForDim[0].price);
+    }
+  });
+
+  const handleMasterPriceChange = (dimension: string, newPrice: number) => {
+    // Update all products with this dimension
+    products.forEach(product => {
+      product.sizes.forEach((size, sizeIndex) => {
+        if (normalizeDimension(size.dimensions) === dimension) {
+          handleLocalPriceChange(product.id, sizeIndex, newPrice);
+        }
+      });
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
@@ -177,6 +197,33 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
             Salva Modifiche
           </Button>
         )}
+      </div>
+
+      {/* Master Price Table - 9 SKUs */}
+      <div className="border-2 border-primary rounded-lg overflow-hidden">
+        <div className="bg-primary text-primary-foreground px-3 py-2 text-sm font-semibold">
+          Listino Prezzi (9 SKU)
+        </div>
+        <div className="grid grid-cols-2 gap-0">
+          <div className="bg-muted px-3 py-1.5 text-xs font-semibold border-b border-r">SIZE</div>
+          <div className="bg-muted px-3 py-1.5 text-xs font-semibold border-b">PRICE €</div>
+          {sortedDimensions.map((dim, idx) => (
+            <div key={dim} className="contents">
+              <div className={`px-3 py-2 text-sm font-medium border-r ${idx < sortedDimensions.length - 1 ? 'border-b' : ''}`}>
+                {dim}
+              </div>
+              <div className={`px-3 py-1.5 ${idx < sortedDimensions.length - 1 ? 'border-b' : ''}`}>
+                <Input
+                  type="number"
+                  value={masterPrices.get(dim) || 0}
+                  onChange={(e) => handleMasterPriceChange(dim, Number(e.target.value))}
+                  className="h-7 text-sm w-24"
+                  min={0}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Vista per dimensione */}
