@@ -69,7 +69,8 @@ const Product = () => {
   // Use mock rooms from sizes array (new unified approach) or fallback to legacy mock_rooms
   const mockRooms = product?.sizes
     .filter(size => size.price > 0) // Only active sizes
-    .filter(size => size.mock_room_url) // Only sizes with mock room images
+    .filter(size => size.dimensions && size.dimensions.trim() !== "" && size.dimensions !== "0") // Valid dimensions only
+    .filter(size => size.mock_room_url && size.mock_room_url.trim() !== "") // Only sizes with actual mock room images
     .map((size, index) => ({
       id: index + 1,
       image: size.mock_room_url || "",
@@ -132,11 +133,11 @@ const Product = () => {
         </div>
       </div>;
   }
-  // Filter out sizes with price = 0 (hidden variants)
+  // Filter out sizes with price = 0 or invalid dimensions (hidden variants)
   const activeSizes = product.sizes.map((size, originalIndex) => ({
     ...size,
     originalIndex
-  })).filter(size => size.price > 0);
+  })).filter(size => size.price > 0 && size.dimensions && size.dimensions.trim() !== "" && size.dimensions !== "0");
   const selectedSizeData = activeSizes.length > 0 ? (activeSizes[selectedSize] || activeSizes[0]) : null;
   
   // Get effective price: use deal_price if offer is enabled and deal_price > 0, otherwise regular price
