@@ -371,9 +371,21 @@ Grazie!`);
             {!isComingSoon && selectedSizeData && (
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-4">
-                  <div className="bg-card rounded-lg px-6 py-4 border border-border">
+                  <div className={`bg-card rounded-lg px-6 py-4 border-2 relative ${
+                    selectedSizeData.deal_label_enabled && selectedSizeData.deal_price && selectedSizeData.deal_price > 0
+                      ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
+                      : 'border-border'
+                  }`}>
+                    {selectedSizeData.deal_label_enabled && selectedSizeData.deal_price && selectedSizeData.deal_price > 0 && (
+                      <span className="absolute -top-3 left-4 bg-yellow-500 text-black text-xs font-bold px-2 py-0.5 rounded">
+                        OFFERTA
+                      </span>
+                    )}
                     <span className="text-muted-foreground text-sm">Totale </span>
                     <span className="text-2xl font-bold text-green-600">€{getEffectivePrice(selectedSizeData)}</span>
+                    {selectedSizeData.deal_label_enabled && selectedSizeData.deal_price && selectedSizeData.deal_price > 0 && (
+                      <span className="ml-2 text-sm text-muted-foreground line-through">€{selectedSizeData.price}</span>
+                    )}
                   </div>
                 </div>
 
