@@ -13,4 +13,5 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://octowonders.com/sitemap.xml
+# Dynamic Sitemap with all products
+Sitemap: https://xqubydbsoucrwqhddodw.supabase.co/functions/v1/sitemap
