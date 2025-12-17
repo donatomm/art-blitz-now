@@ -4,6 +4,7 @@ export interface ProductSize {
   stripe_product_id?: string;
   deal_label_enabled?: boolean;
   deal_label_text?: string;
+  deal_price?: number;
   mock_room_url?: string;
   mock_room_label?: string;
 }

@@ -139,6 +139,15 @@ const Product = () => {
   })).filter(size => size.price > 0);
   const selectedSizeData = activeSizes.length > 0 ? (activeSizes[selectedSize] || activeSizes[0]) : null;
   
+  // Get effective price: use deal_price if offer is enabled and deal_price > 0, otherwise regular price
+  const getEffectivePrice = (sizeData: typeof selectedSizeData) => {
+    if (!sizeData) return 0;
+    if (sizeData.deal_label_enabled && sizeData.deal_price && sizeData.deal_price > 0) {
+      return sizeData.deal_price;
+    }
+    return sizeData.price;
+  };
+  
   // Check if this is a "Coming Soon" product (no active sizes or name contains coming soon)
   const isComingSoon = activeSizes.length === 0 || product.name.toLowerCase().includes("coming soon") || product.name.toLowerCase().includes("in arrivo");
   const getWhatsAppLink = () => {
@@ -149,7 +158,7 @@ Sono interessato/a all'opera
 
 - Opera: ${product.name}
 - Dimensione: ${selectedSizeData.dimensions}
-- Prezzo: €${selectedSizeData.price}
+- Prezzo: €${getEffectivePrice(selectedSizeData)}
 
 MESSAGGIO QUI SOTTO:
 ____________________
@@ -174,7 +183,7 @@ Sono interessato/a all'opera
 
 - Opera: ${product.name}
 - Dimensione: ${selectedSizeData.dimensions}
-- Prezzo: €${selectedSizeData.price}
+- Prezzo: €${getEffectivePrice(selectedSizeData)}
 
 MESSAGGIO QUI SOTTO:
 ____________________
@@ -364,7 +373,7 @@ Grazie!`);
                 <div className="flex flex-wrap items-center gap-4">
                   <div className="bg-card rounded-lg px-6 py-4 border border-border">
                     <span className="text-muted-foreground text-sm">Totale </span>
-                    <span className="text-2xl font-bold text-green-600">€{selectedSizeData.price}</span>
+                    <span className="text-2xl font-bold text-green-600">€{getEffectivePrice(selectedSizeData)}</span>
                   </div>
                 </div>
 

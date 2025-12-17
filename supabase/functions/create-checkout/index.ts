@@ -51,7 +51,13 @@ serve(async (req) => {
     logStep("Product fetched", { name: product.name });
 
     // Get the specific size variant
-    const sizes = product.sizes as Array<{ dimensions: string; price: number; stripe_product_id?: string }>;
+    const sizes = product.sizes as Array<{ 
+      dimensions: string; 
+      price: number; 
+      stripe_product_id?: string;
+      deal_label_enabled?: boolean;
+      deal_price?: number;
+    }>;
     if (!sizes || size_index >= sizes.length) {
       throw new Error("Invalid size index");
     }
@@ -63,9 +69,15 @@ serve(async (req) => {
       throw new Error("Stripe Product ID not configured for this size. Please add it in the Admin Panel.");
     }
 
-    if (!selectedSize.price || selectedSize.price <= 0) {
+    // Use deal_price if offer is enabled, otherwise regular price
+    const effectivePrice = (selectedSize.deal_label_enabled && selectedSize.deal_price && selectedSize.deal_price > 0)
+      ? selectedSize.deal_price
+      : selectedSize.price;
+
+    if (!effectivePrice || effectivePrice <= 0) {
       throw new Error("Invalid price for selected size");
     }
+    logStep("Effective price", { regular: selectedSize.price, deal: selectedSize.deal_price, effective: effectivePrice });
 
     // Initialize Stripe
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
@@ -131,7 +143,7 @@ serve(async (req) => {
               description: description,
               images: images,
             },
-            unit_amount: Math.round(selectedSize.price * 100), // Convert to cents
+            unit_amount: Math.round(effectivePrice * 100), // Convert to cents
           },
           quantity: 1,
         },
