@@ -82,7 +82,7 @@ const ProductCard = ({
         if (!dealSize) return null;
         return (
           <div className="absolute top-2 left-2 z-10">
-            <span className="inline-block bg-yellow-500 text-black font-bold text-xs px-2 py-1 rounded shadow-lg">
+            <span className="inline-block bg-yellow-500 text-black font-bold text-xs px-2 py-1 rounded shadow-lg border-2 border-black">
               OFFERTA
             </span>
           </div>
