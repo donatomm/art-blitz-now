@@ -1,7 +1,13 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script src="https://app.termly.io/resource-blocker/6ea575f3-ebb7-4d52-b62e-f799ea1f47b0?autoBlock=on"></script>
+    <!-- Preconnect to critical origins -->
+    <link rel="preconnect" href="https://xqubydbsoucrwqhddodw.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://app.termly.io" crossorigin>
+    <link rel="dns-prefetch" href="https://xqubydbsoucrwqhddodw.supabase.co">
+    
+    <!-- Termly cookie consent - loaded async to not block rendering -->
+    <script src="https://app.termly.io/resource-blocker/6ea575f3-ebb7-4d52-b62e-f799ea1f47b0?autoBlock=on" async></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OctoWonders by Marco De Francesco - Stampe d'Arte su Tela</title>
@@ -20,6 +26,9 @@
     <meta name="twitter:title" content="OctoWonders - Stampe d'Arte su Tela" />
     <meta name="twitter:description" content="Stampe d'arte originali su tela. Spedizione gratuita in Italia." />
     <meta name="twitter:image" content="https://octowonders.com/artworks/octoheaded.jpg" />
+    
+    <!-- Preload hero image for faster LCP -->
+    <link rel="preload" as="image" href="/src/assets/hero-image.jpg" fetchpriority="high">
   </head>
 
   <body>
