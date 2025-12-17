@@ -3,36 +3,15 @@ import { Product, ProductSize, MockRoom } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon, Save } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-
 import ImageUpload from "./ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult, CSVImportMode } from "@/utils/csvProductParser";
@@ -41,55 +20,52 @@ import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
 
 // Pages Editor sub-component
 const PagesTabContent = () => {
-  const { data: pages, isLoading: pagesLoading } = usePages();
+  const {
+    data: pages,
+    isLoading: pagesLoading
+  } = usePages();
   const updatePage = useUpdatePage();
   const [editingPage, setEditingPage] = useState<Page | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handleEditPage = (page: Page) => {
     setEditingPage(page);
     setEditTitle(page.title);
     setEditContent(page.content);
   };
-
   const handleSavePage = async () => {
     if (!editingPage) return;
-    
     try {
       await updatePage.mutateAsync({
         id: editingPage.id,
         title: editTitle,
-        content: editContent,
+        content: editContent
       });
       toast({
         title: "Pagina salvata!",
-        description: `"${editTitle}" aggiornata con successo.`,
+        description: `"${editTitle}" aggiornata con successo.`
       });
       setEditingPage(null);
     } catch (error) {
       toast({
         title: "Errore",
         description: "Impossibile salvare la pagina.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   if (pagesLoading) {
-    return (
-      <TabsContent value="pages" className="space-y-4">
+    return <TabsContent value="pages" className="space-y-4">
         <div className="flex items-center justify-center py-8">
           <Loader2 className="h-6 w-6 animate-spin" />
         </div>
-      </TabsContent>
-    );
+      </TabsContent>;
   }
-
   if (editingPage) {
-    return (
-      <TabsContent value="pages" className="space-y-4">
+    return <TabsContent value="pages" className="space-y-4">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Modifica: {editingPage.slug}</h3>
@@ -99,44 +75,25 @@ const PagesTabContent = () => {
           </div>
           <div>
             <Label>Titolo</Label>
-            <Input
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-            />
+            <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} />
           </div>
           <div>
             <Label>Contenuto (Markdown)</Label>
-            <Textarea
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              rows={12}
-              className="font-mono text-sm"
-            />
+            <Textarea value={editContent} onChange={e => setEditContent(e.target.value)} rows={12} className="font-mono text-sm" />
           </div>
           <Button onClick={handleSavePage} disabled={updatePage.isPending} className="w-full">
-            {updatePage.isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="mr-2 h-4 w-4" />
-            )}
+            {updatePage.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             Salva Pagina
           </Button>
         </div>
-      </TabsContent>
-    );
+      </TabsContent>;
   }
-
-  return (
-    <TabsContent value="pages" className="space-y-4">
+  return <TabsContent value="pages" className="space-y-4">
       <p className="text-sm text-muted-foreground">
         Modifica i contenuti delle pagine del sito.
       </p>
       <div className="space-y-2">
-        {pages?.map((page) => (
-          <div
-            key={page.id}
-            className="flex items-center justify-between p-3 bg-muted rounded-md"
-          >
+        {pages?.map(page => <div key={page.id} className="flex items-center justify-between p-3 bg-muted rounded-md">
             <div>
               <p className="font-medium">{page.title}</p>
               <p className="text-xs text-muted-foreground">/{page.slug}</p>
@@ -144,19 +101,18 @@ const PagesTabContent = () => {
             <Button variant="ghost" size="icon" onClick={() => handleEditPage(page)}>
               <Edit className="h-4 w-4" />
             </Button>
-          </div>
-        ))}
+          </div>)}
       </div>
-    </TabsContent>
-  );
+    </TabsContent>;
 };
-
 interface AdminPanelProps {
   products: Product[];
   onProductsChange: (products: Product[]) => void;
 }
-
-const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
+const AdminPanel = ({
+  products,
+  onProductsChange
+}: AdminPanelProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [emailInput, setEmailInput] = useState("");
@@ -171,16 +127,23 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const [isMigratingImages, setIsMigratingImages] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
 
   // Check if already authenticated via Supabase session and has admin role
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
       if (session) {
         // Verify user has admin role
-        const { data: hasAdminRole } = await supabase.rpc('has_role', {
+        const {
+          data: hasAdminRole
+        } = await supabase.rpc('has_role', {
           _user_id: session.user.id,
           _role: 'admin'
         });
@@ -188,12 +151,17 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
       }
     };
     checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: {
+        subscription
+      }
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         // Verify admin role on auth state change
         setTimeout(async () => {
-          const { data: hasAdminRole } = await supabase.rpc('has_role', {
+          const {
+            data: hasAdminRole
+          } = await supabase.rpc('has_role', {
             _user_id: session.user.id,
             _role: 'admin'
           });
@@ -203,84 +171,80 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
         setIsAuthenticated(false);
       }
     });
-
     return () => subscription.unsubscribe();
   }, []);
-
   const handleLogin = async () => {
     if (!emailInput || !passwordInput) {
       toast({
         title: "Errore",
         description: "Inserisci email e password.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setIsLoading(true);
     try {
       // Sign in with email/password
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      const {
+        data: signInData,
+        error: signInError
+      } = await supabase.auth.signInWithPassword({
         email: emailInput,
-        password: passwordInput,
+        password: passwordInput
       });
-
       if (signInError) {
         toast({
           title: "Errore di autenticazione",
           description: "Email o password non corretti.",
-          variant: "destructive",
+          variant: "destructive"
         });
         return;
       }
 
       // Verify user has admin role
-      const { data: hasAdminRole } = await supabase.rpc('has_role', {
+      const {
+        data: hasAdminRole
+      } = await supabase.rpc('has_role', {
         _user_id: signInData.user.id,
         _role: 'admin'
       });
-
       if (!hasAdminRole) {
         await supabase.auth.signOut();
         toast({
           title: "Accesso negato",
           description: "Non hai i permessi di amministratore.",
-          variant: "destructive",
+          variant: "destructive"
         });
         return;
       }
-
       setEmailInput("");
       setPasswordInput("");
       toast({
         title: "Accesso effettuato",
-        description: "Benvenuto nel pannello admin.",
+        description: "Benvenuto nel pannello admin."
       });
     } catch (error) {
       toast({
         title: "Errore",
         description: "Errore durante l'accesso.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
   };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsAuthenticated(false);
   };
-
   const handleExportJSON = () => {
     const json = JSON.stringify(products, null, 2);
     navigator.clipboard.writeText(json);
     toast({
       title: "JSON Copiato!",
-      description: "Dati prodotto copiati negli appunti.",
+      description: "Dati prodotto copiati negli appunti."
     });
   };
-
   const handleAddProduct = () => {
     const newProduct: Product = {
       id: crypto.randomUUID(),
@@ -292,21 +256,20 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
       display_order: products.length,
       deal_label_enabled: false,
       deal_label_text: "OFFERTA DEL GIORNO, scade h20:00",
-      mock_rooms: [],
+      mock_rooms: []
     };
     setEditProduct(newProduct);
     setIsEditDialogOpen(true);
   };
-
   const handleEditProduct = (product: Product) => {
-    setEditProduct({ ...product });
+    setEditProduct({
+      ...product
+    });
     setIsEditDialogOpen(true);
   };
-
   const handleSaveProduct = () => {
     if (!editProduct) return;
-
-    const existingIndex = products.findIndex((p) => p.id === editProduct.id);
+    const existingIndex = products.findIndex(p => p.id === editProduct.id);
     if (existingIndex >= 0) {
       const updated = [...products];
       updated[existingIndex] = editProduct;
@@ -317,40 +280,39 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
     setIsEditDialogOpen(false);
     setEditProduct(null);
   };
-
   const handleDeleteProduct = (product: Product) => {
     setProductToDelete(product);
   };
-
   const confirmDeleteProduct = () => {
     if (productToDelete) {
-      onProductsChange(products.filter((p) => p.id !== productToDelete.id));
+      onProductsChange(products.filter(p => p.id !== productToDelete.id));
       setProductToDelete(null);
     }
   };
-
   const handleMoveProduct = (index: number, direction: "up" | "down") => {
     const newIndex = direction === "up" ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= products.length) return;
-
     const sorted = [...products].sort((a, b) => a.display_order - b.display_order);
     const temp = sorted[index].display_order;
     sorted[index].display_order = sorted[newIndex].display_order;
     sorted[newIndex].display_order = temp;
     onProductsChange([...sorted]);
   };
-
   const updateEditSize = (sizeIndex: number, field: keyof ProductSize, value: string | number | boolean) => {
     if (!editProduct) return;
     const newSizes = [...editProduct.sizes];
-    newSizes[sizeIndex] = { ...newSizes[sizeIndex], [field]: value };
-    setEditProduct({ ...editProduct, sizes: newSizes });
+    newSizes[sizeIndex] = {
+      ...newSizes[sizeIndex],
+      [field]: value
+    };
+    setEditProduct({
+      ...editProduct,
+      sizes: newSizes
+    });
   };
-
   const handleImportStripeIds = () => {
     try {
       const mapping = JSON.parse(stripeImportJson) as Record<string, string>;
-      
       const updatedProducts = products.map(product => {
         const stripeProductId = mapping[product.name];
         if (stripeProductId) {
@@ -364,24 +326,19 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
         }
         return product;
       });
-
-      const matchedCount = Object.keys(mapping).filter(name => 
-        products.some(p => p.name === name)
-      ).length;
-
+      const matchedCount = Object.keys(mapping).filter(name => products.some(p => p.name === name)).length;
       onProductsChange(updatedProducts);
       setIsStripeImportDialogOpen(false);
       setStripeImportJson("");
-      
       toast({
         title: "Stripe IDs importati!",
-        description: `${matchedCount} prodotti aggiornati con successo.`,
+        description: `${matchedCount} prodotti aggiornati con successo.`
       });
     } catch (error) {
       toast({
         title: "Errore nel JSON",
         description: "Formato JSON non valido. Controlla la sintassi.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
@@ -390,32 +347,25 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
   const handleCSVFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       const content = e.target?.result as string;
       const result = parseCSVProducts(content, products.length);
       setCSVParseResult(result);
       setIsCSVImportDialogOpen(true);
     };
     reader.readAsText(file);
-    
+
     // Reset input so same file can be selected again
     event.target.value = '';
   };
-
   const handleCSVImportConfirm = () => {
     if (!csvParseResult || csvParseResult.products.length === 0) return;
-
     let updatedProducts = [...products];
     let createdCount = 0;
     let updatedCount = 0;
-
     for (const csvProduct of csvParseResult.products) {
-      const existingIndex = updatedProducts.findIndex(
-        p => p.name.toLowerCase() === csvProduct.name.toLowerCase()
-      );
-
+      const existingIndex = updatedProducts.findIndex(p => p.name.toLowerCase() === csvProduct.name.toLowerCase());
       if (existingIndex >= 0) {
         // Update existing product (merge sizes, keep existing data like image_url)
         const existing = updatedProducts[existingIndex];
@@ -426,54 +376,51 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
           sizes: csvProduct.sizes,
           mock_rooms: csvProduct.mock_rooms.map((mr, idx) => ({
             ...mr,
-            url: existing.mock_rooms?.[idx]?.url || mr.url,
-          })),
+            url: existing.mock_rooms?.[idx]?.url || mr.url
+          }))
         };
         updatedCount++;
       } else {
         // Create new product
         updatedProducts.push({
           ...csvProduct,
-          id: crypto.randomUUID(),
+          id: crypto.randomUUID()
         } as Product);
         createdCount++;
       }
     }
-
     onProductsChange(updatedProducts);
-    
     const messages = [];
     if (createdCount > 0) messages.push(`${createdCount} nuovi`);
     if (updatedCount > 0) messages.push(`${updatedCount} aggiornati`);
-    
     toast({
       title: "Import completato!",
-      description: `Prodotti: ${messages.join(', ')}.`,
+      description: `Prodotti: ${messages.join(', ')}.`
     });
-
     setIsCSVImportDialogOpen(false);
     setCSVParseResult(null);
   };
-
   const handleExportCSV = () => {
     const csv = exportProductsToCSV(products);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csv], {
+      type: 'text/csv;charset=utf-8;'
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = 'octowonders-prodotti.csv';
     link.click();
     URL.revokeObjectURL(url);
-    
     toast({
       title: "CSV esportato!",
-      description: `${products.length} prodotti esportati.`,
+      description: `${products.length} prodotti esportati.`
     });
   };
-
   const handleDownloadCSVTemplate = () => {
     const template = generateCSVTemplate();
-    const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([template], {
+      type: 'text/csv;charset=utf-8;'
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -484,106 +431,87 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
 
   // Migrate local images to Supabase Storage
   const handleMigrateLocalImages = async () => {
-    const localImageProducts = products.filter(p => 
-      p.image_url.startsWith('/artworks/') || p.image_url.startsWith('artworks/')
-    );
-
+    const localImageProducts = products.filter(p => p.image_url.startsWith('/artworks/') || p.image_url.startsWith('artworks/'));
     if (localImageProducts.length === 0) {
       toast({
         title: "Nessuna immagine locale",
-        description: "Tutte le immagini sono già su Supabase Storage.",
+        description: "Tutte le immagini sono già su Supabase Storage."
       });
       return;
     }
-
     setIsMigratingImages(true);
     let migratedCount = 0;
     const errors: string[] = [];
-
     for (const product of localImageProducts) {
       try {
         // Normalize path
-        const imagePath = product.image_url.startsWith('/') 
-          ? product.image_url 
-          : `/${product.image_url}`;
-        
+        const imagePath = product.image_url.startsWith('/') ? product.image_url : `/${product.image_url}`;
+
         // Fetch the local image
         const response = await fetch(imagePath);
         if (!response.ok) {
           errors.push(`${product.name}: file non trovato`);
           continue;
         }
-        
         const blob = await response.blob();
         const fileName = imagePath.split('/').pop() || 'image.jpg';
         const fileExtension = fileName.split('.').pop() || 'jpg';
         const uniqueFileName = `artworks/${Date.now()}-${fileName}`;
-        
-        // Upload to Supabase Storage
-        const { error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(uniqueFileName, blob, {
-            contentType: `image/${fileExtension === 'png' ? 'png' : 'jpeg'}`,
-            upsert: false
-          });
 
+        // Upload to Supabase Storage
+        const {
+          error: uploadError
+        } = await supabase.storage.from('product-images').upload(uniqueFileName, blob, {
+          contentType: `image/${fileExtension === 'png' ? 'png' : 'jpeg'}`,
+          upsert: false
+        });
         if (uploadError) {
           errors.push(`${product.name}: ${uploadError.message}`);
           continue;
         }
 
         // Get public URL
-        const { data: urlData } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(uniqueFileName);
+        const {
+          data: urlData
+        } = supabase.storage.from('product-images').getPublicUrl(uniqueFileName);
 
         // Update product in database
-        const { error: updateError } = await supabase
-          .from('products')
-          .update({ image_url: urlData.publicUrl })
-          .eq('id', product.id);
-
+        const {
+          error: updateError
+        } = await supabase.from('products').update({
+          image_url: urlData.publicUrl
+        }).eq('id', product.id);
         if (updateError) {
           errors.push(`${product.name}: aggiornamento DB fallito`);
           continue;
         }
-
         migratedCount++;
       } catch (err) {
         errors.push(`${product.name}: errore imprevisto`);
       }
     }
-
     setIsMigratingImages(false);
-
     if (migratedCount > 0) {
       // Refresh products by triggering a re-fetch
       window.location.reload();
     }
-
     if (errors.length > 0) {
       toast({
         title: `Migrazione parziale: ${migratedCount}/${localImageProducts.length}`,
         description: errors.join(', '),
-        variant: "destructive",
+        variant: "destructive"
       });
     } else {
       toast({
         title: "Migrazione completata!",
-        description: `${migratedCount} immagini migrate su Supabase Storage.`,
+        description: `${migratedCount} immagini migrate su Supabase Storage.`
       });
     }
   };
-
-  return (
-    <>
+  return <>
       <Sheet>
         <SheetTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg"
-          >
+          <Button variant="outline" size="icon" className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg">
             <Settings className="h-4 w-4" />
           </Button>
         </SheetTrigger>
@@ -591,50 +519,28 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
           <SheetHeader>
             <div className="flex items-center justify-between">
               <SheetTitle>Admin Panel</SheetTitle>
-              {isAuthenticated && (
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
+              {isAuthenticated && <Button variant="ghost" size="sm" onClick={handleLogout}>
                   Esci
-                </Button>
-              )}
+                </Button>}
             </div>
           </SheetHeader>
           
-          {!isAuthenticated ? (
-            <div className="mt-8 space-y-4">
+          {!isAuthenticated ? <div className="mt-8 space-y-4">
               <div>
                 <Label>Email</Label>
-                <Input
-                  type="email"
-                  value={emailInput}
-                  onChange={(e) => setEmailInput(e.target.value)}
-                  placeholder="admin@example.com"
-                  disabled={isLoading}
-                />
+                <Input type="email" value={emailInput} onChange={e => setEmailInput(e.target.value)} placeholder="admin@example.com" disabled={isLoading} />
               </div>
               <div>
                 <Label>Password</Label>
-                <Input
-                  type="password"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="••••••••"
-                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  disabled={isLoading}
-                />
+                <Input type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} placeholder="••••••••" onKeyDown={e => e.key === "Enter" && handleLogin()} disabled={isLoading} />
               </div>
               <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
+                {isLoading ? <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Accesso in corso...
-                  </>
-                ) : (
-                  "Accedi"
-                )}
+                  </> : "Accedi"}
               </Button>
-            </div>
-          ) : (
-          <Tabs defaultValue="products" className="mt-4">
+            </div> : <Tabs defaultValue="products" className="mt-4">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
               <TabsTrigger value="skus">SKUs</TabsTrigger>
@@ -651,13 +557,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   <FileUp className="mr-2 h-4 w-4" />
                   Importa CSV
                 </Button>
-                <input
-                  ref={csvInputRef}
-                  type="file"
-                  accept=".csv"
-                  onChange={handleCSVFileSelect}
-                  className="hidden"
-                />
+                <input ref={csvInputRef} type="file" accept=".csv" onChange={handleCSVFileSelect} className="hidden" />
                 <Button onClick={handleExportCSV} variant="outline" title="Esporta CSV">
                   <Download className="mr-2 h-4 w-4" />
                   CSV
@@ -665,75 +565,34 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                 <Button onClick={() => setIsStripeImportDialogOpen(true)} variant="outline" size="icon" title="Stripe IDs">
                   <Upload className="h-4 w-4" />
                 </Button>
-                <Button 
-                  onClick={handleMigrateLocalImages} 
-                  variant="outline" 
-                  title="Migra local to DB"
-                  disabled={isMigratingImages}
-                  className="gap-1"
-                >
-                  {isMigratingImages ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <ImageIcon className="h-4 w-4" />
-                  )}
+                <Button onClick={handleMigrateLocalImages} variant="outline" title="Migra local to DB" disabled={isMigratingImages} className="gap-1">
+                  {isMigratingImages ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
                   <span className="text-xs">Migra local to DB</span>
                 </Button>
               </div>
 
               <div className="space-y-2">
-                {[...products]
-                  .sort((a, b) => a.display_order - b.display_order)
-                  .map((product, index) => (
-                    <div
-                      key={product.id}
-                      className="flex items-center gap-2 p-2 bg-muted rounded-md"
-                    >
+                {[...products].sort((a, b) => a.display_order - b.display_order).map((product, index) => <div key={product.id} className="flex items-center gap-2 p-2 bg-muted rounded-md">
                       <div className="flex flex-col gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => handleMoveProduct(index, "up")}
-                          disabled={index === 0}
-                        >
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleMoveProduct(index, "up")} disabled={index === 0}>
                           <GripVertical className="h-3 w-3 rotate-90" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => handleMoveProduct(index, "down")}
-                          disabled={index === products.length - 1}
-                        >
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleMoveProduct(index, "down")} disabled={index === products.length - 1}>
                           <GripVertical className="h-3 w-3 -rotate-90" />
                         </Button>
                       </div>
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="w-12 h-12 object-cover rounded"
-                      />
+                      <img src={product.image_url} alt={product.name} className="w-12 h-12 object-cover rounded" />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{product.name}</p>
                         <p className="text-xs text-muted-foreground">{product.medium}</p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditProduct(product)}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => handleEditProduct(product)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteProduct(product)}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteProduct(product)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    </div>
-                  ))}
+                    </div>)}
               </div>
             </TabsContent>
 
@@ -743,8 +602,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
 
             <PagesTabContent />
             
-          </Tabs>
-          )}
+          </Tabs>}
         </SheetContent>
       </Sheet>
 
@@ -753,48 +611,35 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editProduct && products.find((p) => p.id === editProduct.id)
-                ? "Modifica Prodotto"
-                : "Aggiungi Prodotto"}
+              {editProduct && products.find(p => p.id === editProduct.id) ? "Modifica Prodotto" : "Aggiungi Prodotto"}
             </DialogTitle>
           </DialogHeader>
-          {editProduct && (
-            <div className="space-y-4">
+          {editProduct && <div className="space-y-4">
               <div>
                 <Label>Nome</Label>
-                <Input
-                  value={editProduct.name}
-                  onChange={(e) =>
-                    setEditProduct({ ...editProduct, name: e.target.value })
-                  }
-                />
+                <Input value={editProduct.name} onChange={e => setEditProduct({
+              ...editProduct,
+              name: e.target.value
+            })} />
               </div>
               <div>
                 <Label>Tecnica</Label>
-                <Input
-                  value={editProduct.medium}
-                  onChange={(e) =>
-                    setEditProduct({ ...editProduct, medium: e.target.value })
-                  }
-                />
+                <Input value={editProduct.medium} onChange={e => setEditProduct({
+              ...editProduct,
+              medium: e.target.value
+            })} />
               </div>
-              <ImageUpload
-                label="Immagine Opera"
-                currentUrl={editProduct.image_url}
-                onUpload={(url) => setEditProduct({ ...editProduct, image_url: url })}
-                folder="artworks"
-              />
+              <ImageUpload label="Immagine Opera" currentUrl={editProduct.image_url} onUpload={url => setEditProduct({
+            ...editProduct,
+            image_url: url
+          })} folder="artworks" />
               
               <div>
                 <Label>Descrizione</Label>
-                <textarea
-                  value={editProduct.description}
-                  onChange={(e) =>
-                    setEditProduct({ ...editProduct, description: e.target.value })
-                  }
-                  className="w-full min-h-[100px] px-3 py-2 text-sm rounded-md border border-input bg-background"
-                  placeholder="Descrizione dell'opera..."
-                />
+                <textarea value={editProduct.description} onChange={e => setEditProduct({
+              ...editProduct,
+              description: e.target.value
+            })} className="w-full min-h-[100px] px-3 py-2 text-sm rounded-md border border-input bg-background" placeholder="Descrizione dell'opera..." />
               </div>
 
               {/* SIZE + PRICE Table */}
@@ -805,55 +650,35 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                   <span>PRICE €</span>
                   <span></span>
                 </div>
-                {editProduct.sizes.map((size, i) => (
-                  <div key={i} className="grid grid-cols-[1fr_80px_40px] gap-2 items-center">
-                    <Input
-                      placeholder="NNxNN"
-                      value={size.dimensions}
-                      onChange={(e) => updateEditSize(i, "dimensions", e.target.value)}
-                    />
-                    <Input
-                      placeholder="0"
-                      type="number"
-                      value={size.price || ""}
-                      onChange={(e) => updateEditSize(i, "price", Number(e.target.value))}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => {
-                        if (!editProduct) return;
-                        const newSizes = editProduct.sizes.filter((_, idx) => idx !== i);
-                        setEditProduct({ ...editProduct, sizes: newSizes });
-                      }}
-                    >
+                {editProduct.sizes.map((size, i) => <div key={i} className="grid grid-cols-[1fr_80px_40px] gap-2 items-center">
+                    <Input placeholder="NNxNN" value={size.dimensions} onChange={e => updateEditSize(i, "dimensions", e.target.value)} />
+                    <Input placeholder="0" type="number" value={size.price || ""} onChange={e => updateEditSize(i, "price", Number(e.target.value))} />
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                if (!editProduct) return;
+                const newSizes = editProduct.sizes.filter((_, idx) => idx !== i);
+                setEditProduct({
+                  ...editProduct,
+                  sizes: newSizes
+                });
+              }}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs mt-2"
-                  onClick={() => {
-                    if (!editProduct) return;
-                    const newSizes: ProductSize[] = [
-                      ...editProduct.sizes,
-                      {
-                        dimensions: "",
-                        price: 0,
-                        stripe_product_id: "",
-                        deal_label_enabled: false,
-                        deal_label_text: "",
-                        mock_room_url: "",
-                      },
-                    ];
-                    setEditProduct({ ...editProduct, sizes: newSizes });
-                  }}
-                >
+                  </div>)}
+                <Button type="button" variant="outline" size="sm" className="w-full text-xs mt-2" onClick={() => {
+              if (!editProduct) return;
+              const newSizes: ProductSize[] = [...editProduct.sizes, {
+                dimensions: "",
+                price: 0,
+                stripe_product_id: "",
+                deal_label_enabled: false,
+                deal_label_text: "",
+                mock_room_url: ""
+              }];
+              setEditProduct({
+                ...editProduct,
+                sizes: newSizes
+              });
+            }}>
                   + Aggiungi Size
                 </Button>
               </div>
@@ -863,74 +688,38 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                 <Label>Mock Room per Size</Label>
                 <p className="text-xs text-muted-foreground">Ogni size può avere un'immagine mock room associata</p>
                 <div className="space-y-3">
-                  {editProduct.sizes.map((size, i) => (
-                    <div key={i} className="flex gap-2 items-center p-2 bg-muted/50 rounded-lg">
-                      <Input
-                        placeholder="SIZE"
-                        value={size.dimensions}
-                        onChange={(e) => updateEditSize(i, "dimensions", e.target.value)}
-                        className="w-24 bg-yellow-100 dark:bg-yellow-900/30 font-medium"
-                      />
+                  {editProduct.sizes.map((size, i) => <div key={i} className="flex gap-2 items-center p-2 bg-muted/50 rounded-lg">
+                      <Input placeholder="SIZE" value={size.dimensions} onChange={e => updateEditSize(i, "dimensions", e.target.value)} className="w-24 bg-yellow-100 dark:bg-yellow-900/30 font-medium" />
                       <div className="flex-1">
-                        <ImageUpload
-                          label=""
-                          currentUrl={size.mock_room_url || ""}
-                          onUpload={(url) => updateEditSize(i, "mock_room_url", url || "")}
-                          folder="mockrooms"
-                        />
+                        <ImageUpload label="" currentUrl={size.mock_room_url || ""} onUpload={url => updateEditSize(i, "mock_room_url", url || "")} folder="mockrooms" />
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </div>
 
               {/* Stripe IDs & Offerte - collapsed section */}
               <div className="space-y-2 border-t pt-4">
                 <Label>Stripe IDs & Offerte del Giorno</Label>
-                {editProduct.sizes.map((size, i) => (
-                  <div key={i} className="p-2 bg-muted/30 rounded-lg space-y-2">
+                {editProduct.sizes.map((size, i) => <div key={i} className="p-2 bg-muted/30 rounded-lg space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium w-20">{size.dimensions || "—"}</span>
-                      <Input
-                        placeholder="Stripe Product ID (es. prod_ABC123)"
-                        value={size.stripe_product_id || ""}
-                        onChange={(e) => updateEditSize(i, "stripe_product_id", e.target.value)}
-                        className="text-xs font-mono flex-1"
-                      />
+                      <Input placeholder="Stripe Product ID (es. prod_ABC123)" value={size.stripe_product_id || ""} onChange={e => updateEditSize(i, "stripe_product_id", e.target.value)} className="text-xs font-mono flex-1" />
                     </div>
                     <div className="flex items-center gap-2">
-                      <Switch
-                        checked={size.deal_label_enabled || false}
-                        onCheckedChange={(checked) => updateEditSize(i, "deal_label_enabled", checked)}
-                      />
+                      <Switch checked={size.deal_label_enabled || false} onCheckedChange={checked => updateEditSize(i, "deal_label_enabled", checked)} />
                       <span className="text-xs text-muted-foreground">Offerta</span>
-                      {size.deal_label_enabled && (
-                        <>
-                          <Input
-                            placeholder="Prezzo Offerta €"
-                            type="number"
-                            value={size.deal_price || ""}
-                            onChange={(e) => updateEditSize(i, "deal_price", Number(e.target.value))}
-                            className="w-24 text-xs"
-                          />
-                          <Input
-                            placeholder="OFFERTA DEL GIORNO"
-                            value={size.deal_label_text || ""}
-                            onChange={(e) => updateEditSize(i, "deal_label_text", e.target.value)}
-                            className="flex-1 text-xs"
-                          />
-                        </>
-                      )}
+                      {size.deal_label_enabled && <>
+                          <Input placeholder="Prezzo Offerta €" type="number" value={size.deal_price || ""} onChange={e => updateEditSize(i, "deal_price", Number(e.target.value))} className="w-24 text-xs" />
+                          <Input value={size.deal_label_text || ""} onChange={e => updateEditSize(i, "deal_label_text", e.target.value)} className="flex-1 text-xs" placeholder="RISVEGLI" />
+                        </>}
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
  
                <Button onClick={handleSaveProduct} className="w-full">
                  Salva
                </Button>
-            </div>
-          )}
+            </div>}
         </DialogContent>
       </Dialog>
 
@@ -944,16 +733,11 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
           <div className="space-y-4">
             <div>
               <Label>JSON Mapping</Label>
-              <Textarea
-                value={stripeImportJson}
-                onChange={(e) => setStripeImportJson(e.target.value)}
-                placeholder={`{
+              <Textarea value={stripeImportJson} onChange={e => setStripeImportJson(e.target.value)} placeholder={`{
   "Octoheaded": "prod_ABC123",
   "Octoghost": "prod_DEF456",
   "Octosuckers": "prod_GHI789"
-}`}
-                className="min-h-[200px] font-mono text-sm"
-              />
+}`} className="min-h-[200px] font-mono text-sm" />
               <p className="text-xs text-muted-foreground mt-2">
                 Inserisci un JSON con i nomi prodotto come chiavi e gli ID Stripe come valori.
                 Tutti i size variants di ogni prodotto saranno aggiornati con lo stesso ID.
@@ -972,71 +756,50 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
           <DialogHeader>
             <DialogTitle>Importa Prodotti da CSV</DialogTitle>
           </DialogHeader>
-          {csvParseResult && (
-            <div className="space-y-4">
+          {csvParseResult && <div className="space-y-4">
               {/* Errors */}
-              {csvParseResult.errors.length > 0 && (
-                <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+              {csvParseResult.errors.length > 0 && <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
                   <div className="flex items-center gap-2 text-destructive mb-2">
                     <AlertCircle className="h-4 w-4" />
                     <span className="font-medium">Errori</span>
                   </div>
                   <ul className="text-sm text-destructive space-y-1">
-                    {csvParseResult.errors.map((err, i) => (
-                      <li key={i}>• {err}</li>
-                    ))}
+                    {csvParseResult.errors.map((err, i) => <li key={i}>• {err}</li>)}
                   </ul>
-                </div>
-              )}
+                </div>}
 
               {/* Warnings */}
-              {csvParseResult.warnings.length > 0 && (
-                <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              {csvParseResult.warnings.length > 0 && <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
                   <div className="flex items-center gap-2 text-yellow-600 mb-2">
                     <AlertCircle className="h-4 w-4" />
                     <span className="font-medium">Avvisi</span>
                   </div>
                   <ul className="text-sm text-yellow-600 space-y-1">
-                    {csvParseResult.warnings.map((warn, i) => (
-                      <li key={i}>• {warn}</li>
-                    ))}
+                    {csvParseResult.warnings.map((warn, i) => <li key={i}>• {warn}</li>)}
                   </ul>
-                </div>
-              )}
+                </div>}
 
               {/* Success preview */}
-              {csvParseResult.products.length > 0 && (
-                <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+              {csvParseResult.products.length > 0 && <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
                   <div className="flex items-center gap-2 text-green-600 mb-2">
                     <CheckCircle className="h-4 w-4" />
                     <span className="font-medium">{csvParseResult.products.length} prodotti pronti</span>
                   </div>
                   <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                    {csvParseResult.products.map((product, i) => (
-                      <div key={i} className="text-sm bg-background/50 p-2 rounded">
+                    {csvParseResult.products.map((product, i) => <div key={i} className="text-sm bg-background/50 p-2 rounded">
                         <p className="font-medium">{product.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {product.sizes.map(s => `${s.dimensions} €${s.price}`).join(' | ')}
                         </p>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
-                </div>
-              )}
+                </div>}
 
               <div className="flex gap-2">
-                <Button 
-                  onClick={handleCSVImportConfirm} 
-                  className="flex-1"
-                  disabled={csvParseResult.products.length === 0}
-                >
+                <Button onClick={handleCSVImportConfirm} className="flex-1" disabled={csvParseResult.products.length === 0}>
                   Importa {csvParseResult.products.length} prodotti
                 </Button>
-                <Button 
-                  onClick={handleDownloadCSVTemplate} 
-                  variant="outline"
-                  title="Scarica template CSV"
-                >
+                <Button onClick={handleDownloadCSVTemplate} variant="outline" title="Scarica template CSV">
                   <Download className="h-4 w-4" />
                 </Button>
               </div>
@@ -1045,13 +808,12 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
                 Formato CSV: Nome,Tecnica,Dimensioni,Prezzi,Descrizione,Stripe_ID<br />
                 Dimensioni e Prezzi separati da virgola (es. "40x60,75x100" e "119,149")
               </p>
-            </div>
-          )}
+            </div>}
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
+      <AlertDialog open={!!productToDelete} onOpenChange={open => !open && setProductToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Conferma eliminazione</AlertDialogTitle>
@@ -1067,8 +829,6 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
-  );
+    </>;
 };
-
 export default AdminPanel;
