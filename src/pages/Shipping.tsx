@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
+import SEO from "@/components/SEO";
 
 // Simple markdown-like renderer for page content (aligned with Artist.tsx)
 const renderContent = (content: string) => {
@@ -70,6 +71,11 @@ Ed ho le seguenti domande:
   
   return (
     <div className="min-h-screen bg-background pt-24 pb-16 flex flex-col">
+      <SEO 
+        title={page?.seo_title || "Regole di Spedizione"}
+        description={page?.seo_description || "Spedizione gratuita in Italia peninsulare e Sicilia. Consegna in 3-5 giorni. Garanzia soddisfatti o rimborsati entro 14 giorni."}
+        url="/shipping"
+      />
       {/* Back to Gallery button */}
       <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
         <ArrowLeft className="h-5 w-5" />

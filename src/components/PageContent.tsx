@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -162,6 +163,11 @@ const PageContent = ({ slug, children }: PageContentProps) => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title={page.seo_title || page.title}
+        description={page.seo_description || `${page.title} - OctoWonders`}
+        url={`/${slug}`}
+      />
       <Navigation />
       
       {/* Back to Gallery button */}

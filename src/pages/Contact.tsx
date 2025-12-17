@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 
 const Contact = () => {
   const { data: pageData, isLoading } = usePage("contatti");
@@ -69,6 +70,11 @@ Ed ho le seguenti domande:
 
   return (
     <div className="min-h-screen bg-background pt-24 pb-16 flex flex-col">
+      <SEO 
+        title={pageData?.seo_title || "Contattaci"}
+        description={pageData?.seo_description || "Contatta OctoWonders via WhatsApp o Email per domande sulle opere, ordini personalizzati o assistenza."}
+        url="/contact"
+      />
       
       <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
         <ArrowLeft className="h-5 w-5" />

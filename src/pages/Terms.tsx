@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,11 @@ import { Button } from "@/components/ui/button";
 const Terms = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Termini e Condizioni"
+        description="Termini e condizioni di vendita di OctoWonders. Leggi le condizioni di acquisto, spedizione e reso."
+        url="/terms"
+      />
       <Navigation />
       
       <div className="container mx-auto px-4 sm:px-8 pt-24 pb-12 max-w-4xl">
