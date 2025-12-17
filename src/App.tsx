@@ -19,7 +19,7 @@ const queryClient = new QueryClient();
 
 // Main app component
 const App = () => (
-  <div onContextMenu={(e) => e.preventDefault()}>
+  <div>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
