@@ -62,7 +62,8 @@ const HelloBar = () => {
           {!countdown.expired ? <span className="bg-red-600 px-2 py-0.5 rounded font-bold">
               {formatTime(countdown.hours)}:{formatTime(countdown.minutes)}:{formatTime(countdown.seconds)}
             </span> : <span className="bg-red-600 px-2 py-0.5 rounded font-bold">Scaduto</span>}
-          <span className="mx-1">|</span>
+          <span className="mx-1">
+        </span>
           <span>SPEDIZIONE GRATUITA</span>
           <button onClick={() => setShippingDialogOpen(true)} className="ml-1 px-2 py-0.5 text-xs rounded transition-colors bg-green-300 hover:bg-green-200 text-green-900">
             Dettagli
