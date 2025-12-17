@@ -61,7 +61,8 @@ const HelloBar = () => {
           
           {!countdown.expired ? <span className="bg-red-600 px-2 py-0.5 rounded font-bold">
               {formatTime(countdown.hours)}:{formatTime(countdown.minutes)}:{formatTime(countdown.seconds)}
-            </span> : <span className="bg-red-600 px-2 py-0.5 rounded font-bold">Scaduto</span>}
+            </span> : <span className="bg-red-600 px-2 py-0.5 rounded font-bold">
+        </span>}
           <span className="mx-1">
         </span>
           <span>SPEDIZIONE GRATUITA</span>
