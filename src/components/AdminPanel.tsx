@@ -277,12 +277,7 @@ const AdminPanel = ({ products, onProductsChange }: AdminPanelProps) => {
       medium: "Stampa su Tela",
       description: "",
       image_url: "",
-      sizes: [
-        { dimensions: "40x40", price: 125 },
-        { dimensions: "60x60", price: 175 },
-        { dimensions: "80x80", price: 245 },
-        { dimensions: "100x100", price: 295 },
-      ],
+      sizes: [],
       display_order: products.length,
       deal_label_enabled: false,
       deal_label_text: "OFFERTA DEL GIORNO, scade h20:00",
