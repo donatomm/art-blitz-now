@@ -11,6 +11,61 @@ interface ImageUploadProps {
   folder: string;
 }
 
+const WEBP_QUALITY = 0.85;
+const MAX_DIMENSION = 2000;
+
+/**
+ * Converts an image file to WebP format using Canvas API
+ * Also resizes if larger than MAX_DIMENSION
+ */
+const convertToWebP = (file: File): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      
+      // Resize if too large
+      if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+        if (width > height) {
+          height = Math.round((height * MAX_DIMENSION) / width);
+          width = MAX_DIMENSION;
+        } else {
+          width = Math.round((width * MAX_DIMENSION) / height);
+          height = MAX_DIMENSION;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('Could not get canvas context'));
+        return;
+      }
+      
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            console.log(`[ImageUpload] Converted to WebP: ${(file.size / 1024).toFixed(1)}KB → ${(blob.size / 1024).toFixed(1)}KB`);
+            resolve(blob);
+          } else {
+            reject(new Error('Failed to convert to WebP'));
+          }
+        },
+        'image/webp',
+        WEBP_QUALITY
+      );
+    };
+    
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = URL.createObjectURL(file);
+  });
+};
+
 const ImageUpload = ({ label, currentUrl, onUpload, folder }: ImageUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentUrl || null);
@@ -36,11 +91,11 @@ const ImageUpload = ({ label, currentUrl, onUpload, folder }: ImageUploadProps) 
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate file size (max 10MB before conversion)
+    if (file.size > 10 * 1024 * 1024) {
       toast({
         title: "Errore",
-        description: "L'immagine deve essere inferiore a 5MB.",
+        description: "L'immagine deve essere inferiore a 10MB.",
         variant: "destructive",
       });
       return;
@@ -67,8 +122,21 @@ const ImageUpload = ({ label, currentUrl, onUpload, folder }: ImageUploadProps) 
         return;
       }
 
+      // Convert to WebP (skip for GIFs to preserve animation)
+      let uploadBlob: Blob = file;
+      let fileExt = 'webp';
+      
+      if (file.type === 'image/gif') {
+        // Keep GIFs as-is to preserve animation
+        uploadBlob = file;
+        fileExt = 'gif';
+        console.log('[ImageUpload] Keeping GIF format for animation');
+      } else {
+        // Convert to WebP
+        uploadBlob = await convertToWebP(file);
+      }
+
       // Create unique filename
-      const fileExt = file.name.split(".").pop();
       const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       console.log('[ImageUpload] Uploading to:', fileName);
@@ -76,9 +144,10 @@ const ImageUpload = ({ label, currentUrl, onUpload, folder }: ImageUploadProps) 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
         .from("product-images")
-        .upload(fileName, file, {
+        .upload(fileName, uploadBlob, {
           cacheControl: "3600",
           upsert: false,
+          contentType: fileExt === 'gif' ? 'image/gif' : 'image/webp',
         });
 
       if (error) {
