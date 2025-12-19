@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Product } from "@/types/product";
 import { useProducts, useUpdateProduct, useCreateProduct, useDeleteProduct } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
-import HelloBar from "@/components/HelloBar";
+
 import Hero from "@/components/Hero";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
@@ -81,7 +81,7 @@ const Index = () => {
   return <div className="min-h-screen bg-background">
       <SEO />
       <Navigation isOverHero />
-      <HelloBar />
+      
 
       <Hero imageUrl={heroImage} title="Accendi Quella Stanza" subtitle="Opere Magnetiche. Uniche. Non per tutti." ctaText="SCOPRI LE OPERE" onCtaClick={scrollToGallery} />
 
