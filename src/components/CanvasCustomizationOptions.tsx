@@ -1,194 +1,121 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-interface BorderOption {
-  id: string;
-  name: string;
-  image: string;
-  description: string;
-}
-
 interface FrameOption {
   id: string;
   name: string;
-  image: string;
-  description: string;
+  color: string;
 }
 
-const borderOptions: BorderOption[] = [
-  {
-    id: "ripiegato",
-    name: "Ripiegato",
-    image: "/images/preview-tela-angolo.png",
-    description: "Proprio come in una tela di arte classica, la stampa viene stesa per adattarsi al telaio. L'immagine continua sui bordi laterali creando un effetto avvolgente e professionale."
-  },
-  {
-    id: "specchiato",
-    name: "Specchiato",
-    image: "/images/preview-tela-angolo.png",
-    description: "L'immagine viene mostrata per intero sulla parte frontale. Il bordo esterno viene copiato e riflesso sui lati del telaio, creando un effetto di continuità armoniosa."
-  },
-  {
-    id: "allungato",
-    name: "Allungato",
-    image: "/images/preview-tela-angolo.png",
-    description: "I pixel più esterni dell'immagine vengono estesi e allungati intorno al telaio. L'immagine completa rimane visibile sulla parte frontale della tela."
-  },
-  {
-    id: "bianco",
-    name: "Bianco",
-    image: "/images/preview-tela-angolo.png",
-    description: "I bordi laterali restano bianchi, senza stampa. Questo crea un effetto pulito e minimale che valorizza e incornicia naturalmente la tua immagine."
-  },
-  {
-    id: "nero",
-    name: "Nero",
-    image: "/images/preview-tela-angolo.png",
-    description: "Un elegante bordo nero avvolge i lati del telaio, creando un contrasto deciso che esalta la maggior parte dei soggetti fotografici."
-  }
-];
+type ViewType = "frontale" | "anteriore" | "posteriore";
 
 const frameOptions: FrameOption[] = [
-  {
-    id: "2cm",
-    name: "Standard (2 cm)",
-    image: "/images/spessori-telaio.jpg",
-    description: "Telaio in legno di pino certificato FSC® con spessore di 2 cm. Leggero e ideale per formati piccoli e medi. Facile da appendere con uno o due chiodi."
-  },
-  {
-    id: "4cm",
-    name: "XXL (4 cm)",
-    image: "/images/spessori-telaio.jpg",
-    description: "Telaio XXL in legno di pino con spessore di 4 cm. Maggiore stabilità e un look da vera galleria fotografica. Ideale per formati grandi."
-  }
+  { id: "nero", name: "Nero opaco", color: "#1a1a1a" },
+  { id: "argento", name: "Argento antico", color: "#a8a8a8" },
+  { id: "bianco", name: "Bianco", color: "#f5f5f5" },
+  { id: "noce", name: "Color noce", color: "#5c4033" },
+  { id: "quercia", name: "Color quercia antico", color: "#8b7355" },
+];
+
+const viewLabels: { id: ViewType; label: string }[] = [
+  { id: "frontale", label: "Vista frontale" },
+  { id: "anteriore", label: "Dettaglio anteriore" },
+  { id: "posteriore", label: "Dettaglio posteriore" },
 ];
 
 const CanvasCustomizationOptions = () => {
-  const [selectedBorder, setSelectedBorder] = useState<string>("ripiegato");
-  const [selectedFrame, setSelectedFrame] = useState<string>("2cm");
+  const [selectedFrame, setSelectedFrame] = useState<string>("nero");
+  const [selectedView, setSelectedView] = useState<ViewType>("frontale");
 
-  const activeBorder = borderOptions.find(b => b.id === selectedBorder);
-  const activeFrame = frameOptions.find(f => f.id === selectedFrame);
+  const activeFrame = frameOptions.find((f) => f.id === selectedFrame);
 
   return (
-    <div className="space-y-12 mt-8">
-      {/* Border Options Section */}
+    <div className="mt-8 space-y-8">
+      {/* Section Header */}
       <section>
-        <h2 className="text-2xl font-bold mb-6 text-foreground">
-          Bordi Personalizzabili per le Tue Fotografie su Tela
+        <h2 className="text-2xl font-bold mb-2 text-foreground">
+          Foto su Tela con Cornice di Alta Qualità
         </h2>
-        
-        {/* Border Preview Image */}
+        <p className="text-muted-foreground mb-6">
+          Una cornice di prima scelta per la tua foto su tela. I caratteristici
+          bordi ripiegati della tela sono visibili attraverso la cornice
+          fluttuante decorativa.
+        </p>
+
+        {/* Preview Area with frame simulation */}
         <div className="mb-6 flex justify-center">
-          <div className="relative overflow-hidden rounded-lg shadow-lg border border-border bg-card">
-            <img 
-              src={activeBorder?.image} 
-              alt={activeBorder?.name}
-              className="w-full max-w-md h-auto object-cover"
-            />
+          <div
+            className="relative rounded-lg shadow-xl overflow-hidden transition-all duration-300"
+            style={{
+              padding: "16px",
+              backgroundColor: activeFrame?.color,
+            }}
+          >
+            {/* Inner canvas simulation */}
+            <div className="bg-card rounded overflow-hidden shadow-inner">
+              <img
+                src="/artworks/octoheaded.jpg"
+                alt={`Anteprima cornice ${activeFrame?.name}`}
+                className="w-64 h-64 sm:w-80 sm:h-80 object-cover"
+              />
+            </div>
+            {/* Frame label */}
+            <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm text-foreground text-xs px-2 py-1 rounded">
+              {activeFrame?.name}
+            </div>
           </div>
         </div>
 
-        {/* Border Selection Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {borderOptions.map((option) => (
+        {/* View Tabs */}
+        <div className="flex justify-center gap-2 mb-6">
+          {viewLabels.map((view) => (
             <button
-              key={option.id}
-              onClick={() => setSelectedBorder(option.id)}
+              key={view.id}
+              onClick={() => setSelectedView(view.id)}
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
-                "border-2",
-                selectedBorder === option.id
-                  ? "bg-primary text-primary-foreground border-primary shadow-md"
-                  : "bg-card text-foreground border-border hover:border-primary/50 hover:bg-accent"
+                "px-3 py-1.5 text-sm rounded-md transition-all duration-200 border",
+                selectedView === view.id
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-muted-foreground border-border hover:border-primary/50"
               )}
             >
-              {option.name}
+              {view.label}
             </button>
           ))}
         </div>
 
-        {/* Border Description */}
-        <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
-          <h3 className="font-semibold text-lg mb-2 text-foreground">
-            Bordo {activeBorder?.name}
-          </h3>
-          <p className="text-muted-foreground leading-relaxed">
-            {activeBorder?.description}
-          </p>
-        </div>
-      </section>
-
-      {/* Frame Options Section */}
-      <section>
-        <h2 className="text-2xl font-bold mb-6 text-foreground">
-          Spessore del Telaio in Vero Legno
-        </h2>
-
-        {/* Frame Preview Image */}
-        <div className="mb-6 flex justify-center">
-          <div className="relative overflow-hidden rounded-lg shadow-lg border border-border bg-card">
-            <img 
-              src={activeFrame?.image} 
-              alt={activeFrame?.name}
-              className="w-full max-w-md h-auto object-cover"
-            />
-          </div>
-        </div>
-
-        {/* Frame Selection Tabs */}
-        <div className="flex flex-wrap justify-center gap-4 mb-6">
-          {frameOptions.map((option) => (
+        {/* Frame Color Selection */}
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {frameOptions.map((frame) => (
             <button
-              key={option.id}
-              onClick={() => setSelectedFrame(option.id)}
+              key={frame.id}
+              onClick={() => setSelectedFrame(frame.id)}
               className={cn(
-                "px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200",
-                "border-2 min-w-[140px]",
-                selectedFrame === option.id
-                  ? "bg-primary text-primary-foreground border-primary shadow-md"
-                  : "bg-card text-foreground border-border hover:border-primary/50 hover:bg-accent"
+                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border-2",
+                selectedFrame === frame.id
+                  ? "border-primary shadow-md scale-105"
+                  : "border-border hover:border-primary/50"
               )}
             >
-              {option.name}
+              {/* Color swatch */}
+              <span
+                className="w-4 h-4 rounded-full border border-border/50"
+                style={{ backgroundColor: frame.color }}
+              />
+              {frame.name}
             </button>
           ))}
         </div>
 
-        {/* Frame Description */}
-        <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
-          <h3 className="font-semibold text-lg mb-2 text-foreground">
-            Telaio {activeFrame?.name}
-          </h3>
-          <p className="text-muted-foreground leading-relaxed">
-            {activeFrame?.description}
+        {/* Description */}
+        <div className="bg-card border border-border rounded-lg p-6 shadow-sm max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-center">
+            Crea la tua foto su tela e scegli una{" "}
+            <strong className="text-foreground">cornice fluttuante</strong>{" "}
+            disponibile in tanti diversi design. La cornice valorizza l'opera e
+            crea un effetto galleria professionale.
           </p>
         </div>
-      </section>
-
-      {/* Additional Info */}
-      <section className="bg-accent/50 rounded-lg p-6 border border-border">
-        <h3 className="font-semibold text-lg mb-4 text-foreground">
-          Qualità Premium Garantita
-        </h3>
-        <ul className="space-y-2 text-muted-foreground">
-          <li className="flex items-start gap-2">
-            <span className="text-primary mt-1">✓</span>
-            Tele stese su telai in legno di pino di alta qualità certificato FSC®
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-primary mt-1">✓</span>
-            Stampe in alta risoluzione con colori brillanti e duraturi
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-primary mt-1">✓</span>
-            Inchiostri resistenti agli UV, totalmente privi di solventi
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-primary mt-1">✓</span>
-            Ogni tela viene realizzata artigianalmente con cura
-          </li>
-        </ul>
       </section>
     </div>
   );
