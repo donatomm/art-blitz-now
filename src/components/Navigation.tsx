@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import logo from "@/assets/logo.png";
@@ -98,7 +98,7 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
                 className={`relative ${showTransparent ? "text-white hover:bg-white/10" : ""}`}
                 onClick={() => setIsCartOpen(true)}
               >
-                <ShoppingBag className="h-5 w-5" />
+                <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
                 {itemCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-gold text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                     {itemCount > 9 ? "9+" : itemCount}
@@ -118,7 +118,7 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
                 className={`relative ${showTransparent ? "text-white" : ""}`}
                 onClick={() => setIsCartOpen(true)}
               >
-                <ShoppingBag className="h-5 w-5" />
+                <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
                 {itemCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-gold text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                     {itemCount > 9 ? "9+" : itemCount}
