@@ -28,19 +28,16 @@ const Hero = ({
 
         {/* Main Content */}
         <div className="relative z-10 flex flex-col">
-          {/* Shipping info - positioned at top right under nav */}
-          <div className="flex justify-end pt-20 pr-4 md:pr-8">
-            <div className="flex items-center gap-2 text-white text-sm font-medium">
-              <span>SPEDIZIONE GRATUITA IN ITALIA </span>
-              <button onClick={() => setShippingDialogOpen(true)} className="px-2 py-0.5 text-xs rounded transition-colors border border-white/30 text-gold-foreground bg-muted">
-                Dettagli
-              </button>
-            </div>
-          </div>
-
           {/* Hero Text Area */}
           <div className="flex h-[calc(65vh-20px)] min-h-[400px] flex-col items-center justify-center px-4 text-center">
             <div className="bg-blue-500/40 backdrop-blur-sm px-8 py-6 rounded-lg border border-white/10">
+              {/* Shipping info - centered above title */}
+              <div className="flex items-center justify-center gap-2 text-white text-sm font-medium mb-4">
+                <span>SPEDIZIONE GRATUITA IN ITALIA</span>
+                <button onClick={() => setShippingDialogOpen(true)} className="px-2 py-0.5 text-xs rounded transition-colors border border-black bg-transparent text-white hover:bg-white/10">
+                  Dettagli
+                </button>
+              </div>
               <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl md:text-6xl lg:text-7xl whitespace-pre-line">
                 {title}
               </h1>
