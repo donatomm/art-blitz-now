@@ -78,38 +78,78 @@ const CanvasCustomizationOptions = () => {
 
         {/* Preview Area with frame simulation */}
         <div className="mb-6 flex justify-center">
-          <div
-            className="relative rounded-sm shadow-2xl overflow-hidden transition-all duration-300"
-            style={getFrameStyle()}
-          >
-            {/* Inner canvas with gap effect for floating frame */}
-            <div 
-              className="bg-background rounded-sm overflow-hidden"
-              style={{ padding: selectedView === "anteriore" ? "4px" : "2px" }}
-            >
-              <img
-                src={framePreview}
-                alt={`Anteprima cornice ${activeFrame?.name} - ${viewLabels.find(v => v.id === selectedView)?.label}`}
-                className="w-64 h-80 sm:w-72 sm:h-96 object-cover rounded-sm"
-              />
-            </div>
-            
-            {/* Frame depth effect for side views */}
-            {selectedView === "anteriore" && (
-              <div 
-                className="absolute -right-1 top-0 bottom-0 w-4 opacity-60"
+          {selectedView === "anteriore" ? (
+            /* Corner perspective view - Dettaglio anteriore */
+            <div className="relative" style={{ perspective: "800px" }}>
+              <div
+                className="relative transition-all duration-300"
                 style={{ 
-                  background: `linear-gradient(to right, ${activeFrame?.color}, ${activeFrame?.color}dd)`,
-                  transform: "skewY(-2deg)",
+                  transform: "rotateX(15deg) rotateY(-15deg)",
+                  transformStyle: "preserve-3d"
                 }}
-              />
-            )}
-            {selectedView === "posteriore" && (
-              <div 
-                className="absolute inset-4 border-2 border-dashed border-muted-foreground/30 rounded pointer-events-none"
-              />
-            )}
-          </div>
+              >
+                {/* Main frame with canvas */}
+                <div 
+                  className="relative rounded-sm shadow-2xl overflow-visible"
+                  style={{ 
+                    padding: "8px",
+                    backgroundColor: activeFrame?.color || "#1a1a1a"
+                  }}
+                >
+                  {/* Floating gap effect */}
+                  <div className="bg-background/80 p-1">
+                    <img
+                      src={framePreview}
+                      alt={`Anteprima cornice ${activeFrame?.name} - Dettaglio anteriore`}
+                      className="w-64 h-80 sm:w-72 sm:h-96 object-cover"
+                    />
+                  </div>
+                  
+                  {/* Frame depth - bottom edge */}
+                  <div 
+                    className="absolute -bottom-4 left-0 right-0 h-4"
+                    style={{ 
+                      backgroundColor: activeFrame?.color || "#1a1a1a",
+                      transform: "rotateX(-90deg)",
+                      transformOrigin: "top",
+                      filter: "brightness(0.7)"
+                    }}
+                  />
+                  
+                  {/* Frame depth - right edge */}
+                  <div 
+                    className="absolute top-0 -right-4 bottom-0 w-4"
+                    style={{ 
+                      backgroundColor: activeFrame?.color || "#1a1a1a",
+                      transform: "rotateY(90deg)",
+                      transformOrigin: "left",
+                      filter: "brightness(0.8)"
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Standard flat views */
+            <div
+              className="relative rounded-sm shadow-2xl overflow-hidden transition-all duration-300"
+              style={getFrameStyle()}
+            >
+              {/* Inner canvas with gap effect for floating frame */}
+              <div className="bg-background/80 rounded-sm overflow-hidden p-0.5">
+                <img
+                  src={framePreview}
+                  alt={`Anteprima cornice ${activeFrame?.name} - ${viewLabels.find(v => v.id === selectedView)?.label}`}
+                  className="w-64 h-80 sm:w-72 sm:h-96 object-cover rounded-sm"
+                />
+              </div>
+              
+              {/* Mounting hardware for posterior view */}
+              {selectedView === "posteriore" && (
+                <div className="absolute inset-4 border-2 border-dashed border-muted-foreground/30 rounded pointer-events-none" />
+              )}
+            </div>
+          )}
         </div>
 
         {/* Frame Color Selection */}
