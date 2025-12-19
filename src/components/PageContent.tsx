@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useEffect, useRef } from "react";
+import DOMPurify from "dompurify";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { usePage } from "@/hooks/usePages";
@@ -10,8 +12,14 @@ interface PageContentProps {
   children?: React.ReactNode;
 }
 
+// Check if content contains HTML tags
+const containsHTML = (str: string): boolean => {
+  return /<[a-z][\s\S]*>/i.test(str);
+};
+
 const PageContent = ({ slug, children }: PageContentProps) => {
   const { data: page, isLoading, error } = usePage(slug);
+  const htmlContainerRef = useRef<HTMLDivElement>(null);
 
   // Simple markdown renderer for basic formatting
   const renderContent = (content: string) => {
@@ -129,6 +137,31 @@ const PageContent = ({ slug, children }: PageContentProps) => {
     return elements;
   };
 
+  // Configure DOMPurify to allow scripts and styles (admin-only content)
+  const sanitizeHTML = (html: string): string => {
+    return DOMPurify.sanitize(html, {
+      ADD_TAGS: ['style', 'script'],
+      ADD_ATTR: ['onclick', 'onload', 'onerror', 'style', 'class', 'id', 'data-image'],
+      FORCE_BODY: true,
+    });
+  };
+
+  // Execute scripts after HTML is rendered
+  useEffect(() => {
+    if (page?.content && containsHTML(page.content) && htmlContainerRef.current) {
+      // Find and execute script tags
+      const scripts = htmlContainerRef.current.querySelectorAll('script');
+      scripts.forEach((oldScript) => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+        newScript.textContent = oldScript.textContent;
+        oldScript.parentNode?.replaceChild(newScript, oldScript);
+      });
+    }
+  }, [page?.content]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -161,6 +194,8 @@ const PageContent = ({ slug, children }: PageContentProps) => {
     );
   }
 
+  const isHTMLContent = containsHTML(page.content);
+
   return (
     <div className="min-h-screen bg-background">
       <SEO 
@@ -178,9 +213,16 @@ const PageContent = ({ slug, children }: PageContentProps) => {
       
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8">{page.title}</h1>
+          {!isHTMLContent && <h1 className="text-4xl font-bold mb-8">{page.title}</h1>}
           <div className="prose prose-lg max-w-none">
-            {renderContent(page.content)}
+            {isHTMLContent ? (
+              <div 
+                ref={htmlContainerRef}
+                dangerouslySetInnerHTML={{ __html: sanitizeHTML(page.content) }}
+              />
+            ) : (
+              renderContent(page.content)
+            )}
           </div>
           {children}
         </div>
