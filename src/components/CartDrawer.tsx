@@ -2,7 +2,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useProducts } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Minus, Plus, Trash2, ShoppingBag, Loader2 } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart, Loader2, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -78,10 +78,19 @@ const CartDrawer = () => {
       <SheetContent className="w-full sm:max-w-lg flex flex-col">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <ShoppingBag className="h-5 w-5" />
+            <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
             Carrello ({items.length})
           </SheetTitle>
         </SheetHeader>
+
+        {/* Continue shopping link */}
+        <button
+          onClick={() => setIsCartOpen(false)}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors -mt-2 mb-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Continua lo shopping
+        </button>
 
         <div className="flex-1 overflow-y-auto py-4">
           {productsLoading ? (
@@ -90,7 +99,7 @@ const CartDrawer = () => {
             </div>
           ) : items.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              <ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-50" strokeWidth={1.5} />
               <p>Il carrello è vuoto</p>
             </div>
           ) : (
@@ -196,7 +205,7 @@ const CartDrawer = () => {
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="mr-2 h-5 w-5" />
+                  <ShoppingCart className="mr-2 h-5 w-5" strokeWidth={1.5} />
                   Procedi al Checkout
                 </>
               )}
