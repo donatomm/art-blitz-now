@@ -464,10 +464,6 @@ Grazie!`);
                   {CART_ENABLED && selectedSizeData && (
                     <Button
                       onClick={() => {
-                        if (!termsAccepted) {
-                          setShowTermsError(true);
-                          return;
-                        }
                         if (product) {
                           addToCart(product.id, selectedSizeData.dimensions);
                           toast({
