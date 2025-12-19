@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import framePreview from "@/assets/frame-preview.jpg";
 
 interface FrameOption {
   id: string;
@@ -25,9 +26,24 @@ const viewLabels: { id: ViewType; label: string }[] = [
 
 const CanvasCustomizationOptions = () => {
   const [selectedFrame, setSelectedFrame] = useState<string>("nero");
-  const [selectedView, setSelectedView] = useState<ViewType>("frontale");
+  const [selectedView, setSelectedView] = useState<ViewType>("anteriore");
 
   const activeFrame = frameOptions.find((f) => f.id === selectedFrame);
+
+  // Frame thickness varies by view
+  const getFrameStyle = () => {
+    const baseColor = activeFrame?.color || "#1a1a1a";
+    switch (selectedView) {
+      case "frontale":
+        return { padding: "12px", backgroundColor: baseColor };
+      case "anteriore":
+        return { padding: "20px", backgroundColor: baseColor };
+      case "posteriore":
+        return { padding: "16px", backgroundColor: baseColor };
+      default:
+        return { padding: "20px", backgroundColor: baseColor };
+    }
+  };
 
   return (
     <div className="mt-8 space-y-8">
@@ -42,30 +58,6 @@ const CanvasCustomizationOptions = () => {
           fluttuante decorativa.
         </p>
 
-        {/* Preview Area with frame simulation */}
-        <div className="mb-6 flex justify-center">
-          <div
-            className="relative rounded-lg shadow-xl overflow-hidden transition-all duration-300"
-            style={{
-              padding: "16px",
-              backgroundColor: activeFrame?.color,
-            }}
-          >
-            {/* Inner canvas simulation */}
-            <div className="bg-card rounded overflow-hidden shadow-inner">
-              <img
-                src="/artworks/octoheaded.jpg"
-                alt={`Anteprima cornice ${activeFrame?.name}`}
-                className="w-64 h-64 sm:w-80 sm:h-80 object-cover"
-              />
-            </div>
-            {/* Frame label */}
-            <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm text-foreground text-xs px-2 py-1 rounded">
-              {activeFrame?.name}
-            </div>
-          </div>
-        </div>
-
         {/* View Tabs */}
         <div className="flex justify-center gap-2 mb-6">
           {viewLabels.map((view) => (
@@ -73,15 +65,51 @@ const CanvasCustomizationOptions = () => {
               key={view.id}
               onClick={() => setSelectedView(view.id)}
               className={cn(
-                "px-3 py-1.5 text-sm rounded-md transition-all duration-200 border",
+                "px-4 py-2 text-sm rounded-lg transition-all duration-200 border font-medium",
                 selectedView === view.id
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-card text-muted-foreground border-border hover:border-primary/50"
+                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                  : "bg-card text-muted-foreground border-border hover:border-primary/50 hover:bg-accent"
               )}
             >
               {view.label}
             </button>
           ))}
+        </div>
+
+        {/* Preview Area with frame simulation */}
+        <div className="mb-6 flex justify-center">
+          <div
+            className="relative rounded-sm shadow-2xl overflow-hidden transition-all duration-300"
+            style={getFrameStyle()}
+          >
+            {/* Inner canvas with gap effect for floating frame */}
+            <div 
+              className="bg-background rounded-sm overflow-hidden"
+              style={{ padding: selectedView === "anteriore" ? "4px" : "2px" }}
+            >
+              <img
+                src={framePreview}
+                alt={`Anteprima cornice ${activeFrame?.name} - ${viewLabels.find(v => v.id === selectedView)?.label}`}
+                className="w-64 h-80 sm:w-72 sm:h-96 object-cover rounded-sm"
+              />
+            </div>
+            
+            {/* Frame depth effect for side views */}
+            {selectedView === "anteriore" && (
+              <div 
+                className="absolute -right-1 top-0 bottom-0 w-4 opacity-60"
+                style={{ 
+                  background: `linear-gradient(to right, ${activeFrame?.color}, ${activeFrame?.color}dd)`,
+                  transform: "skewY(-2deg)",
+                }}
+              />
+            )}
+            {selectedView === "posteriore" && (
+              <div 
+                className="absolute inset-4 border-2 border-dashed border-muted-foreground/30 rounded pointer-events-none"
+              />
+            )}
+          </div>
         </div>
 
         {/* Frame Color Selection */}
@@ -99,7 +127,7 @@ const CanvasCustomizationOptions = () => {
             >
               {/* Color swatch */}
               <span
-                className="w-4 h-4 rounded-full border border-border/50"
+                className="w-5 h-5 rounded-full border border-border/50 shadow-inner"
                 style={{ backgroundColor: frame.color }}
               />
               {frame.name}
