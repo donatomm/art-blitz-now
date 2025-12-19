@@ -17,6 +17,8 @@ import CheckoutSuccess from "./pages/CheckoutSuccess";
 import Privacy from "./pages/Privacy";
 import Cookies from "./pages/Cookies";
 import Terms from "./pages/Terms";
+import ResiRimborsi from "./pages/ResiRimborsi";
+import OrdinePersonalizzato from "./pages/OrdinePersonalizzato";
 const queryClient = new QueryClient();
 
 // Main app component
@@ -41,6 +43,8 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/cookies" element={<Cookies />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/resi-e-rimborsi" element={<ResiRimborsi />} />
+            <Route path="/ordine-personalizzato" element={<OrdinePersonalizzato />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
