@@ -3,7 +3,14 @@ import { useProducts } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingCart, Loader2, Plus } from "lucide-react";
+import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingCart, Loader2, ChevronDown } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -451,31 +458,25 @@ Grazie!`);
                   )}
                 </div>
                 
-                <div className="flex flex-wrap gap-3">
-                  <Button 
-                    onClick={() => {
-                      if (!termsAccepted) {
-                        setShowTermsError(true);
-                        return;
-                      }
-                      handleCheckout();
-                    }} 
-                    disabled={isCheckoutLoading} 
-                    className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  >
-                    {isCheckoutLoading ? <>
-                        <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                        Caricamento...
-                      </> : <>
-                        <ShoppingCart className="mr-2 h-6 w-6 animate-bounce" />
-                        ACQUISTA ORA
-                      </>}
-                  </Button>
+                {/* Quantity + Buttons - New Layout */}
+                <div className="flex flex-col gap-3 max-w-sm">
+                  {/* Quantity Dropdown */}
+                  <Select defaultValue="1">
+                    <SelectTrigger className="w-full h-12 rounded-full border-2 border-border bg-background text-foreground font-medium text-lg px-6">
+                      <SelectValue placeholder="Quantità: 1" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border-border">
+                      {[1, 2, 3, 4, 5].map((qty) => (
+                        <SelectItem key={qty} value={qty.toString()} className="text-foreground">
+                          Quantità: {qty}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-                  {/* Add to Cart button - only when feature flag enabled */}
+                  {/* Add to Cart button - Yellow, pill shape */}
                   {CART_ENABLED && selectedSizeData && (
                     <Button
-                      variant="outline"
                       onClick={() => {
                         if (!termsAccepted) {
                           setShowTermsError(true);
@@ -489,12 +490,33 @@ Grazie!`);
                           });
                         }
                       }}
-                      className="h-14 px-6 border-2 border-gold text-foreground hover:bg-gold hover:text-black font-bold text-lg transition-all duration-200"
+                      className="w-full h-12 rounded-full bg-[#FFD814] hover:bg-[#F7CA00] text-black font-medium text-lg shadow-sm transition-all duration-200"
                     >
-                      <Plus className="mr-2 h-5 w-5" />
-                      Aggiungi al Carrello
+                      Aggiungi al carrello
                     </Button>
                   )}
+
+                  {/* Buy Now button - Orange, pill shape */}
+                  <Button 
+                    onClick={() => {
+                      if (!termsAccepted) {
+                        setShowTermsError(true);
+                        return;
+                      }
+                      handleCheckout();
+                    }} 
+                    disabled={isCheckoutLoading} 
+                    className="w-full h-12 rounded-full bg-[#FFA41C] hover:bg-[#FF8F00] text-black font-medium text-lg shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isCheckoutLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Caricamento...
+                      </>
+                    ) : (
+                      "Acquista ora"
+                    )}
+                  </Button>
                 </div>
               </div>
             )}
