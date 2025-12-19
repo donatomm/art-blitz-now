@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/contexts/CartContext";
 import logo from "@/assets/logo.png";
+
+const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === 'true';
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -20,6 +23,9 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { getItemCount, setIsCartOpen } = useCart();
+
+  const itemCount = getItemCount();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,17 +89,53 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
                 {item.label}
               </Link>
             ))}
+
+            {/* Cart Icon - Desktop */}
+            {CART_ENABLED && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`relative ${showTransparent ? "text-white hover:bg-white/10" : ""}`}
+                onClick={() => setIsCartOpen(true)}
+              >
+                <ShoppingBag className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-gold text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {itemCount > 9 ? "9+" : itemCount}
+                  </span>
+                )}
+              </Button>
+            )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`md:hidden ${showTransparent ? "text-white" : ""}`}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
+          {/* Mobile Menu Button + Cart */}
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Cart Icon - Mobile */}
+            {CART_ENABLED && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`relative ${showTransparent ? "text-white" : ""}`}
+                onClick={() => setIsCartOpen(true)}
+              >
+                <ShoppingBag className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-gold text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {itemCount > 9 ? "9+" : itemCount}
+                  </span>
+                )}
+              </Button>
+            )}
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`${showTransparent ? "text-white" : ""}`}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
