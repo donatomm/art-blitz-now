@@ -3,12 +3,15 @@ import { useProducts } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingCart, Loader2 } from "lucide-react";
+import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingCart, Loader2, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { TreePine } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useCart } from "@/contexts/CartContext";
+
+const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === 'true';
 
 // Christmas deadline inline text component
 const ChristmasDeadlineText = () => {
@@ -41,6 +44,7 @@ const Product = () => {
   const {
     toast
   } = useToast();
+  const { addToCart } = useCart();
 
   // Scroll to top or to #acquista section when page loads
   useEffect(() => {
@@ -447,25 +451,51 @@ Grazie!`);
                   )}
                 </div>
                 
-                <Button 
-                  onClick={() => {
-                    if (!termsAccepted) {
-                      setShowTermsError(true);
-                      return;
-                    }
-                    handleCheckout();
-                  }} 
-                  disabled={isCheckoutLoading} 
-                  className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
-                  {isCheckoutLoading ? <>
-                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                      Caricamento...
-                    </> : <>
-                      <ShoppingCart className="mr-2 h-6 w-6 animate-bounce" />
-                      ACQUISTA ORA
-                    </>}
-                </Button>
+                <div className="flex flex-wrap gap-3">
+                  <Button 
+                    onClick={() => {
+                      if (!termsAccepted) {
+                        setShowTermsError(true);
+                        return;
+                      }
+                      handleCheckout();
+                    }} 
+                    disabled={isCheckoutLoading} 
+                    className="h-14 px-10 bg-green-600 hover:bg-green-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    {isCheckoutLoading ? <>
+                        <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                        Caricamento...
+                      </> : <>
+                        <ShoppingCart className="mr-2 h-6 w-6 animate-bounce" />
+                        ACQUISTA ORA
+                      </>}
+                  </Button>
+
+                  {/* Add to Cart button - only when feature flag enabled */}
+                  {CART_ENABLED && selectedSizeData && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        if (!termsAccepted) {
+                          setShowTermsError(true);
+                          return;
+                        }
+                        if (product) {
+                          addToCart(product.id, selectedSizeData.dimensions);
+                          toast({
+                            title: "Aggiunto al carrello",
+                            description: `${product.name} - ${selectedSizeData.dimensions}`,
+                          });
+                        }
+                      }}
+                      className="h-14 px-6 border-2 border-gold text-foreground hover:bg-gold hover:text-black font-bold text-lg transition-all duration-200"
+                    >
+                      <Plus className="mr-2 h-5 w-5" />
+                      Aggiungi al Carrello
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
 

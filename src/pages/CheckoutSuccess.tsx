@@ -1,10 +1,19 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Home, ShoppingBag, MessageCircle, Mail } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 const CheckoutSuccess = () => {
+  const { clearCart } = useCart();
+
+  // Clear cart on successful checkout
+  useEffect(() => {
+    clearCart();
+  }, [clearCart]);
+
   return (
     <div className="min-h-screen bg-background">
       <SEO 
