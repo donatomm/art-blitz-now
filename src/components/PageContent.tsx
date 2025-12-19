@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef } from "react";
-import DOMPurify from "dompurify";
+// DOMPurify removed - admin-only content doesn't need sanitization
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { usePage } from "@/hooks/usePages";
@@ -137,13 +137,11 @@ const PageContent = ({ slug, children }: PageContentProps) => {
     return elements;
   };
 
-  // Configure DOMPurify to allow scripts and styles (admin-only content)
-  const sanitizeHTML = (html: string): string => {
-    return DOMPurify.sanitize(html, {
-      ADD_TAGS: ['style', 'script'],
-      ADD_ATTR: ['onclick', 'onload', 'onerror', 'style', 'class', 'id', 'data-image'],
-      FORCE_BODY: true,
-    });
+  // For admin-only HTML content, we skip DOMPurify sanitization
+  // since scripts need to execute. This is safe because only admins can edit.
+  const processHTML = (html: string): string => {
+    // Remove leading markdown heading if present (will be shown separately)
+    return html.replace(/^#\s+[^\n]+\n/, '');
   };
 
   // Execute scripts after HTML is rendered
@@ -218,7 +216,7 @@ const PageContent = ({ slug, children }: PageContentProps) => {
             {isHTMLContent ? (
               <div 
                 ref={htmlContainerRef}
-                dangerouslySetInnerHTML={{ __html: sanitizeHTML(page.content) }}
+                dangerouslySetInnerHTML={{ __html: processHTML(page.content) }}
               />
             ) : (
               renderContent(page.content)
