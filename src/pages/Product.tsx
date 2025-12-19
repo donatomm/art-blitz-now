@@ -492,6 +492,7 @@ Grazie!`);
                       }}
                       className="w-full h-12 rounded-full bg-[#FFD814] hover:bg-[#F7CA00] text-black font-medium text-lg shadow-sm transition-all duration-200"
                     >
+                      <ShoppingCart className="mr-2 h-5 w-5" />
                       Aggiungi al carrello
                     </Button>
                   )}
