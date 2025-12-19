@@ -3,7 +3,7 @@ import { useProducts } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingCart, Loader2, ChevronDown } from "lucide-react";
+import { ArrowLeft, MessageCircle, Mail, ChevronLeft, ChevronRight, ShoppingBag, Loader2, ChevronDown } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -51,7 +51,7 @@ const Product = () => {
   const {
     toast
   } = useToast();
-  const { addToCart } = useCart();
+  const { addToCart, getItemCount } = useCart();
 
   // Scroll to top or to #acquista section when page loads
   useEffect(() => {
@@ -478,7 +478,14 @@ Grazie!`);
                       }}
                       className="w-full h-12 rounded-full bg-[#FFD814] hover:bg-[#F7CA00] text-black font-medium text-lg shadow-sm transition-all duration-200"
                     >
-                      <ShoppingCart className="mr-2 h-5 w-5" />
+                      <div className="relative mr-2">
+                        <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
+                        {getItemCount() > 0 && (
+                          <span className="absolute -top-2 -right-2 bg-black text-[#FFD814] text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                            {getItemCount() > 9 ? "9+" : getItemCount()}
+                          </span>
+                        )}
+                      </div>
                       Aggiungi al carrello
                     </Button>
                   )}
