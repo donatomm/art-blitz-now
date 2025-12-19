@@ -18,6 +18,9 @@ const Footer = () => {
             <Link to="/shipping" className="hover:text-white transition-colors">
               Spedizioni
             </Link>
+            <Link to="/resi-e-rimborsi" className="hover:text-white transition-colors">
+              Resi e Rimborsi
+            </Link>
             <Link to="/contact" className="hover:text-white transition-colors">
               Contatti
             </Link>
