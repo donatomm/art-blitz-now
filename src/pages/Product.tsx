@@ -458,22 +458,8 @@ Grazie!`);
                   )}
                 </div>
                 
-                {/* Quantity + Buttons - New Layout */}
+                {/* Buttons - New Layout */}
                 <div className="flex flex-col gap-3 max-w-sm">
-                  {/* Quantity Dropdown */}
-                  <Select defaultValue="1">
-                    <SelectTrigger className="w-full h-12 rounded-full border-2 border-border bg-background text-foreground font-medium text-lg px-6">
-                      <SelectValue placeholder="Quantità: 1" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border-border">
-                      {[1, 2, 3, 4, 5].map((qty) => (
-                        <SelectItem key={qty} value={qty.toString()} className="text-foreground">
-                          Quantità: {qty}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
                   {/* Add to Cart button - Yellow, pill shape */}
                   {CART_ENABLED && selectedSizeData && (
                     <Button
