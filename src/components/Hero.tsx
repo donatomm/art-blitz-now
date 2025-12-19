@@ -32,7 +32,7 @@ const Hero = ({
           <div className="flex justify-end pt-20 pr-4 md:pr-8">
             <div className="flex items-center gap-2 text-white text-sm font-medium">
               <span>SPEDIZIONE GRATUITA IN ITALIA </span>
-              <button onClick={() => setShippingDialogOpen(true)} className="px-2 py-0.5 text-xs rounded transition-colors bg-white/20 hover:bg-white/30 text-white border border-white/30">
+              <button onClick={() => setShippingDialogOpen(true)} className="px-2 py-0.5 text-xs rounded transition-colors border border-white/30 text-gold-foreground bg-muted">
                 Dettagli
               </button>
             </div>
