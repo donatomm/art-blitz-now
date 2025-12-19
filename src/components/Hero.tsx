@@ -38,13 +38,13 @@ const Hero = ({
 
         {/* Main Content */}
         <div className="relative z-10 flex flex-col">
-          {/* Shipping info - positioned at top right under nav */}
-          <div className="flex justify-end pt-20 pr-4 md:pr-8">
+          {/* Shipping info - centered under nav */}
+          <div className="flex justify-center pt-20">
             <div className="flex items-center gap-2 text-white text-sm font-medium">
               <span>SPEDIZIONE GRATUITA</span>
               <button
                 onClick={() => setShippingDialogOpen(true)}
-                className="px-2 py-0.5 text-xs rounded transition-colors bg-white/20 hover:bg-white/30 text-white border border-white/30"
+                className="px-2 py-0.5 text-xs rounded transition-colors bg-transparent hover:bg-white/10 text-white border border-black"
               >
                 Dettagli
               </button>
