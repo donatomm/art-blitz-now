@@ -3,7 +3,6 @@ import TrustBar from "./TrustBar";
 import heroImage from "@/assets/hero-image.jpg";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { MessageCircle, Mail } from "lucide-react";
-
 interface HeroProps {
   imageUrl?: string;
   title?: string;
@@ -11,7 +10,6 @@ interface HeroProps {
   ctaText?: string;
   onCtaClick?: () => void;
 }
-
 const Hero = ({
   imageUrl = heroImage,
   title = "Your Hero Title Here",
@@ -20,18 +18,10 @@ const Hero = ({
   onCtaClick
 }: HeroProps) => {
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
-
-  return (
-    <>
+  return <>
       <section className="relative w-full overflow-hidden">
         {/* Background Image with fetchpriority for better LCP */}
-        <img
-          src={imageUrl}
-          alt="OctoWonders Hero"
-          fetchPriority="high"
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
+        <img src={imageUrl} alt="OctoWonders Hero" fetchPriority="high" decoding="async" className="absolute inset-0 w-full h-full object-cover object-center" />
 
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/50" />
@@ -41,11 +31,8 @@ const Hero = ({
           {/* Shipping info - positioned at top right under nav */}
           <div className="flex justify-end pt-20 pr-4 md:pr-8">
             <div className="flex items-center gap-2 text-white text-sm font-medium">
-              <span>SPEDIZIONE GRATUITA</span>
-              <button
-                onClick={() => setShippingDialogOpen(true)}
-                className="px-2 py-0.5 text-xs rounded transition-colors bg-white/20 hover:bg-white/30 text-white border border-white/30"
-              >
+              <span>SPEDIZIONE GRATUITA IN ITALIA </span>
+              <button onClick={() => setShippingDialogOpen(true)} className="px-2 py-0.5 text-xs rounded transition-colors bg-white/20 hover:bg-white/30 text-white border border-white/30">
                 Dettagli
               </button>
             </div>
@@ -60,14 +47,9 @@ const Hero = ({
               <p className="max-w-2xl mx-auto text-center text-lg italic text-gold sm:text-xl md:text-2xl">
                 {subtitle}
               </p>
-              {ctaText && (
-                <button
-                  onClick={onCtaClick}
-                  className="mt-6 px-8 py-3 font-semibold rounded-full transition-all duration-200 hover:scale-105 text-lg text-primary-foreground bg-green-600 hover:bg-green-500"
-                >
+              {ctaText && <button onClick={onCtaClick} className="mt-6 px-8 py-3 font-semibold rounded-full transition-all duration-200 hover:scale-105 text-lg text-primary-foreground bg-green-600 hover:bg-green-500">
                   {ctaText}
-                </button>
-              )}
+                </button>}
             </div>
           </div>
 
@@ -100,19 +82,11 @@ const Hero = ({
               <strong className="text-foreground">EXPRESS 24h</strong>. Contattaci per un preventivo personalizzato.
             </p>
             <div className="flex gap-3 mt-4">
-              <a
-                href="https://wa.me/393666295174?text=Ciao!%20Vorrei%20un%20preventivo%20per%20spedizione%20in%20zona%20non%20coperta%20dalla%20spedizione%20gratuita."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors text-sm font-medium"
-              >
+              <a href="https://wa.me/393666295174?text=Ciao!%20Vorrei%20un%20preventivo%20per%20spedizione%20in%20zona%20non%20coperta%20dalla%20spedizione%20gratuita." target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors text-sm font-medium">
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp
               </a>
-              <a
-                href="mailto:info@octowonders.com?subject=Richiesta%20preventivo%20spedizione"
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-md transition-colors text-sm font-medium"
-              >
+              <a href="mailto:info@octowonders.com?subject=Richiesta%20preventivo%20spedizione" className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-md transition-colors text-sm font-medium">
                 <Mail className="h-4 w-4" />
                 Email
               </a>
@@ -120,8 +94,6 @@ const Hero = ({
           </DialogDescription>
         </DialogContent>
       </Dialog>
-    </>
-  );
+    </>;
 };
-
 export default Hero;
