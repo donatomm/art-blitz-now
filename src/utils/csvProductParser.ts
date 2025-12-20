@@ -97,6 +97,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
             deal_label_enabled: false,
             deal_label_text: "OFFERTA DEL GIORNO, scade h20:00",
             mock_rooms: currentProduct.mock_rooms,
+            is_active: true,
           };
           if (currentProduct.id) {
             productData.id = currentProduct.id;
@@ -162,6 +163,7 @@ export function parseCSVProducts(csvContent: string, startingDisplayOrder: numbe
       deal_label_enabled: false,
       deal_label_text: "OFFERTA DEL GIORNO, scade h20:00",
       mock_rooms: currentProduct.mock_rooms,
+      is_active: true,
     };
     if (currentProduct.id) {
       productData.id = currentProduct.id;

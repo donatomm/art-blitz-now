@@ -293,7 +293,8 @@ const AdminPanel = ({
       display_order: products.length,
       deal_label_enabled: false,
       deal_label_text: "OFFERTA DEL GIORNO, scade h20:00",
-      mock_rooms: []
+      mock_rooms: [],
+      is_active: true
     };
     setEditProduct(newProduct);
     setIsEditDialogOpen(true);
@@ -610,7 +611,7 @@ const AdminPanel = ({
               </div>
 
               <div className="space-y-2">
-                {[...products].sort((a, b) => a.display_order - b.display_order).map((product, index) => <div key={product.id} className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                {[...products].sort((a, b) => a.display_order - b.display_order).map((product, index) => <div key={product.id} className={`flex items-center gap-2 p-2 bg-muted rounded-md ${!product.is_active ? 'opacity-50' : ''}`}>
                       <div className="flex flex-col gap-1">
                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleMoveProduct(index, "up")} disabled={index === 0}>
                           <GripVertical className="h-3 w-3 rotate-90" />
@@ -623,6 +624,17 @@ const AdminPanel = ({
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{product.name}</p>
                         <p className="text-xs text-muted-foreground">{product.medium}</p>
+                      </div>
+                      <div className="flex items-center gap-1" title={product.is_active ? "Visibile" : "Nascosto"}>
+                        <Switch 
+                          checked={product.is_active} 
+                          onCheckedChange={(checked) => {
+                            const updated = products.map(p => 
+                              p.id === product.id ? { ...p, is_active: checked } : p
+                            );
+                            onProductsChange(updated);
+                          }}
+                        />
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => handleEditProduct(product)}>
                         <Edit className="h-4 w-4" />
