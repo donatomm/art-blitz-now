@@ -1,6 +1,6 @@
 import { useState } from "react";
 import TrustBar from "./TrustBar";
-import heroImage from "@/assets/hero-image.jpg";
+import heroImage from "@/assets/hero-image.webp";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { MessageCircle, Mail } from "lucide-react";
 interface HeroProps {
