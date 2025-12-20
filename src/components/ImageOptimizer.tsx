@@ -373,7 +373,7 @@ const ImageOptimizer = () => {
           </div>
           
           {convertibleCount > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {/* Batch size selector */}
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground">Batch:</span>
@@ -399,10 +399,26 @@ const ImageOptimizer = () => {
                   </Button>
                 </div>
               </div>
+
+              {/* Preview list of images to be converted */}
+              <div className="bg-background/50 rounded p-2 max-h-32 overflow-y-auto">
+                <div className="text-xs text-muted-foreground mb-1">Immagini da convertire:</div>
+                <div className="space-y-1 text-xs font-mono">
+                  {images
+                    .filter(i => i.type === 'convertible')
+                    .slice(0, batchSize === 'all' ? undefined : batchSize)
+                    .map((img, idx) => (
+                      <div key={idx} className="flex justify-between">
+                        <span className="truncate">{img.fullPath}</span>
+                        <span className="text-muted-foreground ml-2">{(img.size / 1024).toFixed(0)}KB</span>
+                      </div>
+                    ))}
+                </div>
+              </div>
               
               <Button onClick={convertAll} className="w-full">
                 <Play className="mr-2 h-4 w-4" />
-                Converti {batchSize === 'all' ? convertibleCount : Math.min(batchSize, convertibleCount)} immagini in WebP
+                Converti {batchSize === 'all' ? convertibleCount : Math.min(batchSize as number, convertibleCount)} immagini in WebP
               </Button>
             </div>
           )}
