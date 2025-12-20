@@ -78,6 +78,7 @@ const ImageOptimizer = () => {
   const [results, setResults] = useState<ConversionResult[]>([]);
   const [progress, setProgress] = useState(0);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [batchSize, setBatchSize] = useState<number | 'all'>('all');
   const { toast } = useToast();
 
   const scanStorage = async () => {
@@ -146,7 +147,9 @@ const ImageOptimizer = () => {
   };
 
   const convertAll = async () => {
-    const toConvert = images.filter(i => i.type === 'convertible');
+    const allConvertible = images.filter(i => i.type === 'convertible');
+    const toConvert = batchSize === 'all' ? allConvertible : allConvertible.slice(0, batchSize);
+    
     if (toConvert.length === 0) {
       toast({
         title: "Nessuna immagine",
@@ -370,10 +373,38 @@ const ImageOptimizer = () => {
           </div>
           
           {convertibleCount > 0 && (
-            <Button onClick={convertAll} className="w-full">
-              <Play className="mr-2 h-4 w-4" />
-              Converti {convertibleCount} immagini in WebP
-            </Button>
+            <div className="space-y-2">
+              {/* Batch size selector */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Batch:</span>
+                <div className="flex gap-1">
+                  {[5, 10, 25, 50].map(n => (
+                    <Button
+                      key={n}
+                      size="sm"
+                      variant={batchSize === n ? "default" : "outline"}
+                      className="h-7 px-2 text-xs"
+                      onClick={() => setBatchSize(n)}
+                    >
+                      {n}
+                    </Button>
+                  ))}
+                  <Button
+                    size="sm"
+                    variant={batchSize === 'all' ? "default" : "outline"}
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setBatchSize('all')}
+                  >
+                    Tutte
+                  </Button>
+                </div>
+              </div>
+              
+              <Button onClick={convertAll} className="w-full">
+                <Play className="mr-2 h-4 w-4" />
+                Converti {batchSize === 'all' ? convertibleCount : Math.min(batchSize, convertibleCount)} immagini in WebP
+              </Button>
+            </div>
           )}
         </div>
       )}
