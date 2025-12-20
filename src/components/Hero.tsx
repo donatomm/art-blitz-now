@@ -20,8 +20,8 @@ const Hero = ({
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
   return <>
       <section className="relative w-full overflow-hidden">
-        {/* Background Image with fetchpriority for better LCP */}
-        <img src={imageUrl} alt="OctoWonders Hero" loading="eager" decoding="async" className="absolute inset-0 w-full h-full object-cover object-center" />
+        {/* Background Image with high priority for LCP */}
+        <img src={imageUrl} alt="OctoWonders Hero" width={1920} height={1080} loading="eager" decoding="sync" fetchPriority="high" className="absolute inset-0 w-full h-full object-cover object-center" />
 
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/50" />
