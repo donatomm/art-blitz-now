@@ -27,8 +27,10 @@
     <meta name="twitter:description" content="Stampe d'arte originali su tela. Spedizione gratuita in Italia." />
     <meta name="twitter:image" content="https://octowonders.com/artworks/octoheaded.jpg" />
     
-    <!-- Preload hero image for faster LCP -->
-    <link rel="preload" as="image" href="/src/assets/hero-image.jpg" fetchpriority="high">
+    <!-- 
+      Hero image preload removed - Vite handles asset optimization.
+      The hero image uses fetchpriority="high" in the component.
+    -->
   </head>
 
   <body>
