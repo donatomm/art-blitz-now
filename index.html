@@ -27,20 +27,20 @@
     <meta name="twitter:image" content="https://octowonders.com/artworks/octoheaded.jpg" />
     
     <!-- Preload hero image for faster LCP -->
-    <link rel="preload" as="image" href="/src/assets/hero-image.jpg" type="image/jpeg" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/hero-image.jpg" fetchpriority="high" />
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Termly cookie consent - loaded after page load for better LCP -->
+    <!-- Termly cookie consent - loaded 2.5s after page load for better LCP -->
     <script>
       window.addEventListener('load', function() {
         setTimeout(function() {
           var s = document.createElement('script');
           s.src = 'https://app.termly.io/resource-blocker/6ea575f3-ebb7-4d52-b62e-f799ea1f47b0?autoBlock=on';
           document.body.appendChild(s);
-        }, 100);
+        }, 2500);
       });
     </script>
   </body>
