@@ -10,7 +10,6 @@ import AdminPanel from "@/components/AdminPanel";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { toast } from "@/hooks/use-toast";
-const heroImageUrl = "/images/hero-image.jpg";
 const Index = () => {
   const {
     data: products = [],
@@ -83,7 +82,7 @@ const Index = () => {
       <Navigation isOverHero />
       
 
-      <Hero imageUrl={heroImageUrl} title="Accendi Quella Stanza" subtitle="Opere Magnetiche. Uniche. Non per tutti." ctaText="SCOPRI LE OPERE" onCtaClick={scrollToGallery} />
+      <Hero title="Accendi Quella Stanza" subtitle="Opere Magnetiche. Uniche. Non per tutti." ctaText="SCOPRI LE OPERE" onCtaClick={scrollToGallery} />
 
       <main ref={galleryRef} className="p-1">
         {isLoading ? <div className="flex items-center justify-center py-12">

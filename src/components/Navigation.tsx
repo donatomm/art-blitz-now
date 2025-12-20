@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.webp";
 
 const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === 'true';
 
