@@ -21,7 +21,7 @@ const Hero = ({
   return <>
       <section className="relative w-full overflow-hidden">
         {/* Background Image with fetchpriority for better LCP */}
-        <img src={imageUrl} alt="OctoWonders Hero" fetchPriority="high" decoding="async" className="absolute inset-0 w-full h-full object-cover object-center" />
+        <img src={imageUrl} alt="OctoWonders Hero" loading="eager" decoding="async" className="absolute inset-0 w-full h-full object-cover object-center" />
 
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/50" />
