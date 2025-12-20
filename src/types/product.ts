@@ -25,6 +25,7 @@ export interface Product {
   deal_label_enabled: boolean;
   deal_label_text: string;
   mock_rooms?: MockRoom[]; // deprecated - kept for backward compatibility
+  is_active: boolean;
   created_at?: string;
   updated_at?: string;
 }

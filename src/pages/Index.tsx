@@ -88,7 +88,7 @@ const Index = () => {
       <main ref={galleryRef} className="p-1">
         {isLoading ? <div className="flex items-center justify-center py-12">
             <p className="text-muted-foreground">Loading products...</p>
-          </div> : <MasonryGrid products={products} onBuyClick={handleBuyClick} onCustomOrder={handleCustomOrder} />}
+          </div> : <MasonryGrid products={products.filter(p => p.is_active)} onBuyClick={handleBuyClick} onCustomOrder={handleCustomOrder} />}
       </main>
 
       <BuyDialog product={selectedProduct} open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen} />
