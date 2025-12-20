@@ -6,8 +6,7 @@
     <link rel="preconnect" href="https://app.termly.io" crossorigin>
     <link rel="dns-prefetch" href="https://xqubydbsoucrwqhddodw.supabase.co">
     
-    <!-- Termly cookie consent - deferred to not block LCP -->
-    <script src="https://app.termly.io/resource-blocker/6ea575f3-ebb7-4d52-b62e-f799ea1f47b0?autoBlock=on" defer></script>
+    <!-- Termly cookie consent moved to end of body for better LCP -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OctoWonders by Marco De Francesco - Stampe d'Arte su Tela</title>
@@ -36,5 +35,7 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Termly cookie consent - loaded after main content for better LCP -->
+    <script src="https://app.termly.io/resource-blocker/6ea575f3-ebb7-4d52-b62e-f799ea1f47b0?autoBlock=on" defer></script>
   </body>
 </html>
