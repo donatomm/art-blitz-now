@@ -304,7 +304,7 @@ Grazie!`);
       <div className="container mx-auto px-4 pt-32 pb-12">
 
         {/* Deal Label - based on selected size - only show if deal_price > 0 */}
-        {selectedSizeData?.deal_label_enabled && selectedSizeData?.deal_price && selectedSizeData.deal_price > 0 && selectedSizeData?.deal_label_text && (
+        {!!(selectedSizeData?.deal_label_enabled && selectedSizeData?.deal_price && selectedSizeData.deal_price > 0 && selectedSizeData?.deal_label_text) && (
           <div className="w-full mb-4">
             <span className="inline-block font-bold text-sm px-4 py-2 rounded shadow-lg bg-fuchsia-500 text-primary-foreground">
               {selectedSizeData.deal_label_text}
