@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
     // Fetch all products
     const { data: products, error } = await supabase
       .from("products")
-      .select("id, name, updated_at")
+      .select("id, name, slug, updated_at")
       .order("display_order");
 
     if (error) throw error;
@@ -53,15 +53,18 @@ Deno.serve(async (req) => {
 `;
     }
 
-    // Add product pages
+    // Add product pages - only include products with slugs (never index UUIDs)
     if (products) {
       for (const product of products) {
+        // Skip products without slugs - they shouldn't be indexed
+        if (!product.slug) continue;
+        
         const lastmod = product.updated_at 
           ? new Date(product.updated_at).toISOString().split("T")[0]
           : today;
         
         xml += `  <url>
-    <loc>${baseUrl}/product/${product.id}</loc>
+    <loc>${baseUrl}/product/${product.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
