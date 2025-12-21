@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { TreePine } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/contexts/CartContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === 'true';
 
@@ -117,8 +118,10 @@ const Product = () => {
 
   const finalMockRooms = (mockRooms && mockRooms.length > 0) ? mockRooms : legacyMockRooms;
 
-  // Max carousel index (show 2 mock rooms side by side)
-  const maxIndex = Math.max(0, finalMockRooms.length - 2);
+  const isMobile = useIsMobile();
+  
+  // Max carousel index: show 1 at a time on mobile, 2 on desktop
+  const maxIndex = Math.max(0, isMobile ? finalMockRooms.length - 1 : finalMockRooms.length - 2);
 
   const handlePrev = () => {
     setCarouselIndex((prev) => Math.max(0, prev - 1));
@@ -316,10 +319,10 @@ Grazie!`);
               {/* Carousel Container */}
               <div className="flex-1 overflow-hidden">
                 <div className="flex gap-4 transition-transform duration-300 ease-out" style={{
-              transform: `translateX(-${carouselIndex * (50 + 8)}%)`
+              transform: `translateX(-${carouselIndex * (isMobile ? 100 + (16 / (window.innerWidth - 112) * 100) : 50 + 8)}%)`
             }}>
                   {finalMockRooms.map((room) => (
-                    <div key={room.id} className="flex-shrink-0 w-[calc(50%-8px)] flex flex-col">
+                    <div key={room.id} className="flex-shrink-0 w-full sm:w-[calc(50%-8px)] flex flex-col">
                       <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
                         {room.image ? (
                           <img
