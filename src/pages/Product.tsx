@@ -309,20 +309,20 @@ Grazie!`);
           </div>}
 
         {/* Mock Room Carousel - Full width at top */}
-        {finalMockRooms.length > 0 && <div className="relative mb-8">
-            <div className="flex items-center gap-3">
-              {/* Left Arrow */}
-              <button onClick={handlePrev} disabled={carouselIndex === 0} className="flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
+        {finalMockRooms.length > 0 && <div className="relative mb-8 -mx-4 sm:mx-0">
+            <div className="flex items-center gap-0 sm:gap-3">
+              {/* Left Arrow - hidden on mobile */}
+              <button onClick={handlePrev} disabled={carouselIndex === 0} className="hidden sm:flex flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
                 <ChevronLeft className="h-8 w-8 stroke-[3]" />
               </button>
               
               {/* Carousel Container */}
               <div className="flex-1 overflow-hidden">
-                <div className="flex gap-4 transition-transform duration-300 ease-out" style={{
-              transform: `translateX(-${carouselIndex * (isMobile ? 100 + (16 / (window.innerWidth - 112) * 100) : 50 + 8)}%)`
+                <div className="flex gap-0 sm:gap-4 transition-transform duration-300 ease-out" style={{
+              transform: `translateX(-${carouselIndex * 100}%)`
             }}>
                   {finalMockRooms.map((room) => (
-                    <div key={room.id} className="flex-shrink-0 w-full sm:w-[calc(50%-8px)] flex flex-col">
+                    <div key={room.id} className="flex-shrink-0 w-full sm:w-[calc(50%-8px)] flex flex-col px-4 sm:px-0">
                       <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
                         {room.image ? (
                           <img
@@ -359,11 +359,26 @@ Grazie!`);
                 </div>
               </div>
               
-              {/* Right Arrow */}
-              <button onClick={handleNext} disabled={carouselIndex >= maxIndex} className="flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
+              {/* Right Arrow - hidden on mobile */}
+              <button onClick={handleNext} disabled={carouselIndex >= maxIndex} className="hidden sm:flex flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
                 <ChevronRight className="h-8 w-8 stroke-[3]" />
               </button>
             </div>
+            
+            {/* Mobile dot indicators */}
+            {isMobile && finalMockRooms.length > 1 && (
+              <div className="flex justify-center gap-2 mt-4">
+                {finalMockRooms.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCarouselIndex(index)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${
+                      carouselIndex === index ? 'bg-gold scale-125' : 'bg-muted-foreground/30'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
           </div>}
 
         {/* Product Info Row - Artwork left, Info right */}
