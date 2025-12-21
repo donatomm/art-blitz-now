@@ -164,10 +164,10 @@ const CartDrawer = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 ml-auto text-destructive hover:text-destructive"
+                        className="h-7 w-7 ml-auto text-destructive hover:text-destructive hover:bg-destructive/10"
                         onClick={() => removeFromCart(item.productId, item.sizeDimensions)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-5 w-5" strokeWidth={2} />
                       </Button>
                     </div>
                   </div>
@@ -186,7 +186,7 @@ const CartDrawer = () => {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Spedizione</span>
-              <span className="font-medium text-green-600">Gratuita</span>
+              <span className="font-medium text-green-600">Gratuita (Italia)</span>
             </div>
             <div className="flex justify-between text-lg font-bold">
               <span>Totale</span>
@@ -211,13 +211,6 @@ const CartDrawer = () => {
               )}
             </Button>
 
-            <Button
-              variant="ghost"
-              className="w-full text-muted-foreground"
-              onClick={clearCart}
-            >
-              Svuota carrello
-            </Button>
           </div>
         )}
       </SheetContent>
