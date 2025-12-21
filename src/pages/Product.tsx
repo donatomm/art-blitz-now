@@ -36,11 +36,7 @@ const ChristmasDeadlineText = () => {
     </p>;
 };
 const Product = () => {
-  const {
-    id
-  } = useParams<{
-    id: string;
-  }>();
+  const { slug } = useParams<{ slug: string }>();
   const {
     data: products,
     isLoading
@@ -68,8 +64,10 @@ const Product = () => {
     } else {
       window.scrollTo(0, 0);
     }
-  }, [id]);
-  const product = products?.find(p => p.id === id);
+  }, [slug]);
+  
+  // Find product by slug first, fallback to ID for backwards compatibility
+  const product = products?.find(p => p.slug === slug) || products?.find(p => p.id === slug);
 
   // Helper to normalize dimensions so AAxBB and BBxAA are treated as the same SKU
   const normalizeDimension = (dim: string): string => {
@@ -289,7 +287,7 @@ Grazie!`);
         title={product.name}
         description={product.description || `${product.name} - ${product.medium}. Stampa su tela di alta qualità. Da €${minPrice}. Spedizione gratuita in Italia.`}
         image={product.image_url}
-        url={`/product/${product.id}`}
+        url={`/product/${product.slug || product.id}`}
         type="product"
         product={product}
       />
