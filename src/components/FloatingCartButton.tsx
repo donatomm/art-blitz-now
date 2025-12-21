@@ -16,10 +16,10 @@ const FloatingCartButton = () => {
   return (
     <Button
       onClick={() => setIsCartOpen(true)}
-      className="fixed bottom-6 right-6 z-50 h-20 w-20 rounded-full shadow-lg bg-gold hover:bg-gold/90"
+      className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg bg-gold hover:bg-gold/90"
       size="icon"
     >
-      <ShoppingCart className="h-12 w-12 text-black" />
+      <ShoppingCart className="h-8 w-8 text-black" />
       <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
         {itemCount > 9 ? "9+" : itemCount}
       </span>
