@@ -324,11 +324,11 @@ Grazie!`);
         )}
 
         {/* Mock Room Carousel - Full width */}
-        {finalMockRooms.length > 0 && <div className="relative mb-8 -mx-4 sm:mx-0">
-            <div className="flex items-center gap-0 sm:gap-3">
-              {/* Left Arrow - hidden on mobile */}
-              <button onClick={handlePrev} disabled={carouselIndex === 0} className="hidden sm:flex flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
-                <ChevronLeft className="h-8 w-8 stroke-[3]" />
+        {finalMockRooms.length > 0 && <div className="relative mb-8 sm:mx-0">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Left Arrow */}
+              <button onClick={handlePrev} disabled={carouselIndex === 0} className="flex flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
+                <ChevronLeft className="h-5 w-5 sm:h-8 sm:w-8 stroke-[3]" />
               </button>
               
               {/* Carousel Container */}
@@ -337,7 +337,7 @@ Grazie!`);
               transform: `translateX(-${carouselIndex * 100}%)`
             }}>
                   {finalMockRooms.map((room) => (
-                    <div key={room.id} className="flex-shrink-0 w-full sm:w-[calc(50%-8px)] flex flex-col px-4 sm:px-0">
+                    <div key={room.id} className="flex-shrink-0 w-full sm:w-[calc(50%-8px)] flex flex-col px-1 sm:px-0">
                       <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
                         {room.image ? (
                           <img
@@ -374,9 +374,9 @@ Grazie!`);
                 </div>
               </div>
               
-              {/* Right Arrow - hidden on mobile */}
-              <button onClick={handleNext} disabled={carouselIndex >= maxIndex} className="hidden sm:flex flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
-                <ChevronRight className="h-8 w-8 stroke-[3]" />
+              {/* Right Arrow */}
+              <button onClick={handleNext} disabled={carouselIndex >= maxIndex} className="flex flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
+                <ChevronRight className="h-5 w-5 sm:h-8 sm:w-8 stroke-[3]" />
               </button>
             </div>
             
