@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { TreePine } from "lucide-react";
@@ -49,6 +50,7 @@ const Product = () => {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const {
     toast
@@ -272,6 +274,17 @@ Grazie!`);
   const minPrice = activePrices.length > 0 ? Math.min(...activePrices) : 0;
   
   return <div className="min-h-screen bg-background">
+      {/* Fullscreen Image Modal */}
+      <Dialog open={!!fullscreenImage} onOpenChange={() => setFullscreenImage(null)}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
+          <img
+            src={fullscreenImage || ''}
+            alt="Fullscreen mockup"
+            className="w-full h-full object-contain cursor-zoom-out"
+            onClick={() => setFullscreenImage(null)}
+          />
+        </DialogContent>
+      </Dialog>
       <SEO 
         title={product.name}
         description={product.description || `${product.name} - ${product.medium}. Stampa su tela di alta qualità. Da €${minPrice}. Spedizione gratuita in Italia.`}
@@ -355,7 +368,8 @@ Grazie!`);
                         <img
                           src={room.image}
                           alt={`${product?.name} in ambiente`}
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-contain cursor-zoom-in"
+                          onClick={() => setFullscreenImage(room.image)}
                         />
                       ) : (
                         <div className="text-center text-muted-foreground p-4">
