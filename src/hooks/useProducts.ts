@@ -71,6 +71,7 @@ export const useUpdateProduct = () => {
           deal_label_text: product.deal_label_text,
           mock_rooms: product.mock_rooms as unknown as Json,
           is_active: product.is_active,
+          slug: product.slug || null,
         })
         .eq("id", product.id);
 
@@ -98,6 +99,7 @@ export const useCreateProduct = () => {
         deal_label_text: product.deal_label_text,
         mock_rooms: product.mock_rooms as unknown as Json,
         is_active: product.is_active ?? true,
+        slug: product.slug || null,
       });
       if (error) throw error;
     },
