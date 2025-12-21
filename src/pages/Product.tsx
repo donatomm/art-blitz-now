@@ -323,62 +323,108 @@ Grazie!`);
           </div>
         )}
 
-        {/* Mock Room Carousel - Full width */}
+        {/* Mock Room Carousel - Full width with swipe gestures */}
         {finalMockRooms.length > 0 && <div className="relative mb-8 sm:mx-0">
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Left Arrow */}
-              <button onClick={handlePrev} disabled={carouselIndex === 0} className="flex flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
-                <ChevronLeft className="h-5 w-5 sm:h-8 sm:w-8 stroke-[3]" />
-              </button>
-              
-              {/* Carousel Container */}
-              <div className="flex-1 overflow-hidden">
-                <div className="flex gap-0 sm:gap-4 transition-transform duration-300 ease-out" style={{
-              transform: `translateX(-${carouselIndex * 100}%)`
-            }}>
-                  {finalMockRooms.map((room) => (
-                    <div key={room.id} className="flex-shrink-0 w-full sm:w-[calc(50%-8px)] flex flex-col px-1 sm:px-0">
-                      <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
-                        {room.image ? (
-                          <img
-                            src={room.image}
-                            alt={`${product?.name} in ambiente`}
-                            className="w-full h-full object-contain"
-                          />
-                        ) : (
-                          <div className="text-center text-muted-foreground p-4">
-                            <div className="text-4xl mb-2">🖼️</div>
-                            <div className="text-sm">Mockup {room.id}</div>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {room.displayLabel && (
-                          <span className="text-xs font-medium px-3 py-1 rounded border border-border tracking-wider bg-gray-950 text-primary-foreground">
-                            {room.displayLabel}
-                          </span>
-                        )}
-                        {room.price > 0 && (
-                          <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
-                            €{room.price}
-                          </span>
-                        )}
-                        {room.note && (
-                          <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
-                            {room.note}
-                          </span>
-                        )}
-                      </div>
+            {/* Carousel Container with touch support */}
+            <div 
+              className="overflow-hidden rounded-lg"
+              onTouchStart={(e) => {
+                const touch = e.touches[0];
+                (e.currentTarget as HTMLDivElement).dataset.touchStartX = touch.clientX.toString();
+              }}
+              onTouchEnd={(e) => {
+                const startX = parseFloat((e.currentTarget as HTMLDivElement).dataset.touchStartX || '0');
+                const endX = e.changedTouches[0].clientX;
+                const diff = startX - endX;
+                if (Math.abs(diff) > 50) {
+                  if (diff > 0 && carouselIndex < maxIndex) {
+                    handleNext();
+                  } else if (diff < 0 && carouselIndex > 0) {
+                    handlePrev();
+                  }
+                }
+              }}
+            >
+              <div className="flex gap-0 sm:gap-4 transition-transform duration-300 ease-out" style={{
+                transform: `translateX(-${carouselIndex * 100}%)`
+              }}>
+                {finalMockRooms.map((room) => (
+                  <div key={room.id} className="flex-shrink-0 w-full sm:w-[calc(50%-8px)] flex flex-col">
+                    <div className="relative aspect-[3/4] bg-muted rounded-lg overflow-hidden border border-border flex items-center justify-center">
+                      {room.image ? (
+                        <img
+                          src={room.image}
+                          alt={`${product?.name} in ambiente`}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <div className="text-center text-muted-foreground p-4">
+                          <div className="text-4xl mb-2">🖼️</div>
+                          <div className="text-sm">Mockup {room.id}</div>
+                        </div>
+                      )}
+                      
+                      {/* Overlay Arrows - Mobile */}
+                      {isMobile && (
+                        <>
+                          <button 
+                            onClick={handlePrev} 
+                            disabled={carouselIndex === 0} 
+                            className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-all disabled:opacity-30 disabled:cursor-not-allowed z-10"
+                          >
+                            <ChevronLeft className="h-6 w-6 stroke-[2.5]" />
+                          </button>
+                          <button 
+                            onClick={handleNext} 
+                            disabled={carouselIndex >= maxIndex} 
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-all disabled:opacity-30 disabled:cursor-not-allowed z-10"
+                          >
+                            <ChevronRight className="h-6 w-6 stroke-[2.5]" />
+                          </button>
+                        </>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <div className="flex flex-wrap gap-2 mt-2 px-1">
+                      {room.displayLabel && (
+                        <span className="text-xs font-medium px-3 py-1 rounded border border-border tracking-wider bg-gray-950 text-primary-foreground">
+                          {room.displayLabel}
+                        </span>
+                      )}
+                      {room.price > 0 && (
+                        <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
+                          €{room.price}
+                        </span>
+                      )}
+                      {room.note && (
+                        <span className="bg-muted text-foreground text-xs px-3 py-1 rounded border border-border">
+                          {room.note}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-              
-              {/* Right Arrow */}
-              <button onClick={handleNext} disabled={carouselIndex >= maxIndex} className="flex flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
-                <ChevronRight className="h-5 w-5 sm:h-8 sm:w-8 stroke-[3]" />
-              </button>
             </div>
+            
+            {/* Desktop Arrows - Outside carousel */}
+            {!isMobile && (
+              <div className="absolute inset-0 flex items-center justify-between pointer-events-none">
+                <button 
+                  onClick={handlePrev} 
+                  disabled={carouselIndex === 0} 
+                  className="pointer-events-auto -ml-6 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="h-8 w-8 stroke-[3]" />
+                </button>
+                <button 
+                  onClick={handleNext} 
+                  disabled={carouselIndex >= maxIndex} 
+                  className="pointer-events-auto -mr-6 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground flex items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="h-8 w-8 stroke-[3]" />
+                </button>
+              </div>
+            )}
             
             {/* Mobile dot indicators */}
             {isMobile && finalMockRooms.length > 1 && (
