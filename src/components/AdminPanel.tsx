@@ -677,6 +677,22 @@ const AdminPanel = ({
             })} />
               </div>
               <div>
+                <Label>URL Slug</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-sm whitespace-nowrap">/prodotti/</span>
+                  <Input 
+                    value={editProduct.slug || ''} 
+                    onChange={e => setEditProduct({...editProduct, slug: e.target.value || undefined})}
+                    placeholder="inserisci-slug-qui"
+                  />
+                </div>
+                {editProduct.slug && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    URL: octowonders.com/prodotti/{editProduct.slug}
+                  </p>
+                )}
+              </div>
+              <div>
                 <Label>Tecnica</Label>
                 <Input value={editProduct.medium} onChange={e => setEditProduct({
               ...editProduct,

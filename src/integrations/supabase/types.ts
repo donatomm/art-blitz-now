@@ -61,6 +61,7 @@ export type Database = {
           mock_rooms: Json
           name: string
           sizes: Json
+          slug: string | null
           updated_at: string
         }
         Insert: {
@@ -76,6 +77,7 @@ export type Database = {
           mock_rooms?: Json
           name: string
           sizes?: Json
+          slug?: string | null
           updated_at?: string
         }
         Update: {
@@ -91,6 +93,7 @@ export type Database = {
           mock_rooms?: Json
           name?: string
           sizes?: Json
+          slug?: string | null
           updated_at?: string
         }
         Relationships: []
