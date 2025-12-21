@@ -303,13 +303,15 @@ Grazie!`);
           {product.name}
         </h1>
 
-        {/* Product Description - Full width */}
-        {product.description && <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
-            <p className="text-muted-foreground leading-relaxed my-0 py-0 mt-px ml-0 text-lg font-sans font-medium">{product.description}</p>
-          </div>}
+        {/* Flex container to reorder description/carousel on mobile */}
+        <div className="flex flex-col">
+          {/* Product Description - Shows after carousel on mobile, before on desktop */}
+          {product.description && <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg order-2 sm:order-1">
+              <p className="text-muted-foreground leading-relaxed my-0 py-0 mt-px ml-0 text-lg font-sans font-medium">{product.description}</p>
+            </div>}
 
-        {/* Mock Room Carousel - Full width at top */}
-        {finalMockRooms.length > 0 && <div className="relative mb-8 -mx-4 sm:mx-0">
+          {/* Mock Room Carousel - Shows first on mobile */}
+          {finalMockRooms.length > 0 && <div className="relative mb-8 -mx-4 sm:mx-0 order-1 sm:order-2">
             <div className="flex items-center gap-0 sm:gap-3">
               {/* Left Arrow - hidden on mobile */}
               <button onClick={handlePrev} disabled={carouselIndex === 0} className="hidden sm:flex flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
@@ -380,6 +382,7 @@ Grazie!`);
               </div>
             )}
           </div>}
+        </div>
 
         {/* Product Info Row - Artwork left, Info right */}
         <div className="flex flex-col md:flex-row gap-6 items-start md:pl-[68px]">
