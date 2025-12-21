@@ -321,11 +321,11 @@ Grazie!`);
         {product.description && (
           <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
             <p className="text-muted-foreground leading-relaxed my-0 py-0 mt-px ml-0 text-lg font-sans font-medium">
-              {isMobile && !descriptionExpanded && product.description.length > 200 
-                ? product.description.slice(0, 200) + "..." 
+              {isMobile && !descriptionExpanded && [...product.description].length > 200 
+                ? [...product.description].slice(0, 200).join("") + "..." 
                 : product.description}
             </p>
-            {isMobile && product.description.length > 200 && (
+            {isMobile && [...product.description].length > 200 && (
               <button
                 onClick={() => setDescriptionExpanded(!descriptionExpanded)}
                 className="text-gold font-medium text-sm mt-2 hover:underline"
