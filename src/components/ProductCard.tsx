@@ -102,7 +102,7 @@ const ProductCard = ({
           {imageContent}
         </div>
       ) : (
-        <Link to={`/product/${product.id}`} className="relative overflow-hidden block">
+        <Link to={`/product/${product.slug || product.id}`} className="relative overflow-hidden block">
           {imageContent}
         </Link>
       )}
@@ -116,7 +116,7 @@ const ProductCard = ({
               <span className="text-muted-foreground">|</span>
               <span className="text-muted-foreground mx-px">{sizePrices}</span>
               <span className="text-muted-foreground">|</span>
-              <Link to={`/product/${product.id}#acquista`}>
+              <Link to={`/product/${product.slug || product.id}#acquista`}>
                 <Button 
                   size="sm" 
                   className="h-6 px-2 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
