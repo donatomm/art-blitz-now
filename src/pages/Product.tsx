@@ -480,7 +480,7 @@ Grazie!`);
                 <h3 className="text-sm font-medium text-foreground">Seleziona Dimensione</h3>
                 <div className="flex flex-wrap gap-2">
                   {activeSizes.map((size, index) => {
-                    const hasOffer = size.deal_label_enabled && size.deal_price && size.deal_price > 0;
+                    const hasOffer = !!(size.deal_label_enabled && size.deal_price && size.deal_price > 0);
                     return (
                       <button 
                         key={size.dimensions} 
