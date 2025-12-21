@@ -49,6 +49,7 @@ const Product = () => {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const {
     toast
   } = useToast();
@@ -303,15 +304,27 @@ Grazie!`);
           {product.name}
         </h1>
 
-        {/* Flex container to reorder description/carousel on mobile */}
-        <div className="flex flex-col">
-          {/* Product Description - Shows after carousel on mobile, before on desktop */}
-          {product.description && <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg order-2 sm:order-1">
-              <p className="text-muted-foreground leading-relaxed my-0 py-0 mt-px ml-0 text-lg font-sans font-medium">{product.description}</p>
-            </div>}
+        {/* Product Description - Truncated on mobile with Read more */}
+        {product.description && (
+          <div className="w-full mb-8 p-6 bg-card border border-border rounded-lg">
+            <p className="text-muted-foreground leading-relaxed my-0 py-0 mt-px ml-0 text-lg font-sans font-medium">
+              {isMobile && !descriptionExpanded && product.description.length > 100 
+                ? product.description.slice(0, 100) + "..." 
+                : product.description}
+            </p>
+            {isMobile && product.description.length > 100 && (
+              <button 
+                onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+                className="text-gold font-medium text-sm mt-2 hover:underline"
+              >
+                {descriptionExpanded ? "Leggi meno" : "Leggi tutto"}
+              </button>
+            )}
+          </div>
+        )}
 
-          {/* Mock Room Carousel - Shows first on mobile */}
-          {finalMockRooms.length > 0 && <div className="relative mb-8 -mx-4 sm:mx-0 order-1 sm:order-2">
+        {/* Mock Room Carousel - Full width */}
+        {finalMockRooms.length > 0 && <div className="relative mb-8 -mx-4 sm:mx-0">
             <div className="flex items-center gap-0 sm:gap-3">
               {/* Left Arrow - hidden on mobile */}
               <button onClick={handlePrev} disabled={carouselIndex === 0} className="hidden sm:flex flex-shrink-0 w-14 h-14 rounded-full bg-foreground text-background border-2 border-foreground items-center justify-center hover:bg-gold hover:border-gold hover:text-black transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
@@ -382,7 +395,6 @@ Grazie!`);
               </div>
             )}
           </div>}
-        </div>
 
         {/* Product Info Row - Artwork left, Info right */}
         <div className="flex flex-col md:flex-row gap-6 items-start md:pl-[68px]">
