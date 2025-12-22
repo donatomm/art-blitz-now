@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# Redirect sitemap.xml to dynamic edge function
+RewriteRule ^sitemap\.xml$ https://xqubydbsoucrwqhddodw.supabase.co/functions/v1/sitemap [R=301,L]
