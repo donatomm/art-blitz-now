@@ -36,6 +36,9 @@ Deno.serve(async (req) => {
       { loc: "/privacy", changefreq: "yearly", priority: "0.3" },
       { loc: "/cookies", changefreq: "yearly", priority: "0.3" },
       { loc: "/terms", changefreq: "yearly", priority: "0.3" },
+      { loc: "/nota-clienti", changefreq: "monthly", priority: "0.6" },
+      { loc: "/resi-e-rimborsi", changefreq: "monthly", priority: "0.5" },
+      { loc: "/ordine-personalizzato", changefreq: "monthly", priority: "0.7" },
     ];
 
     // Generate XML
