@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
+import { sanitizeHtml, sanitizeInlineHtml } from "@/utils/sanitizeHtml";
 
 interface PageContentProps {
   slug: string;
@@ -18,8 +18,6 @@ const containsHTML = (str: string): boolean => {
 
 const PageContent = ({ slug, children }: PageContentProps) => {
   const { data: page, isLoading, error } = usePage(slug);
-  const htmlContainerRef = useRef<HTMLDivElement>(null);
-
   // Simple markdown renderer for basic formatting
   const renderContent = (content: string) => {
     const lines = content.split('\n');
@@ -55,7 +53,9 @@ const PageContent = ({ slug, children }: PageContentProps) => {
           // Check for image first
           const imageMatch = inlinePart.match(/!\[([^\]]*)\]\(([^)]+)\)/);
           if (imageMatch) {
-            return <img key={`${i}-${j}`} src={imageMatch[2]} alt={imageMatch[1]} className="inline max-h-64 rounded" />;
+            // Sanitize alt text to prevent XSS
+            const sanitizedAlt = sanitizeInlineHtml(imageMatch[1]);
+            return <img key={`${i}-${j}`} src={imageMatch[2]} alt={sanitizedAlt} className="inline max-h-64 rounded" />;
           }
           // Check for link
           const linkMatch = inlinePart.match(/\[([^\]]+)\]\(([^)]+)\)/);
@@ -136,27 +136,14 @@ const PageContent = ({ slug, children }: PageContentProps) => {
     return elements;
   };
 
-  // For admin-only HTML content, we skip sanitization since scripts need to execute.
-  // This is safe because only admins can edit pages (protected by RLS).
+  // Process and sanitize HTML content to prevent XSS attacks
+  // Scripts and dangerous elements are stripped for security
   const processHTML = (html: string): string => {
     // Remove leading markdown heading if present (will be shown separately)
-    return html.replace(/^#\s+[^\n]+\n/, '');
+    const withoutHeading = html.replace(/^#\s+[^\n]+\n/, '');
+    // Sanitize to remove scripts and dangerous content
+    return sanitizeHtml(withoutHeading);
   };
-
-  // Execute scripts after HTML is rendered
-  useEffect(() => {
-    if (page?.content && containsHTML(page.content) && htmlContainerRef.current) {
-      const scripts = htmlContainerRef.current.querySelectorAll('script');
-      scripts.forEach((oldScript) => {
-        const newScript = document.createElement('script');
-        Array.from(oldScript.attributes).forEach(attr => {
-          newScript.setAttribute(attr.name, attr.value);
-        });
-        newScript.textContent = oldScript.textContent;
-        oldScript.parentNode?.replaceChild(newScript, oldScript);
-      });
-    }
-  }, [page?.content]);
 
   if (isLoading) {
     return (
@@ -213,7 +200,6 @@ const PageContent = ({ slug, children }: PageContentProps) => {
           <div className="prose prose-lg max-w-none">
             {isHTMLContent ? (
               <div 
-                ref={htmlContainerRef}
                 dangerouslySetInnerHTML={{ __html: processHTML(page.content) }}
               />
             ) : (
