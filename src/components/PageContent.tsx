@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import DOMPurify from "dompurify";
+import { useEffect, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { usePage } from "@/hooks/usePages";
@@ -18,6 +18,7 @@ const containsHTML = (str: string): boolean => {
 
 const PageContent = ({ slug, children }: PageContentProps) => {
   const { data: page, isLoading, error } = usePage(slug);
+  const htmlContainerRef = useRef<HTMLDivElement>(null);
 
   // Simple markdown renderer for basic formatting
   const renderContent = (content: string) => {
@@ -135,17 +136,27 @@ const PageContent = ({ slug, children }: PageContentProps) => {
     return elements;
   };
 
-  // Sanitize HTML content to prevent XSS attacks
-  // Scripts and dangerous attributes are stripped for security
-  const sanitizeHTML = (html: string): string => {
+  // For admin-only HTML content, we skip sanitization since scripts need to execute.
+  // This is safe because only admins can edit pages (protected by RLS).
+  const processHTML = (html: string): string => {
     // Remove leading markdown heading if present (will be shown separately)
-    const cleanedHtml = html.replace(/^#\s+[^\n]+\n/, '');
-    return DOMPurify.sanitize(cleanedHtml, {
-      ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'b', 'i', 'u', 'a', 'ul', 'ol', 'li', 'div', 'span', 'section', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'button', 'style'],
-      ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id', 'style', 'target', 'rel', 'data-*'],
-      ALLOW_DATA_ATTR: true
-    });
+    return html.replace(/^#\s+[^\n]+\n/, '');
   };
+
+  // Execute scripts after HTML is rendered
+  useEffect(() => {
+    if (page?.content && containsHTML(page.content) && htmlContainerRef.current) {
+      const scripts = htmlContainerRef.current.querySelectorAll('script');
+      scripts.forEach((oldScript) => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+        newScript.textContent = oldScript.textContent;
+        oldScript.parentNode?.replaceChild(newScript, oldScript);
+      });
+    }
+  }, [page?.content]);
 
   if (isLoading) {
     return (
@@ -202,7 +213,8 @@ const PageContent = ({ slug, children }: PageContentProps) => {
           <div className="prose prose-lg max-w-none">
             {isHTMLContent ? (
               <div 
-                dangerouslySetInnerHTML={{ __html: sanitizeHTML(page.content) }}
+                ref={htmlContainerRef}
+                dangerouslySetInnerHTML={{ __html: processHTML(page.content) }}
               />
             ) : (
               renderContent(page.content)
