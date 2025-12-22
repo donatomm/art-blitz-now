@@ -5,6 +5,7 @@ import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import { sanitizeInlineHtml } from "@/utils/sanitizeHtml";
 
 const Contact = () => {
   const { data: pageData, isLoading } = usePage("contatti");
@@ -27,7 +28,7 @@ Ed ho le seguenti domande:
         const ListTag = listType === 'ul' ? 'ul' : 'ol';
         elements.push(
           <ListTag key={elements.length} className={`${listType === 'ul' ? 'list-disc' : 'list-decimal'} list-inside text-lg leading-relaxed text-foreground space-y-2 ml-4 mb-4`}>
-            {listItems.map((item, i) => <li key={i} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />)}
+            {listItems.map((item, i) => <li key={i} dangerouslySetInnerHTML={{ __html: sanitizeInlineHtml(item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')) }} />)}
           </ListTag>
         );
         listItems = [];
@@ -60,7 +61,7 @@ Ed ho le seguenti domande:
         const processedLine = trimmedLine
           .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
           .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary underline hover:text-primary/80" target="_blank" rel="noopener noreferrer">$1</a>');
-        elements.push(<p key={index} className="text-lg leading-relaxed text-foreground mb-4" dangerouslySetInnerHTML={{ __html: processedLine }} />);
+        elements.push(<p key={index} className="text-lg leading-relaxed text-foreground mb-4" dangerouslySetInnerHTML={{ __html: sanitizeInlineHtml(processedLine) }} />);
       }
     });
     

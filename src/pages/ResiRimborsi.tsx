@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePage } from "@/hooks/usePages";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import { sanitizeInlineHtml } from "@/utils/sanitizeHtml";
 
 const renderContent = (content: string) => {
   const lines = content.split('\n');
@@ -66,7 +67,7 @@ const renderContent = (content: string) => {
         <p 
           key={index} 
           className="text-muted-foreground mb-4 leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: processedLine }}
+          dangerouslySetInnerHTML={{ __html: sanitizeInlineHtml(processedLine) }}
         />
       );
     }
