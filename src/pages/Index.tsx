@@ -82,7 +82,7 @@ const Index = () => {
       <Navigation isOverHero />
       
 
-      <Hero title="Accendi Quella Stanza" subtitle="Opere Magnetiche. Uniche. Non per tutti." ctaText="SCOPRI LE OPERE" onCtaClick={scrollToGallery} />
+      <Hero title="Opere magnetiche. Uniche. Non per tutti." subtitle="Opere Magnetiche. Uniche. Non per tutti." ctaText="SCOPRI LE OPERE" onCtaClick={scrollToGallery} />
 
       <main ref={galleryRef} className="p-1">
         {isLoading ? <div className="flex items-center justify-center py-12">
