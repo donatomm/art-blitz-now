@@ -76,6 +76,14 @@ const ProductCard = ({
   const imageContent = (
     <>
       <img src={product.image_url} alt={product.name} width={600} height={600} className={`w-full h-auto object-cover transition-transform duration-500 ${!isComingSoon ? "group-hover:scale-105" : ""}`} loading="lazy" />
+      {/* NEW Badge - top right */}
+      {product.is_new && (
+        <div className="absolute top-2 right-2 z-10">
+          <span className="inline-block bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded shadow-lg">
+            NEW
+          </span>
+        </div>
+      )}
       {/* Deal Label Badge - show if ANY size has deal enabled with deal_price > 0 */}
       {(() => {
         const dealSize = product.sizes.find(s => s.deal_label_enabled && s.deal_price && s.deal_price > 0);
@@ -83,7 +91,7 @@ const ProductCard = ({
         return (
           <div className="absolute top-2 left-2 z-10">
             <span className="inline-block bg-yellow-500 text-black font-bold text-xs px-2 py-1 rounded shadow-lg border-2 border-black">
-              OFFERTA
+              {dealSize.deal_label_text || "OFFERTA"}
             </span>
           </div>
         );

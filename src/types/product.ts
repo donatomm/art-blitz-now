@@ -26,6 +26,7 @@ export interface Product {
   deal_label_text: string;
   mock_rooms?: MockRoom[]; // deprecated - kept for backward compatibility
   is_active: boolean;
+  is_new?: boolean;
   slug?: string;
   created_at?: string;
   updated_at?: string;
