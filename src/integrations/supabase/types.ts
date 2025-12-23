@@ -57,6 +57,7 @@ export type Database = {
           id: string
           image_url: string
           is_active: boolean
+          is_new: boolean
           medium: string
           mock_rooms: Json
           name: string
@@ -73,6 +74,7 @@ export type Database = {
           id?: string
           image_url: string
           is_active?: boolean
+          is_new?: boolean
           medium: string
           mock_rooms?: Json
           name: string
@@ -89,6 +91,7 @@ export type Database = {
           id?: string
           image_url?: string
           is_active?: boolean
+          is_new?: boolean
           medium?: string
           mock_rooms?: Json
           name?: string

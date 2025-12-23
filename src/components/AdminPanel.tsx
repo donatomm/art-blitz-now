@@ -704,6 +704,15 @@ const AdminPanel = ({
             image_url: url
           })} folder="artworks" />
               
+              {/* NEW Badge Toggle */}
+              <div className="flex items-center gap-2 py-2">
+                <Switch 
+                  checked={editProduct.is_new || false} 
+                  onCheckedChange={(checked) => setEditProduct({...editProduct, is_new: checked})} 
+                />
+                <Label className="cursor-pointer">Mostra badge "NEW"</Label>
+              </div>
+
               <div>
                 <Label>Descrizione</Label>
                 <textarea value={editProduct.description} onChange={e => setEditProduct({
@@ -779,7 +788,7 @@ const AdminPanel = ({
                       <span className="text-xs text-muted-foreground">Offerta</span>
                       {size.deal_label_enabled && <>
                           <Input placeholder="Prezzo Offerta €" type="number" value={size.deal_price || ""} onChange={e => updateEditSize(i, "deal_price", Number(e.target.value))} className="w-24 text-xs" />
-                          <Input value={size.deal_label_text || ""} onChange={e => updateEditSize(i, "deal_label_text", e.target.value)} className="flex-1 text-xs" placeholder="RISVEGLI" />
+                          <Input value={size.deal_label_text || ""} onChange={e => updateEditSize(i, "deal_label_text", e.target.value)} className="flex-1 text-xs" placeholder="es. scade il 31 Dic." />
                         </>}
                     </div>
                   </div>)}
