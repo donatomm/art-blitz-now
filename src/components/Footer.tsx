@@ -37,7 +37,7 @@ const Footer = () => {
         </div>
         
         <div className="mt-6 pt-6 border-t border-slate-700 text-center text-sm text-slate-500">
-          © {new Date().getFullYear()} OctoWonders. Tutti i diritti riservati.
+          © {new Date().getFullYear()} OctoWonders by Marco De Francesco. Tutti i diritti riservati.
         </div>
       </div>
     </footer>;
