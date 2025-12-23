@@ -712,17 +712,19 @@ const AdminPanel = ({
             })} className="w-full min-h-[100px] px-3 py-2 text-sm rounded-md border border-input bg-background" placeholder="Descrizione dell'opera..." />
               </div>
 
-              {/* SIZE + PRICE Table */}
+              {/* SIZE + PRICE + STRIPE ID Table */}
               <div className="space-y-2 border-t pt-4">
                 <Label>Dimensioni & Prezzi</Label>
-                <div className="grid grid-cols-[1fr_80px_40px] gap-2 text-xs font-medium text-muted-foreground px-1">
+                <div className="grid grid-cols-[1fr_80px_1fr_40px] gap-2 text-xs font-medium text-muted-foreground px-1">
                   <span>SIZE</span>
                   <span>PRICE €</span>
+                  <span>STRIPE ID</span>
                   <span></span>
                 </div>
-                {editProduct.sizes.map((size, i) => <div key={i} className="grid grid-cols-[1fr_80px_40px] gap-2 items-center">
+                {editProduct.sizes.map((size, i) => <div key={i} className="grid grid-cols-[1fr_80px_1fr_40px] gap-2 items-center">
                     <Input placeholder="NNxNN" value={size.dimensions} onChange={e => updateEditSize(i, "dimensions", e.target.value)} />
                     <Input placeholder="0" type="number" value={size.price || ""} onChange={e => updateEditSize(i, "price", Number(e.target.value))} />
+                    <Input placeholder="prod_ABC123" value={size.stripe_product_id || ""} onChange={e => updateEditSize(i, "stripe_product_id", e.target.value)} className="text-xs font-mono" />
                     <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
                 if (!editProduct) return;
                 const newSizes = editProduct.sizes.filter((_, idx) => idx !== i);
@@ -767,15 +769,12 @@ const AdminPanel = ({
                 </div>
               </div>
 
-              {/* Stripe IDs & Offerte - collapsed section */}
+              {/* Offerte del Giorno - collapsed section */}
               <div className="space-y-2 border-t pt-4">
-                <Label>Stripe IDs & Offerte del Giorno</Label>
-                {editProduct.sizes.map((size, i) => <div key={i} className="p-2 bg-muted/30 rounded-lg space-y-2">
+                <Label>Offerte del Giorno</Label>
+                {editProduct.sizes.map((size, i) => <div key={i} className="p-2 bg-muted/30 rounded-lg">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium w-20">{size.dimensions || "—"}</span>
-                      <Input placeholder="Stripe Product ID (es. prod_ABC123)" value={size.stripe_product_id || ""} onChange={e => updateEditSize(i, "stripe_product_id", e.target.value)} className="text-xs font-mono flex-1" />
-                    </div>
-                    <div className="flex items-center gap-2">
                       <Switch checked={size.deal_label_enabled || false} onCheckedChange={checked => updateEditSize(i, "deal_label_enabled", checked)} />
                       <span className="text-xs text-muted-foreground">Offerta</span>
                       {size.deal_label_enabled && <>
