@@ -48,6 +48,7 @@ export const useProducts = () => {
         description: item.description ?? '',
         mock_rooms: normalizeMockRooms(item.mock_rooms),
         is_active: (item as any).is_active ?? true,
+        is_new: item.is_new ?? false,
       })) as Product[];
     },
   });
@@ -71,6 +72,7 @@ export const useUpdateProduct = () => {
           deal_label_text: product.deal_label_text,
           mock_rooms: product.mock_rooms as unknown as Json,
           is_active: product.is_active,
+          is_new: product.is_new,
           slug: product.slug || null,
         })
         .eq("id", product.id);
@@ -99,6 +101,7 @@ export const useCreateProduct = () => {
         deal_label_text: product.deal_label_text,
         mock_rooms: product.mock_rooms as unknown as Json,
         is_active: product.is_active ?? true,
+        is_new: product.is_new ?? false,
         slug: product.slug || null,
       });
       if (error) throw error;
