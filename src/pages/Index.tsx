@@ -82,7 +82,7 @@ const Index = () => {
       <Navigation isOverHero />
       
 
-      <Hero title="Opere magnetiche. Uniche. Non per tutti." subtitle="Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare." ctaText="SCOPRI LE OPERE" onCtaClick={scrollToGallery} />
+      <Hero title="Opere magnetiche. Uniche. Non per tutti." subtitle="Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare." ctaText="ESPLORA LA COLLEZIONE" onCtaClick={scrollToGallery} />
 
       <main ref={galleryRef} className="p-1">
         {isLoading ? <div className="flex items-center justify-center py-12">
