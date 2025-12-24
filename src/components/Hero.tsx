@@ -31,9 +31,8 @@ const Hero = ({
           {/* Shipping info - centered under nav */}
           <div className="flex justify-center pt-20">
             <div className="flex items-center gap-2 text-white text-sm font-medium">
-              <span>SPEDIZIONE GRATUITA in Italia
--30% fino a capodanno!    
-            </span>
+              <span className="text-center text-gold">SPEDIZIONE GRATUITA in Italia
+- 30% fino a capodanno!</span>
               <button onClick={() => setShippingDialogOpen(true)} className="px-2 py-0.5 text-xs rounded transition-colors bg-transparent hover:bg-white/10 text-white border border-primary-foreground">
                 Dettagli
               </button>
