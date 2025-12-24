@@ -486,9 +486,7 @@ Grazie!`);
                         className={`relative px-4 py-3 rounded-lg border-2 transition-all ${
                           selectedSize === index 
                             ? "border-gold bg-gold/10 text-foreground" 
-                            : hasOffer
-                              ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-foreground"
-                              : "border-border hover:border-gold/50 text-muted-foreground"
+                            : "border-border hover:border-gold/50 text-muted-foreground"
                         }`}
                       >
                         {hasOffer && (
