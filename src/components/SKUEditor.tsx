@@ -2,16 +2,9 @@ import { useState, useEffect } from "react";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileSpreadsheet, Save, RefreshCw, Check } from "lucide-react";
+import { FileSpreadsheet, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import * as XLSX from "xlsx";
-import { 
-  useDefaultPrices, 
-  useBatchUpdateDefaultPrices,
-  normalizeDimension,
-  getMasterPrice,
-  isPriceOverridden
-} from "@/hooks/useDefaultPrices";
 
 interface SKUEditorProps {
   products: Product[];
@@ -24,14 +17,19 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
   const [localPrices, setLocalPrices] = useState<Map<string, number>>(new Map());
   const [hasChanges, setHasChanges] = useState(false);
   const [selectedDimension, setSelectedDimension] = useState<string | null>(null);
-  const [masterPriceEdits, setMasterPriceEdits] = useState<Map<string, number>>(new Map());
-  const [hasMasterChanges, setHasMasterChanges] = useState(false);
-
-  // Fetch default prices from database
-  const { data: defaultPrices = [], isLoading: loadingPrices } = useDefaultPrices();
-  const batchUpdateMutation = useBatchUpdateDefaultPrices();
 
   const getSkuKey = (productId: string, sizeIndex: number) => `${productId}-${sizeIndex}`;
+
+  // Normalize dimension to canonical form (smaller x larger)
+  const normalizeDimension = (dim: string): string => {
+    const match = dim.match(/^(\d+)x(\d+)(.*)$/);
+    if (!match) return dim;
+    const [, a, b, suffix] = match;
+    const numA = parseInt(a);
+    const numB = parseInt(b);
+    if (numA <= numB) return dim;
+    return `${numB}x${numA}${suffix}`;
+  };
 
   useEffect(() => {
     const priceMap = new Map<string, number>();
@@ -44,17 +42,7 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     setHasChanges(false);
   }, [products]);
 
-  // Initialize master price edits from database
-  useEffect(() => {
-    const editMap = new Map<string, number>();
-    defaultPrices.forEach(dp => {
-      editMap.set(dp.dimension, dp.price);
-    });
-    setMasterPriceEdits(editMap);
-    setHasMasterChanges(false);
-  }, [defaultPrices]);
-
-  // Collect all unique dimensions from products
+  // Collect all unique dimensions
   const allDimensions = new Set<string>();
   products.forEach(product => {
     product.sizes.forEach(size => {
@@ -63,12 +51,6 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
       }
     });
   });
-  
-  // Also include dimensions from default_prices that may not be in current products
-  defaultPrices.forEach(dp => {
-    allDimensions.add(dp.dimension);
-  });
-  
   const sortedDimensions = [...allDimensions].sort((a, b) => {
     const numA = parseInt(a.split('x')[0]) || 0;
     const numB = parseInt(b.split('x')[0]) || 0;
@@ -77,18 +59,16 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
 
   // Get products for selected dimension
   const getProductsForDimension = (dim: string) => {
-    const result: { productId: string; productName: string; sizeIndex: number; price: number; stripeId: string; isOverridden: boolean }[] = [];
+    const result: { productId: string; productName: string; sizeIndex: number; price: number; stripeId: string }[] = [];
     products.forEach(product => {
       product.sizes.forEach((size, sizeIndex) => {
         if (normalizeDimension(size.dimensions) === dim && size.price > 0) {
-          const price = localPrices.get(getSkuKey(product.id, sizeIndex)) ?? size.price;
           result.push({
             productId: product.id,
             productName: product.name,
             sizeIndex,
-            price,
-            stripeId: size.stripe_product_id || '-',
-            isOverridden: isPriceOverridden(defaultPrices, size.dimensions, price)
+            price: localPrices.get(getSkuKey(product.id, sizeIndex)) ?? size.price,
+            stripeId: size.stripe_product_id || '-'
           });
         }
       });
@@ -156,27 +136,23 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
   const filteredProducts = selectedDimension ? getProductsForDimension(selectedDimension) : [];
 
   // Group SKUs by normalized dimension
-  const skusByDimension = new Map<string, typeof allSkusList>();
-  const allSkusList = products.flatMap(product =>
+  const skusByDimension = new Map<string, typeof allSkus>();
+  const allSkus = products.flatMap(product =>
     product.sizes
-      .map((size, sizeIndex) => {
-        const price = localPrices.get(getSkuKey(product.id, sizeIndex)) ?? size.price;
-        return {
-          size: size.dimensions,
-          normalizedSize: normalizeDimension(size.dimensions),
-          price,
-          productName: product.name,
-          productId: product.id,
-          sizeIndex: sizeIndex,
-          stripeId: size.stripe_product_id || '-',
-          isOverridden: isPriceOverridden(defaultPrices, size.dimensions, price)
-        };
-      })
+      .map((size, sizeIndex) => ({
+        size: size.dimensions,
+        normalizedSize: normalizeDimension(size.dimensions),
+        price: localPrices.get(getSkuKey(product.id, sizeIndex)) ?? size.price,
+        productName: product.name,
+        productId: product.id,
+        sizeIndex: sizeIndex,
+        stripeId: size.stripe_product_id || '-'
+      }))
       .filter(sku => sku.price > 0)
   );
 
   // Group by normalized dimension
-  allSkusList.forEach(sku => {
+  allSkus.forEach(sku => {
     const existing = skusByDimension.get(sku.normalizedSize) || [];
     existing.push(sku);
     skusByDimension.set(sku.normalizedSize, existing);
@@ -188,76 +164,25 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     items: (skusByDimension.get(dim) || []).sort((a, b) => a.productName.localeCompare(b.productName))
   })).filter(g => g.items.length > 0);
 
-  const handleMasterPriceEdit = (dimension: string, newPrice: number) => {
-    setMasterPriceEdits(prev => new Map(prev).set(dimension, newPrice));
-    setHasMasterChanges(true);
-  };
-
-  const handleSaveMasterPrices = async () => {
-    const updates = Array.from(masterPriceEdits.entries()).map(([dimension, price]) => ({
-      dimension,
-      price
-    }));
-
-    try {
-      await batchUpdateMutation.mutateAsync(updates);
-      setHasMasterChanges(false);
-      toast({
-        title: "Listino salvato",
-        description: "Prezzi base aggiornati nel database.",
-      });
-    } catch (error) {
-      toast({
-        title: "Errore",
-        description: "Impossibile salvare i prezzi base.",
-        variant: "destructive",
-      });
+  // Master price table - get unique price per dimension
+  const masterPrices = new Map<string, number>();
+  sortedDimensions.forEach(dim => {
+    const skusForDim = skusByDimension.get(dim) || [];
+    if (skusForDim.length > 0) {
+      masterPrices.set(dim, skusForDim[0].price);
     }
-  };
+  });
 
-  const handleApplyMasterToAll = () => {
-    // Apply master prices to all products (overwrite all)
-    const updatedProducts = products.map(product => {
-      const newSizes = product.sizes.map(size => {
-        const normalizedDim = normalizeDimension(size.dimensions);
-        const masterPrice = masterPriceEdits.get(normalizedDim);
-        if (masterPrice !== undefined && masterPrice > 0) {
-          return { ...size, price: masterPrice };
-        }
-        return size;
-      });
-      return { ...product, sizes: newSizes };
-    });
-    
-    onProductsChange(updatedProducts);
-    
-    // Also update local prices map
-    const priceMap = new Map<string, number>();
-    updatedProducts.forEach(product => {
+  const handleMasterPriceChange = (dimension: string, newPrice: number) => {
+    // Update all products with this dimension
+    products.forEach(product => {
       product.sizes.forEach((size, sizeIndex) => {
-        priceMap.set(getSkuKey(product.id, sizeIndex), size.price);
+        if (normalizeDimension(size.dimensions) === dimension) {
+          handleLocalPriceChange(product.id, sizeIndex, newPrice);
+        }
       });
     });
-    setLocalPrices(priceMap);
-    setHasChanges(false);
-    
-    toast({
-      title: "Listino applicato",
-      description: "Tutti i prodotti sono stati aggiornati con i prezzi del listino.",
-    });
   };
-
-  const handleResetToMaster = (productId: string, sizeIndex: number, dimension: string) => {
-    const normalizedDim = normalizeDimension(dimension);
-    const masterPrice = getMasterPrice(defaultPrices, normalizedDim);
-    if (masterPrice !== null) {
-      handleLocalPriceChange(productId, sizeIndex, masterPrice);
-    }
-  };
-
-  if (loadingPrices) {
-    return <div className="text-center py-4 text-muted-foreground">Caricamento listino...</div>;
-  }
 
   return (
     <div className="space-y-4">
@@ -274,33 +199,10 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
         )}
       </div>
 
-      {/* Master Price Table - Listino Prezzi */}
+      {/* Master Price Table - 9 SKUs */}
       <div className="border-2 border-primary rounded-lg overflow-hidden">
-        <div className="bg-primary text-primary-foreground px-3 py-2 text-sm font-semibold flex items-center justify-between">
-          <span>Listino Prezzi (Master)</span>
-          <div className="flex gap-2">
-            {hasMasterChanges && (
-              <Button 
-                size="sm" 
-                variant="secondary"
-                onClick={handleSaveMasterPrices}
-                disabled={batchUpdateMutation.isPending}
-                className="h-6 text-xs"
-              >
-                <Save className="mr-1 h-3 w-3" />
-                Salva Listino
-              </Button>
-            )}
-            <Button 
-              size="sm" 
-              variant="secondary"
-              onClick={handleApplyMasterToAll}
-              className="h-6 text-xs"
-            >
-              <RefreshCw className="mr-1 h-3 w-3" />
-              Applica a tutti
-            </Button>
-          </div>
+        <div className="bg-primary text-primary-foreground px-3 py-2 text-sm font-semibold">
+          Listino Prezzi (9 SKU)
         </div>
         <div className="grid grid-cols-2 gap-0">
           <div className="bg-muted px-3 py-1.5 text-xs font-semibold border-b border-r">SIZE</div>
@@ -313,8 +215,8 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
               <div className={`px-3 py-1.5 ${idx < sortedDimensions.length - 1 ? 'border-b' : ''}`}>
                 <Input
                   type="number"
-                  value={masterPriceEdits.get(dim) ?? getMasterPrice(defaultPrices, dim) ?? 0}
-                  onChange={(e) => handleMasterPriceEdit(dim, Number(e.target.value))}
+                  value={masterPrices.get(dim) || 0}
+                  onChange={(e) => handleMasterPriceChange(dim, Number(e.target.value))}
                   className="h-7 text-sm w-24"
                   min={0}
                 />
@@ -322,32 +224,23 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
             </div>
           ))}
         </div>
-        {hasMasterChanges && (
-          <div className="bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 text-xs text-amber-700 dark:text-amber-300 border-t">
-            Modifiche al listino non salvate
-          </div>
-        )}
       </div>
 
       {/* Vista per dimensione */}
       <div className="space-y-3">
         <p className="text-sm text-muted-foreground">Vista per dimensione:</p>
         <div className="flex flex-wrap gap-2">
-          {sortedDimensions.filter(dim => skusByDimension.has(dim)).map(dim => {
-            const hasOverrides = (skusByDimension.get(dim) || []).some(s => s.isOverridden);
-            return (
-              <Button
-                key={dim}
-                variant={selectedDimension === dim ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedDimension(selectedDimension === dim ? null : dim)}
-                className={`text-xs ${hasOverrides ? 'ring-2 ring-amber-400' : ''}`}
-              >
-                {dim}
-                {hasOverrides && <span className="ml-1 text-amber-500">●</span>}
-              </Button>
-            );
-          })}
+          {sortedDimensions.map(dim => (
+            <Button
+              key={dim}
+              variant={selectedDimension === dim ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedDimension(selectedDimension === dim ? null : dim)}
+              className="text-xs"
+            >
+              {dim}
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -355,53 +248,27 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
       {selectedDimension && (
         <div className="border rounded-lg overflow-hidden">
           <div className="text-xs font-medium text-muted-foreground bg-muted grid grid-cols-12 gap-2 px-3 py-2 border-b">
-            <span className="col-span-4">Product</span>
-            <span className="col-span-2">Prezzo €</span>
-            <span className="col-span-3">Stripe ID</span>
-            <span className="col-span-3">Status</span>
+            <span className="col-span-5">Product</span>
+            <span className="col-span-3">Prezzo €</span>
+            <span className="col-span-4">Stripe ID</span>
           </div>
           <div className="max-h-[300px] overflow-y-auto">
             {filteredProducts.map((item, idx) => (
               <div 
                 key={`${item.productId}-${item.sizeIndex}-${idx}`}
-                className={`grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50 ${item.isOverridden ? 'bg-amber-50 dark:bg-amber-900/10' : ''}`}
+                className="grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50"
               >
-                <span className="col-span-4 font-medium truncate">{item.productName}</span>
-                <div className="col-span-2">
+                <span className="col-span-5 font-medium truncate">{item.productName}</span>
+                <div className="col-span-3">
                   <Input
                     type="number"
                     value={item.price}
                     onChange={(e) => handleLocalPriceChange(item.productId, item.sizeIndex, Number(e.target.value))}
-                    className={`h-7 text-sm w-20 ${item.isOverridden ? 'border-amber-400' : ''}`}
+                    className="h-7 text-sm w-20"
                     min={0}
                   />
                 </div>
-                <span className="col-span-3 text-xs text-muted-foreground truncate">{item.stripeId}</span>
-                <div className="col-span-3 flex items-center gap-1">
-                  {item.isOverridden ? (
-                    <>
-                      <span className="text-xs text-amber-600 dark:text-amber-400">Override</span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-5 px-1 text-xs"
-                        onClick={() => {
-                          const product = products.find(p => p.id === item.productId);
-                          if (product) {
-                            const size = product.sizes[item.sizeIndex];
-                            handleResetToMaster(item.productId, item.sizeIndex, size.dimensions);
-                          }
-                        }}
-                      >
-                        Reset
-                      </Button>
-                    </>
-                  ) : (
-                    <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
-                      <Check className="h-3 w-3" /> Listino
-                    </span>
-                  )}
-                </div>
+                <span className="col-span-4 text-xs text-muted-foreground truncate">{item.stripeId}</span>
               </div>
             ))}
           </div>
@@ -414,39 +281,23 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
         <div className="border rounded-lg overflow-hidden max-h-[500px] overflow-y-auto">
           {groupedSkus.map(group => (
             <div key={group.dimension}>
-              <div className="bg-muted px-3 py-1.5 text-xs font-semibold text-foreground border-b sticky top-0 flex justify-between items-center">
-                <span>{group.dimension}</span>
-                <span className="text-muted-foreground">
-                  Listino: €{getMasterPrice(defaultPrices, group.dimension) ?? '-'}
-                </span>
+              <div className="bg-muted px-3 py-1.5 text-xs font-semibold text-foreground border-b sticky top-0">
+                {group.dimension}
               </div>
               {group.items.map((sku, idx) => (
                 <div 
                   key={`${sku.productId}-${sku.sizeIndex}-${idx}`}
-                  className={`grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50 ${sku.isOverridden ? 'bg-amber-50 dark:bg-amber-900/10' : ''}`}
+                  className="grid grid-cols-12 gap-2 px-3 py-2 border-b last:border-b-0 text-sm items-center hover:bg-muted/50"
                 >
-                  <span className="col-span-6 truncate text-xs flex items-center gap-1">
-                    {sku.productName}
-                    {sku.isOverridden && <span className="text-amber-500 text-[10px]">(override)</span>}
-                  </span>
-                  <div className="col-span-6 flex justify-end items-center gap-2">
+                  <span className="col-span-7 truncate text-xs">{sku.productName}</span>
+                  <div className="col-span-5 flex justify-end">
                     <Input
                       type="number"
                       value={sku.price}
                       onChange={(e) => handleLocalPriceChange(sku.productId, sku.sizeIndex, Number(e.target.value))}
-                      className={`h-7 text-sm w-20 text-right ${sku.isOverridden ? 'border-amber-400' : ''}`}
+                      className="h-7 text-sm w-20 text-right"
                       min={0}
                     />
-                    {sku.isOverridden && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 px-2 text-xs"
-                        onClick={() => handleResetToMaster(sku.productId, sku.sizeIndex, sku.size)}
-                      >
-                        ↩
-                      </Button>
-                    )}
                   </div>
                 </div>
               ))}

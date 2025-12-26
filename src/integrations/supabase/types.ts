@@ -14,30 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      default_prices: {
-        Row: {
-          created_at: string
-          dimension: string
-          id: string
-          price: number
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          dimension: string
-          id?: string
-          price?: number
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          dimension?: string
-          id?: string
-          price?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
       pages: {
         Row: {
           content: string
