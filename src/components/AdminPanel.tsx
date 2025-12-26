@@ -18,6 +18,7 @@ import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult
 import SKUEditor from "./SKUEditor";
 import ImageOptimizer from "./ImageOptimizer";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
+import { useDefaultPrices, normalizeDimension, getMasterPrice, isPriceOverridden } from "@/hooks/useDefaultPrices";
 
 // Pages Editor sub-component
 const PagesTabContent = () => {
@@ -167,6 +168,9 @@ const AdminPanel = ({
   const {
     toast
   } = useToast();
+  
+  // Fetch default prices for inheritance indicators
+  const { data: defaultPrices = [] } = useDefaultPrices();
 
   // Check if already authenticated via Supabase session and has admin role
   useEffect(() => {
@@ -721,45 +725,78 @@ const AdminPanel = ({
             })} className="w-full min-h-[100px] px-3 py-2 text-sm rounded-md border border-input bg-background" placeholder="Descrizione dell'opera..." />
               </div>
 
-              {/* SIZE + PRICE + STRIPE ID Table */}
+              {/* SIZE + PRICE + STRIPE ID Table with inheritance indicators */}
               <div className="space-y-2 border-t pt-4">
                 <Label>Dimensioni & Prezzi</Label>
-                <div className="grid grid-cols-[1fr_80px_1fr_40px] gap-2 text-xs font-medium text-muted-foreground px-1">
+                <p className="text-xs text-muted-foreground mb-2">
+                  🟢 = usa prezzo listino | 🟡 = prezzo personalizzato
+                </p>
+                <div className="grid grid-cols-[1fr_100px_1fr_40px] gap-2 text-xs font-medium text-muted-foreground px-1">
                   <span>SIZE</span>
                   <span>PRICE €</span>
                   <span>STRIPE ID</span>
                   <span></span>
                 </div>
-                {editProduct.sizes.map((size, i) => <div key={i} className="grid grid-cols-[1fr_80px_1fr_40px] gap-2 items-center">
-                    <Input placeholder="NNxNN" value={size.dimensions} onChange={e => updateEditSize(i, "dimensions", e.target.value)} />
-                    <Input placeholder="0" type="number" value={size.price || ""} onChange={e => updateEditSize(i, "price", Number(e.target.value))} />
-                    <Input placeholder="prod_ABC123" value={size.stripe_product_id || ""} onChange={e => updateEditSize(i, "stripe_product_id", e.target.value)} className="text-xs font-mono" />
-                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
-                if (!editProduct) return;
-                const newSizes = editProduct.sizes.filter((_, idx) => idx !== i);
-                setEditProduct({
-                  ...editProduct,
-                  sizes: newSizes
-                });
-              }}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>)}
+                {editProduct.sizes.map((size, i) => {
+                  const masterPrice = getMasterPrice(defaultPrices, size.dimensions);
+                  const isOverridden = masterPrice !== null && size.price !== masterPrice;
+                  const hasMasterPrice = masterPrice !== null;
+                  
+                  return (
+                    <div key={i} className={`grid grid-cols-[1fr_100px_1fr_40px] gap-2 items-center ${isOverridden ? 'bg-amber-50 dark:bg-amber-900/10 rounded-md p-1 -mx-1' : ''}`}>
+                      <Input placeholder="NNxNN" value={size.dimensions} onChange={e => updateEditSize(i, "dimensions", e.target.value)} />
+                      <div className="relative">
+                        <Input 
+                          placeholder="0" 
+                          type="number" 
+                          value={size.price || ""} 
+                          onChange={e => updateEditSize(i, "price", Number(e.target.value))} 
+                          className={isOverridden ? 'border-amber-400 pr-6' : ''}
+                        />
+                        {hasMasterPrice && (
+                          <span 
+                            className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs cursor-pointer ${isOverridden ? 'text-amber-500' : 'text-green-500'}`}
+                            title={isOverridden ? `Listino: €${masterPrice} (click per reset)` : `Usa prezzo listino: €${masterPrice}`}
+                            onClick={() => {
+                              if (isOverridden) {
+                                updateEditSize(i, "price", masterPrice);
+                              }
+                            }}
+                          >
+                            {isOverridden ? '🟡' : '🟢'}
+                          </span>
+                        )}
+                      </div>
+                      <Input placeholder="prod_ABC123" value={size.stripe_product_id || ""} onChange={e => updateEditSize(i, "stripe_product_id", e.target.value)} className="text-xs font-mono" />
+                      <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                        if (!editProduct) return;
+                        const newSizes = editProduct.sizes.filter((_, idx) => idx !== i);
+                        setEditProduct({
+                          ...editProduct,
+                          sizes: newSizes
+                        });
+                      }}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  );
+                })}
                 <Button type="button" variant="outline" size="sm" className="w-full text-xs mt-2" onClick={() => {
-              if (!editProduct) return;
-              const newSizes: ProductSize[] = [...editProduct.sizes, {
-                dimensions: "",
-                price: 0,
-                stripe_product_id: "",
-                deal_label_enabled: false,
-                deal_label_text: "",
-                mock_room_url: ""
-              }];
-              setEditProduct({
-                ...editProduct,
-                sizes: newSizes
-              });
-            }}>
+                  if (!editProduct) return;
+                  // Auto-fill price from listino if dimension matches
+                  const newSizes: ProductSize[] = [...editProduct.sizes, {
+                    dimensions: "",
+                    price: 0,
+                    stripe_product_id: "",
+                    deal_label_enabled: false,
+                    deal_label_text: "",
+                    mock_room_url: ""
+                  }];
+                  setEditProduct({
+                    ...editProduct,
+                    sizes: newSizes
+                  });
+                }}>
                   + Aggiungi Size
                 </Button>
               </div>
