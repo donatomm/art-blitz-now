@@ -16,11 +16,7 @@ const CheckoutSuccess = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
-        title="Ordine Completato"
-        description="Grazie per il tuo ordine su OctoWonders."
-        noindex={true}
-      />
+      <SEO title="Ordine Completato" description="Grazie per il tuo ordine su OctoWonders." noindex={true} />
       <Navigation />
 
       <div className="container mx-auto px-4 pt-32 pb-12">
@@ -53,13 +49,37 @@ const CheckoutSuccess = () => {
             </ul>
           </div>
 
+          {/* WhatsApp VIP Section */}
+          <div className="bg-gradient-to-br from-green-50 to-green-100/50 border-2 border-green-500/30 rounded-lg p-6 space-y-3">
+            <div className="text-center space-y-2">
+              <MessageCircle className="h-10 w-10 text-green-600 mx-auto" />
+              <h2 className="text-xl font-bold text-foreground">Lista VIP WhatsApp</h2>
+              <p className="text-sm text-foreground">
+                Nuove opere in anteprima.
+                <br />
+                Offerte esclusive 24h prima di tutti.
+              </p>
+              <a
+                href="https://wa.me/393666295174?text=VIP"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block"
+              >
+                <Button className="bg-green-600 hover:bg-green-700 text-white">
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Unisciti alla Lista VIP
+                </Button>
+              </a>
+            </div>
+          </div>
+
           <div className="text-muted-foreground">
-            <p>Per qualsiasi domanda{" "}
-              <span className="font-medium text-foreground">contattami qui:</span>
+            <p>
+              Per qualsiasi domanda <span className="font-medium text-foreground">contattami qui:</span>
             </p>
             <div className="flex justify-center gap-4 mt-3">
               <a
-                href="https://wa.me/393401234567?text=Ciao%2C%20ho%20una%20domanda%20sul%20mio%20ordine"
+                href="https://wa.me/393666295174?text=Ciao%2C%20ho%20una%20domanda%20sul%20mio%20ordine"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
