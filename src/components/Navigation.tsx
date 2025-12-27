@@ -10,7 +10,7 @@ const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === "true";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Autore", href: "/artist" },
-  { label: "", href: "/Articolie-Creature" },
+  { label: "Articoli e Creature", href: "/Articoli-e-Creature" },
   { label: "Regole di Spedizione", href: "/shipping" },
   { label: "Politica Prezzi", href: "/pricing-policy" },
   { label: "Contatti", href: "/contact" },
