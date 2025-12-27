@@ -1,7 +1,5 @@
 import { lazy, Suspense } from "react";
-import { lazy, Suspense } from "react";
-import { Helmet } from "react-helmet-async"; // ADD THIS LINE
-import { Toaster } from "@/components/ui/toaster";
+import { Helmet } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
