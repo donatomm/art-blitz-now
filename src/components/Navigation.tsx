@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import logo from "@/assets/logo.webp";
 
-const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === "true";
+const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === 'true';
 
 const navItems = [
+  { label: "Home", href: "/" },
   { label: "Autore", href: "/artist" },
-  { label: "Articoli & Creature", href: "/Articoli-e-Creature" },
   { label: "Regole di Spedizione", href: "/shipping" },
   { label: "Politica Prezzi", href: "/pricing-policy" },
   { label: "Contatti", href: "/contact" },
@@ -40,19 +40,33 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        showTransparent ? "bg-black/40 backdrop-blur-sm" : "bg-background/95 backdrop-blur-sm border-b"
+        showTransparent
+          ? "bg-black/40 backdrop-blur-sm"
+          : "bg-background/95 backdrop-blur-sm border-b"
       }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Company Name */}
           <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="OctoWonders Logo" className={`w-10 h-10 ${showTransparent ? "invert" : ""}`} />
+            <img
+              src={logo}
+              alt="OctoWonders Logo"
+              className={`w-10 h-10 ${showTransparent ? "invert" : ""}`}
+            />
             <div className="flex flex-col">
-              <span className={`text-xl font-semibold ${showTransparent ? "text-white" : "text-foreground"}`}>
+              <span
+                className={`text-xl font-semibold ${
+                  showTransparent ? "text-white" : "text-foreground"
+                }`}
+              >
                 OctoWonders
               </span>
-              <span className={`text-xs font-light ${showTransparent ? "text-white/70" : "text-muted-foreground"}`}>
+              <span
+                className={`text-xs font-light ${
+                  showTransparent ? "text-white/70" : "text-muted-foreground"
+                }`}
+              >
                 by Marco De Francesco
               </span>
             </div>
@@ -68,8 +82,8 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
                   showTransparent
                     ? "text-white/90 hover:text-white"
                     : location.pathname === item.href
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {item.label}
@@ -133,7 +147,9 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
                 to={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`block py-2 text-sm font-medium ${
-                  location.pathname === item.href ? "text-foreground" : "text-muted-foreground"
+                  location.pathname === item.href
+                    ? "text-foreground"
+                    : "text-muted-foreground"
                 }`}
               >
                 {item.label}
