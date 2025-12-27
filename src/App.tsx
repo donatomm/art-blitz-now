@@ -1,4 +1,7 @@
 import { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
+import { Helmet } from "react-helmet-async"; // ADD THIS LINE
+import { Toaster } from "@/components/ui/toaster";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -35,9 +38,13 @@ const PageLoader = () => (
   </div>
 );
 
-// Main app component
+/// Main app component
 const App = () => (
-  <div>
+  <>
+    <Helmet>
+      <meta name="p:domain_verify" content="488c339e7167063621a6662be6c159b8" />
+    </Helmet>
+
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <CartProvider>
@@ -61,7 +68,6 @@ const App = () => (
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/resi-e-rimborsi" element={<ResiRimborsi />} />
                 <Route path="/ordine-personalizzato" element={<OrdinePersonalizzato />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
@@ -69,7 +75,7 @@ const App = () => (
         </CartProvider>
       </TooltipProvider>
     </QueryClientProvider>
-  </div>
+  </>
 );
 
 export default App;
