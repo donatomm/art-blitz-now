@@ -45,6 +45,8 @@ const Index = () => {
   const hellobarButtonBgColor = getSettingValue<string>(siteSettings, "hellobar_button_bg_color", "#FFFFFF");
   const hellobarButtonBorderColor = getSettingValue<string>(siteSettings, "hellobar_button_border_color", "#FFFFFF");
   const hellobarPopupContent = getSettingValue<string>(siteSettings, "hellobar_popup_content", "");
+  const hellobarWhatsappNumber = getSettingValue<string>(siteSettings, "hellobar_whatsapp_number", "393666295174");
+  const hellobarContactEmail = getSettingValue<string>(siteSettings, "hellobar_contact_email", "me@octowonders.com");
   const scrollToGallery = () => {
     galleryRef.current?.scrollIntoView({
       behavior: "smooth"
@@ -118,6 +120,8 @@ const Index = () => {
           buttonBgColor: hellobarButtonBgColor,
           buttonBorderColor: hellobarButtonBorderColor,
           popupContent: hellobarPopupContent,
+          whatsappNumber: hellobarWhatsappNumber,
+          contactEmail: hellobarContactEmail,
         }}
       />
 

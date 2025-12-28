@@ -32,6 +32,8 @@ interface NavigationProps {
     buttonBgColor?: string;
     buttonBorderColor?: string;
     popupContent?: string;
+    whatsappNumber?: string;
+    contactEmail?: string;
   };
 }
 
