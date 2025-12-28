@@ -65,7 +65,7 @@ const App = () => (
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/cookies" element={<Cookies />} />
                 <Route path="/terms" element={<Terms />} />
-                <Route path="/resi-e-rimborsi" element={<ResiRimborsi />} />
+                <Route path="/resi-rimborsi" element={<ResiRimborsi />} />
                 <Route path="/ordine-personalizzato" element={<OrdinePersonalizzato />} />
                 <Route path="/colors" element={<ColorPalette />} />
                 <Route path="*" element={<NotFound />} />
