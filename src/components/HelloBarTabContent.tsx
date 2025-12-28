@@ -4,9 +4,22 @@ import { useToast } from "@/hooks/use-toast";
 import { TabsContent } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Save } from "lucide-react";
+
+const DEFAULT_POPUP_CONTENT = `📦 Spedizione Gratuita
+
+La spedizione gratuita è valida per:
+
+𝙄𝙩𝙖𝙡𝙞𝙖 𝙋𝙚𝙣𝙞𝙣𝙨𝙪𝙡𝙖𝙧𝙚 𝙚 𝙎𝙞𝙘𝙞𝙡𝙞𝙖
+
+Per spedizioni in altre zone (Sardegna, isole minori, Paesi Europei), i costi di produzione sono significativamente più alti (diverso fornitore) mentre lo shipping rientra nella norma, ed offre consegna ESPRESSA 24h
+
+Paesi inclusi: DE, AT, CH, LU, GB, IE, FR, BE, ES, SE, DK, FI, NL, PL, PT, CZ, HU, SK.
+
+EXPRESS 24h. Contattaci per un preventivo personalizzato.`;
 
 // Color input with preview - sanitizes double # prefixes
 const ColorInput = ({ 
@@ -65,6 +78,7 @@ const HelloBarTabContent = () => {
   const [hellobarButtonTextColor, setHellobarButtonTextColor] = useState("#16A34A");
   const [hellobarButtonBgColor, setHellobarButtonBgColor] = useState("#FFFFFF");
   const [hellobarButtonBorderColor, setHellobarButtonBorderColor] = useState("#FFFFFF");
+  const [hellobarPopupContent, setHellobarPopupContent] = useState(DEFAULT_POPUP_CONTENT);
   
   // Load settings
   useEffect(() => {
@@ -81,6 +95,7 @@ const HelloBarTabContent = () => {
       setHellobarButtonTextColor(getSettingValue<string>(settings, "hellobar_button_text_color", "#16A34A"));
       setHellobarButtonBgColor(getSettingValue<string>(settings, "hellobar_button_bg_color", "#FFFFFF"));
       setHellobarButtonBorderColor(getSettingValue<string>(settings, "hellobar_button_border_color", "#FFFFFF"));
+      setHellobarPopupContent(getSettingValue<string>(settings, "hellobar_popup_content", DEFAULT_POPUP_CONTENT));
     }
   }, [settings]);
   
@@ -99,6 +114,7 @@ const HelloBarTabContent = () => {
         updateSetting.mutateAsync({ key: "hellobar_button_text_color", value: hellobarButtonTextColor }),
         updateSetting.mutateAsync({ key: "hellobar_button_bg_color", value: hellobarButtonBgColor }),
         updateSetting.mutateAsync({ key: "hellobar_button_border_color", value: hellobarButtonBorderColor }),
+        updateSetting.mutateAsync({ key: "hellobar_popup_content", value: hellobarPopupContent }),
       ]);
       setHasChanges(false);
       toast({
@@ -240,6 +256,24 @@ const HelloBarTabContent = () => {
               value={hellobarButtonBorderColor}
               onChange={(val) => { setHellobarButtonBorderColor(val); markChanged(); }}
             />
+          </div>
+        </div>
+        
+        {/* Popup Content Section */}
+        <div className="border rounded-lg p-4 space-y-4">
+          <h3 className="font-semibold text-sm border-b pb-2">💬 Contenuto Popup</h3>
+          <div>
+            <Label>Testo del Popup (mostrato quando si clicca "Dettagli")</Label>
+            <Textarea
+              value={hellobarPopupContent}
+              onChange={(e) => { setHellobarPopupContent(e.target.value); markChanged(); }}
+              placeholder="Inserisci il contenuto del popup..."
+              rows={10}
+              className="mt-2 font-mono text-sm"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              I bottoni WhatsApp e Email vengono aggiunti automaticamente sotto il testo.
+            </p>
           </div>
         </div>
         
