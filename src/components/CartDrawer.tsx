@@ -194,9 +194,10 @@ const CartDrawer = () => {
             </div>
 
             <Button
+              variant="cta"
               onClick={handleCheckout}
               disabled={isCheckoutLoading}
-              className="w-full h-12 bg-green-600 hover:bg-green-500 text-white font-bold"
+              className="w-full h-12"
             >
               {isCheckoutLoading ? (
                 <>

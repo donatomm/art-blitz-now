@@ -99,8 +99,9 @@ Ed ho le seguenti domande:
         <div className="flex flex-col sm:flex-row gap-4 mt-8">
           <Button
             asChild
+            variant="cta"
             size="lg"
-            className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold h-14 text-lg"
+            className="flex-1 h-14 text-lg"
           >
             <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
               <MessageCircle className="mr-2 h-5 w-5" />
