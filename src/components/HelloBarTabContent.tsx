@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Save } from "lucide-react";
 
-// Color input with preview
+// Color input with preview - sanitizes double # prefixes
 const ColorInput = ({ 
   label, 
   value, 
@@ -17,23 +17,34 @@ const ColorInput = ({
   label: string; 
   value: string; 
   onChange: (val: string) => void;
-}) => (
-  <div className="flex items-center gap-2">
-    <div className="flex-1">
-      <Label className="text-xs">{label}</Label>
-      <Input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="#FFFFFF"
-        className="font-mono text-sm"
+}) => {
+  const handleChange = (newValue: string) => {
+    // Remove any double ## and ensure single #
+    let sanitized = newValue.replace(/^#+/, '#');
+    if (sanitized && !sanitized.startsWith('#')) {
+      sanitized = '#' + sanitized;
+    }
+    onChange(sanitized);
+  };
+  
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1">
+        <Label className="text-xs">{label}</Label>
+        <Input
+          value={value}
+          onChange={(e) => handleChange(e.target.value)}
+          placeholder="#FFFFFF"
+          className="font-mono text-sm"
+        />
+      </div>
+      <div 
+        className="w-10 h-10 rounded border border-border mt-5"
+        style={{ backgroundColor: value }}
       />
     </div>
-    <div 
-      className="w-10 h-10 rounded border border-border mt-5"
-      style={{ backgroundColor: value }}
-    />
-  </div>
-);
+  );
+};
 
 const HelloBarTabContent = () => {
   const { data: settings, isLoading } = useSiteSettings();
