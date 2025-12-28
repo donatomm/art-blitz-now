@@ -18,6 +18,7 @@ import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult
 import SKUEditor from "./SKUEditor";
 import ImageOptimizer from "./ImageOptimizer";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
+import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
 
 // Pages Editor sub-component
 const PagesTabContent = () => {
@@ -141,6 +142,182 @@ const PagesTabContent = () => {
           </div>)}
       </div>
     </TabsContent>;
+};
+
+// Hero Settings Tab sub-component
+const HeroTabContent = () => {
+  const { data: settings, isLoading } = useSiteSettings();
+  const updateSetting = useUpdateSiteSetting();
+  const { toast } = useToast();
+  
+  const [heroTitle, setHeroTitle] = useState("");
+  const [heroSubtitle, setHeroSubtitle] = useState("");
+  const [heroCtaText, setHeroCtaText] = useState("");
+  const [trustBarItems, setTrustBarItems] = useState<string[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
+  
+  // Load settings into local state
+  useEffect(() => {
+    if (settings) {
+      setHeroTitle(getSettingValue<string>(settings, "hero_title", ""));
+      setHeroSubtitle(getSettingValue<string>(settings, "hero_subtitle", ""));
+      setHeroCtaText(getSettingValue<string>(settings, "hero_cta_text", ""));
+      setTrustBarItems(getSettingValue<string[]>(settings, "trust_bar_items", []));
+    }
+  }, [settings]);
+  
+  const handleSave = async () => {
+    try {
+      await Promise.all([
+        updateSetting.mutateAsync({ key: "hero_title", value: heroTitle }),
+        updateSetting.mutateAsync({ key: "hero_subtitle", value: heroSubtitle }),
+        updateSetting.mutateAsync({ key: "hero_cta_text", value: heroCtaText }),
+        updateSetting.mutateAsync({ key: "trust_bar_items", value: trustBarItems }),
+      ]);
+      setHasChanges(false);
+      toast({
+        title: "Hero salvato!",
+        description: "Le modifiche sono state applicate.",
+      });
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Impossibile salvare le impostazioni.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleAddTrustItem = () => {
+    setTrustBarItems([...trustBarItems, "Nuovo elemento"]);
+    setHasChanges(true);
+  };
+  
+  const handleRemoveTrustItem = (index: number) => {
+    setTrustBarItems(trustBarItems.filter((_, i) => i !== index));
+    setHasChanges(true);
+  };
+  
+  const handleUpdateTrustItem = (index: number, value: string) => {
+    const updated = [...trustBarItems];
+    updated[index] = value;
+    setTrustBarItems(updated);
+    setHasChanges(true);
+  };
+  
+  if (isLoading) {
+    return (
+      <TabsContent value="hero" className="space-y-4">
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      </TabsContent>
+    );
+  }
+  
+  return (
+    <TabsContent value="hero" className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Modifica i contenuti della sezione Hero della homepage.
+      </p>
+      
+      <div className="space-y-4">
+        {/* H1 Title */}
+        <div>
+          <Label>Titolo H1 (Hero)</Label>
+          <Input
+            value={heroTitle}
+            onChange={(e) => {
+              setHeroTitle(e.target.value);
+              setHasChanges(true);
+            }}
+            placeholder="Opere magnetiche. Uniche. Non per tutti."
+          />
+        </div>
+        
+        {/* Subtitle */}
+        <div>
+          <Label>Sottotitolo</Label>
+          <Textarea
+            value={heroSubtitle}
+            onChange={(e) => {
+              setHeroSubtitle(e.target.value);
+              setHasChanges(true);
+            }}
+            placeholder="Trasforma la tua parete in un'esperienza visiva..."
+            rows={3}
+          />
+        </div>
+        
+        {/* CTA Text */}
+        <div>
+          <Label>Testo CTA (bottone)</Label>
+          <Input
+            value={heroCtaText}
+            onChange={(e) => {
+              setHeroCtaText(e.target.value);
+              setHasChanges(true);
+            }}
+            placeholder="ESPLORA LA COLLEZIONE"
+          />
+        </div>
+        
+        {/* Trust Bar Items */}
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between mb-2">
+            <Label>Trust Bar (badge sotto l'Hero)</Label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAddTrustItem}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Aggiungi
+            </Button>
+          </div>
+          <div className="space-y-2">
+            {trustBarItems.map((item, index) => (
+              <div key={index} className="flex gap-2 items-center">
+                <Input
+                  value={item}
+                  onChange={(e) => handleUpdateTrustItem(index, e.target.value)}
+                  placeholder="Testo badge..."
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleRemoveTrustItem(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            {trustBarItems.length === 0 && (
+              <p className="text-xs text-muted-foreground py-2">
+                Nessun elemento. Clicca "Aggiungi" per creare badge.
+              </p>
+            )}
+          </div>
+        </div>
+        
+        {/* Save Button */}
+        <Button
+          onClick={handleSave}
+          disabled={updateSetting.isPending || !hasChanges}
+          className="w-full"
+        >
+          {updateSetting.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="mr-2 h-4 w-4" />
+          )}
+          Salva Hero
+        </Button>
+      </div>
+    </TabsContent>
+  );
 };
 interface AdminPanelProps {
   products: Product[];
@@ -579,9 +756,10 @@ const AdminPanel = ({
                   </> : "Accedi"}
               </Button>
             </div> : <Tabs defaultValue="products" className="mt-4">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
               <TabsTrigger value="skus">SKUs</TabsTrigger>
+              <TabsTrigger value="hero">Hero</TabsTrigger>
               <TabsTrigger value="pages">Pagine</TabsTrigger>
               <TabsTrigger value="images">Immagini</TabsTrigger>
             </TabsList>
@@ -649,6 +827,8 @@ const AdminPanel = ({
             <TabsContent value="skus" className="space-y-4">
               <SKUEditor products={products} onProductsChange={onProductsChange} />
             </TabsContent>
+
+            <HeroTabContent />
 
             <PagesTabContent />
 

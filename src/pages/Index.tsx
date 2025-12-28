@@ -10,18 +10,26 @@ import AdminPanel from "@/components/AdminPanel";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { toast } from "@/hooks/use-toast";
+import { useSiteSettings, getSettingValue } from "@/hooks/useSiteSettings";
 const Index = () => {
   const {
     data: products = [],
     isLoading,
     refetch
   } = useProducts();
+  const { data: siteSettings } = useSiteSettings();
   const updateProduct = useUpdateProduct();
   const createProduct = useCreateProduct();
   const deleteProduct = useDeleteProduct();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
+  
+  // Get hero content from site settings
+  const heroTitle = getSettingValue<string>(siteSettings, "hero_title", "Opere magnetiche. Uniche. Non per tutti.");
+  const heroSubtitle = getSettingValue<string>(siteSettings, "hero_subtitle", "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.");
+  const heroCtaText = getSettingValue<string>(siteSettings, "hero_cta_text", "ESPLORA LA COLLEZIONE");
+  const trustBarItems = getSettingValue<string[]>(siteSettings, "trust_bar_items", []);
   const scrollToGallery = () => {
     galleryRef.current?.scrollIntoView({
       behavior: "smooth"
@@ -82,7 +90,13 @@ const Index = () => {
       <Navigation isOverHero />
       
 
-      <Hero title="Opere magnetiche. Uniche. Non per tutti." subtitle="Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare." ctaText="ESPLORA LA COLLEZIONE" onCtaClick={scrollToGallery} />
+      <Hero 
+        title={heroTitle} 
+        subtitle={heroSubtitle} 
+        ctaText={heroCtaText} 
+        onCtaClick={scrollToGallery}
+        trustBarItems={trustBarItems}
+      />
 
       <main ref={galleryRef} className="p-1">
         {isLoading ? <div className="flex items-center justify-center py-12">

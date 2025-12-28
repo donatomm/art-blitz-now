@@ -9,13 +9,15 @@ interface HeroProps {
   subtitle?: string;
   ctaText?: string;
   onCtaClick?: () => void;
+  trustBarItems?: string[];
 }
 const Hero = ({
   imageUrl = heroImage,
   title = "Your Hero Title Here",
   subtitle = "Your inspiring subtitle goes here",
   ctaText,
-  onCtaClick
+  onCtaClick,
+  trustBarItems
 }: HeroProps) => {
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
   return <>
@@ -56,7 +58,7 @@ const Hero = ({
 
           {/* Trust Bar - positioned at bottom of hero */}
           <div className="pb-4">
-            <TrustBar />
+            <TrustBar items={trustBarItems} />
           </div>
         </div>
       </section>
