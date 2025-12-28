@@ -356,7 +356,7 @@ const ImageOptimizer = () => {
       {/* Scan Results */}
       {images.length > 0 && !isConverting && results.length === 0 && (
         <div className="p-4 bg-muted rounded-lg space-y-3">
-          <div className="text-sm font-medium">Trovate {images.length} immagini:</div>
+          <div className="text-sm font-bold text-blue-600">Trovate {images.length} immagini:</div>
           <div className="grid grid-cols-3 gap-2 text-sm">
             <div className="flex items-center gap-2">
               <ImageIcon className="h-4 w-4 text-blue-500" />
@@ -402,7 +402,7 @@ const ImageOptimizer = () => {
 
               {/* Preview list of images to be converted */}
               <div className="bg-background/50 rounded p-2 max-h-32 overflow-y-auto">
-                <div className="text-xs text-muted-foreground mb-1">Immagini da convertire:</div>
+                <div className="text-xs font-bold text-blue-600 mb-1">Immagini da convertire:</div>
                 <div className="space-y-1 text-xs font-mono">
                   {images
                     .filter(i => i.type === 'convertible')

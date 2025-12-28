@@ -228,7 +228,7 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
 
       {/* Vista per dimensione */}
       <div className="space-y-3">
-        <p className="text-sm text-muted-foreground">Vista per dimensione:</p>
+        <p className="text-sm font-bold text-blue-600">Vista per dimensione:</p>
         <div className="flex flex-wrap gap-2">
           {sortedDimensions.map(dim => (
             <Button
@@ -277,7 +277,7 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
 
       {/* Full SKU list grouped by dimension */}
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">Lista completa (raggruppata per SKU):</p>
+        <p className="text-sm font-bold text-blue-600">Lista completa (raggruppata per SKU):</p>
         <div className="border rounded-lg overflow-hidden max-h-[500px] overflow-y-auto">
           {groupedSkus.map(group => (
             <div key={group.dimension}>

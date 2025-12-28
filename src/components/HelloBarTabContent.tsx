@@ -169,7 +169,7 @@ const HelloBarTabContent = () => {
         
         {/* Text Section */}
         <div className="border rounded-lg p-4 space-y-4">
-          <h3 className="font-semibold text-sm border-b pb-2">📝 Testo</h3>
+          <h3 className="font-bold text-sm text-blue-600 border-b pb-2">📝 Testo</h3>
           <div>
             <Label>Testo Hello Bar</Label>
             <Input
@@ -195,7 +195,7 @@ const HelloBarTabContent = () => {
         {/* Countdown Section */}
         <div className="border rounded-lg p-4 space-y-4">
           <div className="flex items-center justify-between border-b pb-2">
-            <h3 className="font-semibold text-sm">⏱️ Countdown</h3>
+            <h3 className="font-bold text-sm text-blue-600">⏱️ Countdown</h3>
             <Switch
               checked={hellobarCountdownEnabled}
               onCheckedChange={(val) => { setHellobarCountdownEnabled(val); markChanged(); }}
@@ -237,7 +237,7 @@ const HelloBarTabContent = () => {
         
         {/* Button Section */}
         <div className="border rounded-lg p-4 space-y-4">
-          <h3 className="font-semibold text-sm border-b pb-2">🔘 Bottone Dettagli</h3>
+          <h3 className="font-bold text-sm text-blue-600 border-b pb-2">🔘 Bottone Dettagli</h3>
           <div>
             <Label>Testo Bottone</Label>
             <Input
@@ -267,7 +267,7 @@ const HelloBarTabContent = () => {
         
         {/* Popup Content Section */}
         <div className="border rounded-lg p-4 space-y-4">
-          <h3 className="font-semibold text-sm border-b pb-2">💬 Contenuto Popup</h3>
+          <h3 className="font-bold text-sm text-blue-600 border-b pb-2">💬 Contenuto Popup</h3>
           <div>
             <Label>Testo del Popup (mostrato quando si clicca "Dettagli")</Label>
             <Textarea
