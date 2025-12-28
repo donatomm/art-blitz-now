@@ -33,16 +33,20 @@ const PagesTabContent = () => {
   const [editContent, setEditContent] = useState("");
   const [editSeoTitle, setEditSeoTitle] = useState("");
   const [editSeoDescription, setEditSeoDescription] = useState("");
+  const [showImageUpload, setShowImageUpload] = useState(false);
   const {
     toast
   } = useToast();
+
   const handleEditPage = (page: Page) => {
     setEditingPage(page);
     setEditTitle(page.title);
     setEditContent(page.content);
     setEditSeoTitle(page.seo_title || "");
     setEditSeoDescription(page.seo_description || "");
+    setShowImageUpload(false);
   };
+
   const handleSavePage = async () => {
     if (!editingPage) return;
     try {
@@ -66,6 +70,17 @@ const PagesTabContent = () => {
       });
     }
   };
+
+  const handleImageUploaded = (url: string) => {
+    const markdownImage = `\n![Immagine](${url})\n`;
+    setEditContent(prev => prev + markdownImage);
+    setShowImageUpload(false);
+    toast({
+      title: "Immagine inserita!",
+      description: "Il codice Markdown dell'immagine è stato aggiunto al contenuto."
+    });
+  };
+
   if (pagesLoading) {
     return <TabsContent value="pages" className="space-y-4">
         <div className="flex items-center justify-center py-8">
@@ -73,6 +88,7 @@ const PagesTabContent = () => {
         </div>
       </TabsContent>;
   }
+
   if (editingPage) {
     return <TabsContent value="pages" className="space-y-4">
         <div className="space-y-4">
@@ -87,7 +103,31 @@ const PagesTabContent = () => {
             <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} />
           </div>
           <div>
-            <Label>Contenuto (Markdown)</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label>Contenuto (Markdown)</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowImageUpload(!showImageUpload)}
+              >
+                <ImageIcon className="h-4 w-4 mr-1" />
+                {showImageUpload ? "Chiudi" : "Aggiungi Immagine"}
+              </Button>
+            </div>
+            {showImageUpload && (
+              <div className="mb-3 p-3 border rounded-md bg-muted/50">
+                <ImageUpload
+                  label="Carica immagine per la pagina"
+                  currentUrl=""
+                  onUpload={handleImageUploaded}
+                  folder="pages"
+                />
+                <p className="text-xs text-muted-foreground mt-2">
+                  L'immagine verrà inserita alla fine del contenuto come Markdown.
+                </p>
+              </div>
+            )}
             <Textarea value={editContent} onChange={e => setEditContent(e.target.value)} rows={12} className="font-mono text-sm" />
           </div>
           
@@ -126,6 +166,7 @@ const PagesTabContent = () => {
         </div>
       </TabsContent>;
   }
+
   return <TabsContent value="pages" className="space-y-4">
       <p className="text-sm text-muted-foreground">
         Modifica i contenuti delle pagine del sito e le impostazioni SEO.
