@@ -18,6 +18,7 @@ import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult
 import SKUEditor from "./SKUEditor";
 import ImageOptimizer from "./ImageOptimizer";
 import HelloBarTabContent from "./HelloBarTabContent";
+import MenuTabContent from "./MenuTabContent";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
 
@@ -829,9 +830,10 @@ const AdminPanel = ({
                   </> : "Accedi"}
               </Button>
             </div> : <Tabs defaultValue="products" className="mt-4">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
               <TabsTrigger value="skus">SKUs</TabsTrigger>
+              <TabsTrigger value="menu">Menu</TabsTrigger>
               <TabsTrigger value="hellobar">Hello Bar</TabsTrigger>
               <TabsTrigger value="hero">Hero</TabsTrigger>
               <TabsTrigger value="pages">Pagine</TabsTrigger>
@@ -901,6 +903,8 @@ const AdminPanel = ({
             <TabsContent value="skus" className="space-y-4">
               <SKUEditor products={products} onProductsChange={onProductsChange} />
             </TabsContent>
+
+            <MenuTabContent />
 
             <HeroTabContent />
 
