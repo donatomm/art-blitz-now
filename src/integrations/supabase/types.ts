@@ -87,6 +87,7 @@ export type Database = {
           name: string
           sizes: Json
           slug: string | null
+          tags: string[] | null
           updated_at: string
         }
         Insert: {
@@ -104,6 +105,7 @@ export type Database = {
           name: string
           sizes?: Json
           slug?: string | null
+          tags?: string[] | null
           updated_at?: string
         }
         Update: {
@@ -121,6 +123,7 @@ export type Database = {
           name?: string
           sizes?: Json
           slug?: string | null
+          tags?: string[] | null
           updated_at?: string
         }
         Relationships: []
