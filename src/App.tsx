@@ -26,6 +26,7 @@ const Cookies = lazy(() => import("./pages/Cookies"));
 const Terms = lazy(() => import("./pages/Terms"));
 const ResiRimborsi = lazy(() => import("./pages/ResiRimborsi"));
 const OrdinePersonalizzato = lazy(() => import("./pages/OrdinePersonalizzato"));
+const ColorPalette = lazy(() => import("./pages/ColorPalette"));
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => (
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/resi-e-rimborsi" element={<ResiRimborsi />} />
                 <Route path="/ordine-personalizzato" element={<OrdinePersonalizzato />} />
+                <Route path="/colors" element={<ColorPalette />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
