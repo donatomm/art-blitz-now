@@ -18,7 +18,7 @@ const Footer = () => {
             <Link to="/shipping" className="hover:text-white transition-colors">
               Spedizioni
             </Link>
-            <Link to="/resi-e-rimborsi" className="hover:text-white transition-colors">
+            <Link to="/resi-rimborsi" className="hover:text-white transition-colors">
               Resi e Rimborsi
             </Link>
             <Link to="/contact" className="hover:text-white transition-colors">
@@ -33,6 +33,9 @@ const Footer = () => {
             <a href="/docs/termini-e-condizioni.pdf" download className="hover:text-white transition-colors">
               Termini e Condizioni di Vendita (PDF)
             </a>
+            <Link to="/sitemap" className="hover:text-white transition-colors">
+              Mappa del Sito
+            </Link>
           </div>
         </div>
         

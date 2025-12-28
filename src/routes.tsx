@@ -20,6 +20,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const ResiRimborsi = lazy(() => import("./pages/ResiRimborsi"));
 const OrdinePersonalizzato = lazy(() => import("./pages/OrdinePersonalizzato"));
 const ColorPalette = lazy(() => import("./pages/ColorPalette"));
+const Sitemap = lazy(() => import("./pages/Sitemap"));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -125,6 +126,10 @@ export const routes: RouteRecord[] = [
       {
         path: "colors",
         element: withSuspense(ColorPalette),
+      },
+      {
+        path: "sitemap",
+        element: withSuspense(Sitemap),
       },
       {
         path: "*",
