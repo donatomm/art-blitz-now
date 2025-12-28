@@ -96,7 +96,7 @@ const ResiRimborsi = () => {
       <SEO 
         title={page?.seo_title || page?.title || "Resi e Rimborsi"}
         description={page?.seo_description || "Politica di resi e rimborsi per i prodotti OctoWonders. Scopri come richiedere un reso o un rimborso."}
-        url="https://octowonders.com/resi-e-rimborsi"
+        url="https://octowonders.com/resi-rimborsi"
       />
       
       <div className="flex-grow">
