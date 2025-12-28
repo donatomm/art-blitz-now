@@ -75,10 +75,10 @@ const HelloBar = ({
 
   return (
     <>
+      {/* This is NOT fixed - it will be inside a fixed wrapper */}
       <div
-        className="fixed top-0 left-0 right-0 z-50 py-2 px-4"
+        className="w-full py-2 px-4"
         style={{ backgroundColor: bgColor }}
-        id="hello-bar"
       >
         <div className="container mx-auto flex flex-wrap items-center justify-center gap-2 md:gap-6">
           {/* Main Text */}
