@@ -186,10 +186,15 @@ const HelloBarTabContent = () => {
                 <Input
                   type="datetime-local"
                   value={hellobarCountdownEnd.slice(0, 16)}
-                  onChange={(e) => { setHellobarCountdownEnd(e.target.value); markChanged(); }}
+                  onChange={(e) => { 
+                    // Ensure we save with seconds appended for proper parsing
+                    const dateValue = e.target.value ? `${e.target.value}:00` : "";
+                    setHellobarCountdownEnd(dateValue); 
+                    markChanged(); 
+                  }}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Il countdown mostrerà Giorni, Ore, Minuti, Secondi
+                  Imposta una data futura! Il countdown mostrerà Giorni, Ore, Minuti, Secondi
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
