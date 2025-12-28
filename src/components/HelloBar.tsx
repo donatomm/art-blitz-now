@@ -101,7 +101,7 @@ const HelloBar = ({
         <div className="container mx-auto flex flex-wrap items-center justify-center gap-2 md:gap-6">
           {/* Main Text */}
           <span
-            className="text-sm md:text-base font-semibold text-center"
+            className="text-sm md:text-base font-light text-center"
             style={{ color: textColor }}
           >
             {text}
@@ -110,7 +110,7 @@ const HelloBar = ({
           {/* Countdown */}
           {countdownEnabled && (
             <span
-              className="text-sm md:text-base font-bold"
+              className="text-sm md:text-base font-normal"
               style={{ color: countdownTextColor }}
             >
               {timeLeft.days}gg {String(timeLeft.hours).padStart(2, "0")}h {String(timeLeft.minutes).padStart(2, "0")}m {String(timeLeft.seconds).padStart(2, "0")}s
@@ -120,7 +120,7 @@ const HelloBar = ({
           {/* Details Button */}
           <button
             onClick={() => setShippingDialogOpen(true)}
-            className="text-xs md:text-sm font-semibold px-3 py-1 rounded transition-opacity hover:opacity-80"
+            className="text-xs md:text-sm font-normal px-3 py-1 rounded transition-opacity hover:opacity-80"
             style={{
               color: buttonTextColor,
               backgroundColor: buttonBgColor,
