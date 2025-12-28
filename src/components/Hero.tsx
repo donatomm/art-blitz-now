@@ -12,18 +12,20 @@ interface HeroProps {
   trustBarItems?: string[];
 }
 const Hero = ({
-  imageUrl = heroImage,
+  imageUrl,
   title = "Your Hero Title Here",
   subtitle = "Your inspiring subtitle goes here",
   ctaText,
   onCtaClick,
   trustBarItems
 }: HeroProps) => {
+  // Use uploaded image if provided, otherwise fall back to default
+  const displayImage = imageUrl && imageUrl.trim() !== "" ? imageUrl : heroImage;
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
   return <>
       <section className="relative w-full overflow-hidden">
         {/* Background Image with high priority for LCP */}
-        <img src={imageUrl} alt="OctoWonders Hero" width={1920} height={1080} loading="eager" decoding="sync" fetchPriority="high" className="absolute inset-0 w-full h-full object-cover object-center" />
+        <img src={displayImage} alt="OctoWonders Hero" width={1920} height={1080} loading="eager" decoding="sync" fetchPriority="high" className="absolute inset-0 w-full h-full object-cover object-center" />
 
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/50" />
