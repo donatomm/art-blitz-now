@@ -41,7 +41,7 @@ const Navigation = ({ isOverHero = false, hasHelloBar = false }: NavigationProps
   return (
     <nav
       className={`fixed left-0 right-0 z-40 transition-all duration-300 ${
-        hasHelloBar ? "top-10" : "top-0"
+        hasHelloBar ? "top-[88px] md:top-10" : "top-0"
       } ${
         showTransparent
           ? "bg-black/40 backdrop-blur-sm"
