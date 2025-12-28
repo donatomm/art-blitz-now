@@ -21,6 +21,10 @@ const Cookies = () => {
         title="Cookie Policy"
         description="Informativa sui cookie di OctoWonders. Come utilizziamo i cookie e come gestire le tue preferenze."
         url="/cookies"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Cookie Policy", url: "/cookies" },
+        ]}
       />
       <Navigation />
       
