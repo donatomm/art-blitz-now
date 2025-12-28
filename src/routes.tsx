@@ -11,7 +11,7 @@ const Artist = lazy(() => import("./pages/Artist"));
 const Shipping = lazy(() => import("./pages/Shipping"));
 const PricingPolicy = lazy(() => import("./pages/PricingPolicy"));
 const Contact = lazy(() => import("./pages/Contact"));
-const NotaClienti = lazy(() => import("./pages/NotaClienti"));
+
 const NotFound = lazy(() => import("./pages/NotFound"));
 const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -82,10 +82,6 @@ export const routes: RouteRecord[] = [
       {
         path: "artist",
         element: withSuspense(Artist),
-      },
-      {
-        path: "nota-clienti",
-        element: withSuspense(NotaClienti),
       },
       {
         path: "shipping",

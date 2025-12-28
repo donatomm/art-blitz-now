@@ -34,7 +34,6 @@ const Sitemap = () => {
         { to: "/shipping", label: "Spedizioni" },
         { to: "/pricing-policy", label: "Politica Prezzi" },
         { to: "/resi-rimborsi", label: "Resi e Rimborsi" },
-        { to: "/nota-clienti", label: "Nota Clienti" },
       ],
     },
     {
