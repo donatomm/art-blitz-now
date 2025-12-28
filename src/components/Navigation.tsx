@@ -4,6 +4,7 @@ import { Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import logo from "@/assets/logo.webp";
+import HelloBar from "./HelloBar";
 
 const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === 'true';
 
@@ -17,16 +18,30 @@ const navItems = [
 
 interface NavigationProps {
   isOverHero?: boolean;
-  hasHelloBar?: boolean;
+  helloBarProps?: {
+    enabled?: boolean;
+    text?: string;
+    textColor?: string;
+    bgColor?: string;
+    countdownEnabled?: boolean;
+    countdownEnd?: string;
+    countdownTextColor?: string;
+    countdownBgColor?: string;
+    buttonText?: string;
+    buttonTextColor?: string;
+    buttonBgColor?: string;
+    buttonBorderColor?: string;
+  };
 }
 
-const Navigation = ({ isOverHero = false, hasHelloBar = false }: NavigationProps) => {
+const Navigation = ({ isOverHero = false, helloBarProps }: NavigationProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { getItemCount, setIsCartOpen } = useCart();
 
   const itemCount = getItemCount();
+  const showHelloBar = helloBarProps?.enabled ?? false;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,129 +54,135 @@ const Navigation = ({ isOverHero = false, hasHelloBar = false }: NavigationProps
   const showTransparent = isOverHero && !isScrolled;
 
   return (
-    <nav
-      className={`fixed left-0 right-0 z-40 transition-all duration-300 ${
-        hasHelloBar ? "top-[88px] md:top-10" : "top-0"
-      } ${
-        showTransparent
-          ? "bg-black/40 backdrop-blur-sm"
-          : "bg-background/95 backdrop-blur-sm border-b"
-      }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo and Company Name */}
-          <Link to="/" className="flex items-center gap-3">
-            <img
-              src={logo}
-              alt="OctoWonders Logo"
-              className={`w-10 h-10 ${showTransparent ? "invert" : ""}`}
-            />
-            <div className="flex flex-col">
-              <span
-                className={`text-xl font-semibold ${
-                  showTransparent ? "text-white" : "text-foreground"
-                }`}
-              >
-                OctoWonders
-              </span>
-              <span
-                className={`text-xs font-light ${
-                  showTransparent ? "text-white/70" : "text-muted-foreground"
-                }`}
-              >
-                by Marco De Francesco
-              </span>
+    <header className="fixed top-0 left-0 right-0 z-50">
+      {/* Hello Bar */}
+      {showHelloBar && helloBarProps && (
+        <HelloBar {...helloBarProps} />
+      )}
+      
+      {/* Navigation Bar */}
+      <nav
+        className={`transition-all duration-300 ${
+          showTransparent
+            ? "bg-black/40 backdrop-blur-sm"
+            : "bg-background/95 backdrop-blur-sm border-b"
+        }`}
+      >
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo and Company Name */}
+            <Link to="/" className="flex items-center gap-3">
+              <img
+                src={logo}
+                alt="OctoWonders Logo"
+                className={`w-10 h-10 ${showTransparent ? "invert" : ""}`}
+              />
+              <div className="flex flex-col">
+                <span
+                  className={`text-xl font-semibold ${
+                    showTransparent ? "text-white" : "text-foreground"
+                  }`}
+                >
+                  OctoWonders
+                </span>
+                <span
+                  className={`text-xs font-light ${
+                    showTransparent ? "text-white/70" : "text-muted-foreground"
+                  }`}
+                >
+                  by Marco De Francesco
+                </span>
+              </div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`text-sm font-medium transition-colors ${
+                    showTransparent
+                      ? "text-white/90 hover:text-white"
+                      : location.pathname === item.href
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              {/* Cart Icon - Desktop */}
+              {CART_ENABLED && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`relative ${showTransparent ? "text-white hover:bg-white/10" : ""}`}
+                  onClick={() => setIsCartOpen(true)}
+                >
+                  <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
+                  {itemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-gold text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {itemCount > 9 ? "9+" : itemCount}
+                    </span>
+                  )}
+                </Button>
+              )}
             </div>
-          </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={`text-sm font-medium transition-colors ${
-                  showTransparent
-                    ? "text-white/90 hover:text-white"
-                    : location.pathname === item.href
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {/* Mobile Menu Button + Cart */}
+            <div className="flex items-center gap-2 md:hidden">
+              {/* Cart Icon - Mobile */}
+              {CART_ENABLED && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`relative ${showTransparent ? "text-white" : ""}`}
+                  onClick={() => setIsCartOpen(true)}
+                >
+                  <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
+                  {itemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-gold text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {itemCount > 9 ? "9+" : itemCount}
+                    </span>
+                  )}
+                </Button>
+              )}
 
-            {/* Cart Icon - Desktop */}
-            {CART_ENABLED && (
               <Button
                 variant="ghost"
                 size="icon"
-                className={`relative ${showTransparent ? "text-white hover:bg-white/10" : ""}`}
-                onClick={() => setIsCartOpen(true)}
+                className={`${showTransparent ? "text-white" : ""}`}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
-                {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-gold text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {itemCount > 9 ? "9+" : itemCount}
-                  </span>
-                )}
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
-            )}
+            </div>
           </div>
 
-          {/* Mobile Menu Button + Cart */}
-          <div className="flex items-center gap-2 md:hidden">
-            {/* Cart Icon - Mobile */}
-            {CART_ENABLED && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`relative ${showTransparent ? "text-white" : ""}`}
-                onClick={() => setIsCartOpen(true)}
-              >
-                <ShoppingCart className="h-5 w-5" strokeWidth={1.5} />
-                {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-gold text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {itemCount > 9 ? "9+" : itemCount}
-                  </span>
-                )}
-              </Button>
-            )}
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`${showTransparent ? "text-white" : ""}`}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
-          </div>
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden py-4 border-t bg-background">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block py-2 text-sm font-medium ${
+                    location.pathname === item.href
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t bg-background">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block py-2 text-sm font-medium ${
-                  location.pathname === item.href
-                    ? "text-foreground"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 

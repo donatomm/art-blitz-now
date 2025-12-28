@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { Product } from "@/types/product";
 import { useProducts, useUpdateProduct, useCreateProduct, useDeleteProduct } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
-import HelloBar from "@/components/HelloBar";
 import Hero from "@/components/Hero";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
@@ -102,22 +101,23 @@ const Index = () => {
   };
   return <div className="min-h-screen bg-background">
       <SEO />
-      <HelloBar
-        enabled={hellobarEnabled}
-        text={hellobarText}
-        textColor={hellobarTextColor}
-        bgColor={hellobarBgColor}
-        countdownEnabled={hellobarCountdownEnabled}
-        countdownEnd={hellobarCountdownEnd}
-        countdownTextColor={hellobarCountdownTextColor}
-        countdownBgColor={hellobarCountdownBgColor}
-        buttonText={hellobarButtonText}
-        buttonTextColor={hellobarButtonTextColor}
-        buttonBgColor={hellobarButtonBgColor}
-        buttonBorderColor={hellobarButtonBorderColor}
+      <Navigation 
+        isOverHero 
+        helloBarProps={{
+          enabled: hellobarEnabled,
+          text: hellobarText,
+          textColor: hellobarTextColor,
+          bgColor: hellobarBgColor,
+          countdownEnabled: hellobarCountdownEnabled,
+          countdownEnd: hellobarCountdownEnd,
+          countdownTextColor: hellobarCountdownTextColor,
+          countdownBgColor: hellobarCountdownBgColor,
+          buttonText: hellobarButtonText,
+          buttonTextColor: hellobarButtonTextColor,
+          buttonBgColor: hellobarButtonBgColor,
+          buttonBorderColor: hellobarButtonBorderColor,
+        }}
       />
-      <Navigation isOverHero hasHelloBar={hellobarEnabled} />
-      
 
       <Hero 
         imageUrl={heroImageUrl}
