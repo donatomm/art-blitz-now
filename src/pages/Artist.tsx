@@ -37,7 +37,23 @@ const Artist = () => {
     lines.forEach((line, index) => {
       const trimmedLine = line.trim();
       
-      if (trimmedLine.startsWith('## ')) {
+      // Check for image markdown: ![alt](url)
+      const imageMatch = trimmedLine.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+      
+      if (imageMatch) {
+        flushList();
+        const altText = imageMatch[1] || 'Immagine';
+        const imageUrl = imageMatch[2];
+        elements.push(
+          <img 
+            key={index} 
+            src={imageUrl} 
+            alt={altText} 
+            className="w-full max-w-lg mx-auto rounded-lg shadow-md my-6" 
+            loading="lazy"
+          />
+        );
+      } else if (trimmedLine.startsWith('## ')) {
         flushList();
         elements.push(<h2 key={index} className="text-2xl font-semibold text-primary mb-4 mt-8">{trimmedLine.substring(3)}</h2>);
       } else if (trimmedLine.startsWith('# ')) {
