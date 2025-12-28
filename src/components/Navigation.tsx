@@ -55,11 +55,6 @@ const Navigation = ({ isOverHero = false, helloBarProps }: NavigationProps) => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      {/* Hello Bar */}
-      {showHelloBar && helloBarProps && (
-        <HelloBar {...helloBarProps} />
-      )}
-      
       {/* Navigation Bar */}
       <nav
         className={`transition-all duration-300 ${
@@ -182,6 +177,11 @@ const Navigation = ({ isOverHero = false, helloBarProps }: NavigationProps) => {
           )}
         </div>
       </nav>
+      
+      {/* Hello Bar - Below Navigation */}
+      {showHelloBar && helloBarProps && (
+        <HelloBar {...helloBarProps} />
+      )}
     </header>
   );
 };
