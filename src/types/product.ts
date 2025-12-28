@@ -28,6 +28,7 @@ export interface Product {
   is_active: boolean;
   is_new?: boolean;
   slug?: string;
+  tags?: string[];
   created_at?: string;
   updated_at?: string;
 }
