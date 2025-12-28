@@ -1,19 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
+import { useSiteSettings, getSettingValue } from "@/hooks/useSiteSettings";
 import logo from "@/assets/logo.webp";
 import HelloBar from "./HelloBar";
 
 const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === 'true';
 
-const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Autore", href: "/artist" },
-  { label: "Regole di Spedizione", href: "/shipping" },
-  { label: "Politica Prezzi", href: "/pricing-policy" },
-  { label: "Contatti", href: "/contact" },
+interface NavItem {
+  label: string;
+  href: string;
+  order?: number;
+}
+
+const defaultNavItems: NavItem[] = [
+  { label: "Autore", href: "/artist", order: 0 },
+  { label: "Regole di Spedizione", href: "/shipping", order: 1 },
+  { label: "Politica Prezzi", href: "/pricing-policy", order: 2 },
+  { label: "Contatti", href: "/contact", order: 3 },
 ];
 
 interface NavigationProps {
@@ -42,9 +48,17 @@ const Navigation = ({ isOverHero = false, helloBarProps }: NavigationProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { getItemCount, setIsCartOpen } = useCart();
+  const { data: settings } = useSiteSettings();
 
   const itemCount = getItemCount();
   const showHelloBar = helloBarProps?.enabled ?? false;
+
+  // Get nav items from settings, or use defaults
+  const navItems = useMemo(() => {
+    const items = getSettingValue<NavItem[]>(settings, "nav_items", []);
+    if (items.length === 0) return defaultNavItems;
+    return items.sort((a, b) => (a.order || 0) - (b.order || 0));
+  }, [settings]);
 
   useEffect(() => {
     const handleScroll = () => {
