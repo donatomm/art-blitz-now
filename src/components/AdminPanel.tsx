@@ -134,7 +134,7 @@ const PagesTabContent = () => {
           
           {/* SEO Fields */}
           <div className="border-t pt-4 mt-4">
-            <h4 className="font-medium text-sm mb-3 text-muted-foreground">🔍 SEO (per Google)</h4>
+            <h4 className="font-bold text-sm mb-3 text-blue-600">🔍 SEO (per Google)</h4>
             <div className="space-y-3">
               <div>
                 <Label>SEO Title <span className="text-xs text-muted-foreground ml-1">(max 60 caratteri)</span></Label>
@@ -339,7 +339,7 @@ const HeroTabContent = () => {
         {/* Trust Bar Items */}
         <div className="border-t pt-4">
           <div className="flex items-center justify-between mb-2">
-            <Label>Trust Bar (badge sotto l'Hero)</Label>
+            <Label className="font-bold text-blue-600">Trust Bar (badge sotto l'Hero)</Label>
             <Button
               type="button"
               variant="outline"
