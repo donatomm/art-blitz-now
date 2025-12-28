@@ -79,6 +79,8 @@ const HelloBarTabContent = () => {
   const [hellobarButtonBgColor, setHellobarButtonBgColor] = useState("#FFFFFF");
   const [hellobarButtonBorderColor, setHellobarButtonBorderColor] = useState("#FFFFFF");
   const [hellobarPopupContent, setHellobarPopupContent] = useState(DEFAULT_POPUP_CONTENT);
+  const [hellobarWhatsappNumber, setHellobarWhatsappNumber] = useState("393666295174");
+  const [hellobarContactEmail, setHellobarContactEmail] = useState("me@octowonders.com");
   
   // Load settings
   useEffect(() => {
@@ -96,6 +98,8 @@ const HelloBarTabContent = () => {
       setHellobarButtonBgColor(getSettingValue<string>(settings, "hellobar_button_bg_color", "#FFFFFF"));
       setHellobarButtonBorderColor(getSettingValue<string>(settings, "hellobar_button_border_color", "#FFFFFF"));
       setHellobarPopupContent(getSettingValue<string>(settings, "hellobar_popup_content", DEFAULT_POPUP_CONTENT));
+      setHellobarWhatsappNumber(getSettingValue<string>(settings, "hellobar_whatsapp_number", "393666295174"));
+      setHellobarContactEmail(getSettingValue<string>(settings, "hellobar_contact_email", "me@octowonders.com"));
     }
   }, [settings]);
   
@@ -115,6 +119,8 @@ const HelloBarTabContent = () => {
         updateSetting.mutateAsync({ key: "hellobar_button_bg_color", value: hellobarButtonBgColor }),
         updateSetting.mutateAsync({ key: "hellobar_button_border_color", value: hellobarButtonBorderColor }),
         updateSetting.mutateAsync({ key: "hellobar_popup_content", value: hellobarPopupContent }),
+        updateSetting.mutateAsync({ key: "hellobar_whatsapp_number", value: hellobarWhatsappNumber }),
+        updateSetting.mutateAsync({ key: "hellobar_contact_email", value: hellobarContactEmail }),
       ]);
       setHasChanges(false);
       toast({
@@ -274,6 +280,30 @@ const HelloBarTabContent = () => {
             <p className="text-xs text-muted-foreground mt-1">
               I bottoni WhatsApp e Email vengono aggiunti automaticamente sotto il testo.
             </p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Numero WhatsApp</Label>
+              <Input
+                value={hellobarWhatsappNumber}
+                onChange={(e) => { setHellobarWhatsappNumber(e.target.value); markChanged(); }}
+                placeholder="393666295174"
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Formato internazionale senza + (es: 393666295174)
+              </p>
+            </div>
+            <div>
+              <Label>Indirizzo Email</Label>
+              <Input
+                value={hellobarContactEmail}
+                onChange={(e) => { setHellobarContactEmail(e.target.value); markChanged(); }}
+                placeholder="me@octowonders.com"
+                className="mt-1"
+              />
+            </div>
           </div>
         </div>
         

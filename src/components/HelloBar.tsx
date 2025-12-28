@@ -32,6 +32,8 @@ interface HelloBarProps {
   buttonBgColor?: string;
   buttonBorderColor?: string;
   popupContent?: string;
+  whatsappNumber?: string;
+  contactEmail?: string;
 }
 
 interface TimeLeft {
@@ -55,6 +57,8 @@ const HelloBar = ({
   buttonBgColor = "#FFFFFF",
   buttonBorderColor = "#FFFFFF",
   popupContent = DEFAULT_POPUP_CONTENT,
+  whatsappNumber = "393666295174",
+  contactEmail = "me@octowonders.com",
 }: HelloBarProps) => {
   const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -144,7 +148,7 @@ const HelloBar = ({
             {/* Contact Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
               <a
-                href="https://wa.me/393666295174?text=Ciao!%20Ho%20una%20domanda%20sulla%20spedizione..."
+                href={`https://wa.me/${whatsappNumber}?text=Ciao!%20Ho%20una%20domanda%20sulla%20spedizione...`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-lg font-medium transition-colors"
@@ -155,7 +159,7 @@ const HelloBar = ({
                 WhatsApp
               </a>
               <a
-                href="mailto:me@octowonders.com?subject=Domanda%20Spedizione&body=Ciao!%20Ho%20una%20domanda%20sulla%20spedizione..."
+                href={`mailto:${contactEmail}?subject=Domanda%20Spedizione&body=Ciao!%20Ho%20una%20domanda%20sulla%20spedizione...`}
                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
