@@ -17,9 +17,10 @@ const navItems = [
 
 interface NavigationProps {
   isOverHero?: boolean;
+  hasHelloBar?: boolean;
 }
 
-const Navigation = ({ isOverHero = false }: NavigationProps) => {
+const Navigation = ({ isOverHero = false, hasHelloBar = false }: NavigationProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -39,7 +40,9 @@ const Navigation = ({ isOverHero = false }: NavigationProps) => {
 
   return (
     <nav
-      className={`fixed top-10 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed left-0 right-0 z-40 transition-all duration-300 ${
+        hasHelloBar ? "top-10" : "top-0"
+      } ${
         showTransparent
           ? "bg-black/40 backdrop-blur-sm"
           : "bg-background/95 backdrop-blur-sm border-b"

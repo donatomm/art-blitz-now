@@ -116,7 +116,7 @@ const Index = () => {
         buttonBgColor={hellobarButtonBgColor}
         buttonBorderColor={hellobarButtonBorderColor}
       />
-      <Navigation isOverHero />
+      <Navigation isOverHero hasHelloBar={hellobarEnabled} />
       
 
       <Hero 
