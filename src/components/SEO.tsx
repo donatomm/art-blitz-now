@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { Head } from 'vite-react-ssg';
 import { Product } from '@/types/product';
 
 interface SEOProps {
@@ -123,7 +123,7 @@ export const SEO = ({
   }
 
   return (
-    <Helmet>
+    <Head>
       {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={metaDescription} />
@@ -150,7 +150,7 @@ export const SEO = ({
       <script type="application/ld+json">
         {JSON.stringify(jsonLd)}
       </script>
-    </Helmet>
+    </Head>
   );
 };
 

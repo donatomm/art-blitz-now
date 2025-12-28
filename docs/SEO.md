@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the SEO architecture for OctoWonders, an e-commerce art prints website. The implementation follows modern SEO best practices with dynamic meta tags, structured data, and automated sitemap generation.
+This document describes the SEO architecture for OctoWonders, an e-commerce art prints website. The implementation follows modern SEO best practices with **Static Site Generation (SSG)**, dynamic meta tags, structured data, and automated sitemap generation.
 
 ## Architecture
 
@@ -17,19 +17,82 @@ This document describes the SEO architecture for OctoWonders, an e-commerce art 
 │  └──────┬───────┘    └──────┬───────┘    └──────────────┘      │
 │         │                   │                                   │
 │         ▼                   ▼                                   │
-│  ┌──────────────┐    ┌──────────────┐                          │
-│  │ react-helmet │    │ Edge Function│                          │
-│  │    -async    │    │ + Build-time │                          │
-│  └──────────────┘    └──────────────┘                          │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
+│  │ vite-react-  │    │ Edge Function│    │ vite-react-  │      │
+│  │  ssg Head    │    │ + Build-time │    │  ssg SSG     │      │
+│  └──────────────┘    └──────────────┘    └──────────────┘      │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
+```
+
+## Static Site Generation (SSG)
+
+The project uses **vite-react-ssg** for prerendering all pages at build time. This ensures that:
+
+- **Googlebot sees fully-rendered HTML** with all meta tags and content
+- **No JavaScript execution required** for crawlers to index content
+- **Faster Time to First Contentful Paint** improving Core Web Vitals
+- **JSON-LD structured data** is present in initial HTML
+
+### How SSG Works
+
+1. **Build starts** → `vite-react-ssg build` command runs
+2. **Routes loaded** → `src/routes.tsx` defines all routes
+3. **Dynamic paths fetched** → `getStaticPaths()` fetches product slugs from Supabase
+4. **Pages prerendered** → Each route is rendered to static HTML
+5. **Deploy** → Static HTML files served from CDN
+
+### Route Configuration (`src/routes.tsx`)
+
+```tsx
+import type { RouteRecord } from "vite-react-ssg";
+
+export const routes: RouteRecord[] = [
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <Index /> },
+      {
+        path: "product/:slug",
+        element: <Product />,
+        getStaticPaths: async () => {
+          // Fetch all product slugs at build time
+          const response = await fetch(
+            `${supabaseUrl}/rest/v1/products?select=slug&is_active=eq.true`
+          );
+          const products = await response.json();
+          return products.map(p => `product/${p.slug}`);
+        },
+      },
+      // ... other routes
+    ],
+  },
+];
+```
+
+### Generated Static Files
+
+At build time, this creates:
+
+```
+dist/
+├── index.html                          (prerendered homepage)
+├── product/
+│   ├── polpo-octopus-ventose.../index.html
+│   ├── 4-acciughe-sardine.../index.html
+│   └── ... (all product pages)
+├── artist/index.html
+├── shipping/index.html
+├── sitemap.xml
+└── ... (all other pages)
 ```
 
 ## Components
 
 ### 1. SEO Component (`src/components/SEO.tsx`)
 
-The central SEO component using `react-helmet-async` for dynamic meta tag injection.
+The central SEO component using `vite-react-ssg`'s `Head` component for dynamic meta tag injection. This is prerendered into the static HTML at build time.
 
 #### Features
 
@@ -189,11 +252,8 @@ const staticPages = [
 User-agent: *
 Allow: /
 
+# Static Sitemap (generated at build time from edge function)
 Sitemap: https://octowonders.com/sitemap.xml
-
-# Disallow admin and private areas
-Disallow: /admin
-Disallow: /api/
 ```
 
 ### 5. Base HTML Meta Tags (`index.html`)
@@ -211,7 +271,8 @@ The root HTML file includes:
 
 | Component | Responsibility | Updates |
 |-----------|---------------|---------|
-| `SEO.tsx` | Meta tags, JSON-LD | Per page render |
+| `SEO.tsx` | Meta tags, JSON-LD | Per page render (prerendered at build) |
+| `vite-react-ssg` | Static HTML generation | On build |
 | Edge Function | Dynamic sitemap | On request |
 | Build Plugin | Static sitemap | On deploy |
 | `robots.txt` | Crawler directives | Manual |
@@ -272,21 +333,23 @@ const getProductSchema = (product: Product) => {
 
 ## Best Practices Implemented
 
-1. **Single H1 per page**: Enforced in page components
-2. **Semantic HTML**: `<header>`, `<main>`, `<section>`, `<article>` used throughout
-3. **Image alt attributes**: All images have descriptive alt text
-4. **Mobile-first**: Responsive design with proper viewport
-5. **Performance**: Preconnect hints, lazy loading where applicable
-6. **Clean URLs**: Human-readable slugs for products
+1. **Static Site Generation**: All pages prerendered at build time
+2. **Single H1 per page**: Enforced in page components
+3. **Semantic HTML**: `<header>`, `<main>`, `<section>`, `<article>` used throughout
+4. **Image alt attributes**: All images have descriptive alt text
+5. **Mobile-first**: Responsive design with proper viewport
+6. **Performance**: Preconnect hints, lazy loading where applicable
+7. **Clean URLs**: Human-readable slugs for products
 
 ## Deployment Workflow
 
 ```
-Code Push → Build Triggered → Sitemap Generated → Deploy
-                                    │
-                                    ▼
-                         Edge Function Available
-                         (real-time sitemap)
+Code Push → Build Triggered → SSG Prerendering → Sitemap Generated → Deploy
+                                     │                    │
+                                     ▼                    ▼
+                          Static HTML for all     Edge Function Available
+                          pages including         (real-time sitemap backup)
+                          product pages
 ```
 
 ## Testing SEO
@@ -306,6 +369,11 @@ Code Push → Build Triggered → Sitemap Generated → Deploy
 - Access `/sitemap.xml` directly
 - Use [XML Sitemap Validator](https://www.xml-sitemaps.com/validate-xml-sitemap.html)
 
+### Verify SSG Output
+
+- Check `dist/` folder after build for static HTML files
+- Verify meta tags are present in HTML source (not injected by JS)
+
 ## Configuration Constants
 
 Located in `src/components/SEO.tsx`:
@@ -319,6 +387,12 @@ const BRAND_NAME = 'OctoWonders by Marco De Francesco';
 
 ## Dependencies
 
-- `react-helmet-async`: ^2.0.5 - Manages document head
+- `vite-react-ssg`: Static Site Generation for React + Vite
 - Edge Functions: Deno runtime for sitemap generation
 - Supabase: Database for product data
+
+## Caveats
+
+- **Build time**: Increases with more products (each page prerendered)
+- **Data freshness**: Product data is from build time (but react-query hydrates fresh data on client)
+- **New products**: Require a rebuild to appear in prerendered pages
