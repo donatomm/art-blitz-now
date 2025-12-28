@@ -11,6 +11,7 @@ import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, 
 import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import ImageUpload from "./ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
@@ -971,6 +972,32 @@ const AdminPanel = ({
                   onCheckedChange={(checked) => setEditProduct({...editProduct, is_new: checked})} 
                 />
                 <Label className="cursor-pointer">Mostra badge "NEW"</Label>
+              </div>
+
+              {/* Tags for Related Products */}
+              <div className="space-y-2 border-t pt-4">
+                <Label>Tags (per Opere Simili)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {['polpo', 'acciuga', 'pesce', 'astratto'].map(tag => (
+                    <label key={tag} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-full cursor-pointer hover:bg-muted transition-colors">
+                      <Checkbox 
+                        checked={editProduct.tags?.includes(tag) || false} 
+                        onCheckedChange={(checked) => {
+                          const currentTags = editProduct.tags || [];
+                          if (checked) {
+                            setEditProduct({...editProduct, tags: [...currentTags, tag]});
+                          } else {
+                            setEditProduct({...editProduct, tags: currentTags.filter(t => t !== tag)});
+                          }
+                        }}
+                      />
+                      <span className="text-sm capitalize">{tag}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  I prodotti con gli stessi tag appariranno in "Opere Simili"
+                </p>
               </div>
 
               <div>

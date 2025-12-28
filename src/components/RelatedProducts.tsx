@@ -12,12 +12,18 @@ const RelatedProducts = ({
   allProducts, 
   maxItems = 4 
 }: RelatedProductsProps) => {
-  // Filter related products: same medium, different product, active, not coming soon
+  // Helper to check if products share any tags
+  const hasMatchingTags = (a: Product, b: Product) => {
+    if (!a.tags?.length || !b.tags?.length) return false;
+    return a.tags.some(tag => b.tags?.includes(tag));
+  };
+
+  // Filter related products by matching tags
   const relatedProducts = allProducts
     .filter(p => 
       p.id !== currentProduct.id && 
       p.is_active &&
-      p.medium.toLowerCase() === currentProduct.medium.toLowerCase() &&
+      hasMatchingTags(p, currentProduct) &&
       !p.name.toLowerCase().includes("coming soon") &&
       !p.name.toLowerCase().includes("in arrivo")
     )
