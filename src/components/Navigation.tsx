@@ -31,6 +31,7 @@ interface NavigationProps {
     buttonTextColor?: string;
     buttonBgColor?: string;
     buttonBorderColor?: string;
+    popupContent?: string;
   };
 }
 

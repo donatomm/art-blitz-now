@@ -44,6 +44,7 @@ const Index = () => {
   const hellobarButtonTextColor = getSettingValue<string>(siteSettings, "hellobar_button_text_color", "#16A34A");
   const hellobarButtonBgColor = getSettingValue<string>(siteSettings, "hellobar_button_bg_color", "#FFFFFF");
   const hellobarButtonBorderColor = getSettingValue<string>(siteSettings, "hellobar_button_border_color", "#FFFFFF");
+  const hellobarPopupContent = getSettingValue<string>(siteSettings, "hellobar_popup_content", "");
   const scrollToGallery = () => {
     galleryRef.current?.scrollIntoView({
       behavior: "smooth"
@@ -116,6 +117,7 @@ const Index = () => {
           buttonTextColor: hellobarButtonTextColor,
           buttonBgColor: hellobarButtonBgColor,
           buttonBorderColor: hellobarButtonBorderColor,
+          popupContent: hellobarPopupContent,
         }}
       />
 
