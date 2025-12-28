@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult, CSVImportMode } from "@/utils/csvProductParser";
 import SKUEditor from "./SKUEditor";
 import ImageOptimizer from "./ImageOptimizer";
+import HelloBarTabContent from "./HelloBarTabContent";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
 
@@ -787,9 +788,10 @@ const AdminPanel = ({
                   </> : "Accedi"}
               </Button>
             </div> : <Tabs defaultValue="products" className="mt-4">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
               <TabsTrigger value="skus">SKUs</TabsTrigger>
+              <TabsTrigger value="hellobar">Hello Bar</TabsTrigger>
               <TabsTrigger value="hero">Hero</TabsTrigger>
               <TabsTrigger value="pages">Pagine</TabsTrigger>
               <TabsTrigger value="images">Immagini</TabsTrigger>
@@ -863,6 +865,8 @@ const AdminPanel = ({
 
             <PagesTabContent />
 
+            <HelloBarTabContent />
+            
             <TabsContent value="images" className="space-y-4">
               <ImageOptimizer />
             </TabsContent>

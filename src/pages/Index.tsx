@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Product } from "@/types/product";
 import { useProducts, useUpdateProduct, useCreateProduct, useDeleteProduct } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
-
+import HelloBar from "@/components/HelloBar";
 import Hero from "@/components/Hero";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
@@ -31,6 +31,20 @@ const Index = () => {
   const heroCtaText = getSettingValue<string>(siteSettings, "hero_cta_text", "ESPLORA LA COLLEZIONE");
   const heroImageUrl = getSettingValue<string>(siteSettings, "hero_image", "");
   const trustBarItems = getSettingValue<string[]>(siteSettings, "trust_bar_items", []);
+  
+  // Get HelloBar settings
+  const hellobarEnabled = getSettingValue<boolean>(siteSettings, "hellobar_enabled", true);
+  const hellobarText = getSettingValue<string>(siteSettings, "hellobar_text", "SPEDIZIONE GRATUITA in Italia - 30% fino a capodanno!");
+  const hellobarTextColor = getSettingValue<string>(siteSettings, "hellobar_text_color", "#FFFFFF");
+  const hellobarBgColor = getSettingValue<string>(siteSettings, "hellobar_bg_color", "#16A34A");
+  const hellobarCountdownEnabled = getSettingValue<boolean>(siteSettings, "hellobar_countdown_enabled", true);
+  const hellobarCountdownEnd = getSettingValue<string>(siteSettings, "hellobar_countdown_end", "2025-01-01T00:00:00");
+  const hellobarCountdownTextColor = getSettingValue<string>(siteSettings, "hellobar_countdown_text_color", "#FFFFFF");
+  const hellobarCountdownBgColor = getSettingValue<string>(siteSettings, "hellobar_countdown_bg_color", "#15803D");
+  const hellobarButtonText = getSettingValue<string>(siteSettings, "hellobar_button_text", "Dettagli");
+  const hellobarButtonTextColor = getSettingValue<string>(siteSettings, "hellobar_button_text_color", "#16A34A");
+  const hellobarButtonBgColor = getSettingValue<string>(siteSettings, "hellobar_button_bg_color", "#FFFFFF");
+  const hellobarButtonBorderColor = getSettingValue<string>(siteSettings, "hellobar_button_border_color", "#FFFFFF");
   const scrollToGallery = () => {
     galleryRef.current?.scrollIntoView({
       behavior: "smooth"
@@ -88,6 +102,20 @@ const Index = () => {
   };
   return <div className="min-h-screen bg-background">
       <SEO />
+      <HelloBar
+        enabled={hellobarEnabled}
+        text={hellobarText}
+        textColor={hellobarTextColor}
+        bgColor={hellobarBgColor}
+        countdownEnabled={hellobarCountdownEnabled}
+        countdownEnd={hellobarCountdownEnd}
+        countdownTextColor={hellobarCountdownTextColor}
+        countdownBgColor={hellobarCountdownBgColor}
+        buttonText={hellobarButtonText}
+        buttonTextColor={hellobarButtonTextColor}
+        buttonBgColor={hellobarButtonBgColor}
+        buttonBorderColor={hellobarButtonBorderColor}
+      />
       <Navigation isOverHero />
       
 
