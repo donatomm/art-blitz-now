@@ -68,7 +68,7 @@ Grazie!`
         <div className="space-y-4">
           <img
             src={product.image_url}
-            alt={product.name}
+            alt={`${product.name} - ${product.medium}`}
             className="w-full h-48 object-cover rounded-md"
           />
           <p className="text-sm text-muted-foreground">{product.medium}</p>
