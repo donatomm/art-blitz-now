@@ -112,7 +112,8 @@ const PageContent = ({ slug, children }: PageContentProps) => {
               key={index} 
               src={imageMatch[2]} 
               alt={imageMatch[1]} 
-              className="max-w-full rounded-lg shadow-sm border border-border my-4"
+              className="w-full max-w-lg mx-auto rounded-lg shadow-md my-6"
+              loading="lazy"
             />
           );
         }
