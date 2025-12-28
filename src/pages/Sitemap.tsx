@@ -54,6 +54,10 @@ const Sitemap = () => {
         title="Mappa del Sito"
         description="Esplora tutte le pagine di OctoWonders: opere d'arte, informazioni sull'artista, spedizioni e contatti."
         url="/sitemap"
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Mappa del Sito", url: "/sitemap" },
+        ]}
       />
 
       <div className="container mx-auto px-4">
