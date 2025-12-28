@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -148,9 +147,12 @@ const PageContent = ({ slug, children }: PageContentProps) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <main className="container mx-auto px-4 pt-24 pb-16">
+      <div className="min-h-screen bg-background pt-24 pb-16">
+        <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
+          <ArrowLeft className="h-5 w-5" />
+          <span className="hidden sm:inline">Torna alla Galleria</span>
+        </Link>
+        <main className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto space-y-4">
             <Skeleton className="h-10 w-64" />
             <Skeleton className="h-4 w-full" />
@@ -164,9 +166,12 @@ const PageContent = ({ slug, children }: PageContentProps) => {
 
   if (error || !page) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <main className="container mx-auto px-4 pt-24 pb-16">
+      <div className="min-h-screen bg-background pt-24 pb-16">
+        <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
+          <ArrowLeft className="h-5 w-5" />
+          <span className="hidden sm:inline">Torna alla Galleria</span>
+        </Link>
+        <main className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl font-bold mb-8">Pagina non trovata</h1>
             <p className="text-muted-foreground">
@@ -181,13 +186,12 @@ const PageContent = ({ slug, children }: PageContentProps) => {
   const isHTMLContent = containsHTML(page.content);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-24 pb-16">
       <SEO 
         title={page.seo_title || page.title}
         description={page.seo_description || `${page.title} - OctoWonders`}
         url={`/${slug}`}
       />
-      <Navigation />
       
       {/* Back to Gallery button */}
       <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
