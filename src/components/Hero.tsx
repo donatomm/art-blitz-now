@@ -26,7 +26,7 @@ const Hero = ({
       {/* Background Image with high priority for LCP */}
       <img 
         src={displayImage} 
-        alt="OctoWonders Hero" 
+        alt="OctoWonders - Collezione stampe d'arte marina su tela" 
         width={1920} 
         height={1080} 
         loading="eager" 

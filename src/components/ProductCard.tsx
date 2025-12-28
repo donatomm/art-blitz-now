@@ -75,7 +75,7 @@ const ProductCard = ({
 
   const imageContent = (
     <>
-      <img src={product.image_url} alt={product.name} width={600} height={600} className={`w-full h-auto object-cover transition-transform duration-500 ${!isComingSoon ? "group-hover:scale-105" : ""}`} loading="lazy" />
+      <img src={product.image_url} alt={`${product.name} - ${product.medium} - Stampa su tela OctoWonders`} width={600} height={600} className={`w-full h-auto object-cover transition-transform duration-500 ${!isComingSoon ? "group-hover:scale-105" : ""}`} loading="lazy" />
       {/* NEW Badge - top right */}
       {product.is_new && (
         <div className="absolute top-2 right-2 z-10">

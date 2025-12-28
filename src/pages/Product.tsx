@@ -277,7 +277,7 @@ Grazie!`);
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
           <img
             src={fullscreenImage || ''}
-            alt="Fullscreen mockup"
+            alt={`${product?.name} - Vista ingrandita mockup ambiente`}
             className="w-full h-full object-contain cursor-zoom-out"
             onClick={() => setFullscreenImage(null)}
           />
@@ -370,7 +370,7 @@ Grazie!`);
                       {room.image ? (
                         <img
                           src={room.image}
-                          alt={`${product?.name} in ambiente`}
+                          alt={`${product?.name} - ${room.displayLabel} - Anteprima stampa in ambiente`}
                           className="w-full h-full object-contain cursor-zoom-in"
                           onClick={() => setFullscreenImage(room.image)}
                         />
@@ -463,7 +463,7 @@ Grazie!`);
         <div className="flex flex-col md:flex-row gap-6 items-start md:pl-[68px]">
           {/* Artwork - Preview */}
           <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[300px] mx-auto md:mx-0 flex-shrink-0">
-            <img src={product.image_url} alt={product.name} className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-125" />
+            <img src={product.image_url} alt={`${product.name} - ${product.medium} - Stampa d'arte su tela`} className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-125" />
           </div>
 
           {/* Right Column - Info */}
