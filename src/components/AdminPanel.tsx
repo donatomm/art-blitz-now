@@ -994,6 +994,52 @@ const AdminPanel = ({
                       <span className="text-sm capitalize">{tag}</span>
                     </label>
                   ))}
+                  {/* Show custom tags (not in predefined list) */}
+                  {editProduct.tags?.filter(t => !['polpo', 'acciuga', 'pesce', 'astratto'].includes(t)).map(tag => (
+                    <span key={tag} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-full bg-primary/10">
+                      <span className="text-sm">{tag}</span>
+                      <button 
+                        type="button"
+                        onClick={() => setEditProduct({...editProduct, tags: editProduct.tags?.filter(t => t !== tag)})}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                {/* Add custom tag input */}
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="Nuovo tag..." 
+                    className="flex-1"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const input = e.currentTarget;
+                        const newTag = input.value.trim().toLowerCase();
+                        if (newTag && !editProduct.tags?.includes(newTag)) {
+                          setEditProduct({...editProduct, tags: [...(editProduct.tags || []), newTag]});
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    onClick={(e) => {
+                      const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                      const newTag = input.value.trim().toLowerCase();
+                      if (newTag && !editProduct.tags?.includes(newTag)) {
+                        setEditProduct({...editProduct, tags: [...(editProduct.tags || []), newTag]});
+                        input.value = '';
+                      }
+                    }}
+                  >
+                    Aggiungi
+                  </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   I prodotti con gli stessi tag appariranno in "Opere Simili"
