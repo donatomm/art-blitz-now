@@ -290,6 +290,11 @@ Grazie!`);
         url={`/product/${product.slug || product.id}`}
         type="product"
         product={product}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Opere d'Arte", url: "/#gallery" },
+          { name: product.name, url: `/product/${product.slug || product.id}` },
+        ]}
       />
       <Navigation />
       

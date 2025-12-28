@@ -1,6 +1,11 @@
 import { Head } from 'vite-react-ssg';
 import { Product } from '@/types/product';
 
+interface Breadcrumb {
+  name: string;
+  url: string;
+}
+
 interface SEOProps {
   title?: string;
   description?: string;
@@ -9,6 +14,7 @@ interface SEOProps {
   type?: 'website' | 'product' | 'article';
   product?: Product;
   noindex?: boolean;
+  breadcrumbs?: Breadcrumb[];
 }
 
 const BASE_URL = 'https://octowonders.com';
@@ -87,6 +93,18 @@ const getWebPageSchema = (title: string, description: string, url: string) => ({
   },
 });
 
+// Generate JSON-LD for BreadcrumbList
+const getBreadcrumbSchema = (breadcrumbs: Breadcrumb[]) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    item: item.url.startsWith('http') ? item.url : `${BASE_URL}${item.url}`,
+  })),
+});
+
 export const SEO = ({
   title,
   description,
@@ -95,6 +113,7 @@ export const SEO = ({
   type = 'website',
   product,
   noindex = false,
+  breadcrumbs,
 }: SEOProps) => {
   // Build full title
   const fullTitle = title 
@@ -150,6 +169,13 @@ export const SEO = ({
       <script type="application/ld+json">
         {JSON.stringify(jsonLd)}
       </script>
+
+      {/* Breadcrumb Structured Data */}
+      {breadcrumbs && breadcrumbs.length > 0 && (
+        <script type="application/ld+json">
+          {JSON.stringify(getBreadcrumbSchema(breadcrumbs))}
+        </script>
+      )}
     </Head>
   );
 };
