@@ -65,7 +65,7 @@ const CheckoutSuccess = () => {
                 rel="noopener noreferrer"
                 className="inline-block"
               >
-                <Button className="bg-green-600 hover:bg-green-700 text-white">
+                <Button variant="cta">
                   <MessageCircle className="mr-2 h-4 w-4" />
                   Unisciti alla Lista VIP
                 </Button>

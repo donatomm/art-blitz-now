@@ -126,8 +126,9 @@ const ProductCard = ({
               <span className="text-muted-foreground">|</span>
               <Link to={`/product/${product.slug || product.id}#acquista`}>
                 <Button 
+                  variant="cta"
                   size="sm" 
-                  className="h-6 px-2 text-xs bg-green-600 hover:bg-green-700 text-white font-bold"
+                  className="h-6 px-2 text-xs"
                 >
                   ACQUISTA
                 </Button>

@@ -97,7 +97,7 @@ const Artist = () => {
         <div className="flex flex-wrap gap-4 mt-8">
           <Button
             asChild
-            className="bg-green-600 hover:bg-green-500 text-white"
+            variant="cta"
           >
             <a
               href={whatsappLink}
