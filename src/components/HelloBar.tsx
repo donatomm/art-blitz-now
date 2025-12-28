@@ -91,26 +91,12 @@ const HelloBar = ({
 
           {/* Countdown */}
           {countdownEnabled && (
-            <div className="flex items-center gap-1">
-              {[
-                { value: timeLeft.days, label: "G" },
-                { value: timeLeft.hours, label: "H" },
-                { value: timeLeft.minutes, label: "M" },
-                { value: timeLeft.seconds, label: "S" },
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center px-2 py-1 rounded text-xs md:text-sm font-bold"
-                  style={{
-                    backgroundColor: countdownBgColor,
-                    color: countdownTextColor,
-                  }}
-                >
-                  <span className="min-w-[20px] text-center">{String(item.value).padStart(2, "0")}</span>
-                  <span className="text-[10px] md:text-xs ml-0.5 opacity-80">{item.label}</span>
-                </div>
-              ))}
-            </div>
+            <span
+              className="text-sm md:text-base font-bold"
+              style={{ color: countdownTextColor }}
+            >
+              {timeLeft.days}gg {String(timeLeft.hours).padStart(2, "0")}h {String(timeLeft.minutes).padStart(2, "0")}m {String(timeLeft.seconds).padStart(2, "0")}s
+            </span>
           )}
 
           {/* Details Button */}
