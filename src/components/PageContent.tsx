@@ -5,9 +5,15 @@ import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
 import { sanitizeHtml, sanitizeInlineHtml } from "@/utils/sanitizeHtml";
 
+interface Breadcrumb {
+  name: string;
+  url: string;
+}
+
 interface PageContentProps {
   slug: string;
   children?: React.ReactNode;
+  breadcrumbs?: Breadcrumb[];
 }
 
 // Check if content contains HTML tags
@@ -15,7 +21,7 @@ const containsHTML = (str: string): boolean => {
   return /<[a-z][\s\S]*>/i.test(str);
 };
 
-const PageContent = ({ slug, children }: PageContentProps) => {
+const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
   const { data: page, isLoading, error } = usePage(slug);
   // Simple markdown renderer for basic formatting
   const renderContent = (content: string) => {
@@ -191,6 +197,7 @@ const PageContent = ({ slug, children }: PageContentProps) => {
         title={page.seo_title || page.title}
         description={page.seo_description || `${page.title} - OctoWonders`}
         url={`/${slug}`}
+        breadcrumbs={breadcrumbs}
       />
       
       {/* Back to Gallery button */}

@@ -11,7 +11,13 @@ Ed ho le seguenti domande:
   const emailLink = `mailto:me@octowonders.com?subject=${encodeURIComponent("Domanda")}&body=${encodeURIComponent(whatsappMessage)}`;
 
   return (
-    <PageContent slug="contatti">
+    <PageContent 
+      slug="contatti"
+      breadcrumbs={[
+        { name: "Home", url: "/" },
+        { name: "Contatti", url: "/contact" },
+      ]}
+    >
       {/* Contact Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 mt-8">
         <Button
