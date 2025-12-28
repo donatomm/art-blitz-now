@@ -29,6 +29,7 @@ const Index = () => {
   const heroTitle = getSettingValue<string>(siteSettings, "hero_title", "Opere magnetiche. Uniche. Non per tutti.");
   const heroSubtitle = getSettingValue<string>(siteSettings, "hero_subtitle", "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.");
   const heroCtaText = getSettingValue<string>(siteSettings, "hero_cta_text", "ESPLORA LA COLLEZIONE");
+  const heroImageUrl = getSettingValue<string>(siteSettings, "hero_image", "");
   const trustBarItems = getSettingValue<string[]>(siteSettings, "trust_bar_items", []);
   const scrollToGallery = () => {
     galleryRef.current?.scrollIntoView({
@@ -91,6 +92,7 @@ const Index = () => {
       
 
       <Hero 
+        imageUrl={heroImageUrl}
         title={heroTitle} 
         subtitle={heroSubtitle} 
         ctaText={heroCtaText} 

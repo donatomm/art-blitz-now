@@ -153,6 +153,7 @@ const HeroTabContent = () => {
   const [heroTitle, setHeroTitle] = useState("");
   const [heroSubtitle, setHeroSubtitle] = useState("");
   const [heroCtaText, setHeroCtaText] = useState("");
+  const [heroImage, setHeroImage] = useState("");
   const [trustBarItems, setTrustBarItems] = useState<string[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
   
@@ -162,6 +163,7 @@ const HeroTabContent = () => {
       setHeroTitle(getSettingValue<string>(settings, "hero_title", ""));
       setHeroSubtitle(getSettingValue<string>(settings, "hero_subtitle", ""));
       setHeroCtaText(getSettingValue<string>(settings, "hero_cta_text", ""));
+      setHeroImage(getSettingValue<string>(settings, "hero_image", ""));
       setTrustBarItems(getSettingValue<string[]>(settings, "trust_bar_items", []));
     }
   }, [settings]);
@@ -172,6 +174,7 @@ const HeroTabContent = () => {
         updateSetting.mutateAsync({ key: "hero_title", value: heroTitle }),
         updateSetting.mutateAsync({ key: "hero_subtitle", value: heroSubtitle }),
         updateSetting.mutateAsync({ key: "hero_cta_text", value: heroCtaText }),
+        updateSetting.mutateAsync({ key: "hero_image", value: heroImage }),
         updateSetting.mutateAsync({ key: "trust_bar_items", value: trustBarItems }),
       ]);
       setHasChanges(false);
@@ -183,6 +186,24 @@ const HeroTabContent = () => {
       toast({
         title: "Errore",
         description: "Impossibile salvare le impostazioni.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleImageUpload = async (url: string) => {
+    setHeroImage(url);
+    // Save immediately when image is uploaded
+    try {
+      await updateSetting.mutateAsync({ key: "hero_image", value: url });
+      toast({
+        title: "Immagine Hero salvata!",
+        description: "La nuova immagine è stata applicata.",
+      });
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Impossibile salvare l'immagine.",
         variant: "destructive",
       });
     }
@@ -222,6 +243,16 @@ const HeroTabContent = () => {
       </p>
       
       <div className="space-y-4">
+        {/* Hero Image */}
+        <div>
+          <ImageUpload
+            label="Immagine Hero (1920×1080px, WebP consigliato)"
+            currentUrl={heroImage}
+            onUpload={handleImageUpload}
+            folder="hero"
+          />
+        </div>
+        
         {/* H1 Title */}
         <div>
           <Label>Titolo H1 (Hero)</Label>
