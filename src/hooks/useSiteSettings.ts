@@ -29,10 +29,10 @@ export const useUpdateSiteSetting = () => {
   
   return useMutation({
     mutationFn: async ({ key, value }: { key: string; value: Json }) => {
+      // Use upsert to create or update the setting
       const { data, error } = await supabase
         .from("site_settings")
-        .update({ value })
-        .eq("key", key)
+        .upsert({ key, value }, { onConflict: 'key' })
         .select()
         .single();
       
