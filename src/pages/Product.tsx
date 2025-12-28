@@ -19,6 +19,7 @@ import { TreePine } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import RelatedProducts from "@/components/RelatedProducts";
 
 const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === 'true';
 
@@ -633,6 +634,14 @@ Grazie!`);
             )}
           </div>
         </div>
+
+        {/* Related Products Section */}
+        {products && products.length > 1 && (
+          <RelatedProducts 
+            currentProduct={product} 
+            allProducts={products} 
+          />
+        )}
       </div>
     </div>;
 };
