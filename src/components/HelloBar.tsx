@@ -78,8 +78,9 @@ const HelloBar = ({
       <div
         className="fixed top-0 left-0 right-0 z-50 py-2 px-4"
         style={{ backgroundColor: bgColor }}
+        id="hello-bar"
       >
-        <div className="container mx-auto flex flex-wrap items-center justify-center gap-3 md:gap-6">
+        <div className="container mx-auto flex flex-wrap items-center justify-center gap-2 md:gap-6">
           {/* Main Text */}
           <span
             className="text-sm md:text-base font-semibold text-center"
