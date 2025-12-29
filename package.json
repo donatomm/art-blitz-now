@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prebuild:products": "tsx scripts/prebuild.ts"
     "dev": "vite",
     "build": "vite-react-ssg build",
     "build:dev": "vite build --mode development",
@@ -11,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "tsx": "^4.20.0"
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -51,6 +53,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "sharp": "^0.33.5",
     "@eslint/js": "^9.32.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.16.5",
