@@ -1,4 +1,4 @@
-import staticProducts from '@/generated/products.json';
+import { staticProducts } from '@/generated/staticProducts';
 import { Product } from '@/types/product';
 
 /**
