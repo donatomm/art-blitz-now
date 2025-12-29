@@ -1,42 +1,17 @@
-import { lazy, Suspense } from "react";
 import type { RouteRecord } from "vite-react-ssg";
 import RootLayout from "./components/RootLayout";
-
-// Static products data for SSG (committed TypeScript file with product data)
+import Index from "./pages/Index";
+import ProductSeo from "./pages/ProductSeo";
 import { staticProducts } from "@/generated/staticProducts";
 
-// Critical path - load immediately (required for SSG head tags)
-import Index from "./pages/Index";
-// Use ProductSeo for SSG-safe meta tags, it lazy-loads full Product on client
-import ProductSeo from "./pages/ProductSeo";
-const Artist = lazy(() => import("./pages/Artist"));
-const Shipping = lazy(() => import("./pages/Shipping"));
-const PricingPolicy = lazy(() => import("./pages/PricingPolicy"));
-const Contact = lazy(() => import("./pages/Contact"));
-
-const NotFound = lazy(() => import("./pages/NotFound"));
-const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-const Cookies = lazy(() => import("./pages/Cookies"));
-const Terms = lazy(() => import("./pages/Terms"));
-const ResiRimborsi = lazy(() => import("./pages/ResiRimborsi"));
-const OrdinePersonalizzato = lazy(() => import("./pages/OrdinePersonalizzato"));
-const ColorPalette = lazy(() => import("./pages/ColorPalette"));
-const Sitemap = lazy(() => import("./pages/Sitemap"));
-
-// Minimal loading fallback
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
-    <div className="animate-pulse text-muted-foreground">Caricamento...</div>
-  </div>
-);
-
-// Wrap lazy components with Suspense
-const withSuspense = (Component: React.ComponentType) => (
-  <Suspense fallback={<PageLoader />}>
-    <Component />
-  </Suspense>
-);
+// Helper: make React Router lazy modules work even if the page exports default
+const lazyPage = (importer: () => Promise<any>) => {
+  return async () => {
+    const mod = await importer();
+    const Component = mod.default ?? mod.Component;
+    return { Component };
+  };
+};
 
 export const routes: RouteRecord[] = [
   {
@@ -46,82 +21,89 @@ export const routes: RouteRecord[] = [
       {
         index: true,
         element: <Index />,
+        // Optional but explicit
+        getStaticPaths: () => ["/"],
       },
+
+      // ✅ Product route: keep ProductSeo as a normal element (SSG-safe)
       {
         path: "product/:slug",
         element: <ProductSeo />,
-        // Use pre-fetched static products TS for SSG paths
-        getStaticPaths: () => {
-          return staticProducts
-            .filter(p => p.slug && p.is_active !== false)
-            .map(p => `product/${p.slug}`);
-        },
+        getStaticPaths: () =>
+          staticProducts
+            .filter((p) => p.slug && p.is_active !== false)
+            .map((p) => `product/${p.slug}`),
       },
+
+      // ✅ All other pages: use route.lazy (NOT React.lazy + Suspense)
       {
         path: "artist",
-        element: withSuspense(Artist),
-        // Explicitly mark for prerendering
+        lazy: lazyPage(() => import("./pages/Artist")),
         getStaticPaths: () => ["artist"],
       },
       {
         path: "shipping",
-        element: withSuspense(Shipping),
+        lazy: lazyPage(() => import("./pages/Shipping")),
         getStaticPaths: () => ["shipping"],
       },
       {
         path: "pricing-policy",
-        element: withSuspense(PricingPolicy),
+        lazy: lazyPage(() => import("./pages/PricingPolicy")),
         getStaticPaths: () => ["pricing-policy"],
       },
       {
         path: "contact",
-        element: withSuspense(Contact),
+        lazy: lazyPage(() => import("./pages/Contact")),
         getStaticPaths: () => ["contact"],
       },
       {
         path: "checkout/success",
-        element: withSuspense(CheckoutSuccess),
+        lazy: lazyPage(() => import("./pages/CheckoutSuccess")),
         getStaticPaths: () => ["checkout/success"],
       },
       {
         path: "privacy",
-        element: withSuspense(Privacy),
+        lazy: lazyPage(() => import("./pages/Privacy")),
         getStaticPaths: () => ["privacy"],
       },
       {
         path: "cookies",
-        element: withSuspense(Cookies),
+        lazy: lazyPage(() => import("./pages/Cookies")),
         getStaticPaths: () => ["cookies"],
       },
       {
         path: "terms",
-        element: withSuspense(Terms),
+        lazy: lazyPage(() => import("./pages/Terms")),
         getStaticPaths: () => ["terms"],
       },
       {
         path: "resi-rimborsi",
-        element: withSuspense(ResiRimborsi),
+        lazy: lazyPage(() => import("./pages/ResiRimborsi")),
         getStaticPaths: () => ["resi-rimborsi"],
       },
       {
         path: "ordine-personalizzato",
-        element: withSuspense(OrdinePersonalizzato),
+        lazy: lazyPage(() => import("./pages/OrdinePersonalizzato")),
         getStaticPaths: () => ["ordine-personalizzato"],
       },
       {
         path: "colors",
-        element: withSuspense(ColorPalette),
+        lazy: lazyPage(() => import("./pages/ColorPalette")),
         getStaticPaths: () => ["colors"],
       },
       {
         path: "sitemap",
-        element: withSuspense(Sitemap),
+        lazy: lazyPage(() => import("./pages/Sitemap")),
         getStaticPaths: () => ["sitemap"],
       },
+
+      // Catch-all
       {
         path: "*",
-        element: withSuspense(NotFound),
+        lazy: lazyPage(() => import("./pages/NotFound")),
       },
     ],
   },
 ];
+
+export default routes;
