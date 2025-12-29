@@ -143,6 +143,9 @@ export const SEO = ({
 
   return (
     <Head>
+      {/* Language */}
+      <html lang="it" />
+      
       {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={metaDescription} />
