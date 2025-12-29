@@ -1,0 +1,2 @@
+# Proxy sitemap.xml to dynamic edge function (live database content)
+/sitemap.xml https://xqubydbsoucrwqhddodw.supabase.co/functions/v1/sitemap 200
