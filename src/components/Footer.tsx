@@ -30,9 +30,9 @@ const Footer = () => {
             <Link to="/cookies" className="hover:text-white transition-colors">
               Cookie Policy
             </Link>
-            <a href="/docs/termini-e-condizioni.pdf" download className="hover:text-white transition-colors">
-              Termini e Condizioni di Vendita (PDF)
-            </a>
+            <Link to="/terms" className="hover:text-white transition-colors">
+              Termini e Condizioni di Vendita
+            </Link>
             <Link to="/sitemap" className="hover:text-white transition-colors">
               Mappa del Sito
             </Link>
