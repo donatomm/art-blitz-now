@@ -2,8 +2,8 @@ import { lazy, Suspense } from "react";
 import type { RouteRecord } from "vite-react-ssg";
 import RootLayout from "./components/RootLayout";
 
-// Static products data for SSG (pre-fetched at build time)
-import staticProducts from "@/generated/products.json";
+// Static products data for SSG (committed TypeScript file with product data)
+import { staticProducts } from "@/generated/staticProducts";
 
 // Critical path - load immediately
 import Index from "./pages/Index";
