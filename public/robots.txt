@@ -14,4 +14,4 @@ User-agent: *
 Allow: /
 
 # Sitemap (auto-regenerated when products change)
-Sitemap: https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/sitemap.xml
+Sitemap: https://octowonders.com/sitemap.xml
