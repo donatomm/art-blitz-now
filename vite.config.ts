@@ -162,7 +162,7 @@ const prebuildPlugin = () => ({
             /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i,
             `<meta name="description" content="${seo.description}">`
           )
-          // Add canonical link if not present
+          // Add canonical link and OG/Twitter tags before </head>
           .replace(
             /<\/head>/i,
             `  <link rel="canonical" href="${seo.canonicalUrl}">
@@ -181,12 +181,17 @@ const prebuildPlugin = () => ({
 </head>`
           );
 
-        const filePath = path.join(productDir, `${product.slug}.html`);
-        fs.writeFileSync(filePath, productHtml);
+        // Create directory for slug (product/slug/index.html pattern)
+        const slugDir = path.join(productDir, product.slug);
+        fs.mkdirSync(slugDir, { recursive: true });
+        fs.writeFileSync(path.join(slugDir, 'index.html'), productHtml);
+        
+        // Also create product/slug.html for fallback
+        fs.writeFileSync(path.join(productDir, `${product.slug}.html`), productHtml);
         count++;
       }
 
-      console.log(`✅ Generated ${count} static product HTML files`);
+      console.log(`✅ Generated ${count} static product HTML files (both /slug/index.html and /slug.html)`);
     } catch (error) {
       console.error("❌ HTML generation failed:", error);
     }
