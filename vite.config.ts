@@ -3,6 +3,22 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
+import { execSync } from "child_process";
+
+// Plugin to run prebuild script before SSG build
+const prebuildPlugin = () => ({
+  name: "prebuild",
+  buildStart() {
+    console.log("🔄 Running prebuild script to fetch products...");
+    try {
+      execSync("npx tsx scripts/prebuild.ts", { stdio: "inherit" });
+      console.log("✅ Prebuild completed successfully");
+    } catch (error) {
+      console.error("❌ Prebuild failed:", error);
+      throw error;
+    }
+  },
+});
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -19,6 +35,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [
+    prebuildPlugin(),
     react(),
     mode === "development" && componentTagger(),
     ViteImageOptimizer({
