@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
+import { getStaticProducts } from "@/hooks/useStaticProducts";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
@@ -38,10 +39,15 @@ const ChristmasDeadlineText = () => {
 };
 const Product = () => {
   const { slug } = useParams<{ slug: string }>();
-  const {
-    data: products,
-    isLoading
-  } = useProducts();
+  
+  // Static products from prebuild (available immediately for SSG)
+  const staticProducts = getStaticProducts();
+  
+  // Live products from React Query (client-side hydration/refresh)
+  const { data: liveProducts, isLoading } = useProducts();
+  
+  // Use live data if available, fallback to static for SSG render
+  const products = liveProducts ?? staticProducts;
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
@@ -131,7 +137,8 @@ const Product = () => {
   const handleNext = () => {
     setCarouselIndex((prev) => Math.min(maxIndex, prev + 1));
   };
-  if (isLoading) {
+  // Only show loading if we have no data at all (static products should always be available for SSG)
+  if (isLoading && staticProducts.length === 0) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Caricamento...</div>
       </div>;
