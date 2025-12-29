@@ -13,5 +13,5 @@ Allow: /
 User-agent: *
 Allow: /
 
-# Static Sitemap (generated at build time from edge function)
-Sitemap: https://octowonders.com/sitemap.xml
+# Dynamic Sitemap (generated live from database via edge function)
+Sitemap: https://xqubydbsoucrwqhddodw.supabase.co/functions/v1/sitemap
