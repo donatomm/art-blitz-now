@@ -36,6 +36,7 @@ const PagesTabContent = () => {
   const [editSeoTitle, setEditSeoTitle] = useState("");
   const [editSeoDescription, setEditSeoDescription] = useState("");
   const [showImageUpload, setShowImageUpload] = useState(false);
+  const [isHtmlMode, setIsHtmlMode] = useState(false);
   const {
     toast
   } = useToast();
@@ -47,6 +48,8 @@ const PagesTabContent = () => {
     setEditSeoTitle(page.seo_title || "");
     setEditSeoDescription(page.seo_description || "");
     setShowImageUpload(false);
+    // Auto-detect HTML mode if content starts with HTML tags
+    setIsHtmlMode(page.content.trim().startsWith('<'));
   };
 
   const handleSavePage = async () => {
@@ -106,18 +109,35 @@ const PagesTabContent = () => {
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
-              <Label>Contenuto (Markdown)</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setShowImageUpload(!showImageUpload)}
-              >
-                <ImageIcon className="h-4 w-4 mr-1" />
-                {showImageUpload ? "Chiudi" : "Aggiungi Immagine"}
-              </Button>
+              <Label>Contenuto {isHtmlMode ? "(HTML)" : "(Markdown)"}</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant={isHtmlMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setIsHtmlMode(!isHtmlMode)}
+                >
+                  {isHtmlMode ? "📄 HTML" : "📝 Markdown"}
+                </Button>
+                {!isHtmlMode && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowImageUpload(!showImageUpload)}
+                  >
+                    <ImageIcon className="h-4 w-4 mr-1" />
+                    {showImageUpload ? "Chiudi" : "Aggiungi Immagine"}
+                  </Button>
+                )}
+              </div>
             </div>
-            {showImageUpload && (
+            {isHtmlMode && (
+              <p className="text-xs text-amber-600 mb-2">
+                ⚠️ Modalità HTML: incolla qui il codice HTML da Termly o altri servizi. Il contenuto verrà renderizzato come HTML.
+              </p>
+            )}
+            {showImageUpload && !isHtmlMode && (
               <div className="mb-3 p-3 border rounded-md bg-muted/50">
                 <ImageUpload
                   label="Carica immagine per la pagina"
@@ -130,7 +150,13 @@ const PagesTabContent = () => {
                 </p>
               </div>
             )}
-            <Textarea value={editContent} onChange={e => setEditContent(e.target.value)} rows={12} className="font-mono text-sm" />
+            <Textarea 
+              value={editContent} 
+              onChange={e => setEditContent(e.target.value)} 
+              rows={isHtmlMode ? 20 : 12} 
+              className="font-mono text-sm" 
+              placeholder={isHtmlMode ? "Incolla qui il codice HTML..." : "Scrivi in Markdown..."}
+            />
           </div>
           
           {/* SEO Fields */}
