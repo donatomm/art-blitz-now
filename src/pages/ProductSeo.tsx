@@ -122,9 +122,10 @@ export default function ProductSeo() {
         <meta name="twitter:image" content={imageUrl} />
 
         {/* JSON-LD Structured Data */}
-        <script type="application/ld+json">
-          {JSON.stringify(getProductSchema(product))}
-        </script>
+     <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(getProductSchema(product)) }}
+/>
       </Head>
 
       {/* Minimal semantic HTML for crawlers */}
