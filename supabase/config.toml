@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.regenerate-sitemap]
 verify_jwt = false
+
+[functions.seo-proxy]
+verify_jwt = false

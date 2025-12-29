@@ -63,11 +63,23 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // This is a public endpoint - no auth required (for crawlers)
+  // Check User-Agent to detect crawlers
+  const userAgent = req.headers.get("user-agent") || "";
+  const isCrawler = /googlebot|bingbot|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|slackbot|telegrambot|whatsapp|crawler|spider|bot/i.test(userAgent);
 
   try {
     const url = new URL(req.url);
-    const slug = url.searchParams.get("slug");
+    // Get slug from query param OR from path (for /seo-proxy/slug-here format)
+    let slug = url.searchParams.get("slug");
+    
+    // Also support path-based: /functions/v1/seo-proxy/my-product-slug
+    if (!slug) {
+      const pathParts = url.pathname.split("/");
+      const lastPart = pathParts[pathParts.length - 1];
+      if (lastPart && lastPart !== "seo-proxy") {
+        slug = lastPart;
+      }
+    }
 
     if (!slug) {
       return new Response(JSON.stringify({ error: "Missing slug parameter" }), {
@@ -144,9 +156,11 @@ serve(async (req) => {
     ${JSON.stringify(getProductSchema(product as Product))}
   </script>
   
+  ${!isCrawler ? `
   <!-- Redirect to actual page for browsers -->
   <meta http-equiv="refresh" content="0;url=${canonicalUrl}">
   <script>window.location.href = "${canonicalUrl}";</script>
+  ` : '<!-- Crawler detected - no redirect -->'}
 </head>
 <body>
   <h1>${product.name}</h1>
