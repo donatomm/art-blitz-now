@@ -44,6 +44,7 @@
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.21.0",
     "vite-plugin-image-optimizer": "^2.0.3",
     "vite-react-ssg": "^0.8.9",
     "xlsx": "^0.18.5",
