@@ -10,22 +10,26 @@ export const getStaticProducts = (): Product[] => {
 };
 
 /**
+ * Get a single product by slug from static data
+ */
+export const getStaticProductBySlug = (slug: string): Product | undefined => {
+  const products = getStaticProducts();
+  return products.find(p => p.slug === slug) || products.find(p => p.id === slug);
+};
+
+/**
  * Hook for components that need static products
  * Returns immediately without loading state (data is baked in at build time)
  */
 export const useStaticProducts = () => {
   const products = getStaticProducts();
   return { 
+    // New interface
+    products,
+    getBySlug: (slug: string) => products.find(p => p.slug === slug),
+    // Backward compatible
     data: products, 
     isLoading: false,
     isError: false,
   };
-};
-
-/**
- * Get a single product by slug from static data
- */
-export const getStaticProductBySlug = (slug: string): Product | undefined => {
-  const products = getStaticProducts();
-  return products.find(p => p.slug === slug) || products.find(p => p.id === slug);
 };
