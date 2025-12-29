@@ -82,50 +82,63 @@ export const routes: RouteRecord[] = [
       {
         path: "artist",
         element: withSuspense(Artist),
+        // Explicitly mark for prerendering
+        getStaticPaths: () => ["artist"],
       },
       {
         path: "shipping",
         element: withSuspense(Shipping),
+        getStaticPaths: () => ["shipping"],
       },
       {
         path: "pricing-policy",
         element: withSuspense(PricingPolicy),
+        getStaticPaths: () => ["pricing-policy"],
       },
       {
         path: "contact",
         element: withSuspense(Contact),
+        getStaticPaths: () => ["contact"],
       },
       {
         path: "checkout/success",
         element: withSuspense(CheckoutSuccess),
+        getStaticPaths: () => ["checkout/success"],
       },
       {
         path: "privacy",
         element: withSuspense(Privacy),
+        getStaticPaths: () => ["privacy"],
       },
       {
         path: "cookies",
         element: withSuspense(Cookies),
+        getStaticPaths: () => ["cookies"],
       },
       {
         path: "terms",
         element: withSuspense(Terms),
+        getStaticPaths: () => ["terms"],
       },
       {
         path: "resi-rimborsi",
         element: withSuspense(ResiRimborsi),
+        getStaticPaths: () => ["resi-rimborsi"],
       },
       {
         path: "ordine-personalizzato",
         element: withSuspense(OrdinePersonalizzato),
+        getStaticPaths: () => ["ordine-personalizzato"],
       },
       {
         path: "colors",
         element: withSuspense(ColorPalette),
+        getStaticPaths: () => ["colors"],
       },
       {
         path: "sitemap",
         element: withSuspense(Sitemap),
+        getStaticPaths: () => ["sitemap"],
       },
       {
         path: "*",
