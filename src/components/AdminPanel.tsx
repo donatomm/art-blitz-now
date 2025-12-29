@@ -108,17 +108,14 @@ const PagesTabContent = () => {
             <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} />
           </div>
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <Label>Contenuto {isHtmlMode ? "(HTML)" : "(Markdown)"}</Label>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant={isHtmlMode ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setIsHtmlMode(!isHtmlMode)}
-                >
-                  {isHtmlMode ? "📄 HTML" : "📝 Markdown"}
-                </Button>
+            <div className="flex items-center justify-between mb-2">
+              <Label>Contenuto</Label>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className={!isHtmlMode ? "font-medium" : "text-muted-foreground"}>Markdown</span>
+                  <Switch checked={isHtmlMode} onCheckedChange={setIsHtmlMode} />
+                  <span className={isHtmlMode ? "font-medium" : "text-muted-foreground"}>HTML</span>
+                </div>
                 {!isHtmlMode && (
                   <Button
                     type="button"
@@ -127,14 +124,14 @@ const PagesTabContent = () => {
                     onClick={() => setShowImageUpload(!showImageUpload)}
                   >
                     <ImageIcon className="h-4 w-4 mr-1" />
-                    {showImageUpload ? "Chiudi" : "Aggiungi Immagine"}
+                    Immagine
                   </Button>
                 )}
               </div>
             </div>
             {isHtmlMode && (
               <p className="text-xs text-amber-600 mb-2">
-                ⚠️ Modalità HTML: incolla qui il codice HTML da Termly o altri servizi. Il contenuto verrà renderizzato come HTML.
+                Incolla codice HTML da Termly o altri servizi
               </p>
             )}
             {showImageUpload && !isHtmlMode && (
