@@ -126,8 +126,8 @@ export default defineConfig(({ mode }) => ({
   // SSG options for prerendering
   ssgOptions: {
     script: "async",
-    formatting: "minify",
-    crittersOptions: {
+    formatting: "none",
+    beastiesOptions: {
       reduceInlineStyles: false,
     },
   },
