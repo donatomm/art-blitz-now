@@ -13,5 +13,5 @@ Allow: /
 User-agent: *
 Allow: /
 
-# Sitemap (regenerated on every deploy from database)
-Sitemap: https://octowonders.com/sitemap.xml
+# Sitemap (auto-regenerated when products change)
+Sitemap: https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/sitemap.xml
