@@ -113,10 +113,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// SSG-safe default values for when CartProvider is not available (during SSG)
+const ssgSafeDefaults: CartContextType = {
+  items: [],
+  addToCart: () => {},
+  removeFromCart: () => {},
+  updateQuantity: () => {},
+  clearCart: () => {},
+  getItemCount: () => 0,
+  isCartOpen: false,
+  setIsCartOpen: () => {},
+};
+
 export const useCart = () => {
   const context = useContext(CartContext);
+  // Return SSG-safe defaults when context is not available (during static generation)
   if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
+    return ssgSafeDefaults;
   }
   return context;
 };

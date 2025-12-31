@@ -30,6 +30,9 @@ const normalizeSizes = (sizes: unknown): ProductSize[] => {
 };
 
 export const useProducts = () => {
+  // Only run the query on the client (not during SSG)
+  const isClient = typeof window !== 'undefined';
+  
   return useQuery({
     queryKey: ["products"],
     queryFn: async () => {
@@ -51,6 +54,8 @@ export const useProducts = () => {
         is_new: item.is_new ?? false,
       })) as Product[];
     },
+    // Only fetch on client-side to allow SSG to render with static data
+    enabled: isClient,
   });
 };
 
