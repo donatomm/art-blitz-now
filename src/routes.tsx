@@ -51,11 +51,15 @@ export const routes: RouteRecord[] = [
       {
         path: "product/:slug",
         element: <Product />,
+        // Entry helps vite-react-ssg find styles/assets for this route
+        entry: "src/pages/Product.tsx",
         // Use pre-fetched static products TS for SSG paths
         getStaticPaths: () => {
-          return staticProducts
+          const paths = staticProducts
             .filter(p => p.slug && p.is_active !== false)
             .map(p => `product/${p.slug}`);
+          console.log('[SSG] Product paths:', paths.length);
+          return paths;
         },
       },
       {

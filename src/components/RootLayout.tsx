@@ -8,7 +8,17 @@ import { CartProvider } from "@/contexts/CartContext";
 import CartDrawer from "@/components/CartDrawer";
 import FloatingCartButton from "@/components/FloatingCartButton";
 
-const queryClient = new QueryClient();
+// Create query client outside component to prevent re-creation
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Disable refetch on window focus during SSG
+      refetchOnWindowFocus: false,
+      // Disable retries during SSG to prevent hanging
+      retry: typeof window !== 'undefined' ? 3 : false,
+    },
+  },
+});
 
 export default function RootLayout() {
   return (
