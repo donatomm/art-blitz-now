@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { toast } from "@/hooks/use-toast";
 import { useSiteSettings, getSettingValue } from "@/hooks/useSiteSettings";
+import { supabase } from "@/integrations/supabase/client";
 const Index = () => {
   const {
     data: products = [],
@@ -89,6 +90,16 @@ const Index = () => {
         await deleteProduct.mutateAsync(product.id);
       }
       refetch();
+      
+      // Regenerate sitemap automatically after product changes
+      try {
+        await supabase.functions.invoke('regenerate-sitemap');
+        console.log('[Index] Sitemap regenerated successfully');
+      } catch (sitemapError) {
+        console.warn('[Index] Sitemap regeneration failed:', sitemapError);
+        // Don't show error to user - sitemap is not critical
+      }
+
       toast({
         title: "Prodotti aggiornati",
         description: "Modifiche salvate con successo."
