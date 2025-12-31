@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileSpreadsheet, Save } from "lucide-react";
+import { FileSpreadsheet, Save, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useDefaultPrices, getDefaultPrice } from "@/hooks/useDefaultPrices";
 import * as XLSX from "xlsx";
 
 interface SKUEditorProps {
@@ -13,6 +14,7 @@ interface SKUEditorProps {
 
 const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
   const { toast } = useToast();
+  const { data: defaultPriceMap } = useDefaultPrices();
   
   const [localPrices, setLocalPrices] = useState<Map<string, number>>(new Map());
   const [hasChanges, setHasChanges] = useState(false);
@@ -103,6 +105,34 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     });
   };
 
+  // Reset all prices to default values from default_prices table
+  const handleResetToDefault = () => {
+    if (!defaultPriceMap || defaultPriceMap.size === 0) {
+      toast({
+        title: "Errore",
+        description: "Prezzi di default non disponibili.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    let resetCount = 0;
+    products.forEach(product => {
+      product.sizes.forEach((size, sizeIndex) => {
+        const defaultPrice = getDefaultPrice(defaultPriceMap, size.dimensions);
+        if (defaultPrice !== null && defaultPrice > 0) {
+          handleLocalPriceChange(product.id, sizeIndex, defaultPrice);
+          resetCount++;
+        }
+      });
+    });
+
+    toast({
+      title: "Prezzi reimpostati",
+      description: `${resetCount} prezzi reimpostati ai valori di default.`,
+    });
+  };
+
   const handleExportXLSX = () => {
     const allSkus = products.flatMap(product =>
       product.sizes
@@ -186,10 +216,19 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <Button onClick={handleExportXLSX} variant="outline" className="flex-1">
           <FileSpreadsheet className="mr-2 h-4 w-4" />
           Esporta Excel
+        </Button>
+        <Button 
+          onClick={handleResetToDefault} 
+          variant="outline" 
+          className="flex-1"
+          disabled={!defaultPriceMap || defaultPriceMap.size === 0}
+        >
+          <RotateCcw className="mr-2 h-4 w-4" />
+          Reset a Default
         </Button>
         {hasChanges && (
           <Button onClick={handleSaveAll} className="flex-1">
