@@ -5,10 +5,11 @@ import RootLayout from "./components/RootLayout";
 // Static products data for SSG (committed TypeScript file with product data)
 import { staticProducts } from "@/generated/staticProducts";
 
-// Critical path - load immediately (required for SSG head tags)
+// Critical path - load immediately for SSG (not lazy loaded)
 import Index from "./pages/Index";
-// Use ProductSeo for SSG-safe meta tags, it lazy-loads full Product on client
-import ProductSeo from "./pages/ProductSeo";
+import Product from "./pages/Product";
+
+// Lazy-loaded pages (not critical for SSG)
 const Artist = lazy(() => import("./pages/Artist"));
 const Shipping = lazy(() => import("./pages/Shipping"));
 const PricingPolicy = lazy(() => import("./pages/PricingPolicy"));
@@ -49,7 +50,7 @@ export const routes: RouteRecord[] = [
       },
       {
         path: "product/:slug",
-        element: <ProductSeo />,
+        element: <Product />,
         // Use pre-fetched static products TS for SSG paths
         getStaticPaths: () => {
           return staticProducts

@@ -32,49 +32,7 @@ const normalizeMockRooms = (mockRooms: unknown) => {
   });
 };
 
-// Helper to generate SEO meta tags for a product
-const generateProductSEO = (product: any) => {
-  const BASE_URL = 'https://octowonders.com';
-  const SITE_NAME = 'OctoWonders';
-  
-  const activeSizes = (product.sizes || []).filter((s: any) => s.price > 0);
-  const prices = activeSizes.map((s: any) => {
-    if (s.deal_label_enabled && s.deal_price && s.deal_price > 0) {
-      return s.deal_price;
-    }
-    return s.price;
-  });
-  const minPrice = Math.min(...prices) || 0;
-  const maxPrice = Math.max(...prices) || 0;
-
-  const title = `${product.name} | ${SITE_NAME}`;
-  const description = product.description 
-    ? product.description.substring(0, 160).replace(/"/g, '&quot;').replace(/\n/g, ' ')
-    : `${product.name} - ${product.medium}. Stampa su tela di alta qualità. Da €${minPrice}.`;
-  const canonicalUrl = `${BASE_URL}/product/${product.slug}`;
-  const imageUrl = product.image_url;
-
-  const jsonLd = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": product.name,
-    "description": description,
-    "image": imageUrl,
-    "brand": { "@type": "Brand", "name": SITE_NAME },
-    "offers": {
-      "@type": "AggregateOffer",
-      "lowPrice": minPrice.toString(),
-      "highPrice": maxPrice.toString(),
-      "priceCurrency": "EUR",
-      "availability": "https://schema.org/InStock",
-      "offerCount": activeSizes.length
-    }
-  });
-
-  return { title, description, canonicalUrl, imageUrl, jsonLd };
-};
-
-// Plugin to fetch products at build time for SSG and generate static HTML
+// Plugin to fetch products at build time for SSG and generate sitemap
 const prebuildPlugin = () => ({
   name: "prebuild-products",
   async buildStart() {
@@ -121,80 +79,20 @@ const prebuildPlugin = () => ({
       console.error("❌ Prebuild failed:", error);
     }
   },
-  async writeBundle(options: any, bundle: any) {
-    // Generate static HTML files for each product after the bundle is written
-    console.log("🔄 Generating static product HTML files...");
+  async writeBundle(options: any) {
+    // Generate sitemap.xml after the bundle is written
+    // vite-react-ssg handles product HTML generation, we only do sitemap here
+    console.log("🔄 Generating sitemap.xml...");
     try {
       const productsPath = path.join(process.cwd(), 'src', 'generated', 'products.json');
       if (!fs.existsSync(productsPath)) {
-        console.log("⚠️ No products.json found, skipping HTML generation");
+        console.log("⚠️ No products.json found, skipping sitemap generation");
         return;
       }
 
       const products = JSON.parse(fs.readFileSync(productsPath, 'utf-8'));
       const distDir = options.dir || path.join(process.cwd(), 'dist');
       
-      // Read the main index.html as template
-      const indexHtmlPath = path.join(distDir, 'index.html');
-      if (!fs.existsSync(indexHtmlPath)) {
-        console.log("⚠️ No index.html found in dist, skipping");
-        return;
-      }
-      
-      const indexHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
-      
-      // Create product directory
-      const productDir = path.join(distDir, 'product');
-      fs.mkdirSync(productDir, { recursive: true });
-
-      let count = 0;
-      for (const product of products) {
-        if (!product.slug || product.is_active === false) continue;
-
-        const seo = generateProductSEO(product);
-        
-        // Replace meta tags in the HTML template
-        let productHtml = indexHtml
-          // Replace title
-          .replace(/<title>.*?<\/title>/i, `<title>${seo.title}</title>`)
-          // Add/replace meta description
-          .replace(
-            /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i,
-            `<meta name="description" content="${seo.description}">`
-          )
-          // Add canonical link and OG/Twitter tags before </head>
-          .replace(
-            /<\/head>/i,
-            `  <link rel="canonical" href="${seo.canonicalUrl}">
-  <meta property="og:title" content="${seo.title}">
-  <meta property="og:description" content="${seo.description}">
-  <meta property="og:image" content="${seo.imageUrl}">
-  <meta property="og:url" content="${seo.canonicalUrl}">
-  <meta property="og:type" content="product">
-  <meta property="og:site_name" content="OctoWonders">
-  <meta property="og:locale" content="it_IT">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${seo.title}">
-  <meta name="twitter:description" content="${seo.description}">
-  <meta name="twitter:image" content="${seo.imageUrl}">
-  <script type="application/ld+json">${seo.jsonLd}</script>
-</head>`
-          );
-
-        // Create directory for slug (product/slug/index.html pattern)
-        const slugDir = path.join(productDir, product.slug);
-        fs.mkdirSync(slugDir, { recursive: true });
-        fs.writeFileSync(path.join(slugDir, 'index.html'), productHtml);
-        
-        // Also create product/slug.html for fallback
-        fs.writeFileSync(path.join(productDir, `${product.slug}.html`), productHtml);
-        count++;
-      }
-
-      console.log(`✅ Generated ${count} static product HTML files (both /slug/index.html and /slug.html)`);
-
-      // Generate sitemap.xml in public/ directory
-      console.log("🔄 Generating sitemap.xml...");
       const BASE_URL = 'https://octowonders.com';
       const today = new Date().toISOString().split('T')[0];
 
@@ -248,10 +146,14 @@ const prebuildPlugin = () => ({
       // Write to public directory (will be copied to dist during build)
       const publicDir = path.join(process.cwd(), 'public');
       fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml);
-      console.log(`✅ Generated public/sitemap.xml with ${staticPages.length} static pages + ${productCount} product pages`);
+      
+      // Also write directly to dist for safety
+      fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml);
+      
+      console.log(`✅ Generated sitemap.xml with ${staticPages.length} static pages + ${productCount} product pages`);
 
     } catch (error) {
-      console.error("❌ HTML/Sitemap generation failed:", error);
+      console.error("❌ Sitemap generation failed:", error);
     }
   }
 });
