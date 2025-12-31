@@ -5,6 +5,17 @@ import { Input } from "@/components/ui/input";
 import { FileSpreadsheet, Save, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDefaultPrices, getDefaultPrice } from "@/hooks/useDefaultPrices";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import * as XLSX from "xlsx";
 
 interface SKUEditorProps {
@@ -221,15 +232,33 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
           <FileSpreadsheet className="mr-2 h-4 w-4" />
           Esporta Excel
         </Button>
-        <Button 
-          onClick={handleResetToDefault} 
-          variant="outline" 
-          className="flex-1"
-          disabled={!defaultPriceMap || defaultPriceMap.size === 0}
-        >
-          <RotateCcw className="mr-2 h-4 w-4" />
-          Reset a Default
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              disabled={!defaultPriceMap || defaultPriceMap.size === 0}
+            >
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Reset a Default
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Conferma reset prezzi</AlertDialogTitle>
+              <AlertDialogDescription>
+                Sei sicuro di voler reimpostare tutti i prezzi ai valori di default? 
+                Questa azione sovrascriverà tutti i prezzi attualmente impostati.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annulla</AlertDialogCancel>
+              <AlertDialogAction onClick={handleResetToDefault}>
+                Conferma Reset
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         {hasChanges && (
           <Button onClick={handleSaveAll} className="flex-1">
             <Save className="mr-2 h-4 w-4" />
