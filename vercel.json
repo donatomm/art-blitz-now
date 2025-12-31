@@ -5,6 +5,10 @@
     {
       "source": "/sitemap.xml",
       "destination": "https://xqubydbsoucrwqhddodw.supabase.co/functions/v1/sitemap"
+    },
+    {
+      "source": "/sitemap.xml/",
+      "destination": "https://xqubydbsoucrwqhddodw.supabase.co/functions/v1/sitemap"
     }
   ],
   "routes": [
