@@ -70,6 +70,7 @@ const HelloBarTabContent = () => {
   const [hellobarText, setHellobarText] = useState("");
   const [hellobarTextColor, setHellobarTextColor] = useState("#FFFFFF");
   const [hellobarBgColor, setHellobarBgColor] = useState("#16A34A");
+  const [hellobarBgOpacity, setHellobarBgOpacity] = useState(100);
   const [hellobarCountdownEnabled, setHellobarCountdownEnabled] = useState(true);
   const [hellobarCountdownEnd, setHellobarCountdownEnd] = useState("");
   const [hellobarCountdownTextColor, setHellobarCountdownTextColor] = useState("#FFFFFF");
@@ -89,6 +90,7 @@ const HelloBarTabContent = () => {
       setHellobarText(getSettingValue<string>(settings, "hellobar_text", "SPEDIZIONE GRATUITA in Italia - 30% fino a capodanno!"));
       setHellobarTextColor(getSettingValue<string>(settings, "hellobar_text_color", "#FFFFFF"));
       setHellobarBgColor(getSettingValue<string>(settings, "hellobar_bg_color", "#16A34A"));
+      setHellobarBgOpacity(getSettingValue<number>(settings, "hellobar_bg_opacity", 100));
       setHellobarCountdownEnabled(getSettingValue<boolean>(settings, "hellobar_countdown_enabled", true));
       setHellobarCountdownEnd(getSettingValue<string>(settings, "hellobar_countdown_end", "2025-01-01T00:00:00"));
       setHellobarCountdownTextColor(getSettingValue<string>(settings, "hellobar_countdown_text_color", "#FFFFFF"));
@@ -110,6 +112,7 @@ const HelloBarTabContent = () => {
         updateSetting.mutateAsync({ key: "hellobar_text", value: hellobarText }),
         updateSetting.mutateAsync({ key: "hellobar_text_color", value: hellobarTextColor }),
         updateSetting.mutateAsync({ key: "hellobar_bg_color", value: hellobarBgColor }),
+        updateSetting.mutateAsync({ key: "hellobar_bg_opacity", value: hellobarBgOpacity }),
         updateSetting.mutateAsync({ key: "hellobar_countdown_enabled", value: hellobarCountdownEnabled }),
         updateSetting.mutateAsync({ key: "hellobar_countdown_end", value: hellobarCountdownEnd }),
         updateSetting.mutateAsync({ key: "hellobar_countdown_text_color", value: hellobarCountdownTextColor }),
@@ -189,6 +192,20 @@ const HelloBarTabContent = () => {
               value={hellobarBgColor}
               onChange={(val) => { setHellobarBgColor(val); markChanged(); }}
             />
+          </div>
+          <div>
+            <Label>Opacità Sfondo ({hellobarBgOpacity}%)</Label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={hellobarBgOpacity}
+              onChange={(e) => { setHellobarBgOpacity(Number(e.target.value)); markChanged(); }}
+              className="w-full mt-2"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              0% = completamente trasparente, 100% = opaco
+            </p>
           </div>
         </div>
         

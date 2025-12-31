@@ -23,6 +23,7 @@ interface HelloBarProps {
   text?: string;
   textColor?: string;
   bgColor?: string;
+  bgOpacity?: number;
   countdownEnabled?: boolean;
   countdownEnd?: string;
   countdownTextColor?: string;
@@ -48,6 +49,7 @@ const HelloBar = ({
   text = "SPEDIZIONE GRATUITA in Italia - 30% fino a capodanno!",
   textColor = "#FFFFFF",
   bgColor = "#16A34A",
+  bgOpacity = 100,
   countdownEnabled = true,
   countdownEnd = "2025-01-01T00:00:00",
   countdownTextColor = "#FFFFFF",
@@ -91,12 +93,21 @@ const HelloBar = ({
 
   if (!enabled) return null;
 
+  // Convert hex to rgba with opacity
+  const hexToRgba = (hex: string, opacity: number) => {
+    const cleanHex = hex.replace('#', '');
+    const r = parseInt(cleanHex.substring(0, 2), 16);
+    const g = parseInt(cleanHex.substring(2, 4), 16);
+    const b = parseInt(cleanHex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+  };
+
   return (
     <>
       {/* This is NOT fixed - it will be inside a fixed wrapper */}
       <div
         className="w-full py-2 px-4"
-        style={{ backgroundColor: bgColor }}
+        style={{ backgroundColor: hexToRgba(bgColor, bgOpacity) }}
       >
         <div className="container mx-auto flex flex-wrap items-center justify-center gap-2 md:gap-6">
           {/* Main Text */}
