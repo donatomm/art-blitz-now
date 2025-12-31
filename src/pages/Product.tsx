@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { getStaticProducts } from "@/hooks/useStaticProducts";
+import { useDefaultPrices, getDefaultPrice, normalizeDimension } from "@/hooks/useDefaultPrices";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,9 @@ const Product = () => {
   // Live products from React Query (client-side hydration/refresh)
   const { data: liveProducts, isLoading } = useProducts();
   
+  // Fetch default prices for strikethrough display
+  const { data: defaultPriceMap } = useDefaultPrices();
+  
   // Use live data if available, fallback to static for SSG render
   const products = liveProducts ?? staticProducts;
   const [selectedSize, setSelectedSize] = useState<number>(0);
@@ -76,29 +80,22 @@ const Product = () => {
   // Find product by slug first, fallback to ID for backwards compatibility
   const product = products?.find(p => p.slug === slug) || products?.find(p => p.id === slug);
 
-  // Helper to normalize dimensions so AAxBB and BBxAA are treated as the same SKU
-  const normalizeDimension = (dim: string): string => {
-    const match = dim.match(/^(\d+)x(\d+)(.*)$/);
-    if (!match) return dim;
-    const [, a, b, suffix] = match;
-    const numA = parseInt(a);
-    const numB = parseInt(b);
-    if (numA <= numB) return dim;
-    return `${numB}x${numA}${suffix}`;
-  };
-
   // Use mock rooms from sizes array (new unified approach) or fallback to legacy mock_rooms
   const mockRooms = product?.sizes
     .filter(size => size.price > 0) // Only active sizes
     .filter(size => size.dimensions && size.dimensions.trim() !== "" && size.dimensions !== "0") // Valid dimensions only
     .filter(size => size.mock_room_url && size.mock_room_url.trim() !== "") // Only sizes with actual mock room images
-    .map((size, index) => ({
-      id: index + 1,
-      image: size.mock_room_url || "",
-      displayLabel: size.dimensions,
-      price: size.price,
-      note: "",
-    }));
+    .map((size, index) => {
+      const hasOffer = !!(size.deal_label_enabled && size.deal_price && size.deal_price > 0);
+      return {
+        id: index + 1,
+        image: size.mock_room_url || "",
+        displayLabel: size.dimensions,
+        price: hasOffer ? size.deal_price! : size.price,
+        hasOffer,
+        note: "",
+      };
+    });
 
   // Fallback to legacy mock_rooms if no sizes have mock_room_url
   const legacyMockRooms = (!mockRooms || mockRooms.length === 0) && product?.mock_rooms && product.mock_rooms.length > 0
@@ -113,15 +110,17 @@ const Product = () => {
             ? product?.sizes.find(s => normalizeDimension(s.dimensions) === normalizeDimension(baseLabel)) || sizeAtIndex
             : sizeAtIndex;
           if (matchingSize && matchingSize.price <= 0) return null;
+          const hasOffer = !!(matchingSize?.deal_label_enabled && matchingSize?.deal_price && matchingSize.deal_price > 0);
           return {
             id: index + 1,
             image: imageUrl,
             displayLabel: baseLabel,
-            price: matchingSize?.price ?? 0,
+            price: hasOffer ? matchingSize!.deal_price! : (matchingSize?.price ?? 0),
+            hasOffer,
             note: "",
           };
         })
-        .filter((room): room is { id: number; image: string; displayLabel: string; price: number; note: string } => room !== null)
+        .filter((room): room is { id: number; image: string; displayLabel: string; price: number; hasOffer: boolean; note: string } => room !== null)
     : [];
 
   const finalMockRooms = (mockRooms && mockRooms.length > 0) ? mockRooms : legacyMockRooms;
@@ -416,8 +415,15 @@ Grazie!`);
                         </span>
                       )}
                       {room.price > 0 && (
-                        <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded">
+                        <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded flex items-center gap-2">
                           €{room.price}
+                          {room.hasOffer && (() => {
+                            const defaultPrice = getDefaultPrice(defaultPriceMap, room.displayLabel);
+                            if (defaultPrice && defaultPrice > room.price) {
+                              return <span className="line-through opacity-60">€{defaultPrice}</span>;
+                            }
+                            return null;
+                          })()}
                         </span>
                       )}
                       {room.note && (
@@ -492,6 +498,9 @@ Grazie!`);
                 <div className="flex flex-wrap gap-2">
                   {activeSizes.map((size, index) => {
                     const hasOffer = !!(size.deal_label_enabled && size.deal_price && size.deal_price > 0);
+                    // Get default price from database for strikethrough
+                    const defaultPrice = getDefaultPrice(defaultPriceMap, size.dimensions);
+                    const displayDefaultPrice = defaultPrice ?? size.price;
                     return (
                       <button 
                         key={size.dimensions} 
@@ -509,8 +518,8 @@ Grazie!`);
                         )}
                         <div className="text-sm font-medium tracking-wider">{size.dimensions}</div>
                         <div className="text-lg font-bold">€{hasOffer ? size.deal_price : size.price}</div>
-                        {hasOffer && (
-                          <div className="text-xs text-muted-foreground line-through">€{size.price}</div>
+                        {hasOffer && displayDefaultPrice > (size.deal_price || 0) && (
+                          <div className="text-xs text-muted-foreground line-through">€{displayDefaultPrice}</div>
                         )}
                       </button>
                     );
