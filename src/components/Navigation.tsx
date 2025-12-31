@@ -29,6 +29,7 @@ interface NavigationProps {
     text?: string;
     textColor?: string;
     bgColor?: string;
+    bgOpacity?: number;
     countdownEnabled?: boolean;
     countdownEnd?: string;
     countdownTextColor?: string;
