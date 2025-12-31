@@ -69,12 +69,30 @@ const prebuildPlugin = () => ({
       // Write to generated folder
       const generatedDir = path.join(process.cwd(), 'src', 'generated');
       fs.mkdirSync(generatedDir, { recursive: true });
+      
+      // Write TypeScript file for SSG (this is what routes.tsx imports)
+      const staticProductsContent = `/**
+ * Static products data for SSG
+ * Auto-generated at build time - DO NOT EDIT MANUALLY
+ */
+
+import { Product } from '@/types/product';
+
+export const staticProducts: Product[] = ${JSON.stringify(products, null, 2)};
+
+export default staticProducts;
+`;
+      fs.writeFileSync(
+        path.join(generatedDir, 'staticProducts.ts'),
+        staticProductsContent
+      );
+      console.log(`✅ Updated staticProducts.ts with ${products.length} products for SSG`);
+      
+      // Also keep products.json for sitemap generation in writeBundle
       fs.writeFileSync(
         path.join(generatedDir, 'products.json'),
         JSON.stringify(products, null, 2)
       );
-
-      console.log(`✅ Fetched ${products.length} products for SSG`);
     } catch (error) {
       console.error("❌ Prebuild failed:", error);
     }
