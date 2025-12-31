@@ -192,8 +192,66 @@ const prebuildPlugin = () => ({
       }
 
       console.log(`✅ Generated ${count} static product HTML files (both /slug/index.html and /slug.html)`);
+
+      // Generate sitemap.xml in public/ directory
+      console.log("🔄 Generating sitemap.xml...");
+      const BASE_URL = 'https://octowonders.com';
+      const today = new Date().toISOString().split('T')[0];
+
+      const staticPages = [
+        { loc: '/', changefreq: 'weekly', priority: '1.0' },
+        { loc: '/artist', changefreq: 'monthly', priority: '0.8' },
+        { loc: '/shipping', changefreq: 'monthly', priority: '0.7' },
+        { loc: '/contact', changefreq: 'monthly', priority: '0.7' },
+        { loc: '/pricing-policy', changefreq: 'monthly', priority: '0.5' },
+        { loc: '/privacy', changefreq: 'yearly', priority: '0.3' },
+        { loc: '/cookies', changefreq: 'yearly', priority: '0.3' },
+        { loc: '/terms', changefreq: 'yearly', priority: '0.3' },
+        { loc: '/resi-rimborsi', changefreq: 'monthly', priority: '0.5' },
+        { loc: '/ordine-personalizzato', changefreq: 'monthly', priority: '0.7' },
+        { loc: '/sitemap', changefreq: 'weekly', priority: '0.4' },
+      ];
+
+      let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+`;
+
+      // Add static pages
+      for (const page of staticPages) {
+        sitemapXml += `  <url>
+    <loc>${BASE_URL}${page.loc}</loc>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>
+`;
+      }
+
+      // Add product pages (only active products with slugs)
+      let productCount = 0;
+      for (const product of products) {
+        if (!product.slug || product.is_active === false) continue;
+        const lastmod = product.updated_at 
+          ? new Date(product.updated_at).toISOString().split('T')[0]
+          : today;
+        sitemapXml += `  <url>
+    <loc>${BASE_URL}/product/${product.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+`;
+        productCount++;
+      }
+
+      sitemapXml += '</urlset>';
+
+      // Write to public directory (will be copied to dist during build)
+      const publicDir = path.join(process.cwd(), 'public');
+      fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml);
+      console.log(`✅ Generated public/sitemap.xml with ${staticPages.length} static pages + ${productCount} product pages`);
+
     } catch (error) {
-      console.error("❌ HTML generation failed:", error);
+      console.error("❌ HTML/Sitemap generation failed:", error);
     }
   }
 });
@@ -203,14 +261,6 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    proxy: {
-      // Proxy sitemap.xml to edge function in development
-      '/sitemap.xml': {
-        target: 'https://xqubydbsoucrwqhddodw.supabase.co',
-        changeOrigin: true,
-        rewrite: () => '/functions/v1/sitemap',
-      },
-    },
   },
   plugins: [
     prebuildPlugin(),
