@@ -43,6 +43,11 @@ const Product = () => {
   // Static products from prebuild (available immediately for SSG)
   const staticProducts = getStaticProducts();
   
+  // SSG Debug logging (will appear in build logs)
+  console.log('[SSG Debug] Product page rendering for slug:', slug);
+  console.log('[SSG Debug] Static products count:', staticProducts.length);
+  console.log('[SSG Debug] Available slugs:', staticProducts.map(p => p.slug).slice(0, 5).join(', '), '...');
+  
   // Live products from React Query (client-side hydration/refresh)
   const { data: liveProducts, isLoading } = useProducts();
   
