@@ -195,8 +195,16 @@ export default defineConfig(({ mode }) => ({
   ssgOptions: {
     script: "async",
     formatting: "none",
+    mock: true,  // Mock browser globals (window, document, localStorage) during SSG
+    dirStyle: "nested",  // Generate /product/slug/index.html for clean URLs
     beastiesOptions: {
       reduceInlineStyles: false,
+    },
+    // Debug hook to verify SSG content in build logs
+    onPageRendered: (route: string, html: string) => {
+      const hasContent = html.includes('<h1') && !html.includes('id="root"></div>');
+      console.log(`[SSG] ${route}: ${hasContent ? '✅ Content rendered' : '❌ Empty body'}`);
+      return html;
     },
   },
 }));
