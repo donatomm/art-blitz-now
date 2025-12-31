@@ -4,6 +4,7 @@ import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Check, X } from "lucide-react";
+import { useDefaultPrices, getDefaultPrice } from "@/hooks/useDefaultPrices";
 
 interface ProductCardProps {
   product: Product;
@@ -22,10 +23,23 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
+  
+  // Fetch default prices for strikethrough display
+  const { data: defaultPriceMap } = useDefaultPrices();
 
+  // Build size prices string with deal indication
   const sizePrices = product.sizes
     .filter((s) => s.price > 0)
-    .map((s) => `${s.dimensions} €${s.price}`)
+    .map((s) => {
+      const hasOffer = !!(s.deal_label_enabled && s.deal_price && s.deal_price > 0);
+      const defaultPrice = getDefaultPrice(defaultPriceMap, s.dimensions);
+      const displayDefaultPrice = defaultPrice ?? s.price;
+      
+      if (hasOffer && displayDefaultPrice > (s.deal_price || 0)) {
+        return `${s.dimensions} €${s.deal_price}`;
+      }
+      return `${s.dimensions} €${s.price}`;
+    })
     .join(" | ");
 
   const handleEditStart = (field: string, value: string) => {
