@@ -34,6 +34,7 @@ interface NavigationProps {
     countdownEnd?: string;
     countdownTextColor?: string;
     countdownBgColor?: string;
+    buttonEnabled?: boolean;
     buttonText?: string;
     buttonTextColor?: string;
     buttonBgColor?: string;

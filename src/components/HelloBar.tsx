@@ -28,6 +28,7 @@ interface HelloBarProps {
   countdownEnd?: string;
   countdownTextColor?: string;
   countdownBgColor?: string;
+  buttonEnabled?: boolean;
   buttonText?: string;
   buttonTextColor?: string;
   buttonBgColor?: string;
@@ -54,6 +55,7 @@ const HelloBar = ({
   countdownEnd = "2025-01-01T00:00:00",
   countdownTextColor = "#FFFFFF",
   countdownBgColor = "#15803D",
+  buttonEnabled = true,
   buttonText = "Dettagli",
   buttonTextColor = "#16A34A",
   buttonBgColor = "#FFFFFF",
@@ -129,17 +131,19 @@ const HelloBar = ({
           )}
 
           {/* Details Button */}
-          <button
-            onClick={() => setShippingDialogOpen(true)}
-            className="text-xs md:text-sm font-normal px-3 py-1 rounded transition-opacity hover:opacity-80"
-            style={{
-              color: buttonTextColor,
-              backgroundColor: buttonBgColor,
-              border: `2px solid ${buttonBorderColor}`,
-            }}
-          >
-            {buttonText}
-          </button>
+          {buttonEnabled && (
+            <button
+              onClick={() => setShippingDialogOpen(true)}
+              className="text-xs md:text-sm font-normal px-3 py-1 rounded transition-opacity hover:opacity-80"
+              style={{
+                color: buttonTextColor,
+                backgroundColor: buttonBgColor,
+                border: `2px solid ${buttonBorderColor}`,
+              }}
+            >
+              {buttonText}
+            </button>
+          )}
         </div>
       </div>
 
