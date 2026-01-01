@@ -18,14 +18,12 @@ const MasonryGrid = ({
 }: MasonryGridProps) => {
   const sortedProducts = [...products].sort((a, b) => a.display_order - b.display_order);
 
-  // Use flexbox with wrapping for correct order and good visual appearance
+  // CSS columns for masonry layout - products flow top-to-bottom per column
+  // This is the intended visual behavior for a gallery
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-1">
       {sortedProducts.map((product) => (
-        <div 
-          key={product.id} 
-          className="w-full sm:w-[calc(50%-2px)] lg:w-[calc(33.333%-3px)] xl:w-[calc(25%-3px)]"
-        >
+        <div key={product.id} className="break-inside-avoid mb-1">
           <ProductCard
             product={product}
             onBuyClick={onBuyClick}
