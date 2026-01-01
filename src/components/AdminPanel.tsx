@@ -606,19 +606,18 @@ const AdminPanel = ({
     const newIndex = direction === "up" ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= products.length) return;
     
+    // Sort products and normalize display_order to sequential values (0, 1, 2, ...)
     const sorted = [...products].sort((a, b) => a.display_order - b.display_order);
-    const tempOrder = sorted[index].display_order;
-    const newOrder = sorted[newIndex].display_order;
     
-    const updated = sorted.map((product, i) => {
-      if (i === index) {
-        return { ...product, display_order: newOrder };
-      }
-      if (i === newIndex) {
-        return { ...product, display_order: tempOrder };
-      }
-      return product;
-    });
+    // Create new array with swapped positions and renumbered display_order
+    const reordered = [...sorted];
+    [reordered[index], reordered[newIndex]] = [reordered[newIndex], reordered[index]];
+    
+    // Assign sequential display_order values
+    const updated = reordered.map((product, i) => ({
+      ...product,
+      display_order: i
+    }));
     
     onProductsChange(updated);
   };
