@@ -56,6 +56,9 @@ export const useProducts = () => {
     },
     // Only fetch on client-side to allow SSG to render with static data
     enabled: isClient,
+    // Ensure fresh data after mutations
+    staleTime: 0,
+    gcTime: 0,
   });
 };
 
