@@ -605,11 +605,22 @@ const AdminPanel = ({
   const handleMoveProduct = (index: number, direction: "up" | "down") => {
     const newIndex = direction === "up" ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= products.length) return;
+    
     const sorted = [...products].sort((a, b) => a.display_order - b.display_order);
-    const temp = sorted[index].display_order;
-    sorted[index].display_order = sorted[newIndex].display_order;
-    sorted[newIndex].display_order = temp;
-    onProductsChange([...sorted]);
+    const tempOrder = sorted[index].display_order;
+    const newOrder = sorted[newIndex].display_order;
+    
+    const updated = sorted.map((product, i) => {
+      if (i === index) {
+        return { ...product, display_order: newOrder };
+      }
+      if (i === newIndex) {
+        return { ...product, display_order: tempOrder };
+      }
+      return product;
+    });
+    
+    onProductsChange(updated);
   };
   const updateEditSize = (sizeIndex: number, field: keyof ProductSize, value: string | number | boolean) => {
     if (!editProduct) return;
