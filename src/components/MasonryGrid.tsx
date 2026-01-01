@@ -18,17 +18,22 @@ const MasonryGrid = ({
 }: MasonryGridProps) => {
   const sortedProducts = [...products].sort((a, b) => a.display_order - b.display_order);
 
+  // Use flexbox with wrapping for correct order and good visual appearance
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1">
+    <div className="flex flex-wrap gap-1">
       {sortedProducts.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          onBuyClick={onBuyClick}
-          onCustomOrder={onCustomOrder}
-          editMode={editMode}
-          onProductUpdate={onProductUpdate}
-        />
+        <div 
+          key={product.id} 
+          className="w-full sm:w-[calc(50%-2px)] lg:w-[calc(33.333%-3px)] xl:w-[calc(25%-3px)]"
+        >
+          <ProductCard
+            product={product}
+            onBuyClick={onBuyClick}
+            onCustomOrder={onCustomOrder}
+            editMode={editMode}
+            onProductUpdate={onProductUpdate}
+          />
+        </div>
       ))}
     </div>
   );
