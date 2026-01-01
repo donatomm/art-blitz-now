@@ -75,6 +75,7 @@ const HelloBarTabContent = () => {
   const [hellobarCountdownEnd, setHellobarCountdownEnd] = useState("");
   const [hellobarCountdownTextColor, setHellobarCountdownTextColor] = useState("#FFFFFF");
   const [hellobarCountdownBgColor, setHellobarCountdownBgColor] = useState("#15803D");
+  const [hellobarButtonEnabled, setHellobarButtonEnabled] = useState(true);
   const [hellobarButtonText, setHellobarButtonText] = useState("Dettagli");
   const [hellobarButtonTextColor, setHellobarButtonTextColor] = useState("#16A34A");
   const [hellobarButtonBgColor, setHellobarButtonBgColor] = useState("#FFFFFF");
@@ -95,6 +96,7 @@ const HelloBarTabContent = () => {
       setHellobarCountdownEnd(getSettingValue<string>(settings, "hellobar_countdown_end", "2025-01-01T00:00:00"));
       setHellobarCountdownTextColor(getSettingValue<string>(settings, "hellobar_countdown_text_color", "#FFFFFF"));
       setHellobarCountdownBgColor(getSettingValue<string>(settings, "hellobar_countdown_bg_color", "#15803D"));
+      setHellobarButtonEnabled(getSettingValue<boolean>(settings, "hellobar_button_enabled", true));
       setHellobarButtonText(getSettingValue<string>(settings, "hellobar_button_text", "Dettagli"));
       setHellobarButtonTextColor(getSettingValue<string>(settings, "hellobar_button_text_color", "#16A34A"));
       setHellobarButtonBgColor(getSettingValue<string>(settings, "hellobar_button_bg_color", "#FFFFFF"));
@@ -117,6 +119,7 @@ const HelloBarTabContent = () => {
         updateSetting.mutateAsync({ key: "hellobar_countdown_end", value: hellobarCountdownEnd }),
         updateSetting.mutateAsync({ key: "hellobar_countdown_text_color", value: hellobarCountdownTextColor }),
         updateSetting.mutateAsync({ key: "hellobar_countdown_bg_color", value: hellobarCountdownBgColor }),
+        updateSetting.mutateAsync({ key: "hellobar_button_enabled", value: hellobarButtonEnabled }),
         updateSetting.mutateAsync({ key: "hellobar_button_text", value: hellobarButtonText }),
         updateSetting.mutateAsync({ key: "hellobar_button_text_color", value: hellobarButtonTextColor }),
         updateSetting.mutateAsync({ key: "hellobar_button_bg_color", value: hellobarButtonBgColor }),
@@ -254,32 +257,42 @@ const HelloBarTabContent = () => {
         
         {/* Button Section */}
         <div className="border rounded-lg p-4 space-y-4">
-          <h3 className="font-bold text-sm text-blue-600 border-b pb-2">🔘 Bottone Dettagli</h3>
-          <div>
-            <Label>Testo Bottone</Label>
-            <Input
-              value={hellobarButtonText}
-              onChange={(e) => { setHellobarButtonText(e.target.value); markChanged(); }}
-              placeholder="Dettagli"
+          <div className="flex items-center justify-between border-b pb-2">
+            <h3 className="font-bold text-sm text-blue-600">🔘 Bottone Dettagli</h3>
+            <Switch
+              checked={hellobarButtonEnabled}
+              onCheckedChange={(val) => { setHellobarButtonEnabled(val); markChanged(); }}
             />
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <ColorInput
-              label="Colore Testo"
-              value={hellobarButtonTextColor}
-              onChange={(val) => { setHellobarButtonTextColor(val); markChanged(); }}
-            />
-            <ColorInput
-              label="Colore Sfondo"
-              value={hellobarButtonBgColor}
-              onChange={(val) => { setHellobarButtonBgColor(val); markChanged(); }}
-            />
-            <ColorInput
-              label="Colore Bordo"
-              value={hellobarButtonBorderColor}
-              onChange={(val) => { setHellobarButtonBorderColor(val); markChanged(); }}
-            />
-          </div>
+          {hellobarButtonEnabled && (
+            <>
+              <div>
+                <Label>Testo Bottone</Label>
+                <Input
+                  value={hellobarButtonText}
+                  onChange={(e) => { setHellobarButtonText(e.target.value); markChanged(); }}
+                  placeholder="Dettagli"
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <ColorInput
+                  label="Colore Testo"
+                  value={hellobarButtonTextColor}
+                  onChange={(val) => { setHellobarButtonTextColor(val); markChanged(); }}
+                />
+                <ColorInput
+                  label="Colore Sfondo"
+                  value={hellobarButtonBgColor}
+                  onChange={(val) => { setHellobarButtonBgColor(val); markChanged(); }}
+                />
+                <ColorInput
+                  label="Colore Bordo"
+                  value={hellobarButtonBorderColor}
+                  onChange={(val) => { setHellobarButtonBorderColor(val); markChanged(); }}
+                />
+              </div>
+            </>
+          )}
         </div>
         
         {/* Popup Content Section */}

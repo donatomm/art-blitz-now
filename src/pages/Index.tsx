@@ -42,6 +42,7 @@ const Index = () => {
   const hellobarCountdownEnd = getSettingValue<string>(siteSettings, "hellobar_countdown_end", "2025-01-01T00:00:00");
   const hellobarCountdownTextColor = getSettingValue<string>(siteSettings, "hellobar_countdown_text_color", "#FFFFFF");
   const hellobarCountdownBgColor = getSettingValue<string>(siteSettings, "hellobar_countdown_bg_color", "#15803D");
+  const hellobarButtonEnabled = getSettingValue<boolean>(siteSettings, "hellobar_button_enabled", true);
   const hellobarButtonText = getSettingValue<string>(siteSettings, "hellobar_button_text", "Dettagli");
   const hellobarButtonTextColor = getSettingValue<string>(siteSettings, "hellobar_button_text_color", "#16A34A");
   const hellobarButtonBgColor = getSettingValue<string>(siteSettings, "hellobar_button_bg_color", "#FFFFFF");
@@ -146,6 +147,7 @@ const Index = () => {
           countdownEnd: hellobarCountdownEnd,
           countdownTextColor: hellobarCountdownTextColor,
           countdownBgColor: hellobarCountdownBgColor,
+          buttonEnabled: hellobarButtonEnabled,
           buttonText: hellobarButtonText,
           buttonTextColor: hellobarButtonTextColor,
           buttonBgColor: hellobarButtonBgColor,
