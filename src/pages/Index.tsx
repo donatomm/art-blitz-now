@@ -64,6 +64,8 @@ const Index = () => {
   };
   const handleProductsChange = async (updatedProducts: Product[]) => {
     try {
+      console.log('[Index] handleProductsChange called with', updatedProducts.length, 'products');
+      
       const existingIds = new Set(products.map(p => p.id));
       const updatedIds = new Set(updatedProducts.map(p => p.id));
 
@@ -73,8 +75,17 @@ const Index = () => {
       // Find deleted products (in existing but not in updated)
       const deletedProducts = products.filter(p => !updatedIds.has(p.id));
 
-      // Find products to update (exist in both)
-      const productsToUpdate = updatedProducts.filter(p => existingIds.has(p.id));
+      // Find products to update (exist in both) - only those with actual changes
+      const productsToUpdate = updatedProducts.filter(p => {
+        if (!existingIds.has(p.id)) return false;
+        const original = products.find(op => op.id === p.id);
+        // Check if display_order or other key fields changed
+        return original?.display_order !== p.display_order || 
+               original?.is_active !== p.is_active ||
+               JSON.stringify(original) !== JSON.stringify(p);
+      });
+
+      console.log('[Index] Products to update:', productsToUpdate.map(p => ({ name: p.name, order: p.display_order })));
 
       // Create new products
       for (const product of newProducts) {
@@ -83,6 +94,7 @@ const Index = () => {
 
       // Update existing products
       for (const product of productsToUpdate) {
+        console.log('[Index] Updating product:', product.name, 'with display_order:', product.display_order);
         await updateProduct.mutateAsync(product);
       }
 
@@ -90,6 +102,8 @@ const Index = () => {
       for (const product of deletedProducts) {
         await deleteProduct.mutateAsync(product.id);
       }
+      
+      console.log('[Index] All updates complete, refetching...');
       await refetch();
       
       // Regenerate sitemap automatically after product changes

@@ -36,12 +36,15 @@ export const useProducts = () => {
   return useQuery({
     queryKey: ["products"],
     queryFn: async () => {
+      console.log('[useProducts] Fetching products from database...');
       const { data, error } = await supabase
         .from("products")
         .select("*")
         .order("display_order", { ascending: true });
 
       if (error) throw error;
+      
+      console.log('[useProducts] Got', data?.length, 'products, first:', data?.[0]?.name, 'order:', data?.[0]?.display_order);
       
       return (data || []).map((item) => ({
         ...item,
@@ -56,9 +59,11 @@ export const useProducts = () => {
     },
     // Only fetch on client-side to allow SSG to render with static data
     enabled: isClient,
-    // Ensure fresh data after mutations
+    // Ensure fresh data - no caching
     staleTime: 0,
     gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 };
 
