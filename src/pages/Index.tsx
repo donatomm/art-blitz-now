@@ -94,8 +94,12 @@ const Index = () => {
       
       // Regenerate sitemap automatically after product changes
       try {
-        await supabase.functions.invoke('regenerate-sitemap');
-        console.log('[Index] Sitemap regenerated successfully');
+        const { error: sitemapError } = await supabase.functions.invoke('regenerate-sitemap');
+        if (sitemapError) {
+          console.warn('[Index] Sitemap regeneration failed:', sitemapError);
+        } else {
+          console.log('[Index] Sitemap regenerated successfully');
+        }
       } catch (sitemapError) {
         console.warn('[Index] Sitemap regeneration failed:', sitemapError);
         // Don't show error to user - sitemap is not critical
