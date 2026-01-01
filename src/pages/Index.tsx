@@ -90,7 +90,7 @@ const Index = () => {
       for (const product of deletedProducts) {
         await deleteProduct.mutateAsync(product.id);
       }
-      refetch();
+      await refetch();
       
       // Regenerate sitemap automatically after product changes
       try {
