@@ -1,3 +1,4 @@
+import Masonry from "react-masonry-css";
 import { Product } from "@/types/product";
 import ProductCard from "./ProductCard";
 
@@ -18,12 +19,23 @@ const MasonryGrid = ({
 }: MasonryGridProps) => {
   const sortedProducts = [...products].sort((a, b) => a.display_order - b.display_order);
 
-  // CSS columns for masonry layout - products flow top-to-bottom per column
-  // This is the intended visual behavior for a gallery
+  // Responsive breakpoints for column count
+  const breakpointColumns = {
+    default: 4,
+    1280: 4,  // xl
+    1024: 3,  // lg
+    640: 2,   // sm
+    0: 1      // mobile
+  };
+
   return (
-    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-1">
+    <Masonry
+      breakpointCols={breakpointColumns}
+      className="flex -ml-1 w-auto"
+      columnClassName="pl-1 bg-clip-padding"
+    >
       {sortedProducts.map((product) => (
-        <div key={product.id} className="break-inside-avoid mb-1">
+        <div key={product.id} className="mb-1">
           <ProductCard
             product={product}
             onBuyClick={onBuyClick}
@@ -33,7 +45,7 @@ const MasonryGrid = ({
           />
         </div>
       ))}
-    </div>
+    </Masonry>
   );
 };
 
