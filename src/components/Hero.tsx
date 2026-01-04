@@ -31,7 +31,8 @@ const Hero = ({
         height={1080} 
         loading="eager" 
         decoding="sync" 
-        fetchPriority="high" 
+        // @ts-ignore - lowercase for HTML attribute compliance
+        fetchpriority="high" 
         className="absolute inset-0 w-full h-full object-cover object-center" 
       />
 

@@ -10,14 +10,17 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { toast } from "@/hooks/use-toast";
 import { useSiteSettings, getSettingValue } from "@/hooks/useSiteSettings";
+import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
 import { supabase } from "@/integrations/supabase/client";
+
 const Index = () => {
   const {
     data: products = [],
     isLoading,
     refetch
   } = useProducts();
-  const { data: siteSettings } = useSiteSettings();
+  const { data: siteSettings } = useSiteSettings(); // Keep for admin/hellobar
+  const staticSettings = useStaticSiteSettings(); // SSG-safe for hero
   const updateProduct = useUpdateProduct();
   const createProduct = useCreateProduct();
   const deleteProduct = useDeleteProduct();
@@ -25,12 +28,12 @@ const Index = () => {
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
   
-  // Get hero content from site settings
-  const heroTitle = getSettingValue<string>(siteSettings, "hero_title", "Opere magnetiche. Uniche. Non per tutti.");
-  const heroSubtitle = getSettingValue<string>(siteSettings, "hero_subtitle", "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.");
-  const heroCtaText = getSettingValue<string>(siteSettings, "hero_cta_text", "ESPLORA LA COLLEZIONE");
-  const heroImageUrl = getSettingValue<string>(siteSettings, "hero_image", "");
-  const trustBarItems = getSettingValue<string[]>(siteSettings, "trust_bar_items", []);
+  // Get hero content from STATIC settings (SSG-safe, no API waterfall)
+  const heroTitle = staticSettings.hero_title;
+  const heroSubtitle = staticSettings.hero_subtitle;
+  const heroCtaText = staticSettings.hero_cta_text;
+  const heroImageUrl = staticSettings.hero_image;
+  const trustBarItems = staticSettings.trust_bar_items;
   
   // Get HelloBar settings
   const hellobarEnabled = getSettingValue<boolean>(siteSettings, "hellobar_enabled", true);
