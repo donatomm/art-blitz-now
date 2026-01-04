@@ -32,10 +32,14 @@ const normalizeMockRooms = (mockRooms: unknown) => {
   });
 };
 
-// Plugin to fetch products at build time for SSG and generate sitemap
+// Plugin to fetch products and site settings at build time for SSG and generate sitemap
 const prebuildPlugin = () => ({
   name: "prebuild-products",
   async buildStart() {
+    const generatedDir = path.join(process.cwd(), 'src', 'generated');
+    fs.mkdirSync(generatedDir, { recursive: true });
+
+    // Fetch products
     console.log("🔄 Fetching products for SSG...");
     try {
       const response = await fetch(
@@ -49,7 +53,7 @@ const prebuildPlugin = () => ({
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status}`);
+        throw new Error(`Failed to fetch products: ${response.status}`);
       }
 
       const data = await response.json() as any[];
@@ -66,10 +70,6 @@ const prebuildPlugin = () => ({
         is_new: item.is_new ?? false,
       }));
 
-      // Write to generated folder
-      const generatedDir = path.join(process.cwd(), 'src', 'generated');
-      fs.mkdirSync(generatedDir, { recursive: true });
-      
       // Write TypeScript file for SSG (this is what routes.tsx imports)
       const staticProductsContent = `/**
  * Static products data for SSG
@@ -94,7 +94,66 @@ export default staticProducts;
         JSON.stringify(products, null, 2)
       );
     } catch (error) {
-      console.error("❌ Prebuild failed:", error);
+      console.error("❌ Products prebuild failed:", error);
+    }
+
+    // Fetch site settings for hero SSG
+    console.log("🔄 Fetching site settings for SSG...");
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/site_settings?select=key,value`,
+        {
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+          },
+        }
+      );
+
+      let settings: Record<string, any> = {};
+      
+      if (response.ok) {
+        const data = await response.json() as { key: string; value: any }[];
+        // Transform array of key-value pairs into object
+        for (const item of data) {
+          settings[item.key] = item.value;
+        }
+      }
+
+      // Apply sensible defaults
+      const staticSettings = {
+        hero_title: settings.hero_title || "Opere magnetiche. Uniche. Non per tutti.",
+        hero_subtitle: settings.hero_subtitle || "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.",
+        hero_cta_text: settings.hero_cta_text || "ESPLORA LA COLLEZIONE",
+        hero_image: settings.hero_image || "",
+        trust_bar_items: Array.isArray(settings.trust_bar_items) ? settings.trust_bar_items : [],
+      };
+
+      const staticSiteSettingsContent = `/**
+ * Static site settings data for SSG
+ * Auto-generated at build time - DO NOT EDIT MANUALLY
+ */
+
+export interface StaticSiteSettings {
+  hero_title: string;
+  hero_subtitle: string;
+  hero_cta_text: string;
+  hero_image: string;
+  trust_bar_items: string[];
+}
+
+export const staticSiteSettings: StaticSiteSettings = ${JSON.stringify(staticSettings, null, 2)};
+
+export default staticSiteSettings;
+`;
+      fs.writeFileSync(
+        path.join(generatedDir, 'staticSiteSettings.ts'),
+        staticSiteSettingsContent
+      );
+      console.log(`✅ Updated staticSiteSettings.ts for SSG`);
+    } catch (error) {
+      console.error("❌ Site settings prebuild failed (using defaults):", error);
+      // Don't throw - we have defaults in the file already
     }
   },
   async writeBundle(options: any) {
