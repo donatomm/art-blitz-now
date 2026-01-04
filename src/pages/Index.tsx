@@ -19,7 +19,7 @@ const Index = () => {
     isLoading,
     refetch
   } = useProducts();
-  const { data: siteSettings } = useSiteSettings(); // Keep for admin/hellobar
+  const { data: siteSettings, isLoading: settingsLoading } = useSiteSettings(); // Keep for admin/hellobar
   const staticSettings = useStaticSiteSettings(); // SSG-safe for hero
   const updateProduct = useUpdateProduct();
   const createProduct = useCreateProduct();
@@ -35,8 +35,8 @@ const Index = () => {
   const heroImageUrl = staticSettings.hero_image;
   const trustBarItems = staticSettings.trust_bar_items;
   
-  // Get HelloBar settings
-  const hellobarEnabled = getSettingValue<boolean>(siteSettings, "hellobar_enabled", true);
+  // Get HelloBar settings - default to FALSE while loading to not block render
+  const hellobarEnabled = settingsLoading ? false : getSettingValue<boolean>(siteSettings, "hellobar_enabled", false);
   const hellobarText = getSettingValue<string>(siteSettings, "hellobar_text", "SPEDIZIONE GRATUITA in Italia - 30% fino a capodanno!");
   const hellobarTextColor = getSettingValue<string>(siteSettings, "hellobar_text_color", "#FFFFFF");
   const hellobarBgColor = getSettingValue<string>(siteSettings, "hellobar_bg_color", "#16A34A");
