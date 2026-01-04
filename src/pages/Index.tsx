@@ -1,17 +1,19 @@
-import { useState, useRef } from "react";
+import { useState, useRef, lazy, Suspense } from "react";
 import { Product } from "@/types/product";
 import { useProducts, useUpdateProduct, useCreateProduct, useDeleteProduct } from "@/hooks/useProducts";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
-import AdminPanel from "@/components/AdminPanel";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { toast } from "@/hooks/use-toast";
 import { useSiteSettings, getSettingValue } from "@/hooks/useSiteSettings";
 import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
 import { supabase } from "@/integrations/supabase/client";
+
+// Lazy load AdminPanel - it's 1278 lines + xlsx library, only needed by admins
+const AdminPanel = lazy(() => import("@/components/AdminPanel"));
 
 const Index = () => {
   const {
@@ -178,7 +180,9 @@ const Index = () => {
 
       <BuyDialog product={selectedProduct} open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen} />
 
-      <AdminPanel products={products} onProductsChange={handleProductsChange} />
+      <Suspense fallback={null}>
+        <AdminPanel products={products} onProductsChange={handleProductsChange} />
+      </Suspense>
       
       <Footer />
     </div>;
