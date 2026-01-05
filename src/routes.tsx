@@ -24,6 +24,7 @@ const ResiRimborsi = lazy(() => import("./pages/ResiRimborsi"));
 const OrdinePersonalizzato = lazy(() => import("./pages/OrdinePersonalizzato"));
 const ColorPalette = lazy(() => import("./pages/ColorPalette"));
 const Sitemap = lazy(() => import("./pages/Sitemap"));
+const FAQs = lazy(() => import("./pages/FAQs"));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -122,6 +123,11 @@ export const routes: RouteRecord[] = [
         path: "sitemap",
         element: withSuspense(Sitemap),
         getStaticPaths: () => ["sitemap"],
+      },
+      {
+        path: "FAQs",
+        element: withSuspense(FAQs),
+        getStaticPaths: () => ["FAQs"],
       },
       {
         path: "*",
