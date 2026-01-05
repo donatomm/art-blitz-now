@@ -66,9 +66,9 @@ export const routes: RouteRecord[] = [
         getStaticPaths: () => ["cookies"],
       },
       {
-        path: "contact",
+        path: "contatti",
         element: withSuspense(Contact),
-        getStaticPaths: () => ["contact"],
+        getStaticPaths: () => ["contatti"],
       },
       {
         path: "colors",
