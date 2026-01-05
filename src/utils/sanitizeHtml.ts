@@ -31,3 +31,75 @@ export const sanitizeInlineHtml = (text: string): string => {
   };
   return DOMPurify.sanitize(text, inlineConfig);
 };
+
+/**
+ * Parse CSS string into a map of selector -> styles
+ */
+const parseCSS = (css: string): Record<string, string> => {
+  const rules: Record<string, string> = {};
+  // Match CSS rules: selector { properties }
+  const ruleRegex = /([^{}]+)\{([^{}]+)\}/g;
+  let match;
+  
+  while ((match = ruleRegex.exec(css)) !== null) {
+    const selector = match[1].trim();
+    const properties = match[2].trim();
+    // Only handle simple class selectors for security
+    if (selector.startsWith('.') && !selector.includes(' ')) {
+      const className = selector.slice(1);
+      rules[className] = properties;
+    }
+  }
+  
+  return rules;
+};
+
+/**
+ * Apply CSS rules as inline styles to matching elements
+ */
+const applyInlineStyles = (html: string, cssRules: Record<string, string>): string => {
+  let result = html;
+  
+  for (const [className, styles] of Object.entries(cssRules)) {
+    // Match elements with this class and add inline styles
+    const classRegex = new RegExp(`class=["']([^"']*\\b${className}\\b[^"']*)["']`, 'gi');
+    result = result.replace(classRegex, (match, classes) => {
+      // Check if style attribute already exists nearby
+      return `${match} style="${styles}"`;
+    });
+  }
+  
+  return result;
+};
+
+/**
+ * Process a full HTML document (with <!DOCTYPE>, <html>, <head>, <body>, <style>)
+ * Extracts body content, converts embedded CSS to inline styles, and sanitizes
+ */
+export const processHtmlDocument = (html: string): string => {
+  // 1. Extract body content
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  const bodyContent = bodyMatch ? bodyMatch[1] : html;
+  
+  // 2. Extract style rules from <style> tags
+  const styleMatch = html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+  const cssRules = styleMatch ? parseCSS(styleMatch[1]) : {};
+  
+  // 3. Apply CSS rules as inline styles
+  const withInlineStyles = applyInlineStyles(bodyContent, cssRules);
+  
+  // 4. Sanitize the result (allows style attribute)
+  const configWithStyles = {
+    ...sanitizeConfig,
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style', 'src', 'alt'],
+  };
+  
+  return DOMPurify.sanitize(withInlineStyles, configWithStyles);
+};
+
+/**
+ * Check if content is a full HTML document
+ */
+export const isFullHtmlDocument = (html: string): boolean => {
+  return /<!DOCTYPE|<html|<head|<body/i.test(html);
+};
