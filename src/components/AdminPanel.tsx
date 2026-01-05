@@ -23,12 +23,21 @@ import MenuTabContent from "./MenuTabContent";
 import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
 
+// NavItem interface for menu sync
+interface NavItem {
+  label: string;
+  href: string;
+  order: number;
+}
+
 // Pages Editor sub-component
 const PagesTabContent = () => {
   const {
     data: pages,
     isLoading: pagesLoading
   } = usePages();
+  const { data: settings } = useSiteSettings();
+  const updateSetting = useUpdateSiteSetting();
   const updatePage = useUpdatePage();
   const [editingPage, setEditingPage] = useState<Page | null>(null);
   const [editTitle, setEditTitle] = useState("");
@@ -67,9 +76,34 @@ const PagesTabContent = () => {
         seo_title: editSeoTitle || null,
         seo_description: editSeoDescription || null
       });
+
+      // Sync menu item label if title changed and there's a matching nav item
+      let menuSynced = false;
+      if (editTitle !== editingPage.title && settings) {
+        const navItems = getSettingValue<NavItem[]>(settings, "nav_items", []);
+        const matchingIndex = navItems.findIndex(
+          item => item.href === `/${editingPage.slug}` || item.href === editingPage.slug
+        );
+        
+        if (matchingIndex !== -1) {
+          const updatedNavItems = [...navItems];
+          updatedNavItems[matchingIndex] = {
+            ...updatedNavItems[matchingIndex],
+            label: editTitle
+          };
+          await updateSetting.mutateAsync({ 
+            key: "nav_items", 
+            value: JSON.parse(JSON.stringify(updatedNavItems))
+          });
+          menuSynced = true;
+        }
+      }
+
       toast({
-        title: "Pagina salvata!",
-        description: `"${editTitle}" aggiornata con successo.`
+        title: menuSynced ? "Pagina e Menu aggiornati!" : "Pagina salvata!",
+        description: menuSynced 
+          ? `"${editTitle}" aggiornata. Anche la voce di menu è stata sincronizzata.`
+          : `"${editTitle}" aggiornata con successo.`
       });
       setEditingPage(null);
     } catch (error) {
