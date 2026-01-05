@@ -41,15 +41,31 @@ export const processHtmlDocument = (html: string): string => {
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
   const bodyContent = bodyMatch ? bodyMatch[1] : html;
   
-  // 2. Extract style block from <style> tags (preserve it)
+  // 2. Extract style block from <style> tags
   const styleMatch = html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
-  const styleBlock = styleMatch ? `<style>${styleMatch[1]}</style>` : '';
+  let cssContent = styleMatch ? styleMatch[1] : '';
   
-  // 3. Combine style block with body content
-  const combined = styleBlock + bodyContent;
+  // 3. Replace 'body' selector with '.html-content' wrapper class
+  // This ensures body styles apply to our wrapper div
+  cssContent = cssContent.replace(/\bbody\b/g, '.html-content');
   
-  // 4. Sanitize with explicit ALLOWED_TAGS including style
-  // Using ALLOWED_TAGS means we must list ALL tags we want to keep
+  // 4. Add default paragraph and element spacing if not already present
+  const defaultStyles = `
+    .html-content p { margin-bottom: 1em; }
+    .html-content h1, .html-content h2, .html-content h3 { margin-top: 1.5em; margin-bottom: 0.5em; }
+    .html-content ul, .html-content ol { margin-bottom: 1em; }
+    .html-content section { margin-bottom: 1.5em; }
+  `;
+  
+  const styleBlock = `<style>${defaultStyles}${cssContent}</style>`;
+  
+  // 4. Wrap body content in a div with the html-content class
+  const wrappedContent = `<div class="html-content">${bodyContent}</div>`;
+  
+  // 5. Combine style block with wrapped content
+  const combined = styleBlock + wrappedContent;
+  
+  // 6. Sanitize with explicit ALLOWED_TAGS including style
   const configWithStyles = {
     FORCE_BODY: true,
     ALLOWED_TAGS: [
