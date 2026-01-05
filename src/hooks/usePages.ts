@@ -6,6 +6,7 @@ export interface Page {
   slug: string;
   title: string;
   content: string;
+  content_type: 'markdown' | 'html';
   seo_title?: string | null;
   seo_description?: string | null;
   created_at: string;
@@ -51,24 +52,83 @@ export const useUpdatePage = () => {
       id, 
       title, 
       content,
+      content_type,
       seo_title,
       seo_description 
     }: { 
       id: string; 
       title: string; 
       content: string;
+      content_type?: 'markdown' | 'html';
       seo_title?: string | null;
       seo_description?: string | null;
     }) => {
+      const updateData: Record<string, any> = { title, content, seo_title, seo_description };
+      if (content_type) {
+        updateData.content_type = content_type;
+      }
+      
       const { data, error } = await supabase
         .from("pages")
-        .update({ title, content, seo_title, seo_description })
+        .update(updateData)
         .eq("id", id)
         .select()
         .single();
 
       if (error) throw error;
       return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pages"] });
+    },
+  });
+};
+
+export const useCreatePage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      slug,
+      title, 
+      content,
+      content_type = 'markdown',
+      seo_title,
+      seo_description 
+    }: { 
+      slug: string;
+      title: string; 
+      content: string;
+      content_type?: 'markdown' | 'html';
+      seo_title?: string | null;
+      seo_description?: string | null;
+    }) => {
+      const { data, error } = await supabase
+        .from("pages")
+        .insert({ slug, title, content, content_type, seo_title, seo_description })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pages"] });
+    },
+  });
+};
+
+export const useDeletePage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("pages")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pages"] });
