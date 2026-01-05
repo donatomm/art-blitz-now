@@ -40,7 +40,8 @@ const Footer = () => {
         </div>
         
         <div className="mt-6 pt-6 border-t border-slate-700 text-center text-sm text-slate-500">
-          © {new Date().getFullYear()} OctoWonders by Marco De Francesco. Tutti i diritti riservati.
+          <p>Codice Fiscale MNGDTM66L18F205N</p>
+          <p className="mt-1">© {new Date().getFullYear()} OctoWonders by Marco De Francesco. Tutti i diritti riservati.</p>
         </div>
       </div>
     </footer>;
