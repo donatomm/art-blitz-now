@@ -49,12 +49,35 @@ export const processHtmlDocument = (html: string): string => {
   // This ensures body styles apply to our wrapper div
   cssContent = cssContent.replace(/\bbody\b/g, '.html-content');
   
-  // 4. Add default paragraph and element spacing if not already present
+  // 4. Add default typography styles
   const defaultStyles = `
-    .html-content p { margin-bottom: 1em; }
-    .html-content h1, .html-content h2, .html-content h3 { margin-top: 1.5em; margin-bottom: 0.5em; }
+    .html-content { line-height: 1.7; }
+    .html-content p { margin-bottom: 1.2em; }
+    .html-content h1 { 
+      font-size: 2.5em; 
+      font-weight: 800; 
+      margin-top: 0; 
+      margin-bottom: 1em; 
+      line-height: 1.2;
+      color: #1a1a2e;
+    }
+    .html-content h2 { 
+      font-size: 1.6em; 
+      font-weight: 700; 
+      margin-top: 2em; 
+      margin-bottom: 0.75em; 
+      color: #2980b9;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 0.3em;
+    }
+    .html-content h3 { 
+      font-size: 1.25em; 
+      font-weight: 600; 
+      margin-top: 1.5em; 
+      margin-bottom: 0.5em; 
+    }
     .html-content ul, .html-content ol { margin-bottom: 1em; }
-    .html-content section { margin-bottom: 1.5em; }
+    .html-content section { margin-bottom: 2em; }
   `;
   
   const styleBlock = `<style>${defaultStyles}${cssContent}</style>`;
