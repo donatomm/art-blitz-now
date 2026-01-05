@@ -215,7 +215,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
       <main className="container mx-auto px-4 pt-24 pb-16">
         <div className="max-w-3xl mx-auto">
           {!isHTMLContent && <h1 className="text-4xl font-bold mb-8">{page.title}</h1>}
-          <div className="prose prose-lg max-w-none">
+          <div className={isFullHtmlDocument(page.content) ? "" : "prose prose-lg max-w-none"}>
             {isHTMLContent ? (
               <div 
                 dangerouslySetInnerHTML={{ __html: processHTML(page.content) }}
