@@ -131,6 +131,11 @@ export const routes: RouteRecord[] = [
         getStaticPaths: () => ["FAQs"],
       },
       {
+        path: "Octopus-Facts",
+        element: withSuspense(OctopusFacts),
+        getStaticPaths: () => ["Octopus-Facts"],
+      },
+      {
         path: "*",
         element: withSuspense(NotFound),
       },
