@@ -7,15 +7,20 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CartProvider } from "@/contexts/CartContext";
 import CartDrawer from "@/components/CartDrawer";
 import FloatingCartButton from "@/components/FloatingCartButton";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Create query client outside component to prevent re-creation
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Disable refetch on window focus during SSG
       refetchOnWindowFocus: false,
-      // Disable retries during SSG to prevent hanging
-      retry: typeof window !== 'undefined' ? 3 : false,
+      retry: (failureCount, error) => {
+        // Don't retry JSON parse errors (SyntaxError from HTML responses)
+        if (error instanceof SyntaxError) return false;
+        // Disable retries during SSG
+        if (typeof window === 'undefined') return false;
+        return failureCount < 3;
+      },
     },
   },
 });
@@ -33,7 +38,9 @@ export default function RootLayout() {
             <Sonner />
             <CartDrawer />
             <FloatingCartButton />
-            <Outlet />
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </CartProvider>
         </TooltipProvider>
       </QueryClientProvider>
