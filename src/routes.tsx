@@ -25,6 +25,7 @@ const OrdinePersonalizzato = lazy(() => import("./pages/OrdinePersonalizzato"));
 const ColorPalette = lazy(() => import("./pages/ColorPalette"));
 const Sitemap = lazy(() => import("./pages/Sitemap"));
 const FAQs = lazy(() => import("./pages/FAQs"));
+const OctopusFacts = lazy(() => import("./pages/OctopusFacts"));
 
 // Minimal loading fallback
 const PageLoader = () => (
