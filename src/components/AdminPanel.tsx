@@ -20,7 +20,7 @@ import SKUEditor from "./SKUEditor";
 import ImageOptimizer from "./ImageOptimizer";
 import HelloBarTabContent from "./HelloBarTabContent";
 import MenuTabContent from "./MenuTabContent";
-import { usePages, useUpdatePage, Page } from "@/hooks/usePages";
+import { usePages, useUpdatePage, useCreatePage, Page } from "@/hooks/usePages";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
 
 // NavItem interface for menu sync
@@ -29,6 +29,20 @@ interface NavItem {
   href: string;
   order: number;
 }
+
+// Generate slug from title
+const generateSlug = (title: string): string => {
+  return title
+    .toLowerCase()
+    .replace(/[àáâãäå]/g, 'a')
+    .replace(/[èéêë]/g, 'e')
+    .replace(/[ìíîï]/g, 'i')
+    .replace(/[òóôõö]/g, 'o')
+    .replace(/[ùúûü]/g, 'u')
+    .replace(/[ñ]/g, 'n')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+};
 
 // Pages Editor sub-component
 const PagesTabContent = () => {
@@ -39,6 +53,7 @@ const PagesTabContent = () => {
   const { data: settings } = useSiteSettings();
   const updateSetting = useUpdateSiteSetting();
   const updatePage = useUpdatePage();
+  const createPage = useCreatePage();
   const [editingPage, setEditingPage] = useState<Page | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
@@ -46,14 +61,16 @@ const PagesTabContent = () => {
   const [editSeoDescription, setEditSeoDescription] = useState("");
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [isHtmlMode, setIsHtmlMode] = useState(false);
+  
+  // New page creation state
+  const [isCreating, setIsCreating] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newSlug, setNewSlug] = useState("");
+  const [newContentType, setNewContentType] = useState<'markdown' | 'html'>('markdown');
+  
   const {
     toast
   } = useToast();
-
-  // Check if content contains significant HTML tags (not just starts with them)
-  const containsSignificantHTML = (str: string): boolean => {
-    return /<(div|p|span|table|ul|ol|h[1-6]|section|article|header|footer|nav|aside|main|form|button|input|textarea|select|label|img|a|br|hr|strong|em|b|i|u|blockquote|pre|code|style)[\s>\/]/i.test(str);
-  };
 
   const handleEditPage = (page: Page) => {
     setEditingPage(page);
@@ -62,8 +79,8 @@ const PagesTabContent = () => {
     setEditSeoTitle(page.seo_title || "");
     setEditSeoDescription(page.seo_description || "");
     setShowImageUpload(false);
-    // Auto-detect HTML mode if content contains HTML tags
-    setIsHtmlMode(containsSignificantHTML(page.content));
+    // Use saved content_type, don't detect
+    setIsHtmlMode(page.content_type === 'html');
   };
 
   const handleSavePage = async () => {
@@ -73,6 +90,7 @@ const PagesTabContent = () => {
         id: editingPage.id,
         title: editTitle,
         content: editContent,
+        content_type: isHtmlMode ? 'html' : 'markdown',
         seo_title: editSeoTitle || null,
         seo_description: editSeoDescription || null
       });
@@ -110,6 +128,69 @@ const PagesTabContent = () => {
       toast({
         title: "Errore",
         description: "Impossibile salvare la pagina.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCreatePage = async () => {
+    if (!newTitle.trim() || !newSlug.trim()) {
+      toast({
+        title: "Errore",
+        description: "Inserisci titolo e slug.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check for duplicate slug
+    if (pages?.some(p => p.slug.toLowerCase() === newSlug.toLowerCase())) {
+      toast({
+        title: "Errore",
+        description: "Esiste già una pagina con questo slug.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      await createPage.mutateAsync({
+        slug: newSlug,
+        title: newTitle,
+        content: newContentType === 'html' ? '<p>Contenuto della pagina</p>' : '# ' + newTitle + '\n\nContenuto della pagina.',
+        content_type: newContentType,
+        seo_title: newTitle,
+        seo_description: null
+      });
+
+      // Add to nav_items
+      if (settings) {
+        const navItems = getSettingValue<NavItem[]>(settings, "nav_items", []);
+        const maxOrder = navItems.length > 0 ? Math.max(...navItems.map(i => i.order)) : 0;
+        const updatedNavItems = [...navItems, { 
+          label: newTitle, 
+          href: `/${newSlug}`, 
+          order: maxOrder + 1 
+        }];
+        await updateSetting.mutateAsync({ 
+          key: "nav_items", 
+          value: JSON.parse(JSON.stringify(updatedNavItems))
+        });
+      }
+
+      toast({
+        title: "Pagina creata!",
+        description: `"${newTitle}" creata e aggiunta al menu. Ricorda di ri-pubblicare il sito per indicizzarla.`
+      });
+      
+      setIsCreating(false);
+      setNewTitle("");
+      setNewSlug("");
+      setNewContentType('markdown');
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Impossibile creare la pagina.",
         variant: "destructive"
       });
     }
@@ -231,10 +312,80 @@ const PagesTabContent = () => {
       </TabsContent>;
   }
 
+  // New page creation form
+  if (isCreating) {
+    return <TabsContent value="pages" className="space-y-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium">Nuova Pagina</h3>
+            <Button variant="ghost" size="sm" onClick={() => setIsCreating(false)}>
+              Annulla
+            </Button>
+          </div>
+          <div>
+            <Label>Titolo</Label>
+            <Input 
+              value={newTitle} 
+              onChange={e => {
+                setNewTitle(e.target.value);
+                setNewSlug(generateSlug(e.target.value));
+              }} 
+              placeholder="Es: Chi Siamo"
+            />
+          </div>
+          <div>
+            <Label>Slug (URL)</Label>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">/</span>
+              <Input 
+                value={newSlug} 
+                onChange={e => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} 
+                placeholder="chi-siamo"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">L'URL sarà: octowonders.com/{newSlug}</p>
+          </div>
+          <div>
+            <Label>Tipo di Contenuto</Label>
+            <div className="flex items-center gap-4 mt-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="radio" 
+                  name="contentType" 
+                  checked={newContentType === 'markdown'} 
+                  onChange={() => setNewContentType('markdown')} 
+                />
+                <span>Markdown</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="radio" 
+                  name="contentType" 
+                  checked={newContentType === 'html'} 
+                  onChange={() => setNewContentType('html')} 
+                />
+                <span>HTML</span>
+              </label>
+            </div>
+          </div>
+          <Button onClick={handleCreatePage} disabled={createPage.isPending} className="w-full">
+            {createPage.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+            Crea Pagina
+          </Button>
+        </div>
+      </TabsContent>;
+  }
+
   return <TabsContent value="pages" className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Modifica i contenuti delle pagine del sito e le impostazioni SEO.
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          Modifica i contenuti delle pagine del sito e le impostazioni SEO.
+        </p>
+        <Button variant="outline" size="sm" onClick={() => setIsCreating(true)}>
+          <Plus className="h-4 w-4 mr-1" />
+          Nuova
+        </Button>
+      </div>
       <div className="space-y-2">
         {pages?.map(page => <div key={page.id} className="flex items-center justify-between p-3 bg-muted rounded-md">
             <div>

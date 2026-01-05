@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
 import { usePage } from "@/hooks/usePages";
+import { getStaticPageBySlug } from "@/hooks/useStaticPages";
 import { Skeleton } from "@/components/ui/skeleton";
 import { sanitizeHtml, sanitizeInlineHtml, processHtmlDocument, isFullHtmlDocument } from "@/utils/sanitizeHtml";
 
@@ -22,7 +23,15 @@ const containsHTML = (str: string): boolean => {
 };
 
 const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
-  const { data: page, isLoading, error } = usePage(slug);
+  // Static page from prebuild (available immediately for SSG - no loading skeleton for crawlers)
+  const staticPage = getStaticPageBySlug(slug);
+  
+  // Live page from database (client-side hydration/refresh)
+  const { data: livePage, isLoading } = usePage(slug);
+  
+  // Use live data if available, fallback to static for SSG render
+  const page = livePage ?? staticPage;
+
   // Simple markdown renderer for basic formatting
   const renderContent = (content: string) => {
     const lines = content.split('\n');
@@ -157,7 +166,11 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
     return sanitizeHtml(withoutHeading);
   };
 
-  if (isLoading) {
+  // Determine content type - use explicit content_type if available, fallback to detection
+  const isHTMLContent = page?.content_type === 'html' || (page?.content && containsHTML(page.content));
+
+  // Only show loading skeleton if no static data (shouldn't happen for SSG pages)
+  if (isLoading && !staticPage) {
     return (
       <div className="min-h-screen bg-background pt-24 pb-16">
         <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
@@ -176,7 +189,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
     );
   }
 
-  if (error || !page) {
+  if (!page) {
     return (
       <div className="min-h-screen bg-background pt-24 pb-16">
         <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
@@ -194,8 +207,6 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
       </div>
     );
   }
-
-  const isHTMLContent = containsHTML(page.content);
 
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">

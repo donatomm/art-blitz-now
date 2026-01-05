@@ -155,6 +155,52 @@ export default staticSiteSettings;
       console.error("❌ Site settings prebuild failed (using defaults):", error);
       // Don't throw - we have defaults in the file already
     }
+
+    // Fetch pages for SSG (full content for SEO indexing)
+    console.log("🔄 Fetching pages for SSG...");
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/pages?select=*&order=slug.asc`,
+        {
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch pages: ${response.status}`);
+      }
+
+      const pages = await response.json() as any[];
+
+      // Write staticPages.ts for SSG
+      const staticPagesContent = `/**
+ * Static pages data for SSG
+ * Auto-generated at build time - DO NOT EDIT MANUALLY
+ */
+
+import { Page } from '@/hooks/usePages';
+
+export const staticPages: Page[] = ${JSON.stringify(pages, null, 2)};
+
+export default staticPages;
+`;
+      fs.writeFileSync(
+        path.join(generatedDir, 'staticPages.ts'),
+        staticPagesContent
+      );
+      console.log(`✅ Updated staticPages.ts with ${pages.length} pages for SSG`);
+
+      // Save pages.json for sitemap generation
+      fs.writeFileSync(
+        path.join(generatedDir, 'pages.json'),
+        JSON.stringify(pages, null, 2)
+      );
+    } catch (error) {
+      console.error("❌ Pages prebuild failed:", error);
+    }
   },
   async writeBundle(options: any) {
     // Generate sitemap.xml after the bundle is written
@@ -173,30 +219,44 @@ export default staticSiteSettings;
       const BASE_URL = 'https://octowonders.com';
       const today = new Date().toISOString().split('T')[0];
 
-      const staticPages = [
+      // Fixed routes (not from CMS)
+      const fixedRoutes = [
         { loc: '/', changefreq: 'weekly', priority: '1.0' },
-        { loc: '/artist', changefreq: 'monthly', priority: '0.8' },
-        { loc: '/shipping', changefreq: 'monthly', priority: '0.7' },
-        { loc: '/contact', changefreq: 'monthly', priority: '0.7' },
-        { loc: '/pricing-policy', changefreq: 'monthly', priority: '0.5' },
-        { loc: '/privacy', changefreq: 'yearly', priority: '0.3' },
-        { loc: '/cookies', changefreq: 'yearly', priority: '0.3' },
-        { loc: '/terms', changefreq: 'yearly', priority: '0.3' },
-        { loc: '/resi-rimborsi', changefreq: 'monthly', priority: '0.5' },
-        { loc: '/ordine-personalizzato', changefreq: 'monthly', priority: '0.7' },
         { loc: '/sitemap', changefreq: 'weekly', priority: '0.4' },
+        { loc: '/colors', changefreq: 'monthly', priority: '0.3' },
       ];
+
+      // Load CMS pages for sitemap
+      const pagesPath = path.join(process.cwd(), 'src', 'generated', 'pages.json');
+      let cmsPages: any[] = [];
+      if (fs.existsSync(pagesPath)) {
+        cmsPages = JSON.parse(fs.readFileSync(pagesPath, 'utf-8'));
+      }
 
       let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 `;
 
-      // Add static pages
-      for (const page of staticPages) {
+      // Add fixed routes
+      for (const route of fixedRoutes) {
         sitemapXml += `  <url>
-    <loc>${BASE_URL}${page.loc}</loc>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
+    <loc>${BASE_URL}${route.loc}</loc>
+    <changefreq>${route.changefreq}</changefreq>
+    <priority>${route.priority}</priority>
+  </url>
+`;
+      }
+
+      // Add CMS pages to sitemap
+      for (const page of cmsPages) {
+        const lastmod = page.updated_at 
+          ? new Date(page.updated_at).toISOString().split('T')[0]
+          : today;
+        sitemapXml += `  <url>
+    <loc>${BASE_URL}/${page.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 `;
       }
@@ -227,7 +287,7 @@ export default staticSiteSettings;
       // Also write directly to dist for safety
       fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml);
       
-      console.log(`✅ Generated sitemap.xml with ${staticPages.length} static pages + ${productCount} product pages`);
+      console.log(`✅ Generated sitemap.xml with ${fixedRoutes.length} fixed routes + ${cmsPages.length} CMS pages + ${productCount} product pages`);
 
     } catch (error) {
       console.error("❌ Sitemap generation failed:", error);

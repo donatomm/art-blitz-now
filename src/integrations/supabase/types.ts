@@ -41,6 +41,7 @@ export type Database = {
       pages: {
         Row: {
           content: string
+          content_type: string
           created_at: string
           id: string
           seo_description: string | null
@@ -51,6 +52,7 @@ export type Database = {
         }
         Insert: {
           content?: string
+          content_type?: string
           created_at?: string
           id?: string
           seo_description?: string | null
@@ -61,6 +63,7 @@ export type Database = {
         }
         Update: {
           content?: string
+          content_type?: string
           created_at?: string
           id?: string
           seo_description?: string | null
