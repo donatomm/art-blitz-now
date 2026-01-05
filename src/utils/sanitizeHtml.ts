@@ -33,68 +33,41 @@ export const sanitizeInlineHtml = (text: string): string => {
 };
 
 /**
- * Parse CSS string into a map of selector -> styles
- */
-const parseCSS = (css: string): Record<string, string> => {
-  const rules: Record<string, string> = {};
-  // Match CSS rules: selector { properties }
-  const ruleRegex = /([^{}]+)\{([^{}]+)\}/g;
-  let match;
-  
-  while ((match = ruleRegex.exec(css)) !== null) {
-    const selector = match[1].trim();
-    const properties = match[2].trim();
-    // Only handle simple class selectors for security
-    if (selector.startsWith('.') && !selector.includes(' ')) {
-      const className = selector.slice(1);
-      rules[className] = properties;
-    }
-  }
-  
-  return rules;
-};
-
-/**
- * Apply CSS rules as inline styles to matching elements
- */
-const applyInlineStyles = (html: string, cssRules: Record<string, string>): string => {
-  let result = html;
-  
-  for (const [className, styles] of Object.entries(cssRules)) {
-    // Match elements with this class and add inline styles
-    const classRegex = new RegExp(`class=["']([^"']*\\b${className}\\b[^"']*)["']`, 'gi');
-    result = result.replace(classRegex, (match, classes) => {
-      // Check if style attribute already exists nearby
-      return `${match} style="${styles}"`;
-    });
-  }
-  
-  return result;
-};
-
-/**
  * Process a full HTML document (with <!DOCTYPE>, <html>, <head>, <body>, <style>)
- * Extracts body content, converts embedded CSS to inline styles, and sanitizes
+ * Extracts body content and style block, combines them, and sanitizes
  */
 export const processHtmlDocument = (html: string): string => {
   // 1. Extract body content
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
   const bodyContent = bodyMatch ? bodyMatch[1] : html;
   
-  // 2. Extract style rules from <style> tags
+  // 2. Extract style block from <style> tags (preserve it)
   const styleMatch = html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
-  const cssRules = styleMatch ? parseCSS(styleMatch[1]) : {};
+  const styleBlock = styleMatch ? `<style>${styleMatch[1]}</style>` : '';
   
-  // 3. Apply CSS rules as inline styles
-  const withInlineStyles = applyInlineStyles(bodyContent, cssRules);
+  // 3. Combine style block with body content
+  const combined = styleBlock + bodyContent;
   
-  // 4. Sanitize the result (allows style attribute)
+  // 4. Sanitize with explicit ALLOWED_TAGS including style
+  // Using ALLOWED_TAGS means we must list ALL tags we want to keep
   const configWithStyles = {
-    ...sanitizeConfig,
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style', 'src', 'alt'],
+    FORCE_BODY: true,
+    ALLOWED_TAGS: [
+      'style', 'article', 'section', 'header', 'footer', 'nav', 'aside', 'main',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'p', 'div', 'span', 'br', 'hr',
+      'ul', 'ol', 'li', 'dl', 'dt', 'dd',
+      'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption',
+      'a', 'strong', 'b', 'em', 'i', 'u', 's', 'small', 'mark', 'sub', 'sup',
+      'blockquote', 'pre', 'code', 'kbd', 'samp',
+      'img', 'figure', 'figcaption',
+      'address', 'time', 'abbr', 'cite', 'q',
+    ],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style', 'src', 'alt', 'lang', 'title', 'datetime', 'id'],
+    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onmouseout', 'onfocus', 'onblur', 'onsubmit', 'onkeydown', 'onkeyup', 'onkeypress'],
   };
   
-  return DOMPurify.sanitize(withInlineStyles, configWithStyles);
+  return DOMPurify.sanitize(combined, configWithStyles);
 };
 
 /**
