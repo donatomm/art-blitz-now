@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
 import { usePage } from "@/hooks/usePages";
 import { Skeleton } from "@/components/ui/skeleton";
-import { sanitizeHtml, sanitizeInlineHtml } from "@/utils/sanitizeHtml";
+import { sanitizeHtml, sanitizeInlineHtml, processHtmlDocument, isFullHtmlDocument } from "@/utils/sanitizeHtml";
 
 interface Breadcrumb {
   name: string;
@@ -147,6 +147,12 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
   const processHTML = (html: string): string => {
     // Remove leading markdown heading if present (will be shown separately)
     const withoutHeading = html.replace(/^#\s+[^\n]+\n/, '');
+    
+    // Check if it's a full HTML document with embedded styles
+    if (isFullHtmlDocument(withoutHeading)) {
+      return processHtmlDocument(withoutHeading);
+    }
+    
     // Sanitize to remove scripts and dangerous content
     return sanitizeHtml(withoutHeading);
   };
