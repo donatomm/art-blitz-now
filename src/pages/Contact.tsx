@@ -15,7 +15,7 @@ Ed ho le seguenti domande:
       slug="contatti"
       breadcrumbs={[
         { name: "Home", url: "/" },
-        { name: "Contatti", url: "/contact" },
+        { name: "Contatti", url: "/contatti" },
       ]}
     >
       {/* Contact Buttons */}
