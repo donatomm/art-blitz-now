@@ -41,6 +41,11 @@ const PagesTabContent = () => {
     toast
   } = useToast();
 
+  // Check if content contains significant HTML tags (not just starts with them)
+  const containsSignificantHTML = (str: string): boolean => {
+    return /<(div|p|span|table|ul|ol|h[1-6]|section|article|header|footer|nav|aside|main|form|button|input|textarea|select|label|img|a|br|hr|strong|em|b|i|u|blockquote|pre|code|style)[\s>\/]/i.test(str);
+  };
+
   const handleEditPage = (page: Page) => {
     setEditingPage(page);
     setEditTitle(page.title);
@@ -48,8 +53,8 @@ const PagesTabContent = () => {
     setEditSeoTitle(page.seo_title || "");
     setEditSeoDescription(page.seo_description || "");
     setShowImageUpload(false);
-    // Auto-detect HTML mode if content starts with HTML tags
-    setIsHtmlMode(page.content.trim().startsWith('<'));
+    // Auto-detect HTML mode if content contains HTML tags
+    setIsHtmlMode(containsSignificantHTML(page.content));
   };
 
   const handleSavePage = async () => {
