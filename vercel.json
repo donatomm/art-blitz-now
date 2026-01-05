@@ -3,6 +3,10 @@
     {
       "source": "/product/:slug",
       "destination": "/product/:slug/index.html"
+    },
+    {
+      "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots).*)",
+      "destination": "/index.html"
     }
   ]
 }
