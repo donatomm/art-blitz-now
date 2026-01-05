@@ -246,6 +246,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     ViteImageOptimizer({
+      includePublic: true,
       png: {
         quality: 80,
       },
