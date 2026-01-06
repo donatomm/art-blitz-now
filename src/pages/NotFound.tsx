@@ -23,7 +23,7 @@ const NotFound = () => {
           alt="Elena illustration" 
           className="mx-auto w-32 h-32 rounded-full mb-6"
         />
-        <p className="mb-8 text-xl font-thin leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <p className="mb-8 text-xl font-light leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           La pagina che stai cercando sembra essersi dissolta nell'etere. Prenditi un attimo di respiro, poi lascia che ti riportiamo a casa.
         </p>
         <a 
