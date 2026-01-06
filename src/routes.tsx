@@ -18,6 +18,7 @@ const ColorPalette = lazy(() => import("./pages/ColorPalette"));
 const Sitemap = lazy(() => import("./pages/Sitemap"));
 const Cookies = lazy(() => import("./pages/Cookies"));
 const Contact = lazy(() => import("./pages/Contact"));
+const ImageRename = lazy(() => import("./pages/ImageRename"));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -84,6 +85,10 @@ export const routes: RouteRecord[] = [
         path: "checkout/success",
         element: withSuspense(CheckoutSuccess),
         getStaticPaths: () => ["checkout/success"],
+      },
+      {
+        path: "image-rename",
+        element: withSuspense(ImageRename),
       },
       // Dynamic CMS pages - all pages from database
       // Slug mapping: database slug -> URL path (e.g., "artista" -> /artista)
