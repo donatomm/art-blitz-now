@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { useDebouncedInput } from "@/hooks/useDebouncedInput";
 import ImageUpload from "./ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult, CSVImportMode } from "@/utils/csvProductParser";
@@ -23,7 +24,6 @@ import HelloBarTabContent from "./HelloBarTabContent";
 import MenuTabContent from "./MenuTabContent";
 import { usePages, useUpdatePage, useCreatePage, Page } from "@/hooks/usePages";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
-
 // NavItem interface for menu sync
 interface NavItem {
   label: string;
@@ -74,6 +74,10 @@ const PagesTabContent = () => {
     toast
   } = useToast();
 
+  // Debounced inputs for better INP
+  const debouncedContent = useDebouncedInput(editContent, setEditContent);
+  const debouncedSeoDescription = useDebouncedInput(editSeoDescription, setEditSeoDescription);
+
   const handleEditPage = (page: Page) => {
     setEditingPage(page);
     setEditSlug(page.slug);
@@ -88,6 +92,9 @@ const PagesTabContent = () => {
 
   const handleSavePage = async () => {
     if (!editingPage) return;
+    // Flush debounced values before saving
+    debouncedContent.flushSync();
+    debouncedSeoDescription.flushSync();
     
     const slugChanged = editSlug !== editingPage.slug;
     
@@ -216,7 +223,7 @@ const PagesTabContent = () => {
 
   const handleImageUploaded = (url: string) => {
     const markdownImage = `\n![Immagine](${url})\n`;
-    setEditContent(prev => prev + markdownImage);
+    debouncedContent.onChange(debouncedContent.value + markdownImage);
     setShowImageUpload(false);
     toast({
       title: "Immagine inserita!",
@@ -300,8 +307,8 @@ const PagesTabContent = () => {
               </div>
             )}
             <Textarea 
-              value={editContent} 
-              onChange={e => setEditContent(e.target.value)} 
+              value={debouncedContent.value} 
+              onChange={e => debouncedContent.onChange(e.target.value)} 
               rows={isHtmlMode ? 20 : 12} 
               className="font-mono text-sm" 
               placeholder={isHtmlMode ? "Incolla qui il codice HTML..." : "Scrivi in Markdown..."}
@@ -325,13 +332,13 @@ const PagesTabContent = () => {
               <div>
                 <Label>SEO Description <span className="text-xs text-muted-foreground ml-1">(max 160 caratteri)</span></Label>
                 <Textarea 
-                  value={editSeoDescription} 
-                  onChange={e => setEditSeoDescription(e.target.value)} 
+                  value={debouncedSeoDescription.value} 
+                  onChange={e => debouncedSeoDescription.onChange(e.target.value)} 
                   placeholder="Es: Scopri l'artista Marco De Francesco. Stampe su tela originali a tema marino."
                   rows={2}
                   maxLength={160}
                 />
-                <p className="text-xs text-muted-foreground mt-1">{editSeoDescription.length}/160 caratteri</p>
+                <p className="text-xs text-muted-foreground mt-1">{debouncedSeoDescription.value.length}/160 caratteri</p>
               </div>
             </div>
           </div>
