@@ -189,15 +189,17 @@ export default function ImageRename() {
   }, []);
 
   const downloadXLSX = () => {
-    // Create worksheet data
+    // Create worksheet data with IMAGE formula for Google Sheets preview
     const wsData = [
-      ["Type", "Product Name", "Size", "Current Filename", "New Filename", "Bucket", "Folder", "Full URL"],
+      ["Preview (Google Sheets)", "Type", "Product Name", "Size", "Current Filename", "New Filename", "Is Orphan", "Bucket", "Folder", "Full URL"],
       ...images.map((img) => [
+        `=IMAGE("${img.fullUrl}", 1)`, // Shows thumbnail in Google Sheets
         img.type,
         img.productName,
         img.size,
         img.currentFilename,
         "", // New Filename - user fills this
+        img.productName.includes("orphan") ? "Yes" : "No",
         img.bucket,
         img.folder,
         img.fullUrl,
@@ -208,14 +210,22 @@ export default function ImageRename() {
 
     // Set column widths
     ws["!cols"] = [
+      { wch: 20 }, // Preview
       { wch: 10 }, // Type
       { wch: 30 }, // Product Name
       { wch: 12 }, // Size
       { wch: 35 }, // Current Filename
       { wch: 35 }, // New Filename
+      { wch: 10 }, // Is Orphan
       { wch: 15 }, // Bucket
       { wch: 12 }, // Folder
       { wch: 80 }, // Full URL
+    ];
+
+    // Set row heights for thumbnail visibility (60pt = ~80px)
+    ws["!rows"] = [
+      { hpt: 20 }, // Header row
+      ...images.map(() => ({ hpt: 60 })),
     ];
 
     const wb = XLSX.utils.book_new();
