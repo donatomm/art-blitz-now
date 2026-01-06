@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
+import NotFound from "@/pages/NotFound";
 import { usePage } from "@/hooks/usePages";
 import { getStaticPageBySlug } from "@/hooks/useStaticPages";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -190,22 +191,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
   }
 
   if (!page) {
-    return (
-      <div className="min-h-screen bg-background pt-24 pb-16">
-        <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
-          <ArrowLeft className="h-5 w-5" />
-          <span className="hidden sm:inline">Torna alla Galleria</span>
-        </Link>
-        <main className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl font-bold mb-8">Pagina non trovata</h1>
-            <p className="text-muted-foreground">
-              Il contenuto richiesto non è disponibile.
-            </p>
-          </div>
-        </main>
-      </div>
-    );
+    return <NotFound />;
   }
 
   return (
