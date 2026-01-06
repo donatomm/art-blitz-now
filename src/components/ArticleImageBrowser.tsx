@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Upload, Copy, Check, Loader2, Image } from "lucide-react";
+import { RefreshCw, Upload, Copy, Check, Loader2, Image, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -228,6 +228,33 @@ const ArticleImageBrowser = () => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const handleDelete = async (imageName: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent copy action
+    
+    if (!confirm(`Eliminare "${imageName}"?`)) return;
+
+    try {
+      const { error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .remove([imageName]);
+
+      if (error) throw error;
+
+      setImages(prev => prev.filter(img => img.name !== imageName));
+      toast({
+        title: "Immagine eliminata",
+        description: `"${imageName}" rimossa dal bucket.`,
+      });
+    } catch (error: any) {
+      console.error("[ArticleImageBrowser] Delete error:", error);
+      toast({
+        title: "Errore eliminazione",
+        description: error.message || "Impossibile eliminare l'immagine.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Actions bar */}
@@ -298,12 +325,19 @@ const ArticleImageBrowser = () => {
                 className="w-full h-20 object-cover"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                 {copiedUrl === image.publicUrl ? (
                   <Check className="h-6 w-6 text-green-400" />
                 ) : (
                   <Copy className="h-5 w-5 text-white" />
                 )}
+                <button
+                  onClick={(e) => handleDelete(image.name, e)}
+                  className="p-1 rounded bg-red-500/80 hover:bg-red-600 transition-colors"
+                  title="Elimina immagine"
+                >
+                  <Trash2 className="h-4 w-4 text-white" />
+                </button>
               </div>
               <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1 py-0.5">
                 <p className="text-[10px] text-white truncate">{image.name}</p>
