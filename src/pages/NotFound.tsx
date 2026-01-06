@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import SEO from "@/components/SEO";
+import elenaImage from "@/assets/404-elena.webp";
 
 const NotFound = () => {
   const location = useLocation();
@@ -29,7 +30,7 @@ const NotFound = () => {
         </a>
         <div className="mt-8">
           <img 
-            src="https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/article-images//home404.webp" 
+            src={elenaImage} 
             alt="404 illustration" 
             className="mx-auto max-w-full h-auto rounded-lg"
           />
