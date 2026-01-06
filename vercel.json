@@ -5,6 +5,34 @@
       "destination": "/product/:slug/index.html"
     },
     {
+      "source": "/artista",
+      "destination": "/artista/index.html"
+    },
+    {
+      "source": "/contatti",
+      "destination": "/contatti/index.html"
+    },
+    {
+      "source": "/spedizione",
+      "destination": "/spedizione/index.html"
+    },
+    {
+      "source": "/FAQs",
+      "destination": "/FAQs/index.html"
+    },
+    {
+      "source": "/pricing-policy",
+      "destination": "/pricing-policy/index.html"
+    },
+    {
+      "source": "/storie-fatti-scientifici-polpo",
+      "destination": "/storie-fatti-scientifici-polpo/index.html"
+    },
+    {
+      "source": "/resi-e-rimborsi",
+      "destination": "/resi-e-rimborsi/index.html"
+    },
+    {
       "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots).*)",
       "destination": "/index.html"
     }
