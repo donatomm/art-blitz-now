@@ -204,12 +204,13 @@ const ArticleImageBrowser = () => {
     }
   };
 
-  const copyToClipboard = async (url: string) => {
+  const copyToClipboard = async (url: string, imageName: string) => {
     try {
-      await navigator.clipboard.writeText(url);
+      const imgTag = `<img src="${url}" alt="${imageName}" />`;
+      await navigator.clipboard.writeText(imgTag);
       setCopiedUrl(url);
       toast({
-        title: "URL copiato!",
+        title: "Tag HTML copiato!",
         description: "Incolla nel contenuto HTML.",
       });
       setTimeout(() => setCopiedUrl(null), 2000);
@@ -317,7 +318,7 @@ const ArticleImageBrowser = () => {
                   ? "ring-2 ring-green-500 border-green-500"
                   : "hover:border-primary"
               }`}
-              onClick={() => copyToClipboard(image.publicUrl)}
+              onClick={() => copyToClipboard(image.publicUrl, image.name)}
             >
               <img
                 src={image.publicUrl}
@@ -348,7 +349,7 @@ const ArticleImageBrowser = () => {
       )}
 
       <p className="text-xs text-muted-foreground">
-        Clicca su un'immagine per copiare l'URL negli appunti.
+        Clicca su un'immagine per copiare il tag HTML negli appunti.
       </p>
     </div>
   );
