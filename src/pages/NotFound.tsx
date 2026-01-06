@@ -16,9 +16,13 @@ const NotFound = () => {
         description="La pagina che stai cercando non esiste."
         noindex={true}
       />
-      <div className="text-center max-w-md">
-        <h1 className="mb-6 text-5xl font-light text-gray-700 tracking-wide">404</h1>
-        <p className="mb-8 text-lg font-light leading-relaxed text-gray-600" style={{ fontFamily: 'Georgia, serif' }}>
+      <div className="text-center max-w-md" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <img 
+          src="https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/article-images//whhoops2.webp" 
+          alt="Whoops" 
+          className="mx-auto mb-6 w-48 h-auto"
+        />
+        <p className="mb-8 text-xl font-light leading-relaxed text-gray-600">
           La pagina che stai cercando sembra essersi dissolta nell'etere. Prenditi un attimo di respiro, poi lascia che ti riportiamo a casa.
         </p>
         <a 
