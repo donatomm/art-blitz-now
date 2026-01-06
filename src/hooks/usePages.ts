@@ -50,6 +50,7 @@ export const useUpdatePage = () => {
   return useMutation({
     mutationFn: async ({ 
       id, 
+      slug,
       title, 
       content,
       content_type,
@@ -57,6 +58,7 @@ export const useUpdatePage = () => {
       seo_description 
     }: { 
       id: string; 
+      slug?: string;
       title: string; 
       content: string;
       content_type?: 'markdown' | 'html';
@@ -66,6 +68,9 @@ export const useUpdatePage = () => {
       const updateData: Record<string, any> = { title, content, seo_title, seo_description };
       if (content_type) {
         updateData.content_type = content_type;
+      }
+      if (slug) {
+        updateData.slug = slug;
       }
       
       const { data, error } = await supabase
