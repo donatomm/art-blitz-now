@@ -58,6 +58,7 @@ const PagesTabContent = () => {
   const [editingPage, setEditingPage] = useState<Page | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
+  const [editSlug, setEditSlug] = useState("");
   const [editSeoTitle, setEditSeoTitle] = useState("");
   const [editSeoDescription, setEditSeoDescription] = useState("");
   const [showImageUpload, setShowImageUpload] = useState(false);
@@ -75,6 +76,7 @@ const PagesTabContent = () => {
 
   const handleEditPage = (page: Page) => {
     setEditingPage(page);
+    setEditSlug(page.slug);
     setEditTitle(page.title);
     setEditContent(page.content);
     setEditSeoTitle(page.seo_title || "");
@@ -86,9 +88,23 @@ const PagesTabContent = () => {
 
   const handleSavePage = async () => {
     if (!editingPage) return;
+    
+    const slugChanged = editSlug !== editingPage.slug;
+    
+    // Check for duplicate slug if changed
+    if (slugChanged && pages?.some(p => p.id !== editingPage.id && p.slug.toLowerCase() === editSlug.toLowerCase())) {
+      toast({
+        title: "Errore",
+        description: "Esiste già una pagina con questo slug.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
       await updatePage.mutateAsync({
         id: editingPage.id,
+        slug: slugChanged ? editSlug : undefined,
         title: editTitle,
         content: editContent,
         content_type: isHtmlMode ? 'html' : 'markdown',
@@ -96,9 +112,9 @@ const PagesTabContent = () => {
         seo_description: editSeoDescription || null
       });
 
-      // Sync menu item label if title changed and there's a matching nav item
+      // Sync menu item if title or slug changed
       let menuSynced = false;
-      if (editTitle !== editingPage.title && settings) {
+      if ((editTitle !== editingPage.title || slugChanged) && settings) {
         const navItems = getSettingValue<NavItem[]>(settings, "nav_items", []);
         const matchingIndex = navItems.findIndex(
           item => item.href === `/${editingPage.slug}` || item.href === editingPage.slug
@@ -108,7 +124,8 @@ const PagesTabContent = () => {
           const updatedNavItems = [...navItems];
           updatedNavItems[matchingIndex] = {
             ...updatedNavItems[matchingIndex],
-            label: editTitle
+            label: editTitle,
+            href: `/${editSlug}`
           };
           await updateSetting.mutateAsync({ 
             key: "nav_items", 
@@ -227,6 +244,20 @@ const PagesTabContent = () => {
           <div>
             <Label>Titolo</Label>
             <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} />
+          </div>
+          <div>
+            <Label>Slug (URL)</Label>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">/</span>
+              <Input 
+                value={editSlug} 
+                onChange={e => setEditSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} 
+                placeholder="nome-pagina"
+              />
+            </div>
+            <p className="text-xs text-amber-600 mt-1">
+              ⚠️ Modificare lo slug cambierà l'URL. I vecchi link non funzioneranno più.
+            </p>
           </div>
           <div>
             <div className="flex items-center justify-between mb-2">
