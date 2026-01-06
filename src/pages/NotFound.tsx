@@ -18,6 +18,11 @@ const NotFound = () => {
         noindex={true}
       />
       <div className="text-center max-w-md">
+        <img 
+          src={elenaImage} 
+          alt="Elena illustration" 
+          className="mx-auto w-32 h-32 rounded-full mb-6"
+        />
         <h1 className="mb-6 text-5xl font-light text-gray-700 tracking-wide">404</h1>
         <p className="mb-8 text-lg font-light leading-relaxed text-gray-600" style={{ fontFamily: 'Georgia, serif' }}>
           La pagina che stai cercando sembra essersi dissolta nell'etere. Prenditi un attimo di respiro, poi lascia che ti riportiamo a casa.
@@ -30,7 +35,7 @@ const NotFound = () => {
         </a>
         <div className="mt-8">
           <img 
-            src={elenaImage} 
+            src="https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/article-images//home404.webp" 
             alt="404 illustration" 
             className="mx-auto max-w-full h-auto rounded-lg"
           />
