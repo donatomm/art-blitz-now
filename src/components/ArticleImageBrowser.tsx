@@ -17,6 +17,31 @@ const BUCKET_NAME = "article-images";
 /**
  * Converts an image file to WebP format using Canvas API
  */
+/**
+ * Sanitizes a filename for SEO-friendly URLs
+ */
+const sanitizeFilename = (filename: string): string => {
+  // Remove extension
+  const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+  
+  // Normalize unicode (remove diacritics like è → e)
+  const normalized = nameWithoutExt.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  
+  // Replace spaces and underscores with hyphens
+  // Remove any non-alphanumeric characters except hyphens
+  // Collapse multiple hyphens into one
+  // Trim hyphens from start/end
+  return normalized
+    .replace(/[\s_]+/g, '-')
+    .replace(/[^a-zA-Z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
+};
+
+/**
+ * Converts an image file to WebP format using Canvas API
+ */
 const convertToWebP = (file: File): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     const img = new window.Image();
@@ -164,7 +189,17 @@ const ArticleImageBrowser = () => {
         uploadBlob = await convertToWebP(file);
       }
 
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      // Create SEO-friendly filename from original
+      const baseName = sanitizeFilename(file.name);
+      const desiredFileName = baseName ? `${baseName}.${fileExt}` : `image-${Date.now()}.${fileExt}`;
+      
+      // Check if file already exists to avoid collision
+      const { data: existingFiles } = await supabase.storage
+        .from(BUCKET_NAME)
+        .list("", { search: desiredFileName });
+      
+      const fileExists = existingFiles?.some(f => f.name === desiredFileName);
+      const fileName = fileExists ? `${baseName}-${Date.now()}.${fileExt}` : desiredFileName;
 
       const { data, error } = await supabase.storage
         .from(BUCKET_NAME)
