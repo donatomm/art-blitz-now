@@ -15,6 +15,20 @@ const WEBP_QUALITY = 0.85;
 const MAX_DIMENSION = 2000;
 
 /**
+ * Sanitizes a filename for SEO-friendly URLs
+ */
+const sanitizeFilename = (filename: string): string => {
+  const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+  const normalized = nameWithoutExt.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return normalized
+    .replace(/[\s_]+/g, '-')
+    .replace(/[^a-zA-Z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
+};
+
+/**
  * Converts an image file to WebP format using Canvas API
  * Also resizes if larger than MAX_DIMENSION
  */
@@ -136,8 +150,17 @@ const ImageUpload = ({ label, currentUrl, onUpload, folder }: ImageUploadProps) 
         uploadBlob = await convertToWebP(file);
       }
 
-      // Create unique filename
-      const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      // Create SEO-friendly filename from original
+      const baseName = sanitizeFilename(file.name);
+      const desiredFileName = baseName ? `${baseName}.${fileExt}` : `image-${Date.now()}.${fileExt}`;
+      
+      // Check if file already exists
+      const { data: existingFiles } = await supabase.storage
+        .from("product-images")
+        .list(folder, { search: desiredFileName });
+      
+      const fileExists = existingFiles?.some(f => f.name === desiredFileName);
+      const fileName = `${folder}/${fileExists ? `${baseName}-${Date.now()}.${fileExt}` : desiredFileName}`;
 
       console.log('[ImageUpload] Uploading to:', fileName);
 
