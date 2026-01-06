@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult, CSVImportMode } from "@/utils/csvProductParser";
 import SKUEditor from "./SKUEditor";
 import ImageOptimizer from "./ImageOptimizer";
+import ArticleImageBrowser from "./ArticleImageBrowser";
 import HelloBarTabContent from "./HelloBarTabContent";
 import MenuTabContent from "./MenuTabContent";
 import { usePages, useUpdatePage, useCreatePage, Page } from "@/hooks/usePages";
@@ -1136,8 +1137,19 @@ const AdminPanel = ({
 
             <HelloBarTabContent />
             
-            <TabsContent value="images" className="space-y-4">
-              <ImageOptimizer />
+            <TabsContent value="images" className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="font-medium text-sm">📷 Libreria Immagini Articoli</h3>
+                <p className="text-xs text-muted-foreground">
+                  Carica e gestisci immagini per le pagine HTML. Clicca per copiare l'URL.
+                </p>
+                <ArticleImageBrowser />
+              </div>
+              
+              <div className="border-t pt-4">
+                <h3 className="font-medium text-sm mb-2">🔧 Ottimizza Immagini Prodotti</h3>
+                <ImageOptimizer />
+              </div>
             </TabsContent>
             
           </Tabs>}
