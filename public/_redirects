@@ -1,9 +1,11 @@
+# 301 Permanent Redirects for old URLs
+/artist /artista 301
+/contact /contatti 301
+/shipping /spedizione 301
+/resi-e-rimborsi /resi-rimborsi 301
+
 # Proxy sitemap.xml to dynamic edge function (live database content)
 /sitemap.xml https://xqubydbsoucrwqhddodw.supabase.co/functions/v1/sitemap 200
-
-# Product pages - serve static HTML files with SEO meta tags
-# Files are generated at build time at dist/product/[slug]/index.html
-# The static file takes precedence before the SPA fallback
 
 # SPA fallback - routes without static files go to index.html
 /* /index.html 200
