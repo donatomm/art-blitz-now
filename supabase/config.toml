@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.seo-proxy]
 verify_jwt = false
+
+[functions.trigger-deploy]
+verify_jwt = false
