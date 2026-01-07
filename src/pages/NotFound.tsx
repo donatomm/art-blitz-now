@@ -45,7 +45,7 @@ const NotFound = () => {
         </button>
         
         <p className="mb-4 text-lg font-medium leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-          Oppure prenditi un attimo di respiro, poi lascia che ti riportiamo a casa.
+          Oppure:
         </p>
         
         <a 
