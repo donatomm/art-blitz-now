@@ -3,7 +3,8 @@
     { "source": "/artist", "destination": "/artista", "permanent": true },
     { "source": "/contact", "destination": "/contatti", "permanent": true },
     { "source": "/shipping", "destination": "/spedizione", "permanent": true },
-    { "source": "/resi-e-rimborsi", "destination": "/resi-rimborsi", "permanent": true }
+    { "source": "/resi-e-rimborsi", "destination": "/resi-rimborsi", "permanent": true },
+    { "source": "/Octopus-Facts", "destination": "/storie-fatti-scientifici-polpo", "permanent": true }
   ],
   "rewrites": [
     {

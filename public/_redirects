@@ -3,6 +3,7 @@
 /contact /contatti 301
 /shipping /spedizione 301
 /resi-e-rimborsi /resi-rimborsi 301
+/Octopus-Facts /storie-fatti-scientifici-polpo 301
 
 # Proxy sitemap.xml to dynamic edge function (live database content)
 /sitemap.xml https://xqubydbsoucrwqhddodw.supabase.co/functions/v1/sitemap 200
