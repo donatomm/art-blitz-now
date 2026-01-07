@@ -39,9 +39,9 @@ const NotFound = () => {
           </span>
           <button
             onClick={handleRefresh}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gray-700 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-cta text-cta-foreground font-semibold rounded-md hover:bg-cta/90 transition-colors"
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={18} />
             Aggiorna Pagina
           </button>
         </div>
