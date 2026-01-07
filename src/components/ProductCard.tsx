@@ -93,7 +93,7 @@ const ProductCard = ({
       {/* NEW Badge - top right */}
       {product.is_new && (
         <div className="absolute top-2 right-2 z-10">
-          <span className="inline-block bg-yellow-300 text-black font-bold text-xs px-2 py-1 rounded shadow-lg border-2 border-white">
+          <span className="inline-block bg-cta text-white font-bold text-xs px-2 py-1 rounded shadow-lg border-2 border-white">
             NEW
           </span>
         </div>
