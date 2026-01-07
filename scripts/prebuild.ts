@@ -1,6 +1,9 @@
 /**
- * Prebuild script - Fetches all products from Supabase and saves to JSON
- * This runs before vite build to enable SSG with product data
+ * Prebuild script - Fetches all data from Supabase and generates static files
+ * Run this script BEFORE committing when database content changes:
+ *   npm run prebuild
+ * 
+ * This populates src/generated/*.ts files which SSG uses for static HTML generation.
  */
 
 import * as fs from 'fs';
@@ -9,54 +12,8 @@ import * as path from 'path';
 const SUPABASE_URL = "https://xqubydbsoucrwqhddodw.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdWJ5ZGJzb3VjcndxaGRkb2R3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4Mzc3MTEsImV4cCI6MjA4MDQxMzcxMX0.gf9hyzaMNAolSwlmUzVlkpopoM24jWiyiGuGsL5REnI";
 
-interface ProductSize {
-  dimensions: string;
-  price: number;
-  stripe_product_id?: string;
-  deal_label_enabled?: boolean;
-  deal_label_text?: string;
-  deal_price?: number;
-  mock_room_url?: string;
-  mock_room_label?: string;
-}
-
-interface MockRoom {
-  url: string;
-  label?: string;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  medium: string;
-  description: string;
-  image_url: string;
-  sizes: ProductSize[];
-  display_order: number;
-  deal_label_enabled: boolean;
-  deal_label_text: string;
-  mock_rooms?: MockRoom[];
-  is_active: boolean;
-  is_new?: boolean;
-  slug?: string;
-  tags?: string[];
-  created_at?: string;
-  updated_at?: string;
-}
-
-// Helper to normalize mock_rooms from DB (can be string[] or MockRoom[])
-const normalizeMockRooms = (mockRooms: unknown): MockRoom[] => {
-  if (!Array.isArray(mockRooms)) return [];
-  return mockRooms.map((item) => {
-    if (typeof item === 'string') {
-      return { url: item, label: '' };
-    }
-    return item as MockRoom;
-  });
-};
-
 // Normalize sizes to ensure all fields have defaults
-const normalizeSizes = (sizes: unknown): ProductSize[] => {
+const normalizeSizes = (sizes: unknown) => {
   if (!Array.isArray(sizes)) return [];
   return sizes.map((size: any) => ({
     dimensions: size.dimensions || '',
@@ -70,7 +27,17 @@ const normalizeSizes = (sizes: unknown): ProductSize[] => {
   }));
 };
 
-async function fetchProducts(): Promise<Product[]> {
+// Normalize mock_rooms from DB
+const normalizeMockRooms = (mockRooms: unknown) => {
+  if (!Array.isArray(mockRooms)) return [];
+  return mockRooms.map((item) => {
+    if (typeof item === 'string') return { url: item, label: '' };
+    return item;
+  });
+};
+
+async function fetchProducts() {
+  console.log("🔄 Fetching products...");
   const response = await fetch(
     `${SUPABASE_URL}/rest/v1/products?select=*&order=display_order.asc`,
     {
@@ -82,13 +49,12 @@ async function fetchProducts(): Promise<Product[]> {
   );
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`);
+    throw new Error(`Failed to fetch products: ${response.status}`);
   }
 
-  const data = await response.json();
-
-  // Normalize data (same logic as useProducts)
-  return data.map((item: any) => ({
+  const data = await response.json() as any[];
+  
+  return data.map((item) => ({
     ...item,
     sizes: normalizeSizes(item.sizes),
     deal_label_enabled: item.deal_label_enabled ?? false,
@@ -97,29 +63,136 @@ async function fetchProducts(): Promise<Product[]> {
     mock_rooms: normalizeMockRooms(item.mock_rooms),
     is_active: item.is_active ?? true,
     is_new: item.is_new ?? false,
-  })) as Product[];
+  }));
+}
+
+async function fetchSiteSettings() {
+  console.log("🔄 Fetching site settings...");
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/site_settings?select=key,value`,
+    {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    }
+  );
+
+  let settings: Record<string, any> = {};
+  
+  if (response.ok) {
+    const data = await response.json() as { key: string; value: any }[];
+    for (const item of data) {
+      settings[item.key] = item.value;
+    }
+  }
+
+  // Apply sensible defaults
+  return {
+    hero_title: settings.hero_title || "Opere magnetiche. Uniche. Non per tutti.",
+    hero_subtitle: settings.hero_subtitle || "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.",
+    hero_cta_text: settings.hero_cta_text || "ESPLORA LA COLLEZIONE",
+    hero_image: settings.hero_image || "",
+    trust_bar_items: Array.isArray(settings.trust_bar_items) ? settings.trust_bar_items : [],
+  };
+}
+
+async function fetchPages() {
+  console.log("🔄 Fetching pages...");
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/pages?select=*&order=slug.asc`,
+    {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch pages: ${response.status}`);
+  }
+
+  return await response.json() as any[];
 }
 
 async function main() {
-  console.log('🚀 Prebuild: Fetching products from database...');
+  console.log('🚀 Prebuild: Fetching all data from database...\n');
   
+  const generatedDir = path.join(process.cwd(), 'src', 'generated');
+  fs.mkdirSync(generatedDir, { recursive: true });
+
   try {
-    const products = await fetchProducts();
-    
-    // Ensure directory exists
-    const generatedDir = path.join(process.cwd(), 'src', 'generated');
-    fs.mkdirSync(generatedDir, { recursive: true });
-    
-    // Write products JSON
-    const outputPath = path.join(generatedDir, 'products.json');
-    fs.writeFileSync(outputPath, JSON.stringify(products, null, 2));
-    
-    console.log(`✅ Pre-fetched ${products.length} products to src/generated/products.json`);
-    
-    // Log active products with slugs for verification
-    const activeWithSlugs = products.filter(p => p.is_active && p.slug);
-    console.log(`📄 ${activeWithSlugs.length} active products with slugs ready for SSG`);
-    
+    // Fetch all data in parallel
+    const [products, siteSettings, pages] = await Promise.all([
+      fetchProducts(),
+      fetchSiteSettings(),
+      fetchPages(),
+    ]);
+
+    // Write staticProducts.ts
+    const staticProductsContent = `/**
+ * Static products data for SSG
+ * Auto-generated by prebuild script - DO NOT EDIT MANUALLY
+ * Run "npm run prebuild" to regenerate
+ */
+
+import { Product } from '@/types/product';
+
+export const staticProducts: Product[] = ${JSON.stringify(products, null, 2)};
+
+export default staticProducts;
+`;
+    fs.writeFileSync(path.join(generatedDir, 'staticProducts.ts'), staticProductsContent);
+    console.log(`✅ staticProducts.ts: ${products.length} products`);
+
+    // Write products.json (for sitemap generation)
+    fs.writeFileSync(path.join(generatedDir, 'products.json'), JSON.stringify(products, null, 2));
+
+    // Write staticSiteSettings.ts
+    const staticSiteSettingsContent = `/**
+ * Static site settings data for SSG
+ * Auto-generated by prebuild script - DO NOT EDIT MANUALLY
+ * Run "npm run prebuild" to regenerate
+ */
+
+export interface StaticSiteSettings {
+  hero_title: string;
+  hero_subtitle: string;
+  hero_cta_text: string;
+  hero_image: string;
+  trust_bar_items: string[];
+}
+
+export const staticSiteSettings: StaticSiteSettings = ${JSON.stringify(siteSettings, null, 2)};
+
+export default staticSiteSettings;
+`;
+    fs.writeFileSync(path.join(generatedDir, 'staticSiteSettings.ts'), staticSiteSettingsContent);
+    console.log(`✅ staticSiteSettings.ts: settings loaded`);
+
+    // Write staticPages.ts
+    const staticPagesContent = `/**
+ * Static pages data for SSG
+ * Auto-generated by prebuild script - DO NOT EDIT MANUALLY
+ * Run "npm run prebuild" to regenerate
+ */
+
+import { Page } from '@/hooks/usePages';
+
+export const staticPages: Page[] = ${JSON.stringify(pages, null, 2)};
+
+export default staticPages;
+`;
+    fs.writeFileSync(path.join(generatedDir, 'staticPages.ts'), staticPagesContent);
+    console.log(`✅ staticPages.ts: ${pages.length} pages`);
+
+    // Write pages.json (for sitemap generation)
+    fs.writeFileSync(path.join(generatedDir, 'pages.json'), JSON.stringify(pages, null, 2));
+
+    console.log('\n✅ Prebuild complete! Files ready for commit.');
+    console.log('📦 Run "git add src/generated && git commit" to save changes.');
+
   } catch (error) {
     console.error('❌ Prebuild failed:', error);
     process.exit(1);

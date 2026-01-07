@@ -5,211 +5,25 @@ import { componentTagger } from "lovable-tagger";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 import * as fs from "fs";
 
-const SUPABASE_URL = "https://xqubydbsoucrwqhddodw.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdWJ5ZGJzb3VjcndxaGRkb2R3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4Mzc3MTEsImV4cCI6MjA4MDQxMzcxMX0.gf9hyzaMNAolSwlmUzVlkpopoM24jWiyiGuGsL5REnI";
-
-// Normalize sizes to ensure all fields have defaults
-const normalizeSizes = (sizes: unknown) => {
-  if (!Array.isArray(sizes)) return [];
-  return sizes.map((size: any) => ({
-    dimensions: size.dimensions || '',
-    price: size.price || 0,
-    stripe_product_id: size.stripe_product_id || '',
-    deal_label_enabled: size.deal_label_enabled ?? false,
-    deal_label_text: size.deal_label_text || '',
-    deal_price: size.deal_price || 0,
-    mock_room_url: size.mock_room_url || '',
-    mock_room_label: size.mock_room_label || '',
-  }));
-};
-
-// Normalize mock_rooms from DB
-const normalizeMockRooms = (mockRooms: unknown) => {
-  if (!Array.isArray(mockRooms)) return [];
-  return mockRooms.map((item) => {
-    if (typeof item === 'string') return { url: item, label: '' };
-    return item;
-  });
-};
-
-// Plugin to fetch products and site settings at build time for SSG and generate sitemap
-const prebuildPlugin = () => ({
-  name: "prebuild-products",
-  async buildStart() {
-    const generatedDir = path.join(process.cwd(), 'src', 'generated');
-    fs.mkdirSync(generatedDir, { recursive: true });
-
-    // Fetch products
-    console.log("🔄 Fetching products for SSG...");
-    try {
-      const response = await fetch(
-        `${SUPABASE_URL}/rest/v1/products?select=*&order=display_order.asc`,
-        {
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch products: ${response.status}`);
-      }
-
-      const data = await response.json() as any[];
-      
-      // Normalize products
-      const products = data.map((item) => ({
-        ...item,
-        sizes: normalizeSizes(item.sizes),
-        deal_label_enabled: item.deal_label_enabled ?? false,
-        deal_label_text: item.deal_label_text ?? '',
-        description: item.description ?? '',
-        mock_rooms: normalizeMockRooms(item.mock_rooms),
-        is_active: item.is_active ?? true,
-        is_new: item.is_new ?? false,
-      }));
-
-      // Write TypeScript file for SSG (this is what routes.tsx imports)
-      const staticProductsContent = `/**
- * Static products data for SSG
- * Auto-generated at build time - DO NOT EDIT MANUALLY
+/**
+ * Sitemap generation plugin
+ * Runs after bundle is written to generate sitemap.xml from pre-generated JSON files
+ * 
+ * NOTE: Product/page data is populated by running "npm run prebuild" before building.
+ * The prebuild script fetches from database and writes to src/generated/*.ts files.
  */
-
-import { Product } from '@/types/product';
-
-export const staticProducts: Product[] = ${JSON.stringify(products, null, 2)};
-
-export default staticProducts;
-`;
-      fs.writeFileSync(
-        path.join(generatedDir, 'staticProducts.ts'),
-        staticProductsContent
-      );
-      console.log(`✅ Updated staticProducts.ts with ${products.length} products for SSG`);
-      
-      // Also keep products.json for sitemap generation in writeBundle
-      fs.writeFileSync(
-        path.join(generatedDir, 'products.json'),
-        JSON.stringify(products, null, 2)
-      );
-    } catch (error) {
-      console.error("❌ Products prebuild failed:", error);
-    }
-
-    // Fetch site settings for hero SSG
-    console.log("🔄 Fetching site settings for SSG...");
-    try {
-      const response = await fetch(
-        `${SUPABASE_URL}/rest/v1/site_settings?select=key,value`,
-        {
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-          },
-        }
-      );
-
-      let settings: Record<string, any> = {};
-      
-      if (response.ok) {
-        const data = await response.json() as { key: string; value: any }[];
-        // Transform array of key-value pairs into object
-        for (const item of data) {
-          settings[item.key] = item.value;
-        }
-      }
-
-      // Apply sensible defaults
-      const staticSettings = {
-        hero_title: settings.hero_title || "Opere magnetiche. Uniche. Non per tutti.",
-        hero_subtitle: settings.hero_subtitle || "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.",
-        hero_cta_text: settings.hero_cta_text || "ESPLORA LA COLLEZIONE",
-        hero_image: settings.hero_image || "",
-        trust_bar_items: Array.isArray(settings.trust_bar_items) ? settings.trust_bar_items : [],
-      };
-
-      const staticSiteSettingsContent = `/**
- * Static site settings data for SSG
- * Auto-generated at build time - DO NOT EDIT MANUALLY
- */
-
-export interface StaticSiteSettings {
-  hero_title: string;
-  hero_subtitle: string;
-  hero_cta_text: string;
-  hero_image: string;
-  trust_bar_items: string[];
-}
-
-export const staticSiteSettings: StaticSiteSettings = ${JSON.stringify(staticSettings, null, 2)};
-
-export default staticSiteSettings;
-`;
-      fs.writeFileSync(
-        path.join(generatedDir, 'staticSiteSettings.ts'),
-        staticSiteSettingsContent
-      );
-      console.log(`✅ Updated staticSiteSettings.ts for SSG`);
-    } catch (error) {
-      console.error("❌ Site settings prebuild failed (using defaults):", error);
-      // Don't throw - we have defaults in the file already
-    }
-
-    // Fetch pages for SSG (full content for SEO indexing)
-    console.log("🔄 Fetching pages for SSG...");
-    try {
-      const response = await fetch(
-        `${SUPABASE_URL}/rest/v1/pages?select=*&order=slug.asc`,
-        {
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch pages: ${response.status}`);
-      }
-
-      const pages = await response.json() as any[];
-
-      // Write staticPages.ts for SSG
-      const staticPagesContent = `/**
- * Static pages data for SSG
- * Auto-generated at build time - DO NOT EDIT MANUALLY
- */
-
-import { Page } from '@/hooks/usePages';
-
-export const staticPages: Page[] = ${JSON.stringify(pages, null, 2)};
-
-export default staticPages;
-`;
-      fs.writeFileSync(
-        path.join(generatedDir, 'staticPages.ts'),
-        staticPagesContent
-      );
-      console.log(`✅ Updated staticPages.ts with ${pages.length} pages for SSG`);
-
-      // Save pages.json for sitemap generation
-      fs.writeFileSync(
-        path.join(generatedDir, 'pages.json'),
-        JSON.stringify(pages, null, 2)
-      );
-    } catch (error) {
-      console.error("❌ Pages prebuild failed:", error);
-    }
-  },
+const sitemapPlugin = () => ({
+  name: "generate-sitemap",
   async writeBundle(options: any) {
-    // Generate sitemap.xml after the bundle is written
-    // vite-react-ssg handles product HTML generation, we only do sitemap here
     console.log("🔄 Generating sitemap.xml...");
     try {
-      const productsPath = path.join(process.cwd(), 'src', 'generated', 'products.json');
+      const generatedDir = path.join(process.cwd(), 'src', 'generated');
+      const productsPath = path.join(generatedDir, 'products.json');
+      const pagesPath = path.join(generatedDir, 'pages.json');
+      
+      // Check if generated files exist
       if (!fs.existsSync(productsPath)) {
-        console.log("⚠️ No products.json found, skipping sitemap generation");
+        console.log("⚠️ No products.json found. Run 'npm run prebuild' first.");
         return;
       }
 
@@ -226,8 +40,7 @@ export default staticPages;
         { loc: '/colors', changefreq: 'monthly', priority: '0.3' },
       ];
 
-      // Load CMS pages for sitemap
-      const pagesPath = path.join(process.cwd(), 'src', 'generated', 'pages.json');
+      // Load CMS pages
       let cmsPages: any[] = [];
       if (fs.existsSync(pagesPath)) {
         cmsPages = JSON.parse(fs.readFileSync(pagesPath, 'utf-8'));
@@ -247,7 +60,7 @@ export default staticPages;
 `;
       }
 
-      // Add CMS pages to sitemap
+      // Add CMS pages
       for (const page of cmsPages) {
         const lastmod = page.updated_at 
           ? new Date(page.updated_at).toISOString().split('T')[0]
@@ -280,14 +93,14 @@ export default staticPages;
 
       sitemapXml += '</urlset>';
 
-      // Write to public directory (will be copied to dist during build)
+      // Write to public directory
       const publicDir = path.join(process.cwd(), 'public');
       fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml);
       
-      // Also write directly to dist for safety
+      // Also write directly to dist
       fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml);
       
-      console.log(`✅ Generated sitemap.xml with ${fixedRoutes.length} fixed routes + ${cmsPages.length} CMS pages + ${productCount} product pages`);
+      console.log(`✅ Generated sitemap.xml: ${fixedRoutes.length} fixed + ${cmsPages.length} CMS + ${productCount} products`);
 
     } catch (error) {
       console.error("❌ Sitemap generation failed:", error);
@@ -302,7 +115,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    prebuildPlugin(),
+    sitemapPlugin(),
     react(),
     mode === "development" && componentTagger(),
     ViteImageOptimizer({
@@ -333,12 +146,11 @@ export default defineConfig(({ mode }) => ({
   ssgOptions: {
     script: "async",
     formatting: "none",
-    mock: true,  // Mock browser globals (window, document, localStorage) during SSG
-    dirStyle: "nested",  // Generate /product/slug/index.html for clean URLs
+    mock: true,
+    dirStyle: "nested",
     beastiesOptions: {
       reduceInlineStyles: false,
     },
-    // Debug hook to verify SSG content in build logs
     onPageRendered: (route: string, html: string) => {
       const hasContent = html.includes('<h1') && !html.includes('id="root"></div>');
       console.log(`[SSG] ${route}: ${hasContent ? '✅ Content rendered' : '❌ Empty body'}`);
