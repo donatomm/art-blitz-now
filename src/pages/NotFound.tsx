@@ -29,12 +29,12 @@ const NotFound = () => {
           className="mx-auto w-32 h-32 rounded-full mb-4"
         />
         
-        <p className="mb-3 text-lg font-light leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <p className="mb-3 text-lg font-normal leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           La pagina che stai cercando sembra essersi dissolta nell'etere.
         </p>
         
         <div className="mb-3">
-          <span className="text-gray-600 font-light" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <span className="text-gray-600 font-normal" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             Prova questo:{" "}
           </span>
           <button
@@ -46,7 +46,7 @@ const NotFound = () => {
           </button>
         </div>
         
-        <p className="mb-4 text-lg font-light leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <p className="mb-4 text-lg font-normal leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           Oppure prenditi un attimo di respiro, poi lascia che ti riportiamo a casa.
         </p>
         
