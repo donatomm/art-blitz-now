@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Home } from "lucide-react";
 import SEO from "@/components/SEO";
 import elenaImage from "@/assets/404-elena.webp";
 
@@ -50,9 +50,10 @@ const NotFound = () => {
         
         <a 
           href="/" 
-          className="inline-block px-8 py-3 bg-gray-700 text-white font-medium rounded-md hover:bg-gray-800 transition-colors"
+          className="inline-flex items-center gap-2 px-8 py-3 bg-gray-700 text-white font-medium rounded-md hover:bg-gray-800 transition-colors"
         >
-          Take me home
+          <Home size={18} />
+          Riportami a casa
         </a>
         
         <div className="mt-6">
