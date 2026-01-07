@@ -29,24 +29,22 @@ const NotFound = () => {
           className="mx-auto w-32 h-32 rounded-full mb-4"
         />
         
-        <p className="mb-3 text-lg font-normal leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <p className="mb-3 text-lg font-medium leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           La pagina che stai cercando sembra essersi dissolta nell'etere.
         </p>
         
-        <div className="mb-3">
-          <span className="text-gray-600 font-normal" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            Prova questo:{" "}
-          </span>
-          <button
-            onClick={handleRefresh}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-cta text-cta-foreground font-semibold rounded-md hover:bg-cta/90 transition-colors"
-          >
-            <RefreshCw size={18} />
-            Aggiorna Pagina
-          </button>
-        </div>
+        <p className="mb-2 text-lg font-medium leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          Prova questo:
+        </p>
+        <button
+          onClick={handleRefresh}
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-cta text-cta-foreground font-semibold rounded-md hover:bg-cta/90 transition-colors mb-3"
+        >
+          <RefreshCw size={18} />
+          Aggiorna Pagina
+        </button>
         
-        <p className="mb-4 text-lg font-normal leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <p className="mb-4 text-lg font-medium leading-relaxed text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           Oppure prenditi un attimo di respiro, poi lascia che ti riportiamo a casa.
         </p>
         
