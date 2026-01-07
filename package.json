@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild:products": "tsx scripts/prebuild.ts",
     "dev": "vite",
-    "build": "vite-react-ssg build",
+   "build": "npm run prebuild:products && vite-react-ssg build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
