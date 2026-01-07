@@ -1,0 +1,112 @@
+[
+  {
+    "id": "6a1e6fc6-c3c9-49be-b8f7-f8a97b7dcb35",
+    "slug": "artista",
+    "title": "About Me",
+    "content": "## Chi è Elena?\n\nSono Elena, artista e creatrice di OctoWonders. Ho sempre amato i polpi per la loro straordinaria intelligenza e capacità di adattamento.\n\nLe mie opere combinano l'eleganza del polpo con tecniche artistiche moderne, creando pezzi unici che portano un tocco di meraviglia oceanica nella tua casa.\n\nOgni opera è realizzata a mano con materiali di alta qualità e attenzione ai dettagli.",
+    "content_type": "markdown",
+    "seo_title": "Chi è Elena | OctoWonders Artista",
+    "seo_description": "Scopri Elena, l'artista dietro OctoWonders. Opere d'arte uniche ispirate ai polpi, realizzate a mano con passione.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  },
+  {
+    "id": "3fdc15a1-b291-45dc-b3f3-40b64d929aee",
+    "slug": "contatti",
+    "title": "Contact",
+    "content": "## Contattaci\n\nHai domande? Scrivici!\n\n**Email:** info@octowonders.com\n\n**Orari:** Lun-Ven 9:00-18:00",
+    "content_type": "markdown",
+    "seo_title": "Contatti | OctoWonders",
+    "seo_description": "Contatta OctoWonders per informazioni sui nostri prodotti artistici ispirati ai polpi.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  },
+  {
+    "id": "7b2e8fd7-d4da-4acf-c9g8-h9b75c8ec46",
+    "slug": "FAQs",
+    "title": "FAQs",
+    "content": "## Domande Frequenti\n\n### Come posso ordinare?\nPuoi ordinare direttamente dal nostro sito. Aggiungi i prodotti al carrello e procedi al checkout.\n\n### Quali metodi di pagamento accettate?\nAccettiamo carte di credito/debito tramite Stripe.\n\n### Posso richiedere un'opera personalizzata?\nCertamente! Visita la pagina \"Ordine Personalizzato\" per maggiori informazioni.",
+    "content_type": "markdown",
+    "seo_title": "Domande Frequenti | OctoWonders",
+    "seo_description": "Trova risposte alle domande più comuni su OctoWonders, ordini, pagamenti e spedizioni.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  },
+  {
+    "id": "8c3f9ge8-e5eb-5bdf-d0h9-i0c86d9fd57",
+    "slug": "ordine-personalizzato",
+    "title": "Custom Order",
+    "content": "## Ordine Personalizzato\n\nDesideri un'opera unica creata apposta per te?\n\n### Come funziona\n1. Contattaci con la tua idea\n2. Discutiamo i dettagli insieme\n3. Creo l'opera su misura\n4. Ricevi la tua opera unica\n\n### Prezzi\nI prezzi variano in base alla complessità e alle dimensioni. Contattaci per un preventivo gratuito.",
+    "content_type": "markdown",
+    "seo_title": "Ordine Personalizzato | OctoWonders",
+    "seo_description": "Richiedi un'opera d'arte personalizzata su misura per te. Creazioni uniche ispirate ai polpi.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  },
+  {
+    "id": "9d4g0hf9-f6fc-6ceg-e1i0-j1d97e0ge68",
+    "slug": "pricing-policy",
+    "title": "Pricing Policy",
+    "content": "## Politica dei Prezzi\n\nI nostri prezzi sono trasparenti e includono:\n- Opera d'arte originale\n- Imballaggio protettivo\n- Certificato di autenticità\n\n### Sconti\nOffriamo sconti periodici. Iscriviti alla newsletter per non perdere le promozioni.",
+    "content_type": "markdown",
+    "seo_title": "Politica Prezzi | OctoWonders",
+    "seo_description": "Scopri la nostra politica dei prezzi trasparente. Opere d'arte originali con certificato di autenticità.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  },
+  {
+    "id": "0e5h1ig0-g7gd-7dfh-f2j1-k2e08f1hf79",
+    "slug": "privacy",
+    "title": "Privacy Policy",
+    "content": "## Privacy Policy\n\nLa tua privacy è importante per noi.\n\n### Dati raccolti\nRaccogliamo solo i dati necessari per elaborare gli ordini.\n\n### Utilizzo dei dati\nI tuoi dati non vengono mai venduti a terzi.",
+    "content_type": "markdown",
+    "seo_title": "Privacy Policy | OctoWonders",
+    "seo_description": "Leggi la nostra informativa sulla privacy. Proteggiamo i tuoi dati personali.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  },
+  {
+    "id": "1f6i2jh1-h8he-8egi-g3k2-l3f19g2ig80",
+    "slug": "resi-rimborsi",
+    "title": "Returns and Refunds",
+    "content": "## Resi e Rimborsi\n\n### Politica di reso\nHai 14 giorni dalla ricezione per richiedere un reso.\n\n### Condizioni\n- L'opera deve essere nelle condizioni originali\n- Imballaggio originale incluso\n\n### Rimborsi\nI rimborsi vengono elaborati entro 7 giorni lavorativi.",
+    "content_type": "markdown",
+    "seo_title": "Resi e Rimborsi | OctoWonders",
+    "seo_description": "Informazioni su resi e rimborsi. 14 giorni per restituire il prodotto.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  },
+  {
+    "id": "2g7j3ki2-i9if-9fhj-h4l3-m4g20h3jh91",
+    "slug": "spedizione",
+    "title": "Shipping",
+    "content": "## Spedizione\n\n### Tempi di consegna\n- Italia: 3-5 giorni lavorativi\n- Europa: 7-14 giorni lavorativi\n\n### Costi\n- Italia: €10 (gratis sopra €150)\n- Europa: €25\n\n### Tracciamento\nRiceverai un codice di tracciamento via email.",
+    "content_type": "markdown",
+    "seo_title": "Spedizione | OctoWonders",
+    "seo_description": "Informazioni sulle spedizioni. Consegna in tutta Italia e Europa con tracciamento.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  },
+  {
+    "id": "3h8k4lj3-j0jg-0gik-i5m4-n5h31i4ki02",
+    "slug": "storie-fatti-scientifici-polpo",
+    "title": "Octopus Facts",
+    "content": "## Fatti Scientifici sui Polpi\n\n### Intelligenza straordinaria\nI polpi sono tra gli invertebrati più intelligenti. Possono aprire barattoli, risolvere puzzle e usare strumenti.\n\n### Tre cuori\nI polpi hanno tre cuori: due pompano sangue alle branchie, uno al resto del corpo.\n\n### Mimetismo\nPossono cambiare colore e texture della pelle in millisecondi per mimetizzarsi.\n\n### Otto braccia, mille neuroni\nOgni braccio ha circa 500 milioni di neuroni, permettendo movimenti semi-indipendenti.",
+    "content_type": "markdown",
+    "seo_title": "Fatti Scientifici sui Polpi | OctoWonders",
+    "seo_description": "Scopri curiosità e fatti scientifici affascinanti sui polpi. Intelligenza, anatomia e comportamento.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  },
+  {
+    "id": "4i9l5mk4-k1kh-1hjl-j6n5-o6i42j5lj13",
+    "slug": "terms",
+    "title": "Terms and Conditions",
+    "content": "## Termini e Condizioni\n\n### Accettazione\nUtilizzando questo sito accetti i nostri termini e condizioni.\n\n### Proprietà intellettuale\nTutte le opere sono protette da copyright.\n\n### Responsabilità\nNon siamo responsabili per danni derivanti dall'uso improprio dei prodotti.",
+    "content_type": "markdown",
+    "seo_title": "Termini e Condizioni | OctoWonders",
+    "seo_description": "Leggi i termini e condizioni di utilizzo del sito OctoWonders.",
+    "created_at": "2025-02-03T16:57:10.911918+00:00",
+    "updated_at": "2025-02-03T16:57:10.911918+00:00"
+  }
+]
