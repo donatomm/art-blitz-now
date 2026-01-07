@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Generated static files (regenerated at build time)
+src/generated/staticPages.ts
+src/generated/staticProducts.ts
+src/generated/staticSiteSettings.ts
+src/generated/*.json
