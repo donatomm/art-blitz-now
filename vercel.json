@@ -1,4 +1,10 @@
 {
+  "redirects": [
+    { "source": "/artist", "destination": "/artista", "permanent": true },
+    { "source": "/contact", "destination": "/contatti", "permanent": true },
+    { "source": "/shipping", "destination": "/spedizione", "permanent": true },
+    { "source": "/resi-e-rimborsi", "destination": "/resi-rimborsi", "permanent": true }
+  ],
   "rewrites": [
     {
       "source": "/product/:slug",
@@ -29,8 +35,8 @@
       "destination": "/storie-fatti-scientifici-polpo/index.html"
     },
     {
-      "source": "/resi-e-rimborsi",
-      "destination": "/resi-e-rimborsi/index.html"
+      "source": "/resi-rimborsi",
+      "destination": "/resi-rimborsi/index.html"
     },
     {
       "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots).*)",
