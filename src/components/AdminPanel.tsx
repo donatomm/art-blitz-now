@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon, Save } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon, Save, Rocket } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -646,6 +646,78 @@ const HeroTabContent = () => {
     </TabsContent>
   );
 };
+
+// Deploy Tab Content sub-component
+const DeployTabContent = () => {
+  const [isDeploying, setIsDeploying] = useState(false);
+  const { toast } = useToast();
+
+  const handleDeploy = async () => {
+    setIsDeploying(true);
+    try {
+      const response = await supabase.functions.invoke('trigger-deploy');
+      
+      if (response.error) {
+        throw new Error(response.error.message || 'Deploy failed');
+      }
+
+      toast({
+        title: "🚀 Deploy avviato!",
+        description: "Il sito sarà pubblicato in 1-2 minuti. Controlla Vercel per lo stato."
+      });
+    } catch (error) {
+      console.error('Deploy error:', error);
+      toast({
+        title: "Errore nel deploy",
+        description: error instanceof Error ? error.message : "Impossibile avviare il deploy.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeploying(false);
+    }
+  };
+
+  return (
+    <TabsContent value="deploy" className="space-y-6">
+      <div className="space-y-4">
+        <div className="p-4 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg">
+          <h3 className="font-medium text-green-800 dark:text-green-200 mb-2">🚀 Sincronizza e Pubblica</h3>
+          <p className="text-sm text-green-700 dark:text-green-300 mb-4">
+            Dopo aver modificato prodotti, pagine o impostazioni, clicca il pulsante per pubblicare le modifiche sul sito live.
+          </p>
+          <Button 
+            onClick={handleDeploy} 
+            disabled={isDeploying}
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
+            size="lg"
+          >
+            {isDeploying ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Deploy in corso...
+              </>
+            ) : (
+              <>
+                <Rocket className="mr-2 h-5 w-5" />
+                Sync & Deploy
+              </>
+            )}
+          </Button>
+        </div>
+        
+        <div className="text-xs text-muted-foreground space-y-1">
+          <p><strong>Come funziona:</strong></p>
+          <ol className="list-decimal pl-4 space-y-1">
+            <li>Le modifiche al database sono già salvate</li>
+            <li>Il deploy ricostruisce il sito con i nuovi dati</li>
+            <li>In 1-2 minuti il sito live sarà aggiornato</li>
+          </ol>
+        </div>
+      </div>
+    </TabsContent>
+  );
+};
+
 interface AdminPanelProps {
   products: Product[];
   onProductsChange: (products: Product[]) => void;
@@ -1093,7 +1165,7 @@ const AdminPanel = ({
                   </> : "Accedi"}
               </Button>
             </div> : <Tabs defaultValue="products" className="mt-4">
-            <TabsList className="grid w-full grid-cols-7">
+            <TabsList className="grid w-full grid-cols-8">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
               <TabsTrigger value="skus">SKUs</TabsTrigger>
               <TabsTrigger value="menu">Menu</TabsTrigger>
@@ -1101,6 +1173,7 @@ const AdminPanel = ({
               <TabsTrigger value="hero">Hero</TabsTrigger>
               <TabsTrigger value="pages">Pagine</TabsTrigger>
               <TabsTrigger value="images">Immagini</TabsTrigger>
+              <TabsTrigger value="deploy" className="text-green-600">Deploy</TabsTrigger>
             </TabsList>
             
             <TabsContent value="products" className="space-y-4">
@@ -1189,6 +1262,8 @@ const AdminPanel = ({
                 <ImageOptimizer />
               </div>
             </TabsContent>
+
+            <DeployTabContent />
             
           </Tabs>}
         </SheetContent>
