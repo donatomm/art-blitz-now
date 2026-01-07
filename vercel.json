@@ -40,7 +40,7 @@
       "destination": "/resi-rimborsi/index.html"
     },
     {
-      "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots).*)",
+      "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots|artist|contact|shipping|resi-e-rimborsi|Octopus-Facts).*)",
       "destination": "/index.html"
     }
   ]
