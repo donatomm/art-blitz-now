@@ -16,10 +16,10 @@ interface NavItem {
 }
 
 const defaultNavItems: NavItem[] = [
-  { label: "Autore", href: "/artist", order: 0 },
-  { label: "Regole di Spedizione", href: "/shipping", order: 1 },
+  { label: "Autore", href: "/artista", order: 0 },
+  { label: "Regole di Spedizione", href: "/spedizione", order: 1 },
   { label: "Politica Prezzi", href: "/pricing-policy", order: 2 },
-  { label: "Contatti", href: "/contact", order: 3 },
+  { label: "Contatti", href: "/contatti", order: 3 },
 ];
 
 interface NavigationProps {

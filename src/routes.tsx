@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { Navigate } from "react-router-dom";
 import type { RouteRecord } from "vite-react-ssg";
 import RootLayout from "./components/RootLayout";
 
@@ -89,6 +90,27 @@ export const routes: RouteRecord[] = [
       {
         path: "image-rename",
         element: withSuspense(ImageRename),
+      },
+      // Legacy URL redirects (for external links, bookmarks, search engines)
+      {
+        path: "artist",
+        element: <Navigate to="/artista" replace />,
+      },
+      {
+        path: "contact",
+        element: <Navigate to="/contatti" replace />,
+      },
+      {
+        path: "shipping",
+        element: <Navigate to="/spedizione" replace />,
+      },
+      {
+        path: "resi-e-rimborsi",
+        element: <Navigate to="/resi-rimborsi" replace />,
+      },
+      {
+        path: "Octopus-Facts",
+        element: <Navigate to="/storie-fatti-scientifici-polpo" replace />,
       },
       // Dynamic CMS pages - all pages from database
       // Slug mapping: database slug -> URL path (e.g., "artista" -> /artista)
