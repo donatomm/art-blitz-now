@@ -128,8 +128,10 @@ export const SEO = ({
   const metaImage = image || DEFAULT_IMAGE;
   const absoluteImage = metaImage.startsWith('http') ? metaImage : `${BASE_URL}${metaImage}`;
 
-  // URL
-  const canonicalUrl = url ? `${BASE_URL}${url}` : BASE_URL;
+  // Canonical URL - always absolute, strip query/hash, trailing slash for homepage
+  const canonicalUrl = url 
+    ? `${BASE_URL}${url.split('?')[0].split('#')[0]}`
+    : `${BASE_URL}/`;
 
   // Determine JSON-LD schema
   let jsonLd;
