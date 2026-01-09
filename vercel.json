@@ -43,5 +43,16 @@
       "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots|artist|contact|shipping|resi-e-rimborsi|Octopus-Facts).*)",
       "destination": "/index.html"
     }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
+        }
+      ]
+    }
   ]
 }
