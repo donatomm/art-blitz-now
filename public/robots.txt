@@ -13,5 +13,9 @@ Allow: /
 User-agent: *
 Allow: /
 
+# Note: UUID product URLs (/product/{uuid}) are handled via 301 redirects
+# in the application code (src/pages/Product.tsx) to their canonical slug URLs.
+# robots.txt patterns cannot reliably distinguish UUIDs from valid slug URLs.
+
 # Sitemap (auto-regenerated when products change)
 Sitemap: https://octowonders.com/sitemap.xml
