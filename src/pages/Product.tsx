@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { getStaticProducts } from "@/hooks/useStaticProducts";
 import { useDefaultPrices, getDefaultPrice, normalizeDimension } from "@/hooks/useDefaultPrices";
@@ -78,7 +78,15 @@ const Product = () => {
   }, [slug]);
   
   // Find product by slug first, fallback to ID for backwards compatibility
-  const product = products?.find(p => p.slug === slug) || products?.find(p => p.id === slug);
+  const productBySlug = products?.find(p => p.slug === slug);
+  const productById = !productBySlug ? products?.find(p => p.id === slug) : null;
+  const product = productBySlug || productById;
+  
+  // 301 redirect: if accessed by UUID but product has a slug, redirect to canonical slug URL
+  // This prevents duplicate content and consolidates SEO signals
+  if (productById && productById.slug && slug !== productById.slug) {
+    return <Navigate to={`/product/${productById.slug}`} replace />;
+  }
 
   // Use mock rooms from sizes array (new unified approach) or fallback to legacy mock_rooms
   const mockRooms = product?.sizes
