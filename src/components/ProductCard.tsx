@@ -21,6 +21,9 @@ const ProductCard = ({
   editMode = false,
   onProductUpdate
 }: ProductCardProps) => {
+  // Don't render card if product has no slug - prevents UUID links
+  if (!product.slug) return null;
+
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   
@@ -124,7 +127,7 @@ const ProductCard = ({
           {imageContent}
         </div>
       ) : (
-        <Link to={`/product/${product.slug || product.id}`} className="relative overflow-hidden block">
+        <Link to={`/product/${product.slug}`} className="relative overflow-hidden block">
           {imageContent}
         </Link>
       )}
@@ -138,7 +141,7 @@ const ProductCard = ({
               <span className="text-muted-foreground">|</span>
               <span className="text-muted-foreground mx-px">{sizePrices}</span>
               <span className="text-muted-foreground">|</span>
-              <Link to={`/product/${product.slug || product.id}#acquista`}>
+              <Link to={`/product/${product.slug}#acquista`}>
                 <Button 
                   variant="cta"
                   size="sm" 

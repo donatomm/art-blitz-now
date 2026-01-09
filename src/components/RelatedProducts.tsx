@@ -18,11 +18,12 @@ const RelatedProducts = ({
     return a.tags.some(tag => b.tags?.includes(tag));
   };
 
-  // Filter related products by matching tags
+  // Filter related products by matching tags (only include products with slugs)
   const relatedProducts = allProducts
     .filter(p => 
       p.id !== currentProduct.id && 
       p.is_active &&
+      p.slug && // Only include products with slugs
       hasMatchingTags(p, currentProduct) &&
       !p.name.toLowerCase().includes("coming soon") &&
       !p.name.toLowerCase().includes("in arrivo")
@@ -36,6 +37,7 @@ const RelatedProducts = ({
         .filter(p => 
           p.id !== currentProduct.id && 
           p.is_active &&
+          p.slug && // Only include products with slugs
           !p.name.toLowerCase().includes("coming soon") &&
           !p.name.toLowerCase().includes("in arrivo")
         )
@@ -62,7 +64,7 @@ const RelatedProducts = ({
           return (
             <Link
               key={product.id}
-              to={`/product/${product.slug || product.id}`}
+              to={`/product/${product.slug}`}
               className="group overflow-hidden rounded-lg bg-card border border-border hover:border-gold transition-colors"
             >
               <div className="relative aspect-square overflow-hidden">

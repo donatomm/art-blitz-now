@@ -302,13 +302,13 @@ Grazie!`);
         title={product.name}
         description={product.description || `${product.name} - ${product.medium}. Stampa su tela di alta qualità. Da €${minPrice}. Spedizione gratuita in Italia.`}
         image={product.image_url}
-        url={`/product/${product.slug || product.id}`}
+        url={`/product/${product.slug}`}
         type="product"
         product={product}
         breadcrumbs={[
           { name: "Home", url: "/" },
           { name: "Opere d'Arte", url: "/#gallery" },
-          { name: product.name, url: `/product/${product.slug || product.id}` },
+          { name: product.name, url: `/product/${product.slug}` },
         ]}
       />
       <Navigation />
