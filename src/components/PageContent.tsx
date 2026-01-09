@@ -173,13 +173,13 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
   // Only show loading skeleton if no static data (shouldn't happen for SSG pages)
   if (isLoading && !staticPage) {
     return (
-      <div className="min-h-screen bg-background pt-24 pb-16">
+      <div className="min-h-screen bg-background pt-16 pb-16">
         <Link to="/" className="fixed top-4 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-75 hover:opacity-100 hover:scale-105 hover:shadow-xl">
           <ArrowLeft className="h-5 w-5" />
           <span className="hidden sm:inline">Torna alla Galleria</span>
         </Link>
         <main className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto space-y-4">
+          <div className="max-w-4xl space-y-4">
             <Skeleton className="h-10 w-64" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
@@ -195,7 +195,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-16">
+    <div className="min-h-screen bg-background pt-16 pb-16">
       <SEO 
         title={page.seo_title || page.title}
         description={page.seo_description || `${page.title} - OctoWonders`}
@@ -209,8 +209,8 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
         <span className="hidden sm:inline">Torna alla Galleria</span>
       </Link>
       
-      <main className="container mx-auto px-4 pt-24 pb-16">
-        <div className="max-w-3xl mx-auto">
+      <main className="container mx-auto px-4 pt-8 pb-16">
+        <div className="max-w-4xl">
           {!isHTMLContent && <h1 className="text-4xl font-bold mb-8">{page.title}</h1>}
           <div className={isFullHtmlDocument(page.content) ? "" : "prose prose-lg max-w-none"}>
             {isHTMLContent ? (
