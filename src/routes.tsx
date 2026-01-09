@@ -20,6 +20,7 @@ const Sitemap = lazy(() => import("./pages/Sitemap"));
 const Cookies = lazy(() => import("./pages/Cookies"));
 const Contact = lazy(() => import("./pages/Contact"));
 const ImageRename = lazy(() => import("./pages/ImageRename"));
+const ImageRenamerTool = lazy(() => import("./pages/ImageRenamerTool"));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -90,6 +91,10 @@ export const routes: RouteRecord[] = [
       {
         path: "image-rename",
         element: withSuspense(ImageRename),
+      },
+      {
+        path: "image-rename-tool",
+        element: withSuspense(ImageRenamerTool),
       },
       // Legacy URL redirects (for external links, bookmarks, search engines)
       {
