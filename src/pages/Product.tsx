@@ -323,9 +323,9 @@ Grazie!`);
         )}
 
         {/* Product Name - Prominent display */}
-        <h1 className="w-full text-3xl md:text-4xl font-bold text-foreground mb-4 tracking-wide mx-[25px] my-0">
-          {product.name}
-        </h1>
+          <h1 className="w-full text-3xl md:text-4xl font-bold text-foreground mb-4 tracking-wide text-center">
+            {product.name}
+          </h1>
 
         {/* Product Description - Truncated on mobile with Read more */}
         {product.description && (
