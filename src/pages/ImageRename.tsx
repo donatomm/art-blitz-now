@@ -8,6 +8,7 @@ import * as XLSX from "xlsx";
 interface ImageEntry {
   type: "Artwork" | "Mockroom" | "Article";
   productName: string;
+  productSlug: string;
   size: string;
   currentFilename: string;
   bucket: string;
@@ -23,6 +24,7 @@ interface ProductSize {
 interface Product {
   id: string;
   name: string;
+  slug: string;
   image_url: string;
   sizes: ProductSize[];
   display_order: number;
@@ -55,7 +57,7 @@ export default function ImageRename() {
       // 1. Fetch all products ordered by display_order
       const { data: products, error: productsError } = await supabase
         .from("products")
-        .select("id, name, image_url, sizes, display_order")
+        .select("id, name, slug, image_url, sizes, display_order")
         .order("display_order", { ascending: true });
 
       if (productsError) throw productsError;
@@ -71,6 +73,7 @@ export default function ImageRename() {
           entries.push({
             type: "Artwork",
             productName: typedProduct.name,
+            productSlug: typedProduct.slug || "",
             size: "",
             currentFilename: getFilenameFromUrl(typedProduct.image_url),
             bucket: "product-images",
@@ -86,6 +89,7 @@ export default function ImageRename() {
             entries.push({
               type: "Mockroom",
               productName: typedProduct.name,
+              productSlug: typedProduct.slug || "",
               size: sizeEntry.dimensions || "",
               currentFilename: getFilenameFromUrl(sizeEntry.mock_room_url),
               bucket: "product-images",
@@ -113,6 +117,7 @@ export default function ImageRename() {
             entries.push({
               type: "Article",
               productName: "(no product)",
+              productSlug: "",
               size: "",
               currentFilename: file.name,
               bucket: "article-images",
@@ -148,6 +153,7 @@ export default function ImageRename() {
           entries.push({
             type: "Artwork",
             productName: "(orphan - not linked)",
+            productSlug: "",
             size: "",
             currentFilename: file.name,
             bucket: "product-images",
@@ -166,6 +172,7 @@ export default function ImageRename() {
           entries.push({
             type: "Mockroom",
             productName: "(orphan - not linked)",
+            productSlug: "",
             size: "",
             currentFilename: file.name,
             bucket: "product-images",
@@ -191,11 +198,12 @@ export default function ImageRename() {
   const downloadXLSX = () => {
     // Create worksheet data with IMAGE formula for Google Sheets preview
     const wsData = [
-      ["Preview (Google Sheets)", "Type", "Product Name", "Size", "Current Filename", "New Filename", "Is Orphan", "Bucket", "Folder", "Full URL"],
+      ["Preview (Google Sheets)", "Type", "Product Name", "Product Slug", "Size", "Current Filename", "New Filename", "Is Orphan", "Bucket", "Folder", "Full URL"],
       ...images.map((img) => [
         `=IMAGE("${img.fullUrl}", 1)`, // Shows thumbnail in Google Sheets
         img.type,
         img.productName,
+        img.productSlug,
         img.size,
         img.currentFilename,
         "", // New Filename - user fills this
@@ -213,6 +221,7 @@ export default function ImageRename() {
       { wch: 20 }, // Preview
       { wch: 10 }, // Type
       { wch: 30 }, // Product Name
+      { wch: 30 }, // Product Slug
       { wch: 12 }, // Size
       { wch: 35 }, // Current Filename
       { wch: 35 }, // New Filename
@@ -294,6 +303,7 @@ export default function ImageRename() {
                   <th className="text-left p-2">Preview</th>
                   <th className="text-left p-2">Type</th>
                   <th className="text-left p-2">Product Name</th>
+                  <th className="text-left p-2">Slug</th>
                   <th className="text-left p-2">Size</th>
                   <th className="text-left p-2">Current Filename</th>
                 </tr>
@@ -323,6 +333,7 @@ export default function ImageRename() {
                       </span>
                     </td>
                     <td className="p-2 font-medium">{img.productName}</td>
+                    <td className="p-2 font-mono text-xs">{img.productSlug || "-"}</td>
                     <td className="p-2">{img.size || "-"}</td>
                     <td className="p-2 font-mono text-xs truncate max-w-[200px]">
                       {img.currentFilename}
