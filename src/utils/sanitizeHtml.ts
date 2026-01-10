@@ -101,8 +101,9 @@ export const processHtmlDocument = (html: string): string => {
       'blockquote', 'pre', 'code', 'kbd', 'samp',
       'img', 'figure', 'figcaption',
       'address', 'time', 'abbr', 'cite', 'q',
+      'audio', 'source', 'video', 'track',
     ],
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style', 'src', 'alt', 'lang', 'title', 'datetime', 'id'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style', 'src', 'alt', 'lang', 'title', 'datetime', 'id', 'controls', 'preload', 'autoplay', 'loop', 'muted', 'type'],
     FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onmouseout', 'onfocus', 'onblur', 'onsubmit', 'onkeydown', 'onkeyup', 'onkeypress'],
   };
   
