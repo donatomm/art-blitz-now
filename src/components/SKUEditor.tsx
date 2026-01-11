@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileSpreadsheet, Save, RotateCcw } from "lucide-react";
+import { FileSpreadsheet, Save, RotateCcw, BadgeX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDefaultPrices, getDefaultPrice } from "@/hooks/useDefaultPrices";
 import {
@@ -174,6 +174,34 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     });
   };
 
+  // Clear all offers from all products
+  const handleClearAllOffers = () => {
+    const updatedProducts = products.map(product => {
+      // Update all sizes: disable offer, set deal_price = price, clear deal_label_text
+      const newSizes = product.sizes.map(size => ({
+        ...size,
+        deal_label_enabled: false,
+        deal_price: size.price, // Copy current price to deal_price
+        deal_label_text: '',
+      }));
+      
+      // Also reset legacy product-level deal fields
+      return {
+        ...product,
+        sizes: newSizes,
+        deal_label_enabled: false,
+        deal_label_text: 'OFFERTA DEL GIORNO, scade h20:00', // Reset to default
+      };
+    });
+    
+    onProductsChange(updatedProducts);
+    
+    toast({
+      title: "Offerte rimosse",
+      description: `Tutte le offerte sono state rimosse da ${products.length} prodotti.`,
+    });
+  };
+
   const filteredProducts = selectedDimension ? getProductsForDimension(selectedDimension) : [];
 
   // Group SKUs by normalized dimension
@@ -255,6 +283,40 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
               <AlertDialogCancel>Annulla</AlertDialogCancel>
               <AlertDialogAction onClick={handleResetToDefault}>
                 Conferma Reset
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="flex-1 border-orange-300 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+            >
+              <BadgeX className="mr-2 h-4 w-4" />
+              Rimuovi Offerte
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Conferma rimozione offerte</AlertDialogTitle>
+              <AlertDialogDescription className="space-y-2">
+                <span className="block">Sei sicuro di voler rimuovere tutte le offerte attive? Questa azione:</span>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Disattiverà tutte le etichette offerta</li>
+                  <li>Imposterà il prezzo offerta uguale al prezzo corrente</li>
+                  <li>Cancellerà tutti i testi delle offerte</li>
+                </ul>
+                <span className="block font-medium">I prezzi dei prodotti rimarranno invariati.</span>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annulla</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleClearAllOffers}
+                className="bg-orange-600 hover:bg-orange-700"
+              >
+                Conferma Rimozione
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
