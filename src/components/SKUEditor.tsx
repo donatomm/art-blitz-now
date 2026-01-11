@@ -43,7 +43,7 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
   
   // Bulk offer creation state - discounts per dimension
   const [bulkOfferOpen, setBulkOfferOpen] = useState(false);
-  const [dimensionDiscounts, setDimensionDiscounts] = useState<Map<string, number>>(new Map());
+  const [dimensionOfferPrices, setDimensionOfferPrices] = useState<Map<string, number | null>>(new Map());
   const [bulkDealLabelText, setBulkDealLabelText] = useState("OFFERTA DEL GIORNO, scade h20:00");
 
   const getSkuKey = (productId: string, sizeIndex: number) => `${productId}-${sizeIndex}`;
@@ -217,29 +217,29 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     });
   };
 
-  // Initialize dimension discounts when dialog opens
+  // Initialize dimension offer prices when dialog opens
   const handleOpenBulkOffer = (open: boolean) => {
     if (open) {
-      // Initialize with all dimensions set to 0
-      const initialDiscounts = new Map<string, number>();
-      sortedDimensions.forEach(dim => initialDiscounts.set(dim, 0));
-      setDimensionDiscounts(initialDiscounts);
+      // Initialize with all dimensions set to null (no offer)
+      const initialPrices = new Map<string, number | null>();
+      sortedDimensions.forEach(dim => initialPrices.set(dim, null));
+      setDimensionOfferPrices(initialPrices);
     }
     setBulkOfferOpen(open);
   };
 
-  const handleDimensionDiscountChange = (dimension: string, discount: number) => {
-    setDimensionDiscounts(prev => new Map(prev).set(dimension, discount));
+  const handleDimensionOfferPriceChange = (dimension: string, offerPrice: number | null) => {
+    setDimensionOfferPrices(prev => new Map(prev).set(dimension, offerPrice));
   };
 
-  // Apply bulk offer with per-dimension discounts
+  // Apply bulk offer with per-dimension offer prices
   const handleApplyBulkOffer = () => {
-    // Check if at least one discount is set
-    const hasAnyDiscount = Array.from(dimensionDiscounts.values()).some(d => d > 0);
-    if (!hasAnyDiscount) {
+    // Check if at least one offer price is set
+    const hasAnyOffer = Array.from(dimensionOfferPrices.values()).some(p => p !== null && p > 0);
+    if (!hasAnyOffer) {
       toast({
         title: "Errore",
-        description: "Inserisci almeno uno sconto valido (maggiore di 0).",
+        description: "Inserisci almeno un prezzo offerta valido.",
         variant: "destructive",
       });
       return;
@@ -251,15 +251,15 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     const updatedProducts = products.map(product => {
       const newSizes = product.sizes.map(size => {
         const normalizedDim = normalizeDimension(size.dimensions);
-        const discount = dimensionDiscounts.get(normalizedDim) || 0;
+        const offerPrice = dimensionOfferPrices.get(normalizedDim);
         
-        // Only apply if discount > 0 and price is greater than discount
-        if (discount > 0 && size.price > discount) {
+        // Only apply if offer price is set and less than current price
+        if (offerPrice !== null && offerPrice > 0 && offerPrice < size.price) {
           skuCount++;
           return {
             ...size,
             deal_label_enabled: true,
-            deal_price: size.price - discount,
+            deal_price: offerPrice,
             deal_label_text: labelText,
           };
         }
@@ -279,16 +279,16 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     
     onProductsChange(updatedProducts);
     setBulkOfferOpen(false);
-    setDimensionDiscounts(new Map());
+    setDimensionOfferPrices(new Map());
     
     toast({
       title: "Offerte applicate",
-      description: `Sconti applicati a ${skuCount} SKU.`,
+      description: `Offerte applicate a ${skuCount} SKU.`,
     });
   };
 
-  // Count how many discounts are set
-  const activeDiscountCount = Array.from(dimensionDiscounts.values()).filter(d => d > 0).length;
+  // Count how many offer prices are set
+  const activeOfferCount = Array.from(dimensionOfferPrices.values()).filter(p => p !== null && p > 0).length;
 
   const filteredProducts = selectedDimension ? getProductsForDimension(selectedDimension) : [];
 
@@ -419,45 +419,42 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
               Crea Offerte
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>Crea offerte per dimensione</DialogTitle>
               <DialogDescription>
-                Imposta uno sconto fisso per ogni dimensione (SKU). Lo sconto sarà sottratto dal prezzo corrente.
+                Inserisci il prezzo offerta per ogni SKU. Lascia vuoto per non applicare offerta.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Sconti per dimensione (€)</Label>
                 <div className="border rounded-lg overflow-hidden max-h-64 overflow-y-auto">
-                  <div className="grid grid-cols-2 gap-0">
-                    <div className="bg-muted px-3 py-1.5 text-xs font-semibold border-b border-r sticky top-0">DIMENSIONE</div>
-                    <div className="bg-muted px-3 py-1.5 text-xs font-semibold border-b sticky top-0">SCONTO €</div>
+                  <div className="grid grid-cols-3 gap-0">
+                    <div className="bg-muted px-3 py-1.5 text-xs font-semibold border-b border-r sticky top-0">SKU</div>
+                    <div className="bg-muted px-3 py-1.5 text-xs font-semibold border-b border-r sticky top-0">Prezzo Attuale</div>
+                    <div className="bg-muted px-3 py-1.5 text-xs font-semibold border-b sticky top-0">Prezzo Offerta</div>
                     {sortedDimensions.map((dim, idx) => (
                       <div key={dim} className="contents">
-                        <div className={`px-3 py-2 text-sm font-medium border-r flex items-center ${idx < sortedDimensions.length - 1 ? 'border-b' : ''}`}>
+                        <div className={`px-3 py-2 text-sm font-medium border-r ${idx < sortedDimensions.length - 1 ? 'border-b' : ''}`}>
                           {dim}
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            (€{masterPrices.get(dim) || 0})
-                          </span>
+                        </div>
+                        <div className={`px-3 py-2 text-sm text-muted-foreground border-r ${idx < sortedDimensions.length - 1 ? 'border-b' : ''}`}>
+                          €{masterPrices.get(dim) || 0}
                         </div>
                         <div className={`px-3 py-1.5 ${idx < sortedDimensions.length - 1 ? 'border-b' : ''}`}>
                           <Input
                             type="number"
                             min={0}
-                            value={dimensionDiscounts.get(dim) || ''}
-                            onChange={(e) => handleDimensionDiscountChange(dim, Number(e.target.value))}
+                            value={dimensionOfferPrices.get(dim) ?? ''}
+                            onChange={(e) => handleDimensionOfferPriceChange(dim, e.target.value ? Number(e.target.value) : null)}
                             className="h-7 text-sm w-20"
-                            placeholder="0"
+                            placeholder="-"
                           />
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Lascia 0 per non applicare sconto a quella dimensione.
-                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="deal-label">Testo etichetta offerta</Label>
@@ -478,9 +475,9 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
               <Button 
                 onClick={handleApplyBulkOffer}
                 className="bg-green-600 hover:bg-green-700"
-                disabled={activeDiscountCount === 0}
+                disabled={activeOfferCount === 0}
               >
-                Applica ({activeDiscountCount} dimensioni)
+                Applica ({activeOfferCount} dimensioni)
               </Button>
             </DialogFooter>
           </DialogContent>
