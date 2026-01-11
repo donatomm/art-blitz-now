@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileSpreadsheet, Save, RotateCcw, BadgeX } from "lucide-react";
+import { FileSpreadsheet, Save, RotateCcw, BadgeX, BadgePercent } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useDefaultPrices, getDefaultPrice } from "@/hooks/useDefaultPrices";
 import {
@@ -30,6 +40,11 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
   const [localPrices, setLocalPrices] = useState<Map<string, number>>(new Map());
   const [hasChanges, setHasChanges] = useState(false);
   const [selectedDimension, setSelectedDimension] = useState<string | null>(null);
+  
+  // Bulk offer creation state
+  const [bulkOfferOpen, setBulkOfferOpen] = useState(false);
+  const [bulkDiscountAmount, setBulkDiscountAmount] = useState<number>(0);
+  const [bulkDealLabelText, setBulkDealLabelText] = useState("OFFERTA DEL GIORNO, scade h20:00");
 
   const getSkuKey = (productId: string, sizeIndex: number) => `${productId}-${sizeIndex}`;
 
@@ -202,6 +217,54 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
     });
   };
 
+  // Apply bulk offer to all SKUs
+  const handleApplyBulkOffer = () => {
+    if (bulkDiscountAmount <= 0) {
+      toast({
+        title: "Errore",
+        description: "Inserisci uno sconto valido (maggiore di 0).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const labelText = bulkDealLabelText.trim() || "OFFERTA DEL GIORNO, scade h20:00";
+    let skuCount = 0;
+
+    const updatedProducts = products.map(product => {
+      const newSizes = product.sizes.map(size => {
+        // Only apply if price is greater than discount
+        if (size.price > bulkDiscountAmount) {
+          skuCount++;
+          return {
+            ...size,
+            deal_label_enabled: true,
+            deal_price: size.price - bulkDiscountAmount,
+            deal_label_text: labelText,
+          };
+        }
+        return size;
+      });
+      
+      // Also set legacy product-level deal fields
+      return {
+        ...product,
+        sizes: newSizes,
+        deal_label_enabled: true,
+        deal_label_text: labelText,
+      };
+    });
+    
+    onProductsChange(updatedProducts);
+    setBulkOfferOpen(false);
+    setBulkDiscountAmount(0);
+    
+    toast({
+      title: "Offerte applicate",
+      description: `Sconto di €${bulkDiscountAmount} applicato a ${skuCount} SKU.`,
+    });
+  };
+
   const filteredProducts = selectedDimension ? getProductsForDimension(selectedDimension) : [];
 
   // Group SKUs by normalized dimension
@@ -321,6 +384,64 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        <Dialog open={bulkOfferOpen} onOpenChange={setBulkOfferOpen}>
+          <DialogTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="flex-1 border-green-300 text-green-600 hover:bg-green-50 hover:text-green-700"
+            >
+              <BadgePercent className="mr-2 h-4 w-4" />
+              Crea Offerte
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Crea offerte su tutti gli SKU</DialogTitle>
+              <DialogDescription>
+                Applica uno sconto fisso a tutti gli SKU. Il prezzo offerta sarà calcolato come: prezzo corrente - sconto.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="discount-amount">Sconto fisso (€)</Label>
+                <Input
+                  id="discount-amount"
+                  type="number"
+                  min={0}
+                  value={bulkDiscountAmount || ''}
+                  onChange={(e) => setBulkDiscountAmount(Number(e.target.value))}
+                  placeholder="Es: 10"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Questo importo verrà sottratto dal prezzo di ogni SKU.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="deal-label">Testo etichetta offerta</Label>
+                <Input
+                  id="deal-label"
+                  type="text"
+                  value={bulkDealLabelText}
+                  onChange={(e) => setBulkDealLabelText(e.target.value)}
+                  placeholder="Es: OFFERTA DEL GIORNO"
+                  maxLength={100}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setBulkOfferOpen(false)}>
+                Annulla
+              </Button>
+              <Button 
+                onClick={handleApplyBulkOffer}
+                className="bg-green-600 hover:bg-green-700"
+                disabled={bulkDiscountAmount <= 0}
+              >
+                Applica a tutti gli SKU
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         {hasChanges && (
           <Button onClick={handleSaveAll} className="flex-1">
             <Save className="mr-2 h-4 w-4" />
