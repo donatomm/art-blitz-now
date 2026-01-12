@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const CartDrawer = () => {
   const { items, removeFromCart, updateQuantity, clearCart, isCartOpen, setIsCartOpen } = useCart();
-  const { data: products, isLoading: productsLoading } = useProducts();
+  const { data: products, isLoading: productsLoading } = useProducts({ enabled: isCartOpen });
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const { toast } = useToast();
 
