@@ -29,9 +29,16 @@ const normalizeSizes = (sizes: unknown): ProductSize[] => {
   }));
 };
 
-export const useProducts = () => {
+interface UseProductsOptions {
+  enabled?: boolean;
+}
+
+export const useProducts = (options: UseProductsOptions = {}) => {
   // Only run the query on the client (not during SSG)
   const isClient = typeof window !== 'undefined';
+  
+  // Allow caller to control enabled state (e.g., only fetch when authenticated)
+  const shouldFetch = isClient && (options.enabled !== false);
   
   return useQuery({
     queryKey: ["products"],
@@ -57,8 +64,8 @@ export const useProducts = () => {
         is_new: item.is_new ?? false,
       })) as Product[];
     },
-    // Only fetch on client-side to allow SSG to render with static data
-    enabled: isClient,
+    // Only fetch when explicitly enabled AND on client-side
+    enabled: shouldFetch,
     // Ensure fresh data - no caching
     staleTime: 0,
     gcTime: 0,

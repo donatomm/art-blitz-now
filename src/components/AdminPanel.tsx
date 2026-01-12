@@ -737,7 +737,7 @@ const AdminPanel = () => {
   const { toast } = useToast();
 
   // Only fetch products when authenticated - prevents API call for visitors
-  const { data: products = [], refetch } = useProducts();
+  const { data: products = [], refetch } = useProducts({ enabled: isAuthenticated });
   const updateProduct = useUpdateProduct();
   const createProduct = useCreateProduct();
   const deleteProduct = useDeleteProduct();
