@@ -720,12 +720,6 @@ const DeployTabContent = () => {
 };
 
 const AdminPanel = () => {
-  // Fetch products dynamically - only runs when AdminPanel is opened (lazy loaded)
-  const { data: products = [], refetch } = useProducts();
-  const updateProduct = useUpdateProduct();
-  const createProduct = useCreateProduct();
-  const deleteProduct = useDeleteProduct();
-  
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [emailInput, setEmailInput] = useState("");
@@ -740,23 +734,20 @@ const AdminPanel = () => {
   const [isMigratingImages, setIsMigratingImages] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
+  // Only fetch products when authenticated - prevents API call for visitors
+  const { data: products = [], refetch } = useProducts();
+  const updateProduct = useUpdateProduct();
+  const createProduct = useCreateProduct();
+  const deleteProduct = useDeleteProduct();
 
   // Check if already authenticated via Supabase session and has admin role
   useEffect(() => {
     const checkSession = async () => {
-      const {
-        data: {
-          session
-        }
-      } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // Verify user has admin role
-        const {
-          data: hasAdminRole
-        } = await supabase.rpc('has_role', {
+        const { data: hasAdminRole } = await supabase.rpc('has_role', {
           _user_id: session.user.id,
           _role: 'admin'
         });
@@ -764,17 +755,10 @@ const AdminPanel = () => {
       }
     };
     checkSession();
-    const {
-      data: {
-        subscription
-      }
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        // Verify admin role on auth state change
         setTimeout(async () => {
-          const {
-            data: hasAdminRole
-          } = await supabase.rpc('has_role', {
+          const { data: hasAdminRole } = await supabase.rpc('has_role', {
             _user_id: session.user.id,
             _role: 'admin'
           });
@@ -786,66 +770,41 @@ const AdminPanel = () => {
     });
     return () => subscription.unsubscribe();
   }, []);
+
   const handleLogin = async () => {
     if (!emailInput || !passwordInput) {
-      toast({
-        title: "Errore",
-        description: "Inserisci email e password.",
-        variant: "destructive"
-      });
+      toast({ title: "Errore", description: "Inserisci email e password.", variant: "destructive" });
       return;
     }
     setIsLoading(true);
     try {
-      // Sign in with email/password
-      const {
-        data: signInData,
-        error: signInError
-      } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: emailInput,
         password: passwordInput
       });
       if (signInError) {
-        toast({
-          title: "Errore di autenticazione",
-          description: "Email o password non corretti.",
-          variant: "destructive"
-        });
+        toast({ title: "Errore di autenticazione", description: "Email o password non corretti.", variant: "destructive" });
         return;
       }
-
-      // Verify user has admin role
-      const {
-        data: hasAdminRole
-      } = await supabase.rpc('has_role', {
+      const { data: hasAdminRole } = await supabase.rpc('has_role', {
         _user_id: signInData.user.id,
         _role: 'admin'
       });
       if (!hasAdminRole) {
         await supabase.auth.signOut();
-        toast({
-          title: "Accesso negato",
-          description: "Non hai i permessi di amministratore.",
-          variant: "destructive"
-        });
+        toast({ title: "Accesso negato", description: "Non hai i permessi di amministratore.", variant: "destructive" });
         return;
       }
       setEmailInput("");
       setPasswordInput("");
-      toast({
-        title: "Accesso effettuato",
-        description: "Benvenuto nel pannello admin."
-      });
+      toast({ title: "Accesso effettuato", description: "Benvenuto nel pannello admin." });
     } catch (error) {
-      toast({
-        title: "Errore",
-        description: "Errore durante l'accesso.",
-        variant: "destructive"
-      });
+      toast({ title: "Errore", description: "Errore durante l'accesso.", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsAuthenticated(false);
@@ -1202,7 +1161,8 @@ const AdminPanel = () => {
       });
     }
   };
-  return <>
+  return (
+    <>
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg">
@@ -1213,28 +1173,13 @@ const AdminPanel = () => {
           <SheetHeader>
             <div className="flex items-center justify-between">
               <SheetTitle>Admin Panel</SheetTitle>
-              {isAuthenticated && <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  Esci
-                </Button>}
+              <Button variant="ghost" size="sm" onClick={onLogout}>
+                Esci
+              </Button>
             </div>
           </SheetHeader>
           
-          {!isAuthenticated ? <div className="mt-8 space-y-4">
-              <div>
-                <Label>Email</Label>
-                <Input type="email" value={emailInput} onChange={e => setEmailInput(e.target.value)} placeholder="admin@example.com" disabled={isLoading} />
-              </div>
-              <div>
-                <Label>Password</Label>
-                <Input type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} placeholder="••••••••" onKeyDown={e => e.key === "Enter" && handleLogin()} disabled={isLoading} />
-              </div>
-              <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
-                {isLoading ? <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Accesso in corso...
-                  </> : "Accedi"}
-              </Button>
-            </div> : <Tabs defaultValue="products" className="mt-4">
+          <Tabs defaultValue="products" className="mt-4">
             <TabsList className="grid w-full grid-cols-8">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
               <TabsTrigger value="skus">SKUs</TabsTrigger>
@@ -1248,11 +1193,19 @@ const AdminPanel = () => {
             
             <TabsContent value="products" className="space-y-4">
               <div className="flex gap-2 flex-wrap">
-                <Button onClick={handleAddProduct} className="flex-1">
+                <Button onClick={handleAddProduct} variant="outline" size="sm">
                   <Plus className="mr-2 h-4 w-4" />
                   Aggiungi
                 </Button>
-                <Button onClick={() => csvInputRef.current?.click()} variant="secondary">
+                <Button onClick={handleExportJSON} variant="outline" size="sm">
+                  <Download className="mr-2 h-4 w-4" />
+                  JSON
+                </Button>
+                <Button onClick={handleExportXLSX} variant="outline" size="sm">
+                  <Download className="mr-2 h-4 w-4" />
+                  Excel
+                </Button>
+                <Button onClick={() => csvInputRef.current?.click()} variant="outline" size="sm">
                   <FileUp className="mr-2 h-4 w-4" />
                   Importa CSV
                 </Button>
@@ -1335,9 +1288,8 @@ const AdminPanel = () => {
 
             <DeployTabContent />
             
-          </Tabs>}
+          </Tabs>
         </SheetContent>
-      </Sheet>
 
       {/* Product Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -1658,6 +1610,8 @@ const AdminPanel = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>;
+    </>
+  );
 };
+
 export default AdminPanel;
