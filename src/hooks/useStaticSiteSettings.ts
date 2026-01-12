@@ -3,9 +3,7 @@
  * Returns bundled data synchronously - no API calls, no hydration mismatch
  */
 
-import { staticSiteSettings, StaticSiteSettings, NavItem } from '@/generated/staticSiteSettings';
-
-export type { NavItem };
+import { staticSiteSettings, StaticSiteSettings } from '@/generated/staticSiteSettings';
 
 export const useStaticSiteSettings = (): StaticSiteSettings => {
   return staticSiteSettings;
