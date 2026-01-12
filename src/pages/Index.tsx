@@ -8,7 +8,6 @@ import BuyDialog from "@/components/BuyDialog";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { toast } from "@/hooks/use-toast";
-import { useSiteSettings, getSettingValue } from "@/hooks/useSiteSettings";
 import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,8 +20,10 @@ const Index = () => {
     isLoading,
     refetch
   } = useProducts();
-  const { data: siteSettings, isLoading: settingsLoading } = useSiteSettings(); // Keep for admin/hellobar
-  const staticSettings = useStaticSiteSettings(); // SSG-safe for hero
+  
+  // Use STATIC settings for everything - NO API CALLS blocking LCP
+  const staticSettings = useStaticSiteSettings();
+  
   const updateProduct = useUpdateProduct();
   const createProduct = useCreateProduct();
   const deleteProduct = useDeleteProduct();
@@ -37,37 +38,41 @@ const Index = () => {
   const heroImageUrl = staticSettings.hero_image;
   const trustBarItems = staticSettings.trust_bar_items;
   
-  // Get HelloBar settings - default to FALSE while loading to not block render
-  const hellobarEnabled = settingsLoading ? false : getSettingValue<boolean>(siteSettings, "hellobar_enabled", false);
-  const hellobarText = getSettingValue<string>(siteSettings, "hellobar_text", "SPEDIZIONE GRATUITA in Italia - 30% fino a capodanno!");
-  const hellobarTextColor = getSettingValue<string>(siteSettings, "hellobar_text_color", "#FFFFFF");
-  const hellobarBgColor = getSettingValue<string>(siteSettings, "hellobar_bg_color", "#16A34A");
-  const hellobarBgOpacity = getSettingValue<number>(siteSettings, "hellobar_bg_opacity", 100);
-  const hellobarCountdownEnabled = getSettingValue<boolean>(siteSettings, "hellobar_countdown_enabled", true);
-  const hellobarCountdownEnd = getSettingValue<string>(siteSettings, "hellobar_countdown_end", "2025-01-01T00:00:00");
-  const hellobarCountdownTextColor = getSettingValue<string>(siteSettings, "hellobar_countdown_text_color", "#FFFFFF");
-  const hellobarCountdownBgColor = getSettingValue<string>(siteSettings, "hellobar_countdown_bg_color", "#15803D");
-  const hellobarButtonEnabled = getSettingValue<boolean>(siteSettings, "hellobar_button_enabled", true);
-  const hellobarButtonText = getSettingValue<string>(siteSettings, "hellobar_button_text", "Dettagli");
-  const hellobarButtonTextColor = getSettingValue<string>(siteSettings, "hellobar_button_text_color", "#16A34A");
-  const hellobarButtonBgColor = getSettingValue<string>(siteSettings, "hellobar_button_bg_color", "#FFFFFF");
-  const hellobarButtonBorderColor = getSettingValue<string>(siteSettings, "hellobar_button_border_color", "#FFFFFF");
-  const hellobarPopupContent = getSettingValue<string>(siteSettings, "hellobar_popup_content", "");
-  const hellobarWhatsappNumber = getSettingValue<string>(siteSettings, "hellobar_whatsapp_number", "393666295174");
-  const hellobarContactEmail = getSettingValue<string>(siteSettings, "hellobar_contact_email", "me@octowonders.com");
+  // Get HelloBar settings from STATIC settings (no API call!)
+  const hellobarEnabled = staticSettings.hellobar_enabled;
+  const hellobarText = staticSettings.hellobar_text;
+  const hellobarTextColor = staticSettings.hellobar_text_color;
+  const hellobarBgColor = staticSettings.hellobar_bg_color;
+  const hellobarBgOpacity = staticSettings.hellobar_bg_opacity;
+  const hellobarCountdownEnabled = staticSettings.hellobar_countdown_enabled;
+  const hellobarCountdownEnd = staticSettings.hellobar_countdown_end;
+  const hellobarCountdownTextColor = staticSettings.hellobar_countdown_text_color;
+  const hellobarCountdownBgColor = staticSettings.hellobar_countdown_bg_color;
+  const hellobarButtonEnabled = staticSettings.hellobar_button_enabled;
+  const hellobarButtonText = staticSettings.hellobar_button_text;
+  const hellobarButtonTextColor = staticSettings.hellobar_button_text_color;
+  const hellobarButtonBgColor = staticSettings.hellobar_button_bg_color;
+  const hellobarButtonBorderColor = staticSettings.hellobar_button_border_color;
+  const hellobarPopupContent = staticSettings.hellobar_popup_content;
+  const hellobarWhatsappNumber = staticSettings.hellobar_whatsapp_number;
+  const hellobarContactEmail = staticSettings.hellobar_contact_email;
+
   const scrollToGallery = () => {
     galleryRef.current?.scrollIntoView({
       behavior: "smooth"
     });
   };
+  
   const handleBuyClick = (product: Product) => {
     setSelectedProduct(product);
     setIsBuyDialogOpen(true);
   };
+  
   const handleCustomOrder = (product: Product) => {
     const message = encodeURIComponent(`Hi! I'm interested in a custom order for:\n\n${product.name}\n${product.medium}\n\nPlease let me know the available options!`);
     window.open(`https://wa.me/?text=${message}`, "_blank");
   };
+  
   const handleProductsChange = async (updatedProducts: Product[]) => {
     try {
       console.log('[Index] handleProductsChange called with', updatedProducts.length, 'products');
@@ -138,7 +143,9 @@ const Index = () => {
       });
     }
   };
-  return <div className="min-h-screen bg-background">
+
+  return (
+    <div className="min-h-screen bg-background">
       <SEO />
       <Navigation 
         isOverHero 
@@ -173,9 +180,13 @@ const Index = () => {
       />
 
       <main ref={galleryRef} className="p-1">
-        {isLoading ? <div className="flex items-center justify-center py-12">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
             <p className="text-muted-foreground">Loading products...</p>
-          </div> : <MasonryGrid products={products.filter(p => p.is_active)} onBuyClick={handleBuyClick} onCustomOrder={handleCustomOrder} />}
+          </div>
+        ) : (
+          <MasonryGrid products={products.filter(p => p.is_active)} onBuyClick={handleBuyClick} onCustomOrder={handleCustomOrder} />
+        )}
       </main>
 
       <BuyDialog product={selectedProduct} open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen} />
@@ -185,6 +196,8 @@ const Index = () => {
       </Suspense>
       
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
