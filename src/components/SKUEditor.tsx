@@ -44,7 +44,7 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
   // Bulk offer creation state - discounts per dimension
   const [bulkOfferOpen, setBulkOfferOpen] = useState(false);
   const [dimensionOfferPrices, setDimensionOfferPrices] = useState<Map<string, number | null>>(new Map());
-  const [bulkDealLabelText, setBulkDealLabelText] = useState("OFFERTA DEL GIORNO, scade h20:00");
+  const [bulkDealLabelText, setBulkDealLabelText] = useState("");
 
   const getSkuKey = (productId: string, sizeIndex: number) => `${productId}-${sizeIndex}`;
 
@@ -224,6 +224,7 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
       const initialPrices = new Map<string, number | null>();
       sortedDimensions.forEach(dim => initialPrices.set(dim, null));
       setDimensionOfferPrices(initialPrices);
+      setBulkDealLabelText(""); // Reset label text
     }
     setBulkOfferOpen(open);
   };
@@ -245,7 +246,15 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
       return;
     }
 
-    const labelText = bulkDealLabelText.trim() || "OFFERTA DEL GIORNO, scade h20:00";
+    const labelText = bulkDealLabelText.trim();
+    if (!labelText) {
+      toast({
+        title: "Errore",
+        description: "Inserisci il testo dell'etichetta offerta.",
+        variant: "destructive",
+      });
+      return;
+    }
     let skuCount = 0;
 
     const updatedProducts = products.map(product => {
@@ -475,7 +484,7 @@ const SKUEditor = ({ products, onProductsChange }: SKUEditorProps) => {
               <Button 
                 onClick={handleApplyBulkOffer}
                 className="bg-green-600 hover:bg-green-700"
-                disabled={activeOfferCount === 0}
+                disabled={activeOfferCount === 0 || !bulkDealLabelText.trim()}
               >
                 Applica ({activeOfferCount} dimensioni)
               </Button>
