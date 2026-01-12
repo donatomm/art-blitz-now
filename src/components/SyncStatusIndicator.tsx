@@ -117,11 +117,11 @@ const SyncStatusIndicator = () => {
 
   // All synced - green button (disabled)
   return (
-    <Button
-      disabled
-      className="fixed bottom-20 right-4 z-50 rounded-full shadow-lg bg-green-600 hover:bg-green-600 opacity-80"
-      size="sm"
-    >
+      <Button
+        disabled
+        className="fixed bottom-20 right-4 z-50 rounded-full shadow-lg bg-green-600 hover:bg-green-600 disabled:opacity-100"
+        size="sm"
+      >
       <CheckCircle className="h-4 w-4 mr-2" />
       All SYNCed
     </Button>
