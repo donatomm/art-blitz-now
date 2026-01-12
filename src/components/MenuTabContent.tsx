@@ -6,6 +6,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { Plus, Trash2, ArrowUp, ArrowDown, Loader2, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface NavItem {
   label: string;
@@ -91,7 +92,11 @@ const MenuTabContent = () => {
   const handleSave = async () => {
     try {
       await updateSetting.mutateAsync({ key: "nav_items", value: navItems as unknown as import("@/integrations/supabase/types").Json });
-      setHasChanges(false);
+      // Mark content as updated for sync indicator
+      await supabase.from('site_settings').upsert({
+        key: 'last_content_updated_at',
+        value: new Date().toISOString()
+      }, { onConflict: 'key' });
       setHasChanges(false);
       toast({
         title: "Menu salvato!",

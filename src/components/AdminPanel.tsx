@@ -118,6 +118,12 @@ const PagesTabContent = () => {
         seo_title: editSeoTitle || null,
         seo_description: editSeoDescription || null
       });
+      
+      // Mark content as updated for sync indicator
+      await supabase.from('site_settings').upsert({
+        key: 'last_content_updated_at',
+        value: new Date().toISOString()
+      }, { onConflict: 'key' });
 
       // Sync menu item if title or slug changed
       let menuSynced = false;
@@ -187,6 +193,12 @@ const PagesTabContent = () => {
         seo_title: newTitle,
         seo_description: null
       });
+      
+      // Mark content as updated for sync indicator
+      await supabase.from('site_settings').upsert({
+        key: 'last_content_updated_at',
+        value: new Date().toISOString()
+      }, { onConflict: 'key' });
 
       // Add to nav_items
       if (settings) {
@@ -473,6 +485,11 @@ const HeroTabContent = () => {
         updateSetting.mutateAsync({ key: "hero_image", value: heroImage }),
         updateSetting.mutateAsync({ key: "trust_bar_items", value: trustBarItems }),
       ]);
+      // Mark content as updated for sync indicator
+      await supabase.from('site_settings').upsert({
+        key: 'last_content_updated_at',
+        value: new Date().toISOString()
+      }, { onConflict: 'key' });
       setHasChanges(false);
       toast({
         title: "Hero salvato!",
@@ -660,6 +677,12 @@ const DeployTabContent = () => {
       if (response.error) {
         throw new Error(response.error.message || 'Deploy failed');
       }
+
+      // Update deploy timestamp on success
+      await supabase.from('site_settings').upsert({
+        key: 'last_deploy_triggered_at',
+        value: new Date().toISOString()
+      }, { onConflict: 'key' });
 
       toast({
         title: "🚀 Deploy avviato!",
@@ -881,7 +904,7 @@ const AdminPanel = ({
     });
     setIsEditDialogOpen(true);
   };
-  const handleSaveProduct = () => {
+  const handleSaveProduct = async () => {
     if (!editProduct) return;
     const existingIndex = products.findIndex(p => p.id === editProduct.id);
     if (existingIndex >= 0) {
@@ -891,6 +914,11 @@ const AdminPanel = ({
     } else {
       onProductsChange([...products, editProduct]);
     }
+    // Mark content as updated for sync indicator
+    await supabase.from('site_settings').upsert({
+      key: 'last_content_updated_at',
+      value: new Date().toISOString()
+    }, { onConflict: 'key' });
     setIsEditDialogOpen(false);
     setEditProduct(null);
   };

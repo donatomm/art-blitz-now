@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Lazy load AdminPanel - it's 1278 lines + xlsx library, only needed by admins
 const AdminPanel = lazy(() => import("@/components/AdminPanel"));
+import SyncStatusIndicator from "@/components/SyncStatusIndicator";
 
 const Index = () => {
   const {
@@ -183,6 +184,8 @@ const Index = () => {
       <Suspense fallback={null}>
         <AdminPanel products={products} onProductsChange={handleProductsChange} />
       </Suspense>
+      
+      <SyncStatusIndicator />
       
       <Footer />
     </div>;
