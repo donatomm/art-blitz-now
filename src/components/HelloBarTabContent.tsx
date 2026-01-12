@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Save } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const DEFAULT_POPUP_CONTENT = `📦 Spedizione Gratuita
 
@@ -128,6 +129,11 @@ const HelloBarTabContent = () => {
         updateSetting.mutateAsync({ key: "hellobar_whatsapp_number", value: hellobarWhatsappNumber }),
         updateSetting.mutateAsync({ key: "hellobar_contact_email", value: hellobarContactEmail }),
       ]);
+      // Mark content as updated for sync indicator
+      await supabase.from('site_settings').upsert({
+        key: 'last_content_updated_at',
+        value: new Date().toISOString()
+      }, { onConflict: 'key' });
       setHasChanges(false);
       toast({
         title: "Hello Bar salvata!",
