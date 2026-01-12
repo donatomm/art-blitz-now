@@ -87,13 +87,33 @@ async function fetchSiteSettings() {
     }
   }
 
-  // Apply sensible defaults
+  // Apply sensible defaults - include HelloBar and nav items for SSG
   return {
     hero_title: settings.hero_title || "Opere magnetiche. Uniche. Non per tutti.",
     hero_subtitle: settings.hero_subtitle || "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.",
     hero_cta_text: settings.hero_cta_text || "ESPLORA LA COLLEZIONE",
     hero_image: settings.hero_image || "",
     trust_bar_items: Array.isArray(settings.trust_bar_items) ? settings.trust_bar_items : [],
+    // HelloBar settings for SSG
+    hellobar_enabled: settings.hellobar_enabled ?? false,
+    hellobar_text: settings.hellobar_text || "SPEDIZIONE GRATUITA in Italia",
+    hellobar_text_color: settings.hellobar_text_color || "#FFFFFF",
+    hellobar_bg_color: settings.hellobar_bg_color || "#16A34A",
+    hellobar_bg_opacity: settings.hellobar_bg_opacity ?? 100,
+    hellobar_countdown_enabled: settings.hellobar_countdown_enabled ?? false,
+    hellobar_countdown_end: settings.hellobar_countdown_end || "",
+    hellobar_countdown_text_color: settings.hellobar_countdown_text_color || "#FFFFFF",
+    hellobar_countdown_bg_color: settings.hellobar_countdown_bg_color || "#15803D",
+    hellobar_button_enabled: settings.hellobar_button_enabled ?? true,
+    hellobar_button_text: settings.hellobar_button_text || "Dettagli",
+    hellobar_button_text_color: settings.hellobar_button_text_color || "#16A34A",
+    hellobar_button_bg_color: settings.hellobar_button_bg_color || "#FFFFFF",
+    hellobar_button_border_color: settings.hellobar_button_border_color || "#FFFFFF",
+    hellobar_popup_content: settings.hellobar_popup_content || "",
+    hellobar_whatsapp_number: settings.hellobar_whatsapp_number || "393666295174",
+    hellobar_contact_email: settings.hellobar_contact_email || "me@octowonders.com",
+    // Navigation items for SSG
+    nav_items: Array.isArray(settings.nav_items) ? settings.nav_items : [],
   };
 }
 
@@ -156,12 +176,38 @@ export default staticProducts;
  * Run "npm run prebuild" to regenerate
  */
 
+export interface NavItem {
+  label: string;
+  href: string;
+  order?: number;
+}
+
 export interface StaticSiteSettings {
   hero_title: string;
   hero_subtitle: string;
   hero_cta_text: string;
   hero_image: string;
   trust_bar_items: string[];
+  // HelloBar settings
+  hellobar_enabled: boolean;
+  hellobar_text: string;
+  hellobar_text_color: string;
+  hellobar_bg_color: string;
+  hellobar_bg_opacity: number;
+  hellobar_countdown_enabled: boolean;
+  hellobar_countdown_end: string;
+  hellobar_countdown_text_color: string;
+  hellobar_countdown_bg_color: string;
+  hellobar_button_enabled: boolean;
+  hellobar_button_text: string;
+  hellobar_button_text_color: string;
+  hellobar_button_bg_color: string;
+  hellobar_button_border_color: string;
+  hellobar_popup_content: string;
+  hellobar_whatsapp_number: string;
+  hellobar_contact_email: string;
+  // Navigation items
+  nav_items: NavItem[];
 }
 
 export const staticSiteSettings: StaticSiteSettings = ${JSON.stringify(siteSettings, null, 2)};

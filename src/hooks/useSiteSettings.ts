@@ -21,6 +21,7 @@ export const useSiteSettings = () => {
       if (error) throw error;
       return data as SiteSetting[];
     },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes to prevent redundant API calls
   });
 };
 
