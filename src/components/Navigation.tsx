@@ -4,6 +4,7 @@ import { Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useSiteSettings, getSettingValue } from "@/hooks/useSiteSettings";
+import { staticSiteSettings } from "@/generated/staticSiteSettings";
 import logo from "@/assets/logo.webp";
 import HelloBar from "./HelloBar";
 
@@ -55,11 +56,16 @@ const Navigation = ({ isOverHero = false, helloBarProps }: NavigationProps) => {
   const itemCount = getItemCount();
   const showHelloBar = helloBarProps?.enabled ?? false;
 
-  // Get nav items from settings, or use defaults - don't block render
+  // Get nav items from settings - use STATIC settings as defaults for SSG, then hydrate with live data
   const navItems = useMemo(() => {
-    if (settingsLoading) return defaultNavItems; // Render immediately with defaults
+    // Use static settings as SSG-safe defaults
+    const staticNavItems = staticSiteSettings.nav_items;
+    const fallback = staticNavItems.length > 0 ? staticNavItems : defaultNavItems;
+    
+    if (settingsLoading) return fallback; // Render immediately with static/fallback
+    
     const items = getSettingValue<NavItem[]>(settings, "nav_items", []);
-    if (items.length === 0) return defaultNavItems;
+    if (items.length === 0) return fallback;
     return items.sort((a, b) => (a.order || 0) - (b.order || 0));
   }, [settings, settingsLoading]);
 

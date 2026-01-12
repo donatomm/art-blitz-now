@@ -25,6 +25,7 @@ export const usePages = () => {
       if (error) throw error;
       return data as Page[];
     },
+    staleTime: 2 * 60 * 1000, // Cache for 2 minutes to prevent redundant API calls
   });
 };
 

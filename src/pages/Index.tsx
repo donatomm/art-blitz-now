@@ -38,24 +38,58 @@ const Index = () => {
   const heroImageUrl = staticSettings.hero_image;
   const trustBarItems = staticSettings.trust_bar_items;
   
-  // Get HelloBar settings - default to FALSE while loading to not block render
-  const hellobarEnabled = settingsLoading ? false : getSettingValue<boolean>(siteSettings, "hellobar_enabled", false);
-  const hellobarText = getSettingValue<string>(siteSettings, "hellobar_text", "SPEDIZIONE GRATUITA in Italia - 30% fino a capodanno!");
-  const hellobarTextColor = getSettingValue<string>(siteSettings, "hellobar_text_color", "#FFFFFF");
-  const hellobarBgColor = getSettingValue<string>(siteSettings, "hellobar_bg_color", "#16A34A");
-  const hellobarBgOpacity = getSettingValue<number>(siteSettings, "hellobar_bg_opacity", 100);
-  const hellobarCountdownEnabled = getSettingValue<boolean>(siteSettings, "hellobar_countdown_enabled", true);
-  const hellobarCountdownEnd = getSettingValue<string>(siteSettings, "hellobar_countdown_end", "2025-01-01T00:00:00");
-  const hellobarCountdownTextColor = getSettingValue<string>(siteSettings, "hellobar_countdown_text_color", "#FFFFFF");
-  const hellobarCountdownBgColor = getSettingValue<string>(siteSettings, "hellobar_countdown_bg_color", "#15803D");
-  const hellobarButtonEnabled = getSettingValue<boolean>(siteSettings, "hellobar_button_enabled", true);
-  const hellobarButtonText = getSettingValue<string>(siteSettings, "hellobar_button_text", "Dettagli");
-  const hellobarButtonTextColor = getSettingValue<string>(siteSettings, "hellobar_button_text_color", "#16A34A");
-  const hellobarButtonBgColor = getSettingValue<string>(siteSettings, "hellobar_button_bg_color", "#FFFFFF");
-  const hellobarButtonBorderColor = getSettingValue<string>(siteSettings, "hellobar_button_border_color", "#FFFFFF");
-  const hellobarPopupContent = getSettingValue<string>(siteSettings, "hellobar_popup_content", "");
-  const hellobarWhatsappNumber = getSettingValue<string>(siteSettings, "hellobar_whatsapp_number", "393666295174");
-  const hellobarContactEmail = getSettingValue<string>(siteSettings, "hellobar_contact_email", "me@octowonders.com");
+  // Get HelloBar settings - use STATIC settings as defaults for SSG, then hydrate with live data
+  const hellobarEnabled = settingsLoading 
+    ? staticSettings.hellobar_enabled 
+    : getSettingValue<boolean>(siteSettings, "hellobar_enabled", staticSettings.hellobar_enabled);
+  const hellobarText = settingsLoading 
+    ? staticSettings.hellobar_text 
+    : getSettingValue<string>(siteSettings, "hellobar_text", staticSettings.hellobar_text);
+  const hellobarTextColor = settingsLoading 
+    ? staticSettings.hellobar_text_color 
+    : getSettingValue<string>(siteSettings, "hellobar_text_color", staticSettings.hellobar_text_color);
+  const hellobarBgColor = settingsLoading 
+    ? staticSettings.hellobar_bg_color 
+    : getSettingValue<string>(siteSettings, "hellobar_bg_color", staticSettings.hellobar_bg_color);
+  const hellobarBgOpacity = settingsLoading 
+    ? staticSettings.hellobar_bg_opacity 
+    : getSettingValue<number>(siteSettings, "hellobar_bg_opacity", staticSettings.hellobar_bg_opacity);
+  const hellobarCountdownEnabled = settingsLoading 
+    ? staticSettings.hellobar_countdown_enabled 
+    : getSettingValue<boolean>(siteSettings, "hellobar_countdown_enabled", staticSettings.hellobar_countdown_enabled);
+  const hellobarCountdownEnd = settingsLoading 
+    ? staticSettings.hellobar_countdown_end 
+    : getSettingValue<string>(siteSettings, "hellobar_countdown_end", staticSettings.hellobar_countdown_end);
+  const hellobarCountdownTextColor = settingsLoading 
+    ? staticSettings.hellobar_countdown_text_color 
+    : getSettingValue<string>(siteSettings, "hellobar_countdown_text_color", staticSettings.hellobar_countdown_text_color);
+  const hellobarCountdownBgColor = settingsLoading 
+    ? staticSettings.hellobar_countdown_bg_color 
+    : getSettingValue<string>(siteSettings, "hellobar_countdown_bg_color", staticSettings.hellobar_countdown_bg_color);
+  const hellobarButtonEnabled = settingsLoading 
+    ? staticSettings.hellobar_button_enabled 
+    : getSettingValue<boolean>(siteSettings, "hellobar_button_enabled", staticSettings.hellobar_button_enabled);
+  const hellobarButtonText = settingsLoading 
+    ? staticSettings.hellobar_button_text 
+    : getSettingValue<string>(siteSettings, "hellobar_button_text", staticSettings.hellobar_button_text);
+  const hellobarButtonTextColor = settingsLoading 
+    ? staticSettings.hellobar_button_text_color 
+    : getSettingValue<string>(siteSettings, "hellobar_button_text_color", staticSettings.hellobar_button_text_color);
+  const hellobarButtonBgColor = settingsLoading 
+    ? staticSettings.hellobar_button_bg_color 
+    : getSettingValue<string>(siteSettings, "hellobar_button_bg_color", staticSettings.hellobar_button_bg_color);
+  const hellobarButtonBorderColor = settingsLoading 
+    ? staticSettings.hellobar_button_border_color 
+    : getSettingValue<string>(siteSettings, "hellobar_button_border_color", staticSettings.hellobar_button_border_color);
+  const hellobarPopupContent = settingsLoading 
+    ? staticSettings.hellobar_popup_content 
+    : getSettingValue<string>(siteSettings, "hellobar_popup_content", staticSettings.hellobar_popup_content);
+  const hellobarWhatsappNumber = settingsLoading 
+    ? staticSettings.hellobar_whatsapp_number 
+    : getSettingValue<string>(siteSettings, "hellobar_whatsapp_number", staticSettings.hellobar_whatsapp_number);
+  const hellobarContactEmail = settingsLoading 
+    ? staticSettings.hellobar_contact_email 
+    : getSettingValue<string>(siteSettings, "hellobar_contact_email", staticSettings.hellobar_contact_email);
   const scrollToGallery = () => {
     galleryRef.current?.scrollIntoView({
       behavior: "smooth"
@@ -183,9 +217,8 @@ const Index = () => {
 
       <Suspense fallback={null}>
         <AdminPanel products={products} onProductsChange={handleProductsChange} />
+        <SyncStatusIndicator />
       </Suspense>
-      
-      <SyncStatusIndicator />
       
       <Footer />
     </div>;
