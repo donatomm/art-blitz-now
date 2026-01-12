@@ -58,8 +58,8 @@ const Navigation = ({ isOverHero = false, helloBarProps }: NavigationProps) => {
 
   // Get nav items from settings - use STATIC settings as defaults for SSG, then hydrate with live data
   const navItems = useMemo(() => {
-    // Use static settings as SSG-safe defaults
-    const staticNavItems = staticSiteSettings.nav_items;
+    // Use static settings as SSG-safe defaults (with safety check)
+    const staticNavItems = staticSiteSettings.nav_items ?? [];
     const fallback = staticNavItems.length > 0 ? staticNavItems : defaultNavItems;
     
     if (settingsLoading) return fallback; // Render immediately with static/fallback
