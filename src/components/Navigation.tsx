@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { useSiteSettings, getSettingValue } from "@/hooks/useSiteSettings";
+import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
 import logo from "@/assets/logo.webp";
 import HelloBar from "./HelloBar";
 
@@ -50,18 +50,19 @@ const Navigation = ({ isOverHero = false, helloBarProps }: NavigationProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { getItemCount, setIsCartOpen } = useCart();
-  const { data: settings, isLoading: settingsLoading } = useSiteSettings();
+  
+  // Use STATIC settings - NO API CALLS blocking LCP
+  const staticSettings = useStaticSiteSettings();
 
   const itemCount = getItemCount();
   const showHelloBar = helloBarProps?.enabled ?? false;
 
-  // Get nav items from settings, or use defaults - don't block render
+  // Get nav items from STATIC settings - no API call, instant render
   const navItems = useMemo(() => {
-    if (settingsLoading) return defaultNavItems; // Render immediately with defaults
-    const items = getSettingValue<NavItem[]>(settings, "nav_items", []);
-    if (items.length === 0) return defaultNavItems;
-    return items.sort((a, b) => (a.order || 0) - (b.order || 0));
-  }, [settings, settingsLoading]);
+    const items = staticSettings.nav_items;
+    if (!items || items.length === 0) return defaultNavItems;
+    return [...items].sort((a, b) => (a.order || 0) - (b.order || 0));
+  }, [staticSettings.nav_items]);
 
   useEffect(() => {
     const handleScroll = () => {
