@@ -48,7 +48,7 @@ export const staticSiteSettings: StaticSiteSettings = {
   "hero_title": "Opere magnetiche. Uniche. Non per tutti.",
   "hero_subtitle": "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.",
   "hero_cta_text": "ESPLORA LA COLLEZIONE",
-  "hero_image": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/hero/octosuckers-land-copy.webp",
+  "hero_image": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/hero/herolast.webp",
   "trust_bar_items": ["Stampe Professionali Su Tela", "Tecnologia di stampa HP Latex™ ", "Colori Brillanti Resistenti Alla Luce", "Pronte da Appendere", "Spedizione GRATUITA in Italia"],
   "nav_items": [
     { "label": "Autore", "href": "/artista", "order": 0 },
