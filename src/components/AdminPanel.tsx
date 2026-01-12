@@ -887,6 +887,25 @@ const AdminPanel = () => {
       description: "Dati prodotto copiati negli appunti."
     });
   };
+  
+  const handleExportXLSX = () => {
+    const data = products.map(p => ({
+      name: p.name,
+      medium: p.medium,
+      description: p.description,
+      image_url: p.image_url,
+      is_active: p.is_active,
+      display_order: p.display_order,
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Products");
+    XLSX.writeFile(wb, "products.xlsx");
+    toast({
+      title: "Excel Scaricato!",
+      description: "File Excel esportato con successo."
+    });
+  };
   const handleAddProduct = () => {
     const newProduct: Product = {
       id: crypto.randomUUID(),
@@ -1173,12 +1192,32 @@ const AdminPanel = () => {
           <SheetHeader>
             <div className="flex items-center justify-between">
               <SheetTitle>Admin Panel</SheetTitle>
-              <Button variant="ghost" size="sm" onClick={onLogout}>
+              {isAuthenticated && <Button variant="ghost" size="sm" onClick={handleLogout}>
                 Esci
-              </Button>
+              </Button>}
             </div>
           </SheetHeader>
           
+          {!isAuthenticated ? (
+            <div className="mt-8 space-y-4">
+              <div>
+                <Label>Email</Label>
+                <Input type="email" value={emailInput} onChange={e => setEmailInput(e.target.value)} placeholder="admin@example.com" disabled={isLoading} />
+              </div>
+              <div>
+                <Label>Password</Label>
+                <Input type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} placeholder="••••••••" onKeyDown={e => e.key === "Enter" && handleLogin()} disabled={isLoading} />
+              </div>
+              <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Accesso in corso...
+                  </>
+                ) : "Accedi"}
+              </Button>
+            </div>
+          ) : (
           <Tabs defaultValue="products" className="mt-4">
             <TabsList className="grid w-full grid-cols-8">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
@@ -1289,7 +1328,9 @@ const AdminPanel = () => {
             <DeployTabContent />
             
           </Tabs>
+          )}
         </SheetContent>
+      </Sheet>
 
       {/* Product Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
