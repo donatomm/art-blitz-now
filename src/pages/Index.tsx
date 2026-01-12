@@ -1,32 +1,24 @@
 import { useState, useRef, lazy, Suspense } from "react";
 import { Product } from "@/types/product";
-import { useProducts, useUpdateProduct, useCreateProduct, useDeleteProduct } from "@/hooks/useProducts";
+import { useStaticProducts } from "@/hooks/useStaticProducts";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import MasonryGrid from "@/components/MasonryGrid";
 import BuyDialog from "@/components/BuyDialog";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
-import { toast } from "@/hooks/use-toast";
 import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
-import { supabase } from "@/integrations/supabase/client";
 
 // Lazy load AdminPanel - it's 1278 lines + xlsx library, only needed by admins
 const AdminPanel = lazy(() => import("@/components/AdminPanel"));
 
 const Index = () => {
-  const {
-    data: products = [],
-    isLoading,
-    refetch
-  } = useProducts();
+  // Use STATIC products for instant LCP - no API call blocking render
+  const { products } = useStaticProducts();
   
   // Use STATIC settings for everything - NO API CALLS blocking LCP
   const staticSettings = useStaticSiteSettings();
   
-  const updateProduct = useUpdateProduct();
-  const createProduct = useCreateProduct();
-  const deleteProduct = useDeleteProduct();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -72,77 +64,6 @@ const Index = () => {
     const message = encodeURIComponent(`Hi! I'm interested in a custom order for:\n\n${product.name}\n${product.medium}\n\nPlease let me know the available options!`);
     window.open(`https://wa.me/?text=${message}`, "_blank");
   };
-  
-  const handleProductsChange = async (updatedProducts: Product[]) => {
-    try {
-      console.log('[Index] handleProductsChange called with', updatedProducts.length, 'products');
-      
-      const existingIds = new Set(products.map(p => p.id));
-      const updatedIds = new Set(updatedProducts.map(p => p.id));
-
-      // Find new products (in updated but not in existing)
-      const newProducts = updatedProducts.filter(p => !existingIds.has(p.id));
-
-      // Find deleted products (in existing but not in updated)
-      const deletedProducts = products.filter(p => !updatedIds.has(p.id));
-
-      // Find products to update (exist in both) - only those with actual changes
-      const productsToUpdate = updatedProducts.filter(p => {
-        if (!existingIds.has(p.id)) return false;
-        const original = products.find(op => op.id === p.id);
-        // Check if display_order or other key fields changed
-        return original?.display_order !== p.display_order || 
-               original?.is_active !== p.is_active ||
-               JSON.stringify(original) !== JSON.stringify(p);
-      });
-
-      console.log('[Index] Products to update:', productsToUpdate.map(p => ({ name: p.name, order: p.display_order })));
-
-      // Create new products
-      for (const product of newProducts) {
-        await createProduct.mutateAsync(product);
-      }
-
-      // Update existing products
-      for (const product of productsToUpdate) {
-        console.log('[Index] Updating product:', product.name, 'with display_order:', product.display_order);
-        await updateProduct.mutateAsync(product);
-      }
-
-      // Delete removed products
-      for (const product of deletedProducts) {
-        await deleteProduct.mutateAsync(product.id);
-      }
-      
-      console.log('[Index] All updates complete, refetching...');
-      await refetch();
-      
-      // Regenerate sitemap automatically after product changes
-      try {
-        const { error: sitemapError } = await supabase.functions.invoke('regenerate-sitemap');
-        if (sitemapError) {
-          console.warn('[Index] Sitemap regeneration failed:', sitemapError);
-        } else {
-          console.log('[Index] Sitemap regenerated successfully');
-        }
-      } catch (sitemapError) {
-        console.warn('[Index] Sitemap regeneration failed:', sitemapError);
-        // Don't show error to user - sitemap is not critical
-      }
-
-      toast({
-        title: "Prodotti aggiornati",
-        description: "Modifiche salvate con successo."
-      });
-    } catch (error) {
-      console.error('[Index] Error saving products:', error);
-      toast({
-        title: "Errore",
-        description: "Impossibile salvare. Verifica di essere admin.",
-        variant: "destructive"
-      });
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -180,19 +101,17 @@ const Index = () => {
       />
 
       <main ref={galleryRef} className="p-1">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground">Loading products...</p>
-          </div>
-        ) : (
-          <MasonryGrid products={products.filter(p => p.is_active)} onBuyClick={handleBuyClick} onCustomOrder={handleCustomOrder} />
-        )}
+        <MasonryGrid 
+          products={products.filter(p => p.is_active)} 
+          onBuyClick={handleBuyClick} 
+          onCustomOrder={handleCustomOrder} 
+        />
       </main>
 
       <BuyDialog product={selectedProduct} open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen} />
 
       <Suspense fallback={null}>
-        <AdminPanel products={products} onProductsChange={handleProductsChange} />
+        <AdminPanel />
       </Suspense>
       
       <Footer />

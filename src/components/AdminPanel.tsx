@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Product, ProductSize, MockRoom } from "@/types/product";
+import { useProducts, useUpdateProduct, useCreateProduct, useDeleteProduct } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -718,14 +719,13 @@ const DeployTabContent = () => {
   );
 };
 
-interface AdminPanelProps {
-  products: Product[];
-  onProductsChange: (products: Product[]) => void;
-}
-const AdminPanel = ({
-  products,
-  onProductsChange
-}: AdminPanelProps) => {
+const AdminPanel = () => {
+  // Fetch products dynamically - only runs when AdminPanel is opened (lazy loaded)
+  const { data: products = [], refetch } = useProducts();
+  const updateProduct = useUpdateProduct();
+  const createProduct = useCreateProduct();
+  const deleteProduct = useDeleteProduct();
+  
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [emailInput, setEmailInput] = useState("");
@@ -850,6 +850,76 @@ const AdminPanel = ({
     await supabase.auth.signOut();
     setIsAuthenticated(false);
   };
+
+  // Handle product changes - moved from Index.tsx to be self-contained
+  const handleProductsChange = async (updatedProducts: Product[]) => {
+    try {
+      console.log('[AdminPanel] handleProductsChange called with', updatedProducts.length, 'products');
+      
+      const existingIds = new Set(products.map(p => p.id));
+      const updatedIds = new Set(updatedProducts.map(p => p.id));
+
+      // Find new products (in updated but not in existing)
+      const newProducts = updatedProducts.filter(p => !existingIds.has(p.id));
+
+      // Find deleted products (in existing but not in updated)
+      const deletedProducts = products.filter(p => !updatedIds.has(p.id));
+
+      // Find products to update (exist in both) - only those with actual changes
+      const productsToUpdate = updatedProducts.filter(p => {
+        if (!existingIds.has(p.id)) return false;
+        const original = products.find(op => op.id === p.id);
+        return original?.display_order !== p.display_order || 
+               original?.is_active !== p.is_active ||
+               JSON.stringify(original) !== JSON.stringify(p);
+      });
+
+      console.log('[AdminPanel] Products to update:', productsToUpdate.map(p => ({ name: p.name, order: p.display_order })));
+
+      // Create new products
+      for (const product of newProducts) {
+        await createProduct.mutateAsync(product);
+      }
+
+      // Update existing products
+      for (const product of productsToUpdate) {
+        console.log('[AdminPanel] Updating product:', product.name, 'with display_order:', product.display_order);
+        await updateProduct.mutateAsync(product);
+      }
+
+      // Delete removed products
+      for (const product of deletedProducts) {
+        await deleteProduct.mutateAsync(product.id);
+      }
+      
+      console.log('[AdminPanel] All updates complete, refetching...');
+      await refetch();
+      
+      // Regenerate sitemap automatically after product changes
+      try {
+        const { error: sitemapError } = await supabase.functions.invoke('regenerate-sitemap');
+        if (sitemapError) {
+          console.warn('[AdminPanel] Sitemap regeneration failed:', sitemapError);
+        } else {
+          console.log('[AdminPanel] Sitemap regenerated successfully');
+        }
+      } catch (sitemapError) {
+        console.warn('[AdminPanel] Sitemap regeneration failed:', sitemapError);
+      }
+
+      toast({
+        title: "Prodotti aggiornati",
+        description: "Modifiche salvate con successo."
+      });
+    } catch (error) {
+      console.error('[AdminPanel] Error saving products:', error);
+      toast({
+        title: "Errore",
+        description: "Impossibile salvare. Verifica di essere admin.",
+        variant: "destructive"
+      });
+    }
+  };
   const handleExportJSON = () => {
     const json = JSON.stringify(products, null, 2);
     navigator.clipboard.writeText(json);
@@ -887,9 +957,9 @@ const AdminPanel = ({
     if (existingIndex >= 0) {
       const updated = [...products];
       updated[existingIndex] = editProduct;
-      onProductsChange(updated);
+      handleProductsChange(updated);
     } else {
-      onProductsChange([...products, editProduct]);
+      handleProductsChange([...products, editProduct]);
     }
     setIsEditDialogOpen(false);
     setEditProduct(null);
@@ -899,7 +969,7 @@ const AdminPanel = ({
   };
   const confirmDeleteProduct = () => {
     if (productToDelete) {
-      onProductsChange(products.filter(p => p.id !== productToDelete.id));
+      handleProductsChange(products.filter(p => p.id !== productToDelete.id));
       setProductToDelete(null);
     }
   };
@@ -920,7 +990,7 @@ const AdminPanel = ({
       display_order: i
     }));
     
-    onProductsChange(updated);
+    handleProductsChange(updated);
   };
   const updateEditSize = (sizeIndex: number, field: keyof ProductSize, value: string | number | boolean) => {
     if (!editProduct) return;
@@ -951,7 +1021,7 @@ const AdminPanel = ({
         return product;
       });
       const matchedCount = Object.keys(mapping).filter(name => products.some(p => p.name === name)).length;
-      onProductsChange(updatedProducts);
+      handleProductsChange(updatedProducts);
       setIsStripeImportDialogOpen(false);
       setStripeImportJson("");
       toast({
@@ -1013,7 +1083,7 @@ const AdminPanel = ({
         createdCount++;
       }
     }
-    onProductsChange(updatedProducts);
+    handleProductsChange(updatedProducts);
     const messages = [];
     if (createdCount > 0) messages.push(`${createdCount} nuovi`);
     if (updatedCount > 0) messages.push(`${updatedCount} aggiornati`);
@@ -1222,7 +1292,7 @@ const AdminPanel = ({
                             const updated = products.map(p => 
                               p.id === product.id ? { ...p, is_active: checked } : p
                             );
-                            onProductsChange(updated);
+                            handleProductsChange(updated);
                           }}
                         />
                       </div>
@@ -1237,7 +1307,7 @@ const AdminPanel = ({
             </TabsContent>
 
             <TabsContent value="skus" className="space-y-4">
-              <SKUEditor products={products} onProductsChange={onProductsChange} />
+              <SKUEditor products={products} onProductsChange={handleProductsChange} />
             </TabsContent>
 
             <MenuTabContent />
