@@ -177,6 +177,13 @@ export default staticProducts;
     // Write products.json (for sitemap generation)
     fs.writeFileSync(path.join(generatedDir, 'products.json'), JSON.stringify(products, null, 2));
 
+  // Add build timestamp for pipeline verification
+    const buildTimestamp = new Date().toISOString();
+    const siteSettingsWithTimestamp = {
+      ...siteSettings,
+      build_timestamp: buildTimestamp,
+    };
+
     // Write staticSiteSettings.ts with COMPLETE interface
     const staticSiteSettingsContent = `/**
  * Static site settings data for SSG
@@ -219,12 +226,16 @@ export interface StaticSiteSettings {
   hellobar_popup_content: string;
   hellobar_whatsapp_number: string;
   hellobar_contact_email: string;
+  
+  // Build metadata
+  build_timestamp: string;
 }
 
-export const staticSiteSettings: StaticSiteSettings = ${JSON.stringify(siteSettings, null, 2)};
+export const staticSiteSettings: StaticSiteSettings = ${JSON.stringify(siteSettingsWithTimestamp, null, 2)};
 
 export default staticSiteSettings;
 `;
+    console.log(`✅ Build timestamp: ${buildTimestamp}`);
     fs.writeFileSync(path.join(generatedDir, 'staticSiteSettings.ts'), staticSiteSettingsContent);
     console.log(`✅ staticSiteSettings.ts: settings loaded`);
 

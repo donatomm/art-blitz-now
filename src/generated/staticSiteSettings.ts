@@ -39,6 +39,9 @@ export interface StaticSiteSettings {
   hellobar_popup_content: string;
   hellobar_whatsapp_number: string;
   hellobar_contact_email: string;
+  
+  // Build metadata
+  build_timestamp: string;
 }
 
 export const staticSiteSettings: StaticSiteSettings = {
@@ -69,7 +72,8 @@ export const staticSiteSettings: StaticSiteSettings = {
   "hellobar_button_border_color": "#FFFFFF",
   "hellobar_popup_content": "",
   "hellobar_whatsapp_number": "393666295174",
-  "hellobar_contact_email": "me@octowonders.com"
+  "hellobar_contact_email": "me@octowonders.com",
+  "build_timestamp": "2026-01-12T00:00:00.000Z"
 };
 
 export default staticSiteSettings;

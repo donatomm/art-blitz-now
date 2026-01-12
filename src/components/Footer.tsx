@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
+import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
+
 const Footer = () => {
+  const { build_timestamp } = useStaticSiteSettings();
+  
   return <footer className="bg-slate-900 text-slate-300 py-8 mt-auto">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -42,6 +46,7 @@ const Footer = () => {
         <div className="mt-6 pt-6 border-t border-slate-700 text-center text-sm text-slate-500">
           <p>Codice Fiscale MNGDTM66L18F205N</p>
           <p className="mt-1">© {new Date().getFullYear()} OctoWonders by Marco De Francesco alias Donato Marco Mangialardo. Tutti i diritti riservati.</p>
+          <p className="mt-2 text-xs text-slate-600">Build: {build_timestamp || 'unknown'}</p>
         </div>
       </div>
     </footer>;
