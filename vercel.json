@@ -1,5 +1,14 @@
 {
-  "buildCommand": "npm run prebuild:products && npm run build",
+ {
+  "redirects": [
+    {
+      "source": "/storie-fatti-scientifici-polpo",
+      "destination": "/blog",
+      "permanent": true
+    }
+  ]
+}
+ "buildCommand": "npm run prebuild:products && npm run build",
   "redirects": [
     { "source": "/artist", "destination": "/artista", "permanent": true },
     { "source": "/contact", "destination": "/contatti", "permanent": true },
