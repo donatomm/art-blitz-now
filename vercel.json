@@ -1,54 +1,27 @@
 {
- {
+  "buildCommand": "npm run prebuild:products && npm run build",
   "redirects": [
     {
       "source": "/storie-fatti-scientifici-polpo",
       "destination": "/blog",
       "permanent": true
-    }
-  ]
-}
- "buildCommand": "npm run prebuild:products && npm run build",
-  "redirects": [
+    },
+    { "source": "/Octopus-Facts", "destination": "/blog", "permanent": true },
+
     { "source": "/artist", "destination": "/artista", "permanent": true },
     { "source": "/contact", "destination": "/contatti", "permanent": true },
     { "source": "/shipping", "destination": "/spedizione", "permanent": true },
-    { "source": "/resi-e-rimborsi", "destination": "/resi-rimborsi", "permanent": true },
-    { "source": "/Octopus-Facts", "destination": "/storie-fatti-scientifici-polpo", "permanent": true }
+    { "source": "/resi-e-rimborsi", "destination": "/resi-rimborsi", "permanent": true }
   ],
   "rewrites": [
-    {
-      "source": "/product/:slug",
-      "destination": "/product/:slug/index.html"
-    },
-    {
-      "source": "/artista",
-      "destination": "/artista/index.html"
-    },
-    {
-      "source": "/contatti",
-      "destination": "/contatti/index.html"
-    },
-    {
-      "source": "/spedizione",
-      "destination": "/spedizione/index.html"
-    },
-    {
-      "source": "/FAQs",
-      "destination": "/FAQs/index.html"
-    },
-    {
-      "source": "/pricing-policy",
-      "destination": "/pricing-policy/index.html"
-    },
-    {
-      "source": "/storie-fatti-scientifici-polpo",
-      "destination": "/storie-fatti-scientifici-polpo/index.html"
-    },
-    {
-      "source": "/resi-rimborsi",
-      "destination": "/resi-rimborsi/index.html"
-    },
+    { "source": "/product/:slug", "destination": "/product/:slug/index.html" },
+    { "source": "/artista", "destination": "/artista/index.html" },
+    { "source": "/contatti", "destination": "/contatti/index.html" },
+    { "source": "/spedizione", "destination": "/spedizione/index.html" },
+    { "source": "/FAQs", "destination": "/FAQs/index.html" },
+    { "source": "/pricing-policy", "destination": "/pricing-policy/index.html" },
+    { "source": "/resi-rimborsi", "destination": "/resi-rimborsi/index.html" },
+
     {
       "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots|artist|contact|shipping|resi-e-rimborsi|Octopus-Facts).*)",
       "destination": "/index.html"
