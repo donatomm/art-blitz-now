@@ -311,7 +311,60 @@ The defaults should be no-op functions that don't break the component but also d
 
 ---
 
-## Quick Reference: The 6 Common Mistakes
+## Case Study 7: Product Page API Call Causing JSON Error
+
+### Problem
+Clicking Product > Back to Gallery causes `SyntaxError: Unexpected token '<'` JSON parse error.
+
+### Root Cause
+`Product.tsx` used `useProducts()` to fetch "fresh" data on every page load. When the API returned an error page (HTML) instead of JSON, `JSON.parse` threw an error. This also caused data inconsistency between Index (static) and Product (live).
+
+### Before (Wrong)
+```typescript
+// Product.tsx - WRONG: API call can fail with JSON error
+const Product = () => {
+  const staticProducts = getStaticProducts();
+  const { data: liveProducts, isLoading } = useProducts(); // ← Network request!
+  const { data: defaultPriceMap } = useDefaultPrices();    // ← Another request!
+  
+  // Mixing static and live data = inconsistency
+  const products = liveProducts ?? staticProducts;
+  
+  if (isLoading && staticProducts.length === 0) {
+    return <div>Loading...</div>; // ← Blocks render waiting for API
+  }
+  // ...
+};
+```
+
+### After (Correct)
+```typescript
+// Product.tsx - CORRECT: Static data only, no API calls
+const Product = () => {
+  // Use ONLY static products - no API calls that can fail
+  const products = getStaticProducts();
+  
+  // No loading state needed - static data is always available
+  // ...
+};
+```
+
+### Prevention Rule
+**In an SSG architecture, public content pages MUST use static data only.**
+
+API calls belong in:
+- Admin panels (behind auth)
+- User-specific features (cart checkout, etc.)
+- Real-time features (chat, notifications)
+
+They do NOT belong in:
+- Product pages (use `getStaticProducts()`)
+- Index/gallery pages (use static data)
+- Any page that should work offline or survive API failures
+
+---
+
+## Quick Reference: The 7 Common Mistakes
 
 | # | Mistake | Symptom | Prevention |
 |---|---------|---------|------------|
@@ -321,6 +374,7 @@ The defaults should be no-op functions that don't break the component but also d
 | 4 | RootLayout data fetch | Every page makes API calls on load | Use static data or conditional fetch in RootLayout |
 | 5 | Browser API at top level | SSG build fails or hydration mismatch | Wrap in `useEffect`, guard with `typeof window` |
 | 6 | Context without fallback | SSG throws errors | Provide safe default values |
+| 7 | Product page API call | JSON parse error on navigation | Use `getStaticProducts()` only on public pages |
 
 ---
 
