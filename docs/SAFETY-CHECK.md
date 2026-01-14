@@ -12,6 +12,8 @@
 | Does this add a component outside `<Suspense>` that makes API calls? | | If yes: WRAP IN SUSPENSE or move inside existing boundary |
 | Does this modify `routes.tsx` or add new routes? | | If yes: update `getStaticPaths` and verify SSG output |
 | Does this change require a database update to take effect? | | If yes: remind user to trigger rebuild after DB change |
+| Does this page use `useProducts()` instead of `getStaticProducts()`? | | If yes: MUST use static data on public pages to prevent JSON errors |
+| Have you run `npm run prebuild` after database changes? | | If no: static HTML will show stale content |
 
 ---
 

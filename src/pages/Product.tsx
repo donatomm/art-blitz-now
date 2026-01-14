@@ -1,7 +1,6 @@
 import { useParams, Link, Navigate } from "react-router-dom";
-import { useProducts } from "@/hooks/useProducts";
 import { getStaticProducts } from "@/hooks/useStaticProducts";
-import { useDefaultPrices, getDefaultPrice, normalizeDimension } from "@/hooks/useDefaultPrices";
+import { normalizeDimension } from "@/hooks/useDefaultPrices";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
@@ -41,17 +40,9 @@ const ChristmasDeadlineText = () => {
 const Product = () => {
   const { slug } = useParams<{ slug: string }>();
   
-  // Static products from prebuild (available immediately for SSG)
-  const staticProducts = getStaticProducts();
-  
-  // Live products from React Query (client-side hydration/refresh)
-  const { data: liveProducts, isLoading } = useProducts();
-  
-  // Fetch default prices for strikethrough display
-  const { data: defaultPriceMap } = useDefaultPrices();
-  
-  // Use live data if available, fallback to static for SSG render
-  const products = liveProducts ?? staticProducts;
+  // Use ONLY static products - no API calls that can fail with JSON errors
+  // Static data is baked at build time via prebuild.ts
+  const products = getStaticProducts();
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
@@ -144,12 +135,7 @@ const Product = () => {
   const handleNext = () => {
     setCarouselIndex((prev) => Math.min(maxIndex, prev + 1));
   };
-  // Only show loading if we have no data at all (static products should always be available for SSG)
-  if (isLoading && staticProducts.length === 0) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Caricamento...</div>
-      </div>;
-  }
+  // Static data is always available - no loading state needed
   if (!product) {
     return <div className="min-h-screen bg-background">
         <Navigation />
@@ -426,9 +412,14 @@ Grazie!`);
                         <span className="bg-gold text-black text-xs font-bold px-3 py-1 rounded flex items-center gap-2">
                           €{room.price}
                           {room.hasOffer && (() => {
-                            const defaultPrice = getDefaultPrice(defaultPriceMap, room.displayLabel);
-                            if (defaultPrice && defaultPrice > room.price) {
-                              return <span className="line-through opacity-60">€{defaultPrice}</span>;
+                            // Show original price strikethrough for offers
+                            // (uses the size's regular price, not external default_prices table)
+                            const matchingSize = product?.sizes.find(s => 
+                              normalizeDimension(s.dimensions) === normalizeDimension(room.displayLabel)
+                            );
+                            const originalPrice = matchingSize?.price;
+                            if (originalPrice && originalPrice > room.price) {
+                              return <span className="line-through opacity-60">€{originalPrice}</span>;
                             }
                             return null;
                           })()}
@@ -506,9 +497,8 @@ Grazie!`);
                 <div className="flex flex-wrap gap-2">
                   {activeSizes.map((size, index) => {
                     const hasOffer = !!(size.deal_label_enabled && size.deal_price && size.deal_price > 0);
-                    // Get default price from database for strikethrough
-                    const defaultPrice = getDefaultPrice(defaultPriceMap, size.dimensions);
-                    const displayDefaultPrice = defaultPrice ?? size.price;
+                    // Use regular price as the strikethrough price for offers
+                    const displayDefaultPrice = size.price;
                     return (
                       <button 
                         key={size.dimensions} 
