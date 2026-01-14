@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon, Save, Rocket } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon, Save, Rocket, Eye } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -433,9 +433,19 @@ const PagesTabContent = () => {
               <p className="text-xs text-muted-foreground">/{page.slug}</p>
               {page.seo_title && <p className="text-xs text-green-600 mt-1">🔍 SEO configurato</p>}
             </div>
-            <Button variant="ghost" size="icon" onClick={() => handleEditPage(page)}>
-              <Edit className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => window.open(`/${page.slug}`, '_blank')}
+                title="Anteprima"
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => handleEditPage(page)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+            </div>
           </div>)}
       </div>
     </TabsContent>;
@@ -733,6 +743,7 @@ const AdminPanel = () => {
   const [csvImportMode, setCSVImportMode] = useState<CSVImportMode>('merge');
   const [isMigratingImages, setIsMigratingImages] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [activeTab, setActiveTab] = useState("products");
   const csvInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -1192,9 +1203,22 @@ const AdminPanel = () => {
           <SheetHeader>
             <div className="flex items-center justify-between">
               <SheetTitle>Admin Panel</SheetTitle>
-              {isAuthenticated && <Button variant="ghost" size="sm" onClick={handleLogout}>
-                Esci
-              </Button>}
+              {isAuthenticated && (
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => window.open('/', '_blank')}
+                    title="Anteprima sito"
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
+                    Anteprima
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleLogout}>
+                    Esci
+                  </Button>
+                </div>
+              )}
             </div>
           </SheetHeader>
           
@@ -1218,7 +1242,7 @@ const AdminPanel = () => {
               </Button>
             </div>
           ) : (
-          <Tabs defaultValue="products" className="mt-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
             <TabsList className="grid w-full grid-cols-8">
               <TabsTrigger value="products">Prodotti</TabsTrigger>
               <TabsTrigger value="skus">SKUs</TabsTrigger>
