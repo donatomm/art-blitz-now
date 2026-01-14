@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run prebuild:products && npm run build",
+  "buildCommand": "npm run build",
   "redirects": [
     {
       "source": "/storie-fatti-scientifici-polpo",
