@@ -12,6 +12,7 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /ordine-personalizzato
 
 # Note: UUID product URLs (/product/{uuid}) are handled via 301 redirects
 # in the application code (src/pages/Product.tsx) to their canonical slug URLs.
