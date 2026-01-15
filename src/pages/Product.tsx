@@ -40,6 +40,11 @@ const ChristmasDeadlineText = () => {
 const Product = () => {
   const { slug } = useParams<{ slug: string }>();
   
+  // Layer 3: Client-side redirect for uppercase URLs to lowercase (SEO canonical)
+  if (slug && slug !== slug.toLowerCase()) {
+    return <Navigate to={`/product/${slug.toLowerCase()}`} replace />;
+  }
+  
   // Use ONLY static products - no API calls that can fail with JSON errors
   // Static data is baked at build time via prebuild.ts
   const products = getStaticProducts();
