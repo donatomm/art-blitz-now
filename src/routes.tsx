@@ -117,6 +117,10 @@ export const routes: RouteRecord[] = [
         path: "Octopus-Facts",
         element: <Navigate to="/storie-fatti-scientifici-polpo" replace />,
       },
+      {
+        path: "FAQs",
+        element: <Navigate to="/faqs" replace />,
+      },
       // Dynamic CMS pages - all pages from database
       // Slug mapping: database slug -> URL path (e.g., "artista" -> /artista)
       {
