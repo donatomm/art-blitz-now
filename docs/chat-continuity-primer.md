@@ -1,88 +1,112 @@
-# docs/chat-continuity-primer.md
-# CHAT CONTINUITY PRIMER (ChatGPT)
-## For Donato → ChatGPT Continuity
-Project: **octowonders SEO fixes and improvements**
-
-This file is the long, living record: decisions, workflows, checkpoints, and “truth tests”.
-Rules live in `docs/README_FOR_AI.md`. If there is a conflict, README wins.
+# CHAT CONTINUITY PRIMER (AI assistants)
+## For Donato → Continuity
+Project: **octowonders SEO fixes and improvements** (but follow scope guardrails)
 
 ---
 
-## SECTION A — Current context
+## SECTION A — CURRENT WORK SESSION CONTEXT
 
-### A1. What this project optimizes for
-- Reliable SSG output for crawlable routes.
-- Strong SEO hygiene (canonicals, sitemap, stable URLs, redirects safety).
-- Fast iteration without regressions.
+### A0. Capacity / Degradation Signal
+- Old chat felt: slightly degraded
+- What started failing:
+  - assistant went off-scope (kept mentioning SEO after user said “FORGET SEO”)
+  - assistant claimed “I can see the HTML” too confidently (user reaction: “stop”)
+- Constraints reasserted by user:
+  - **Forget SEO.**
+  - Execute only requested edits; stop immediately when told.
 
-### A2. Degradation signals
-If any happen, stop and checkpoint:
-- Assistant invents certainty (“I can see the HTML”).
-- Assistant goes off-scope or ignores constraints.
-- Plans change without verifying `dist/` output.
-- Summaries get rewritten repeatedly (Xerox effect).
+### A1. Primary Objective (One Sentence)
+Create a full ChatGPT chat-continuity primer (Markdown) populated with everything known from this chat, and preserve the OctoWonders repo/architecture understanding for future work.
+
+### A2. Scope Guardrails (What to Ignore)
+FORGET SEO unless Donato explicitly asks for SEO.  
+Do not keep fixing the /storie-fatti-scientifici-polpo page unless asked again.  
+No extra tangents.
+
+### A3. Current Status / Progress Marker
+COMPLETED:
+- A page-edit request was defined: translate EN→IT, insert HTML5 audio player with specific label and position, remove black horizontal line.
+- User fixed the page in Lovable (no further fixes requested).
+- Repo ZIP was provided so the assistant can learn project structure.
+- Claude chat-migration primer was adapted into a ChatGPT-oriented template.
+
+IN PROGRESS:
+- Producing the filled continuity primer (this document).
+
+NEXT:
+- None.
+
+### A4. Non-Negotiable Requirements (Hard Constraints)
+- direct, practical, skeptical; don’t waste tokens; minimize em-dashes
+- when user says “STOP,” stop immediately
+- when user says “FORGET X,” drop it immediately
+- don’t claim access to GitHub/Supabase/Vercel/Lovable unless user uploads content
+- copy/paste-ready; diff/patch preferred for edits
+
+### A4.1 Precedence rule (when docs/requests conflict)
+1) **User commands override everything**:
+   - STOP = stop immediately
+   - FORGET X = drop it immediately
+
+2) **This primer governs behavior + scope**:
+   - only do what’s requested
+   - avoid tangents
+   - don’t claim access you don’t have
+
+3) **Repo README governs architecture safety** when changes are requested:
+   - protect SSG output and routing stability
+   - avoid SPA-shell regressions
+
+Interpretation:
+- “FORGET SEO” means “don’t start SEO projects unasked,” not “break SSG.”
+
+### A5. Decisions Already Made (Do Not Re-litigate)
+1) Do not continue fixing the page unless asked.  
+2) Use repo ZIP to inform project architecture understanding.  
+3) SEO is out-of-scope unless user asks.
+
+### A6. Open Questions / Unknowns
+None blocking.
+
+### A7. Exact Next Step
+Deliver this primer; do nothing else.
 
 ---
 
-## SECTION B — Architecture snapshot (high level)
+## SECTION B — INPUTS & ARTIFACTS
 
-- Vite + React + TypeScript + Tailwind + shadcn UI
-- SSG via `vite-react-ssg`
-- Routing via `react-router` plus SSG static paths
-- Supabase is the data source
-  - Build-time prebuild generates static data for SSG
-  - Runtime hydration uses live data (React Query)
+### B1. Uploaded Files
+| File | What it is | Why it matters |
+|---|---|---|
+| `/mnt/data/art-blitz-now-main 2.zip` | Repo snapshot | Anchor architecture understanding |
+| `/mnt/data/Claude-chat_migration_primer_template-Date XX.XX.XX.md` | Claude primer template | Baseline adapted to ChatGPT |
 
-Key principle:
-- Crawlable pages must ship pre-rendered HTML in `dist/`, not empty SPA shells.
+### B2. Pasted Snippets
+Audio URL (historical request):
+https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/audio//POLPO-INTELLIGENZA_DIBATTITO_STREAMING.mp3
 
----
-
-## SECTION C — Operational workflows
-
-### C1. AM Preview Styling: stable CSS fix
-
-Problem:
-- Site CSS is hashed (`/assets/app-XXXX.css`) and changes after deploy, breaking AM preview styling.
-
-Fix:
-- Serve a stable CSS alias at `https://octowonders.com/app.css`
-- Configure AM preview styling to load:
-  1) `https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300&display=swap` (optional)
-  2) `https://octowonders.com/app.css` (required)
-- Remove any dependency on hashed `/assets/app-XXXX.css`.
-
-AM “nuke” procedure:
-1. In AM Preview Styling, click **Clear**
-2. Paste only the allowed URLs (each on its own line)
-3. Click **Extract CSS links**
-4. Confirm the loaded list does not include `/assets/app-*.css` and does not include concatenated garbage like `app.csshttps://...`
-
-Truth test:
-- Open `https://octowonders.com/app.css`
-- Expected: not 404, displays CSS text (Tailwind variables etc.)
-
-### C2. Vercel build settings: lifecycle hooks must run
-
-Problem observed:
-- `/app.css` returned 404 when `postbuild` did not run.
-
-Fix:
-- Vercel Build Command must be `npm run build`
-- Output directory must be `dist`
-- Avoid self-referential or duplicate commands like `npm run prebuild:products && npm run build` because `build` already triggers prebuild in this repo.
-
-Truth test:
-- After deploy, `https://octowonders.com/app.css` must load (not 404).
+Page URL referenced:
+https://octowonders.com/storie-fatti-scientifici-polpo
 
 ---
 
-## SECTION D — Content notes (RTL)
+## SECTION C — PROJECT SNAPSHOT (OctoWonders)
 
-If testing RTL articles and formatting looks chaotic:
-- Wrap the RTL block:
+- Stack: Vite + React + TypeScript + Tailwind/shadcn
+- Routing: react-router + vite-react-ssg
+  - `src/main.tsx` uses `ViteReactSSG`
+  - `src/routes.tsx` defines routes with `getStaticPaths`
+- Data: Supabase (products, pages, site_settings) using supabase client + React Query hooks (useProducts/usePages)
+- Build: `scripts/prebuild.ts` (via `npm run prebuild:products`) generates:
+  - `src/generated/staticProducts.ts`, `staticPages.ts`, `staticSiteSettings.ts`
+  - `products.json`, `pages.json`
+- Rendering: pages/products render from generated static data for SSG, then hydrate with live data
+- Content: `PageContent` renders markdown-like text and full HTML with sanitize utilities
+- Sitemap: `vite.config.ts` plugin from products.json/pages.json writes sitemap.xml to public and dist
+- Redirects: Vercel edge `middleware.ts` handles `/product/{uuid}` → 308 redirect to slug (else 410)
 
-```html
-<div dir="rtl" style="text-align:right;">
-  <!-- RTL content -->
-</div>
+---
+
+## VERSION
+Filled snapshot: **2026-01-10**
+Visible: 0% - 100%
