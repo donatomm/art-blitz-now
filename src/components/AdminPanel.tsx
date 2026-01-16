@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { normalizeSlug } from "@/lib/utils";
 import { Product, ProductSize, MockRoom } from "@/types/product";
 import { useProducts, useUpdateProduct, useCreateProduct, useDeleteProduct } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
@@ -1378,7 +1379,11 @@ const AdminPanel = () => {
                   <span className="text-muted-foreground text-sm whitespace-nowrap">/prodotti/</span>
                   <Input 
                     value={editProduct.slug || ''} 
-                    onChange={e => setEditProduct({...editProduct, slug: e.target.value || undefined})}
+                    onChange={e => {
+                      const raw = e.target.value;
+                      const normalized = raw ? normalizeSlug(raw) : undefined;
+                      setEditProduct({...editProduct, slug: normalized});
+                    }}
                     placeholder="inserisci-slug-qui"
                   />
                 </div>
