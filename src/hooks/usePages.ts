@@ -1,6 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+// Check if running in Lovable preview (not production)
+const isLovablePreview = typeof window !== 'undefined' && 
+  (window.location.hostname.includes('lovable.app') || 
+   window.location.hostname.includes('localhost'));
+
 export interface Page {
   id: string;
   slug: string;
@@ -25,6 +30,7 @@ export const usePages = () => {
       if (error) throw error;
       return data as Page[];
     },
+    enabled: isLovablePreview,
   });
 };
 
@@ -41,6 +47,7 @@ export const usePage = (slug: string) => {
       if (error) throw error;
       return data as Page | null;
     },
+    enabled: isLovablePreview,
   });
 };
 
