@@ -12,7 +12,7 @@ import * as path from 'path';
 const SUPABASE_URL = "https://xqubydbsoucrwqhddodw.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdWJ5ZGJzb3VjcndxaGRkb2R3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4Mzc3MTEsImV4cCI6MjA4MDQxMzcxMX0.gf9hyzaMNAolSwlmUzVlkpopoM24jWiyiGuGsL5REnI";
 
-// Normalize slug to URL-safe format
+// Normalize slug to URL-safe format (supports nested paths like "blog/article")
 const normalizeSlug = (slug: string | null | undefined): string | null => {
   if (!slug) return null;
   return slug
@@ -20,9 +20,10 @@ const normalizeSlug = (slug: string | null | undefined): string | null => {
     .normalize('NFD')                    // Decompose accented chars (è → e + combining accent)
     .replace(/[\u0300-\u036f]/g, '')     // Remove combining accents
     .replace(/\s+/g, '-')                // Spaces → hyphens
-    .replace(/[^a-z0-9-]/g, '')          // Remove invalid chars
+    .replace(/[^a-z0-9\/-]/g, '')        // Keep / for nested paths
     .replace(/-+/g, '-')                 // Collapse multiple hyphens
-    .replace(/^-|-$/g, '');              // Trim leading/trailing hyphens
+    .replace(/\/+/g, '/')                // Collapse multiple slashes
+    .replace(/^[-\/]+|[-\/]+$/g, '');    // Trim leading/trailing hyphens and slashes
 };
 
 // Normalize sizes to ensure all fields have defaults
