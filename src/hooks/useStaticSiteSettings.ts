@@ -1,12 +1,17 @@
 /**
- * Hook for site settings
- * ALWAYS fetches live data from database
- * Static data is used only as initial fallback while loading
+ * SSG-safe hook for site settings
+ * In Lovable preview: fetches LIVE data from database
+ * In production: returns bundled data synchronously
  */
 
 import { useQuery } from '@tanstack/react-query';
 import { staticSiteSettings, StaticSiteSettings } from '@/generated/staticSiteSettings';
 import { supabase } from '@/integrations/supabase/client';
+
+// Check if running in Lovable preview (not production)
+const isLovablePreview = typeof window !== 'undefined' && 
+  (window.location.hostname.includes('lovable.app') || 
+   window.location.hostname.includes('localhost'));
 
 // Helper to get setting value with default
 const getSetting = (settings: any[], key: string, defaultValue: any) => {
@@ -15,11 +20,11 @@ const getSetting = (settings: any[], key: string, defaultValue: any) => {
 };
 
 export const useStaticSiteSettings = (): StaticSiteSettings => {
-  // ALWAYS fetch live settings from database
+  // Fetch live settings in preview mode
   const { data: liveSettings } = useQuery({
     queryKey: ['site-settings-live'],
     queryFn: async () => {
-      console.log('[useStaticSiteSettings] Fetching LIVE settings...');
+      console.log('[useStaticSiteSettings] Fetching LIVE settings for preview...');
       const { data, error } = await supabase
         .from('site_settings')
         .select('*');
@@ -55,13 +60,14 @@ export const useStaticSiteSettings = (): StaticSiteSettings => {
         build_timestamp: new Date().toISOString(),
       } as StaticSiteSettings;
     },
+    enabled: isLovablePreview,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: 'always',
   });
   
-  // Use live data if available, static as fallback
-  return liveSettings ?? staticSiteSettings;
+  // Use live data in preview, static data in production
+  return isLovablePreview && liveSettings ? liveSettings : staticSiteSettings;
 };
 
 export default useStaticSiteSettings;
