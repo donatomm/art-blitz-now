@@ -12,6 +12,19 @@ import * as path from 'path';
 const SUPABASE_URL = "https://xqubydbsoucrwqhddodw.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdWJ5ZGJzb3VjcndxaGRkb2R3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4Mzc3MTEsImV4cCI6MjA4MDQxMzcxMX0.gf9hyzaMNAolSwlmUzVlkpopoM24jWiyiGuGsL5REnI";
 
+// Normalize slug to URL-safe format
+const normalizeSlug = (slug: string | null | undefined): string | null => {
+  if (!slug) return null;
+  return slug
+    .toLowerCase()
+    .normalize('NFD')                    // Decompose accented chars (è → e + combining accent)
+    .replace(/[\u0300-\u036f]/g, '')     // Remove combining accents
+    .replace(/\s+/g, '-')                // Spaces → hyphens
+    .replace(/[^a-z0-9-]/g, '')          // Remove invalid chars
+    .replace(/-+/g, '-')                 // Collapse multiple hyphens
+    .replace(/^-|-$/g, '');              // Trim leading/trailing hyphens
+};
+
 // Normalize sizes to ensure all fields have defaults
 const normalizeSizes = (sizes: unknown) => {
   if (!Array.isArray(sizes)) return [];
@@ -56,6 +69,7 @@ async function fetchProducts() {
   
   return data.map((item) => ({
     ...item,
+    slug: normalizeSlug(item.slug),      // Normalize slug to URL-safe format
     sizes: normalizeSizes(item.sizes),
     deal_label_enabled: item.deal_label_enabled ?? false,
     deal_label_text: item.deal_label_text ?? '',
