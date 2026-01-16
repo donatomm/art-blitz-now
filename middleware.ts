@@ -1,7 +1,4 @@
-// Layer 5: Edge-level middleware for URL normalization
-export const config = { 
-  matcher: ["/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots).*)"] 
-};
+export const config = { matcher: ["/product/:path*"] };
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -15,19 +12,8 @@ const uuidToSlug: Record<string, string> = {
 
 export default function middleware(req: Request) {
   const url = new URL(req.url);
-  const pathname = url.pathname;
-  
-  // Layer 5: Redirect any uppercase URL to lowercase (SEO canonical)
-  // This catches ALL uppercase URLs at the edge before they hit the app
-  if (pathname !== pathname.toLowerCase()) {
-    return Response.redirect(
-      new URL(pathname.toLowerCase() + url.search, url.origin), 
-      301
-    );
-  }
+  const parts = url.pathname.split("/").filter(Boolean);
 
-  // Product-specific UUID redirect logic
-  const parts = pathname.split("/").filter(Boolean);
   if (parts.length !== 2 || parts[0] !== "product") return;
 
   const maybeId = parts[1];

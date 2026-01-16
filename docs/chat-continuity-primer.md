@@ -1,5 +1,5 @@
-# CHAT CONTINUITY PRIMER (ChatGPT)
-## For Donato → ChatGPT Continuity
+# CHAT CONTINUITY PRIMER (AI assistants)
+## For Donato → Continuity
 Project: **octowonders SEO fixes and improvements** (but follow scope guardrails)
 
 ---
