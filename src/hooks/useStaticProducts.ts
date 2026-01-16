@@ -3,11 +3,6 @@ import { staticProducts } from '@/generated/staticProducts';
 import { supabase } from '@/integrations/supabase/client';
 import { Product, ProductSize, MockRoom } from '@/types/product';
 
-// Check if running in Lovable preview (not production)
-const isLovablePreview = typeof window !== 'undefined' && 
-  (window.location.hostname.includes('lovable.app') || 
-   window.location.hostname.includes('localhost'));
-
 // Helper to normalize mock_rooms from DB
 const normalizeMockRooms = (mockRooms: unknown): MockRoom[] => {
   if (!Array.isArray(mockRooms)) return [];
@@ -52,17 +47,17 @@ export const getStaticProductBySlug = (slug: string): Product | undefined => {
 
 /**
  * Hook for components that need products
- * In Lovable preview: fetches LIVE data from database
- * In production: returns static data (baked in at build time)
+ * ALWAYS fetches live data from database
+ * Static data is used only as initial fallback while loading
  */
 export const useStaticProducts = () => {
   const staticData = getStaticProducts();
   
-  // In Lovable preview, fetch live data from database
+  // ALWAYS fetch live data from database
   const { data: liveProducts, isLoading } = useQuery({
     queryKey: ['products-live'],
     queryFn: async () => {
-      console.log('[useStaticProducts] Fetching LIVE products for preview...');
+      console.log('[useStaticProducts] Fetching LIVE products...');
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -81,20 +76,19 @@ export const useStaticProducts = () => {
         is_new: item.is_new ?? false,
       })) as Product[];
     },
-    enabled: isLovablePreview,
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: 'always',
   });
   
-  // Use live data in preview, static data in production
-  const products = isLovablePreview && liveProducts ? liveProducts : staticData;
+  // Use live data if available, static as fallback
+  const products = liveProducts ?? staticData;
   
   return { 
     products,
     getBySlug: (slug: string) => products.find(p => p.slug === slug),
     data: products, 
-    isLoading: isLovablePreview ? isLoading : false,
+    isLoading,
     isError: false,
   };
 };
