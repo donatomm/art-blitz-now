@@ -7,6 +7,8 @@
       "permanent": true
     },
     { "source": "/Octopus-Facts", "destination": "/blog", "permanent": true },
+    
+    { "source": "/FAQs", "destination": "/faqs", "permanent": true },
 
     { "source": "/artist", "destination": "/artista", "permanent": true },
     { "source": "/contact", "destination": "/contatti", "permanent": true },
@@ -18,7 +20,6 @@
     { "source": "/artista", "destination": "/artista/index.html" },
     { "source": "/contatti", "destination": "/contatti/index.html" },
     { "source": "/spedizione", "destination": "/spedizione/index.html" },
-    { "source": "/FAQs", "destination": "/FAQs/index.html" },
     { "source": "/pricing-policy", "destination": "/pricing-policy/index.html" },
     { "source": "/resi-rimborsi", "destination": "/resi-rimborsi/index.html" },
 
