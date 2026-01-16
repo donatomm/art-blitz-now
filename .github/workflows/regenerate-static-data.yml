@@ -1,0 +1,65 @@
+name: Regenerate Static Data
+
+# Triggers:
+# 1. Manual dispatch from GitHub UI (for testing)
+# 2. Repository dispatch from external webhook (for Admin Panel "Sync+Deploy" button)
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [regenerate-static-data]
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # For public repos, GITHUB_TOKEN is auto-provided
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Regenerate static data from database
+        run: npm run prebuild:products
+        env:
+          NODE_ENV: production
+          
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git add -N src/generated/
+          if git diff --quiet src/generated/; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "📌 No changes detected in generated files"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "✅ Changes detected in generated files"
+          fi
+          
+      - name: Commit and push if changed
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add src/generated/
+          git commit -m "chore: regenerate static data from database [skip ci]"
+          git push
+          
+      - name: Trigger Vercel deployment
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          echo "✅ Push successful - Vercel will auto-deploy"
+          
+      - name: No deployment needed
+        if: steps.check_changes.outputs.changed == 'false'
+        run: |
+          echo "ℹ️ No changes detected - skipping deployment"
