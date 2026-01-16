@@ -121,11 +121,10 @@ export const routes: RouteRecord[] = [
         path: "FAQs",
         element: <Navigate to="/faqs" replace />,
       },
-      // Dynamic CMS pages - catch-all for nested paths (e.g., blog/article1)
-      // Slug mapping: database slug -> URL path (e.g., "artista" -> /artista, "blog/article1" -> /blog/article1)
-      // CMSPage handles NotFound internally if slug doesn't exist
+      // Dynamic CMS pages - all pages from database
+      // Slug mapping: database slug -> URL path (e.g., "artista" -> /artista)
       {
-        path: "*",
+        path: ":slug",
         element: <CMSPage />,
         entry: "src/pages/CMSPage.tsx",
         getStaticPaths: () => {
@@ -136,6 +135,10 @@ export const routes: RouteRecord[] = [
           console.log('[SSG] CMS page paths:', paths);
           return paths;
         },
+      },
+      {
+        path: "*",
+        element: withSuspense(NotFound),
       },
     ],
   },

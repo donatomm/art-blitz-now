@@ -56,12 +56,8 @@ async function fetchProducts() {
   
   return data.map((item) => ({
     ...item,
-    // Layer 4: Normalize slug (lowercase, collapse //, trim slashes)
-    slug: item.slug
-      ?.toLowerCase()
-      .replace(/\/+/g, '/')         // Collapse //
-      .replace(/^\/+|\/+$/g, '')    // Trim leading/trailing /
-      || item.slug,
+    // Layer 4: Normalize slug to lowercase (safety net)
+    slug: item.slug?.toLowerCase() || item.slug,
     sizes: normalizeSizes(item.sizes),
     deal_label_enabled: item.deal_label_enabled ?? false,
     deal_label_text: item.deal_label_text ?? '',
@@ -149,14 +145,10 @@ async function fetchPages() {
 
   const data = await response.json() as any[];
   
-  // Layer 4: Normalize slug (lowercase, collapse //, trim slashes)
+  // Layer 4: Normalize slug to lowercase (safety net)
   return data.map((page) => ({
     ...page,
-    slug: page.slug
-      ?.toLowerCase()
-      .replace(/\/+/g, '/')         // Collapse //
-      .replace(/^\/+|\/+$/g, '')    // Trim leading/trailing /
-      || page.slug,
+    slug: page.slug?.toLowerCase() || page.slug,
   }));
 }
 
