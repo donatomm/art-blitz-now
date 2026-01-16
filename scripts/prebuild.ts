@@ -155,7 +155,12 @@ async function fetchPages() {
     throw new Error(`Failed to fetch pages: ${response.status}`);
   }
 
-  return await response.json() as any[];
+  const data = await response.json() as any[];
+
+  return data.map((item) => ({
+    ...item,
+    slug: normalizeSlug(item.slug),      // Normalize slug to URL-safe format
+  }));
 }
 
 async function main() {
