@@ -11,6 +11,7 @@ import { staticPages } from "@/generated/staticPages";
 import Index from "./pages/Index";
 import Product from "./pages/Product";
 import CMSPage from "./pages/CMSPage";
+import NestedCMSPage from "./pages/NestedCMSPage";
 
 // Lazy-loaded pages (special pages not from CMS)
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -117,18 +118,31 @@ export const routes: RouteRecord[] = [
         path: "Octopus-Facts",
         element: <Navigate to="/storie-fatti-scientifici-polpo" replace />,
       },
-      // Dynamic CMS pages - all pages from database
-      // Slug mapping: database slug -> URL path (e.g., "artista" -> /artista)
+      // Dynamic CMS pages - single segment slugs (e.g., "artista")
       {
         path: ":slug",
         element: <CMSPage />,
         entry: "src/pages/CMSPage.tsx",
         getStaticPaths: () => {
-          // Filter out pages that have special handling
+          // Filter out pages that have special handling or nested paths
           const paths = staticPages
-            .filter(p => !specialPageSlugs.includes(p.slug))
+            .filter(p => !specialPageSlugs.includes(p.slug) && !p.slug.includes('/'))
             .map(p => p.slug);
-          console.log('[SSG] CMS page paths:', paths);
+          console.log('[SSG] CMS page paths (single):', paths);
+          return paths;
+        },
+      },
+      // Nested CMS pages - two segment slugs (e.g., "blog/article-title")
+      {
+        path: ":category/:slug",
+        element: <NestedCMSPage />,
+        entry: "src/pages/NestedCMSPage.tsx",
+        getStaticPaths: () => {
+          // Only pages with nested paths like "blog/article"
+          const paths = staticPages
+            .filter(p => p.slug.includes('/'))
+            .map(p => p.slug);
+          console.log('[SSG] CMS page paths (nested):', paths);
           return paths;
         },
       },
