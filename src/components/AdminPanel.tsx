@@ -32,7 +32,7 @@ interface NavItem {
   order: number;
 }
 
-// Generate slug from title
+// Generate slug from title (allows / for nested paths like blog/article1)
 const generateSlug = (title: string): string => {
   return title
     .toLowerCase()
@@ -42,8 +42,9 @@ const generateSlug = (title: string): string => {
     .replace(/[òóôõö]/g, 'o')
     .replace(/[ùúûü]/g, 'u')
     .replace(/[ñ]/g, 'n')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replace(/[^a-z0-9/-]+/g, '-')  // Allow / for nested paths
+    .replace(/\/+/g, '/')           // Collapse multiple slashes
+    .replace(/^[-/]+|[-/]+$/g, ''); // Trim leading/trailing - or /
 };
 
 // Pages Editor sub-component
@@ -259,8 +260,14 @@ const PagesTabContent = () => {
               <span className="text-muted-foreground">/</span>
               <Input 
                 value={editSlug} 
-                onChange={e => setEditSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} 
-                placeholder="nome-pagina"
+                onChange={e => setEditSlug(
+                  e.target.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9/-]/g, '')  // Allow / for nested paths
+                    .replace(/\/+/g, '/')         // Collapse //
+                    .replace(/^\/+|\/+$/g, '')    // Trim leading/trailing /
+                )} 
+                placeholder="blog/nome-pagina"
               />
             </div>
             <p className="text-xs text-amber-600 mt-1">
@@ -379,8 +386,14 @@ const PagesTabContent = () => {
               <span className="text-muted-foreground">/</span>
               <Input 
                 value={newSlug} 
-                onChange={e => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} 
-                placeholder="chi-siamo"
+                onChange={e => setNewSlug(
+                  e.target.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9/-]/g, '')  // Allow / for nested paths
+                    .replace(/\/+/g, '/')         // Collapse //
+                    .replace(/^\/+|\/+$/g, '')    // Trim leading/trailing /
+                )} 
+                placeholder="blog/chi-siamo"
               />
             </div>
             <p className="text-xs text-muted-foreground mt-1">L'URL sarà: octowonders.com/{newSlug}</p>
