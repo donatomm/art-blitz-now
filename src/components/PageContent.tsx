@@ -190,8 +190,9 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-16 pb-16">
+    <>
       <Navigation />
+      <div className="min-h-screen bg-background pt-16 pb-16">
       <SEO 
         title={page.seo_title || page.title}
         description={page.seo_description || `${page.title} - OctoWonders`}
@@ -215,7 +216,8 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
           {children}
         </div>
       </main>
-    </div>
+      </div>
+    </>
   );
 };
 
