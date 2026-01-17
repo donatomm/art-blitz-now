@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
+import Navigation from "@/components/Navigation";
 import NotFound from "@/pages/NotFound";
 import { usePage } from "@/hooks/usePages";
 import { getStaticPageBySlug } from "@/hooks/useStaticPages";
@@ -196,6 +197,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
 
   return (
     <div className="min-h-screen bg-background pt-16 pb-16">
+      <Navigation />
       <SEO 
         title={page.seo_title || page.title}
         description={page.seo_description || `${page.title} - OctoWonders`}
