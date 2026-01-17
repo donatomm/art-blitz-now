@@ -1,6 +1,6 @@
 /**
  * Static pages data for SSG
- * Auto-generated at build time - DO NOT EDIT MANUALLY
+ * Auto-generated - DO NOT EDIT MANUALLY
  */
 
 import { Page } from '@/hooks/usePages';
@@ -10,12 +10,23 @@ export const staticPages: Page[] = [
     "id": "ffe9db77-a890-4b31-8982-79d8471e0230",
     "slug": "artista",
     "title": "Chi Sono",
-    "content": "Ciao, sono **Marco De Francesco** — che è uno pseudonimo :-)\n\nLE ORIGINI\n\nTutto iniziò con un polpo. Vero. \n\nNon un polpo qualsiasi: un Octopus Vulgaris catturato dal mio caro amico Enrico \"Pencho\" - agronomo, pescatore subacqueo -  nelle acque del Golfo Paradiso, in Liguria.\n\nDa appassionato di cucina e amante del polpo, l'ho cotto alla giapponese per esaltarne la pigmentazione originale e la texture. \n\nCottura breve, 5 minuti. Il polpo si arriccia, prende una tonalità di rosso unica.\n\nAd un certo punto, ammiro questo polpo nella a pentola, …realizzo, …è meraviglioso.\n![Immagine](https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/pages/1766900501898-7c7if.webp)\n\nNe ho fatto una foto per il mio album \"foodie\".\nChe è quella che vedete qui sopra\n\nUn giorno, giocando con app di editing sul mio iPhone, ho applicato qualche stile pittorico alla foto. Il risultato fu interessante.   \n\nCi ho giocato ancora, provando mille permutazioni. Ne è venuta fuori un'immagine notevole.\n\n![Immagine](https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/pages/1766900560194-1h351i.webp)\n\nL'ho stampata su carta. Ne ho fatto un quadretto.   \n\nPoi ho scoperto il mondo delle stampe su canvas e ne ho fatta una tela che un mio amico ha adorato - gliel'ho regalata. \n\n\nHo trovato nuovi soggetti, anche non in cottura, e mi sono sbizzarrito con esperimenti.   \n\nMi sono ritrovato con diverse tele che i miei amici si sono regalate per Natale.\n\nE tutto partì da lì. In quella cucina, in quella pentola\n\n## L'Arte che Non Si Ferma\n\nDi giorno sono un Product Marketer nel mondo tech. Dopo il tramonto creo queste opere che vedete su OctoWonders.\n\n## Perché Condividere\n\nIn tanti mi hanno spinto a condividere le mie creazioni.\n\n**Mi hanno convinto con un'idea semplice:** l'arte non è arte se resta chiusa in un cassetto. Va condivisa, vissuta, appesa al muro di qualcuno che se la può godere.\n\n## L'intento\nCon questo progetto voglio permettere la trasformazione di pareti noiose in murali vividi e vibranti. \n\nUn'opera potente cambia drasticamente l'atmosfera di una stanza. L'ambiente intorno a noi influenza profondamente come ci sentiamo e pensiamo. \n\nIn definitiva, l'arte visiva può plasmare la nostra mentalità e ispirare a vivere ogni giorno al meglio.\n\nNon per tutti. Solo per chi non vuole il solito. Per chi sa che l'arte  non decora, accende.\n\n\n## Un'Operazione Artigianale\n\nQuesta è un'operazione artigianale al 100%.\n\nHo messo su questo sito facendo le ore piccole, tra una call di lavoro e l'altra. Perdonatemi per qualche problemino tecnico — sono un marketer, non uno sviluppatore :-)\n\nMancherà qualche parte, ma ci sto già lavorando su\n\n**Ma sulla qualità non scendo a compromessi:**\n\n- Ogni opera è creata con tecniche manuali e digitali in sequenza\n- **Zero AI, 0%** — solo il mio occhio, le mie mani, la mia visione\n- Stampe professionali su tela con tecnologia HP Latex\n- Colori brillanti garantiti 70 anni, e resistenti alla luce\n- Pronte da appendere!\n\nLa trama della tela stampata è molto simile a quella dei dipinti ad olio. \n\nL'effetto estetico è quello di un quadro senza cornice, perfetto per decorare qualsiasi stanza, sia a casa che in azienda, ma anche una perfetta idea regalo in grado di emozionare chi lo riceve grazie alla possibilità di donare un oggetto unico e personalizzato.\n\n## Pagamenti Sicuri\n\nNiente preoccupazione per i pagamenti: uso **Stripe**, lo standard mondiale per transazioni online sicure. Le stesse tecnologie che usano Amazon, Shopify, e migliaia di aziende globali.\n\n## Chi Ha Già Le Mie Opere\n\nSto creando una sezione per recensioni, ma posso anticiparti che chi ha le mie opere in giro per l'Italia e l'Europa è rimasto molto contento/a.\n\n---\n\n## Enjoy e Buone Feste! 🎄\n\nSe hai domande, dubbi, o vuoi semplicemente dirmi cosa ne pensi — scrivimi. Rispondo sempre.\n\n",
+    "content": "",
     "content_type": "markdown",
     "seo_title": "Chi Sono - Marco De Francesco | OctoWonders",
     "seo_description": "Autore: Marco De Francesco, Opere d'arte originali su tela a tema marino: polpi,pesci, vibranti Stampe su Tela per le tue pareti",
     "created_at": "2025-12-05T19:48:40.846496+00:00",
-    "updated_at": "2026-01-06T06:50:18.338754+00:00"
+    "updated_at": "2026-01-07T19:50:15.516094+00:00"
+  },
+  {
+    "id": "f3d6c088-5598-449f-9da2-a55418aa92e2",
+    "slug": "blog",
+    "title": "🟢 Polpo: Scienza e Storie incredibili",
+    "content": "",
+    "content_type": "html",
+    "seo_title": "Blog about science and incredible stories about Polpo.",
+    "seo_description": "I comportamenti \"intelligenti\" del polpo: dibattito tra scienziati ed esperti. Le mirabolanti storie del polpo, tra clamorose evasioni, im mondiale del 2010, ..",
+    "created_at": "2026-01-12T01:10:35.713069+00:00",
+    "updated_at": "2026-01-17T02:03:22.334832+00:00"
   },
   {
     "id": "5a8af9a2-9cec-4000-9934-3494690dbd58",
@@ -29,92 +40,92 @@ export const staticPages: Page[] = [
     "updated_at": "2025-12-28T05:13:10.091131+00:00"
   },
   {
-    "id": "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a",
-    "slug": "FAQs",
-    "title": "FAQs",
-    "content": "<h1 style=\"font-size: 3em; font-weight: bold; margin-bottom: 0;\">FAQs</h1>\n<p style=\"font-size: 1em; margin-top: 5px;\">Domande frequenti. OctoWonders - Versione Preliminare</p>\n\n<hr>\n---\n\n<div style=\"color: #0056D2; background-color: #F0F0F0; padding: 10px; border-radius: 4px; font-family: sans-serif; margin-bottom: 10px;\"><b>STAMPE E QUALITÀ</b></div>\n\n<div style=\"color: #0056D2; background-color: #F0F0F0; padding: 10px; border-radius: 4px; font-family: sans-serif; margin-bottom: 10px;\"><b>1. Le opere/stampe sono fatte a mano o con l'intelligenza artificiale?</b></div>\n\nQuasi ogni opera è creata manualmente da Marco De Francesco. Alcune opere si inspirano da scatti di fotografi professionisti, citati come autori. L'applicazione di effetti digitali è, a mio parere, equivalente a passaggi di pennello. Uso tecniche che aggiungono strati di creazione o modifica sia manuali sia digitali, in sequenza. Ma ogni passaggio, e ve ne sono a volte centinaia, è controllato da me. Quando vedo quello che avevo in testa, o che mi sorprende, scelgo.<br><br>\n\nL'Intelligenza Artificiale viene usata di rado, per ritocchi. Ad esempio per rimuovere uno sfondo, cancellare un particolare. MAI per la creazione di soggetti. La stampa su tela è professionale (tecnologia HP Latex), ma l'arte è 100% artigianale. Va beh, 99%.<br><br>\n\nIn teoria un'opera deve piacere, stimolare, creare un'aurea, una sorgente di interesse e di stile. AI o non AI, il principio resta.\nSin dal'inizio ho deciso di collegare alcune opere con la loro genesi, la loro storia che ho vissuto personalmente. Quando possibile. Questo rende queste opere più mie, e la cosa mi piace. <br><br>",
+    "id": "9a7146bb-3c10-4df5-becb-95964f59c5f8",
+    "slug": "faqs",
+    "title": "🟢 FAQs",
+    "content": "",
     "content_type": "html",
-    "seo_title": "FAQs - Domande Frequenti | OctoWonders",
-    "seo_description": "Risposte alle domande più comuni su stampe su tela, spedizione, resi e pagamenti su OctoWonders.",
+    "seo_title": "Faqs - Frequently Asked Questions - Octowonders",
+    "seo_description": "FAQs ed Informazioni importanti per i clienti di Octowonders. Leggi prima di effettuare un ordine. Non sbagliare indirizzo!!",
     "created_at": "2025-12-05T19:48:40.846496+00:00",
-    "updated_at": "2025-12-28T05:13:10.091131+00:00"
+    "updated_at": "2026-01-15T01:34:13.814035+00:00"
   },
   {
-    "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+    "id": "2485b239-64e0-4fa2-acfb-77ccd4f69947",
     "slug": "ordine-personalizzato",
     "title": "Ordine Personalizzato",
-    "content": "# Ordine Personalizzato\n\nVuoi una misura particolare? Un'opera adattata al tuo spazio? Contattami e troviamo la soluzione perfetta.\n\n## Come Funziona\n\n1. **Contattami** via WhatsApp o email\n2. **Descrivi** cosa ti serve (misure, opera, dettagli)\n3. **Ricevi** preventivo entro 24 ore\n4. **Conferma** e procediamo\n\n## Cosa Posso Personalizzare\n\n- Misure non standard\n- Telaio da 4cm invece di 2cm\n- Cornici (solo formati piccoli)\n- Stampe su Alluminio Dibond™\n\n**Nota**: Le misure personalizzate non sono rimborsabili.",
+    "content": "# Ordine Personalizzato",
     "content_type": "markdown",
-    "seo_title": "Ordine Personalizzato | OctoWonders",
-    "seo_description": "Richiedi stampe su tela personalizzate: misure speciali, telai, cornici. Contatta OctoWonders per un preventivo.",
-    "created_at": "2025-12-05T19:48:40.846496+00:00",
-    "updated_at": "2025-12-28T05:13:10.091131+00:00"
+    "seo_title": "Ordine Personalizzato - OctoWonders",
+    "seo_description": "Richiedi un ordine personalizzato: dimensioni, stile bordo, cornici, stampa su Alluminio Dibond, Acrilico, poster",
+    "created_at": "2025-12-19T22:03:05.134114+00:00",
+    "updated_at": "2025-12-28T23:36:22.871757+00:00"
   },
   {
-    "id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+    "id": "ce78027d-dbbf-4e4f-a421-ed1e35132ccf",
     "slug": "pricing-policy",
-    "title": "Politica Prezzi",
-    "content": "# Politica Prezzi\n\n## Trasparenza Totale\n\nI prezzi riflettono i costi reali del fornitore di stampa. L'arte non si sconta; i materiali, la procedura di imballaggio e la spedizione sì.\n\n- Quando i materiali aumentano, aggiorno i prezzi\n- Quando il fornitore fa promozioni, li abbasso\n\nNon tengo margini fissi — adatto in base ai costi reali. Se risparmio io, risparmiate anche voi.\n\n## Spedizione\n\n**Gratuita** per Italia continentale e Sicilia.\n\nPer la Sardegna contattaci prima (logistica in corso).\n\nPaesi UE disponibili su richiesta.",
+    "title": "Prezzi",
+    "content": "**Tutti i prezzi sono IVA inclusa**\n\nI prezzi delle opere dipendono dall'arte che non si sconta mai, e dallo sconto del fornitore (stampa ed intelaiatura) che ogni tanto fa offerte. Non appena ricevo uno sconto ve lo passo, lo applico subito al prezzo delle opere.\n\n## Aspetto e Spessore Tela/Telaio\n\nLe tele vengono montate su un telaio di abete rosso **2 cm** di spessore, che ha un aspetto ottimo.\n\nSu richiesta, ad un prezzo intorno  ai **10-15 EUR**, si può richiedere uno spessore di **4 cm**. Consigliato per tele ampie, come 90x6075x100 o 80x120.\n\nDetto questo, vi consiglio le misure grandi. La resa è incredibile. Se non c'e' un limite fisico, come una stanza proprio piccola, andate almeno sul 90x60. Sono Strepitose. Se poi non vi piacciono (mai accaduto) troviamo una soluzione.\n\n![Confronto spessori telaio: 2cm standard e 4cm su richiesta](/images/spessori-telaio.jpg)\n\n![Dettaglio angolo tela e telaio](/images/preview-tela-angolo.png)",
     "content_type": "markdown",
-    "seo_title": "Politica Prezzi | OctoWonders",
-    "seo_description": "Prezzi trasparenti per stampe su tela. Spedizione gratuita in Italia. Scopri la nostra politica prezzi.",
-    "created_at": "2025-12-05T19:48:40.846496+00:00",
-    "updated_at": "2025-12-28T05:13:10.091131+00:00"
+    "seo_title": "Politica Prezzi",
+    "seo_description": "Politica prezzi OctoWonders. Prezzi IVA inclusa, spessore telaio personalizzabile. Sconti del fornitore applicati immediatamente.",
+    "created_at": "2025-12-28T06:35:38.436351+00:00",
+    "updated_at": "2026-01-05T16:26:20.769913+00:00"
   },
   {
-    "id": "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
+    "id": "e5ddee44-5a54-477c-bdca-6b327250efc3",
     "slug": "privacy",
     "title": "Privacy Policy",
-    "content": "# Privacy Policy\n\nLa tua privacy è importante. Ecco come trattiamo i tuoi dati.\n\n## Dati Raccolti\n\n- **Email e indirizzo**: Solo per spedizione e comunicazioni ordine\n- **Dati pagamento**: Gestiti da Stripe (non li vediamo mai)\n\n## Come Li Usiamo\n\n- Processare e spedire ordini\n- Comunicare aggiornamenti sull'ordine\n- Rispondere a tue richieste\n\n## Condivisione\n\nNon vendiamo né condividiamo i tuoi dati con terze parti, eccetto:\n- Stripe (pagamenti)\n- Corrieri (spedizione)\n\n## I Tuoi Diritti\n\nPuoi richiedere cancellazione dei tuoi dati in qualsiasi momento via email.",
+    "content": "",
     "content_type": "markdown",
-    "seo_title": "Privacy Policy | OctoWonders",
-    "seo_description": "Informativa privacy di OctoWonders. Come trattiamo i tuoi dati personali.",
-    "created_at": "2025-12-05T19:48:40.846496+00:00",
-    "updated_at": "2025-12-28T05:13:10.091131+00:00"
+    "seo_title": "Informativa sulla privacy",
+    "seo_description": "Informativa sulla privacy di OctoWonders. Come raccogliamo, utilizziamo e proteggiamo i tuoi dati personali.",
+    "created_at": "2025-12-28T06:35:38.436351+00:00",
+    "updated_at": "2026-01-07T13:55:54.758532+00:00"
   },
   {
-    "id": "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8b",
+    "id": "529e7bf5-854c-43ea-92fc-4731c3795bba",
     "slug": "resi-rimborsi",
     "title": "Resi e Rimborsi",
-    "content": "# Resi e Rimborsi\n\n## Garanzia Soddisfatti o Rimborsati\n\nHai **14 giorni** dalla consegna per restituire il prodotto se non sei soddisfatto.\n\n## Come Richiedere un Reso\n\n1. Contattami via email o WhatsApp\n2. Descrivi il motivo\n3. Ti invio le istruzioni per la restituzione\n\n## Rimborso\n\n- Rimborso completo entro 7 giorni dalla ricezione del reso\n- Spese di spedizione reso a carico tuo (salvo difetti)\n\n## Eccezioni\n\n**Non rimborsabili:**\n- Misure personalizzate\n- Prodotti danneggiati dall'uso\n\n## Prodotto Danneggiato\n\nSe il prodotto arriva danneggiato, contattami entro 48 ore con foto. Sostituzione gratuita o rimborso completo.",
+    "content": "# Resi e Rimborsi\n\n## Diritto di Recesso\n\nHai **14 giorni** dalla ricezione del prodotto per esercitare il diritto di recesso, senza dover fornire alcuna motivazione.\n\n## Come Richiedere un Reso\n\n1. **Contattaci** via email o WhatsApp\n2. **Descrivi** il motivo del reso\n3. **Attendi** le istruzioni per la spedizione\n4. **Imballa** accuratamente il prodotto\n5. **Spedisci** all'indirizzo indicato\n\n## Condizioni per il Rimborso\n\n- Il prodotto deve essere **integro e non danneggiato**\n- Deve essere nella **confezione originale**\n- Le spese di spedizione per il reso sono **a carico del cliente**\n\n## Tempistiche di Rimborso\n\nIl rimborso verrà effettuato entro **14 giorni lavorativi** dalla ricezione del reso, utilizzando lo stesso metodo di pagamento usato per l'acquisto.\n\n## Prodotti Non Rimborsabili\n\nI **prodotti personalizzati** o realizzati su misura non possono essere resi, salvo difetti di fabbricazione.\n\n## Prodotti Danneggiati o Difettosi\n\nIn caso di prodotto danneggiato o difettoso, contattaci immediatamente allegando foto del problema. Provvederemo alla sostituzione o al rimborso completo.",
     "content_type": "markdown",
-    "seo_title": "Resi e Rimborsi | OctoWonders",
-    "seo_description": "Politica resi e rimborsi OctoWonders. Garanzia soddisfatti o rimborsati entro 14 giorni.",
-    "created_at": "2025-12-05T19:48:40.846496+00:00",
+    "seo_title": "Resi e Rimborsi - OctoWonders",
+    "seo_description": "Politica di resi e rimborsi per acquisti su OctoWonders. Scopri come richiedere un reso entro 14 giorni.",
+    "created_at": "2025-12-19T22:03:05.134114+00:00",
     "updated_at": "2025-12-28T05:13:10.091131+00:00"
   },
   {
-    "id": "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b",
+    "id": "18ec4fff-a77b-45e8-a0b4-6ae632d53691",
     "slug": "spedizione",
     "title": "Spedizione",
-    "content": "# Spedizione\n\n## Tempi\n\n- **Produzione**: 1 giorno lavorativo\n- **Spedizione**: 3-5 giorni lavorativi\n- **Totale**: 4-6 giorni lavorativi\n\n## Costi\n\n- **Italia continentale e Sicilia**: GRATUITA\n- **Sardegna**: Contattaci prima\n- **Altri paesi UE**: Su richiesta\n\n## Corrieri\n\nSpediamo principalmente con **UPS**. In alcuni casi GLS o GEL/Bartolini.\n\n## Tracking\n\nRicevi link di tracciamento via email appena il pacco viene spedito.\n\n## Consegna\n\nPuoi indicare una \"zona sicura\" al checkout se non sei sicuro di essere a casa.",
+    "content": "Questo documenti ti aiuta a capire come funzionano le spedizioni e quali sono i tuoi diritti da consumatore secondo [Il Codice Di Consumo](https://www.mimit.gov.it/it/mercato-e-consumatori/tutela-del-consumatore/codice-del-consumo) \n\nNon hai bisogno di leggere tutto, ma è importante avere delle norme come da legge. \n\nIo mi affido al buon senso e ti aiutero' sempre in caso di problemi. Tutto è regolato da  **Regole e condizioni di Vendita** accessibile piè di pagina. \n\nQui di seguito la loro essenza:\n\n## Tempi di Consegna\n\n**La tua opera sarà:**\n\n- Stampata su tela in **24 ore**\n- Consegnata in **3-5 giorni lavorativi**\n\nOgni stampa è imballata professionalmente con materiali protettivi per garantire che arrivi in perfette condizioni.\n\n---\n\n## Costi di Spedizione\n\n**GRATIS** per Italia Peninsulare e Sicilia\n**Sardegna e isole: EUR 17** \n**San Marino: €59 (manco fosse in Groenlandia, è 1h da casa mia...)** - Suggerisco di usare un **indirizzo Italiano**, come amici, un negozio di fiducia, un centro postale etc. in quel caso è Gratis\n\n**Altri Paesi UE + UK** \n\nContattaci prima dell'acquisto in quanto richiede un diverso servizio di stampa e corriere, con prezzi diversi, spesso maggiori dei miei, ma ragionevoli. \n\nIn *EU* e *UK*  è anche spesso disponibile UPS EXPRESS (consegna in *24h*) per un costo extra, standard.\n\n---\n\n## Rimborsi\n\nVogliamo che tu ami la tua opera.\n\nConsulta la pagina Resi e Rimbrsi\nhttps://octowonders.com/resi-e-rimborsi\n\n\n**Se non sei soddisfatto:**\n\n- Contattaci entro **14 giorni dalla consegna**\n- Ti rimborseremo o sostituiremo l'opera\n\n**Nota:** Gli ordini personalizzati (dimensioni non standard) non sono rimborsabili, ma troveremo una soluzione.\n\n---",
     "content_type": "markdown",
-    "seo_title": "Spedizione | OctoWonders",
-    "seo_description": "Spedizione gratuita in Italia. Tempi di consegna 4-6 giorni. Tracking incluso.",
+    "seo_title": "Spedizione gratuita in Italia, tracciamento del tuo pacco",
+    "seo_description": "Informazioni su spedizione, tmpi di consegna e costi. Spedizione gratuita in Italia, Info su spedizioni in paesi EU e UK",
     "created_at": "2025-12-05T19:48:40.846496+00:00",
-    "updated_at": "2025-12-28T05:13:10.091131+00:00"
+    "updated_at": "2026-01-07T14:05:21.268234+00:00"
   },
   {
-    "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c",
+    "id": "d4666d20-6cb1-4108-b3dd-9c3a424afd87",
     "slug": "storie-fatti-scientifici-polpo",
-    "title": "Storie e Fatti Scientifici sul Polpo",
-    "content": "# Storie e Fatti Scientifici sul Polpo\n\nIl polpo è una delle creature più affascinanti del mare. Ecco alcuni fatti incredibili.\n\n## Intelligenza Straordinaria\n\n- **3 cuori**: Due pompano sangue alle branchie, uno al resto del corpo\n- **9 cervelli**: Uno centrale e uno in ogni tentacolo\n- **Sangue blu**: Contiene rame invece di ferro\n\n## Capacità Uniche\n\n- Cambiano colore e texture in millisecondi\n- Possono aprire barattoli\n- Riconoscono volti umani\n- Usano strumenti\n\n## Il Polpo nell'Arte\n\nDa millenni il polpo affascina artisti e culture. Dai vasi greci ai dipinti giapponesi, questa creatura misteriosa continua a ispirare.\n\nLe mie opere catturano questa magia, trasformando il polpo in arte contemporanea che puoi portare a casa tua.",
-    "content_type": "markdown",
-    "seo_title": "Storie e Fatti Scientifici sul Polpo | OctoWonders",
-    "seo_description": "Scopri fatti incredibili sul polpo: 3 cuori, 9 cervelli, intelligenza straordinaria. Il polpo nell'arte.",
-    "created_at": "2025-12-05T19:48:40.846496+00:00",
-    "updated_at": "2025-12-28T05:13:10.091131+00:00"
+    "title": "🟢 Polpo: Scienza e Storie Incredibili",
+    "content": "",
+    "content_type": "html",
+    "seo_title": "polpo: scienza divulgazione e storie meravigliose vere",
+    "seo_description": "L'autore Marco De Francesco si trasforma in scrittore offrendo articoli scientifici e divulgativi, assieme a storie vere sul polpo che meraviglia: octowonders",
+    "created_at": "2026-01-05T20:39:23.244652+00:00",
+    "updated_at": "2026-01-12T08:31:30.312839+00:00"
   },
   {
-    "id": "a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c1d",
+    "id": "9a6556a0-db0a-4a1a-bd5d-a7ddac63df9c",
     "slug": "terms",
     "title": "Termini e Condizioni",
-    "content": "# Termini e Condizioni\n\n## Generale\n\nQuesto sito è gestito da Marco De Francesco (OctoWonders). Usando questo sito accetti questi termini.\n\n## Prodotti\n\n- Le immagini sono rappresentative; colori possono variare leggermente\n- Prezzi possono cambiare senza preavviso\n- Disponibilità soggetta a conferma\n\n## Ordini\n\n- L'ordine è confermato dopo pagamento\n- Ricevi email di conferma da Stripe\n- Possiamo rifiutare ordini a nostra discrezione\n\n## Proprietà Intellettuale\n\n- Tutte le opere sono protette da copyright\n- Acquisti la stampa fisica, non i diritti d'uso commerciale\n- Vietata riproduzione senza autorizzazione\n\n## Limitazione Responsabilità\n\nNon siamo responsabili per danni indiretti derivanti dall'uso del sito o dei prodotti.\n\n## Legge Applicabile\n\nQuesti termini sono regolati dalla legge italiana.",
+    "content": "# 📄 Termini e Condizioni di Vendita\n\nScarica il documento completo con i termini e le condizioni di vendita di OctoWonders.\n\n[Scarica PDF](/docs/termini-e-condizioni.pdf)",
     "content_type": "markdown",
-    "seo_title": "Termini e Condizioni | OctoWonders",
-    "seo_description": "Termini e condizioni di vendita OctoWonders. Copyright, ordini, responsabilità.",
-    "created_at": "2025-12-05T19:48:40.846496+00:00",
-    "updated_at": "2025-12-28T05:13:10.091131+00:00"
+    "seo_title": "Termini e Condizioni",
+    "seo_description": "Termini e condizioni di vendita di OctoWonders. Leggi le condizioni di acquisto, spedizione e reso.",
+    "created_at": "2025-12-28T06:35:38.436351+00:00",
+    "updated_at": "2025-12-29T03:32:56.847585+00:00"
   }
 ];
 
