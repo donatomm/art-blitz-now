@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import Navigation from "@/components/Navigation";
 import NotFound from "@/pages/NotFound";
@@ -203,6 +204,9 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
       
       <main className="container mx-auto px-4 pt-8 pb-16">
         <div className="max-w-4xl">
+          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground mb-4 inline-block">
+            ← Home
+          </Link>
           {!isHTMLContent && <h1 className="text-4xl font-bold mb-8">{page.title}</h1>}
           <div className={isFullHtmlDocument(page.content) ? "" : "prose prose-lg max-w-none"}>
             {isHTMLContent ? (
