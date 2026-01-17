@@ -54,7 +54,7 @@ const PagesTabContent = () => {
   const {
     data: pages,
     isLoading: pagesLoading
-  } = usePages();
+  } = usePages({ forceLive: true });
   const { data: settings } = useSiteSettings();
   const updateSetting = useUpdateSiteSetting();
   const updatePage = useUpdatePage();

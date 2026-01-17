@@ -18,7 +18,9 @@ export interface Page {
   updated_at: string;
 }
 
-export const usePages = () => {
+export const usePages = (options?: { forceLive?: boolean }) => {
+  const forceLive = options?.forceLive ?? false;
+  
   return useQuery({
     queryKey: ["pages"],
     queryFn: async () => {
@@ -30,11 +32,13 @@ export const usePages = () => {
       if (error) throw error;
       return data as Page[];
     },
-    enabled: isLovablePreview,
+    enabled: forceLive || isLovablePreview,
   });
 };
 
-export const usePage = (slug: string) => {
+export const usePage = (slug: string, options?: { forceLive?: boolean }) => {
+  const forceLive = options?.forceLive ?? false;
+  
   return useQuery({
     queryKey: ["pages", slug],
     queryFn: async () => {
@@ -47,7 +51,7 @@ export const usePage = (slug: string) => {
       if (error) throw error;
       return data as Page | null;
     },
-    enabled: isLovablePreview,
+    enabled: forceLive || isLovablePreview,
   });
 };
 
