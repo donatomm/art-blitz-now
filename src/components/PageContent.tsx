@@ -204,7 +204,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
       
       <main className="container mx-auto px-4 pt-8 pb-16">
         <div className="max-w-4xl">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground mb-4 inline-block">
+          <Link to="/" className="text-sm text-gold hover:text-gold/80 mb-4 inline-block">
             ← Home
           </Link>
           {!isHTMLContent && <h1 className="text-4xl font-bold mb-8">{page.title}</h1>}
