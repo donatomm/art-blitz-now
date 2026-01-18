@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
 import Navigation from "@/components/Navigation";
 import NotFound from "@/pages/NotFound";
@@ -193,6 +194,13 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
   return (
     <>
       <Navigation />
+      
+      {/* Fixed back button - unified style with Product pages */}
+      <Link to="/" className="fixed top-[68px] left-4 z-40 inline-flex items-center gap-2 px-4 py-1.5 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-90 hover:opacity-100 hover:scale-105 hover:shadow-xl text-sm">
+        <ArrowLeft className="h-4 w-4" />
+        <span className="hidden sm:inline">Torna alla Galleria</span>
+      </Link>
+      
       <div className="min-h-screen bg-background pt-16 pb-16">
       <SEO 
         title={page.seo_title || page.title}
@@ -204,9 +212,6 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
       
       <main className="container mx-auto px-4 pt-8 pb-16">
         <div className="max-w-4xl">
-          <Link to="/" className="text-sm text-gold hover:text-gold/80 mb-4 inline-block">
-            ← Home
-          </Link>
           {!isHTMLContent && <h1 className="text-4xl font-bold mb-8">{page.title}</h1>}
           <div className={isFullHtmlDocument(page.content) ? "" : "prose prose-lg max-w-none"}>
             {isHTMLContent ? (

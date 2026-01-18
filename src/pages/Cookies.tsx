@@ -30,10 +30,10 @@ const Cookies = () => {
       
       <Link
         to="/"
-        className="fixed top-20 left-4 z-40 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-3 py-2 rounded-full border border-border"
+        className="fixed top-[68px] left-4 z-40 inline-flex items-center gap-2 px-4 py-1.5 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-90 hover:opacity-100 hover:scale-105 hover:shadow-xl text-sm"
       >
-        <ArrowLeft className="w-4 h-4" />
-        Torna alla Galleria
+        <ArrowLeft className="h-4 w-4" />
+        <span className="hidden sm:inline">Torna alla Galleria</span>
       </Link>
 
       <main className="pt-24 pb-16 px-4 md:px-8 max-w-4xl mx-auto flex-1">
