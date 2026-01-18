@@ -76,10 +76,13 @@ export const useUpdatePage = () => {
       seo_title?: string | null;
       seo_description?: string | null;
     }) => {
-      const updateData: Record<string, any> = { title, content, seo_title, seo_description };
-      if (content_type) {
-        updateData.content_type = content_type;
-      }
+      const updateData: Record<string, any> = { 
+        title, 
+        content, 
+        content_type: content_type || 'markdown',
+        seo_title, 
+        seo_description 
+      };
       if (slug) {
         updateData.slug = slug;
       }
