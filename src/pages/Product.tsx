@@ -300,8 +300,8 @@ Grazie!`);
       <Navigation />
       
       {/* Fixed back button - positioned below the navigation bar */}
-      <Link to="/" className="fixed top-20 left-4 z-40 inline-flex items-center gap-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-90 hover:opacity-100 hover:scale-105 hover:shadow-xl">
-        <ArrowLeft className="h-5 w-5" />
+      <Link to="/" className="fixed top-[68px] left-4 z-40 inline-flex items-center gap-2 px-4 py-1.5 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-90 hover:opacity-100 hover:scale-105 hover:shadow-xl text-sm">
+        <ArrowLeft className="h-4 w-4" />
         <span className="hidden sm:inline">Torna alla Galleria</span>
       </Link>
       
