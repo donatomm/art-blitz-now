@@ -9,7 +9,7 @@ interface StorageImage {
   name: string;
   fullPath: string;
   size: number;
-  type: 'convertible' | 'skip-gif' | 'already-webp';
+  type: 'convertible' | 'skip-gif' | 'already-webp' | 'oversized-webp';
 }
 
 interface ConversionResult {
@@ -22,8 +22,10 @@ interface ConversionResult {
   error?: string;
 }
 
-const WEBP_QUALITY = 0.85;
-const MAX_DIMENSION = 2000;
+// Aggressive optimization for LCP < 2.5s target
+const WEBP_QUALITY = 0.72;      // 72% - visually identical, -40% file size
+const MAX_DIMENSION = 1400;     // 1400px max - sufficient for retina displays
+const TARGET_SIZE_KB = 200;     // Warn if output exceeds this
 
 const convertToWebP = (blob: Blob): Promise<Blob> => {
   return new Promise((resolve, reject) => {
@@ -107,10 +109,17 @@ const ImageOptimizer = () => {
           const fullPath = `${folder}/${file.name}`;
           
           let type: StorageImage['type'] = 'convertible';
+          const fileSize = file.metadata?.size || 0;
+          
           if (ext === 'gif') {
             type = 'skip-gif';
           } else if (ext === 'webp') {
-            type = 'already-webp';
+            // Check if WebP is oversized (> 200KB needs re-optimization)
+            if (fileSize > TARGET_SIZE_KB * 1024) {
+              type = 'oversized-webp';
+            } else {
+              type = 'already-webp';
+            }
           } else if (!['jpg', 'jpeg', 'png'].includes(ext || '')) {
             continue; // Skip non-image files
           }
@@ -127,12 +136,13 @@ const ImageOptimizer = () => {
       setImages(allImages);
       
       const convertible = allImages.filter(i => i.type === 'convertible').length;
+      const oversized = allImages.filter(i => i.type === 'oversized-webp').length;
       const gifs = allImages.filter(i => i.type === 'skip-gif').length;
       const webps = allImages.filter(i => i.type === 'already-webp').length;
       
       toast({
         title: "Scansione completata",
-        description: `${convertible} da convertire, ${gifs} GIF (skip), ${webps} già WebP`,
+        description: `${convertible} da convertire, ${oversized} WebP oversized (>${TARGET_SIZE_KB}KB), ${gifs} GIF, ${webps} OK`,
       });
     } catch (error) {
       console.error('Scan error:', error);
@@ -147,7 +157,8 @@ const ImageOptimizer = () => {
   };
 
   const convertAll = async () => {
-    const allConvertible = images.filter(i => i.type === 'convertible');
+    // Include both convertible (jpg/png) and oversized-webp for re-optimization
+    const allConvertible = images.filter(i => i.type === 'convertible' || i.type === 'oversized-webp');
     const toConvert = batchSize === 'all' ? allConvertible : allConvertible.slice(0, batchSize);
     
     if (toConvert.length === 0) {
@@ -186,8 +197,15 @@ const ImageOptimizer = () => {
         const webpBlob = await convertToWebP(downloadData);
         const newSize = webpBlob.size;
 
-        // Generate new path
-        const newPath = image.fullPath.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+        // Warn if still oversized
+        if (newSize > TARGET_SIZE_KB * 1024) {
+          console.warn(`⚠️ ${image.name} still ${(newSize/1024).toFixed(0)}KB > ${TARGET_SIZE_KB}KB target`);
+        }
+
+        // Generate new path (keep .webp for oversized-webp, convert extension for others)
+        const newPath = image.type === 'oversized-webp' 
+          ? image.fullPath 
+          : image.fullPath.replace(/\.(jpg|jpeg|png)$/i, '.webp');
 
         // Upload WebP
         const { error: uploadError } = await supabase.storage
@@ -321,8 +339,10 @@ const ImageOptimizer = () => {
   };
 
   const convertibleCount = images.filter(i => i.type === 'convertible').length;
+  const oversizedCount = images.filter(i => i.type === 'oversized-webp').length;
   const gifCount = images.filter(i => i.type === 'skip-gif').length;
   const webpCount = images.filter(i => i.type === 'already-webp').length;
+  const totalToConvert = convertibleCount + oversizedCount;
   const successCount = results.filter(r => r.status === 'success').length;
   const errorCount = results.filter(r => r.status === 'error').length;
   const totalSaved = results.reduce((acc, r) => acc + r.saved, 0);
@@ -357,14 +377,18 @@ const ImageOptimizer = () => {
       {images.length > 0 && !isConverting && results.length === 0 && (
         <div className="p-4 bg-muted rounded-lg space-y-3">
           <div className="text-sm font-bold text-blue-600">Trovate {images.length} immagini:</div>
-          <div className="grid grid-cols-3 gap-2 text-sm">
+          <div className="grid grid-cols-2 gap-2 text-sm">
             <div className="flex items-center gap-2">
               <ImageIcon className="h-4 w-4 text-blue-500" />
               <span>{convertibleCount} da convertire</span>
             </div>
             <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-orange-500" />
+              <span>{oversizedCount} WebP &gt;{TARGET_SIZE_KB}KB</span>
+            </div>
+            <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>{webpCount} già WebP</span>
+              <span>{webpCount} già ottimizzate</span>
             </div>
             <div className="flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-yellow-500" />
@@ -372,7 +396,7 @@ const ImageOptimizer = () => {
             </div>
           </div>
           
-          {convertibleCount > 0 && (
+          {totalToConvert > 0 && (
             <div className="space-y-3">
               {/* Batch size selector */}
               <div className="flex items-center gap-2">
@@ -402,15 +426,19 @@ const ImageOptimizer = () => {
 
               {/* Preview list of images to be converted */}
               <div className="bg-background/50 rounded p-2 max-h-32 overflow-y-auto">
-                <div className="text-xs font-bold text-blue-600 mb-1">Immagini da convertire:</div>
+                <div className="text-xs font-bold text-blue-600 mb-1">
+                  Immagini da ottimizzare ({convertibleCount} nuove + {oversizedCount} oversized):
+                </div>
                 <div className="space-y-1 text-xs font-mono">
                   {images
-                    .filter(i => i.type === 'convertible')
+                    .filter(i => i.type === 'convertible' || i.type === 'oversized-webp')
                     .slice(0, batchSize === 'all' ? undefined : batchSize)
                     .map((img, idx) => (
                       <div key={idx} className="flex justify-between">
                         <span className="truncate">{img.fullPath}</span>
-                        <span className="text-muted-foreground ml-2">{(img.size / 1024).toFixed(0)}KB</span>
+                        <span className={`ml-2 ${img.type === 'oversized-webp' ? 'text-orange-500 font-bold' : 'text-muted-foreground'}`}>
+                          {(img.size / 1024).toFixed(0)}KB
+                        </span>
                       </div>
                     ))}
                 </div>
@@ -418,7 +446,7 @@ const ImageOptimizer = () => {
               
               <Button onClick={convertAll} className="w-full">
                 <Play className="mr-2 h-4 w-4" />
-                Converti {batchSize === 'all' ? convertibleCount : Math.min(batchSize as number, convertibleCount)} immagini in WebP
+                Ottimizza {batchSize === 'all' ? totalToConvert : Math.min(batchSize as number, totalToConvert)} immagini (target &lt;{TARGET_SIZE_KB}KB)
               </Button>
             </div>
           )}
