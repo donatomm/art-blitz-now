@@ -212,7 +212,9 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
       
       <main className="container mx-auto px-4 pt-20 pb-16">
         <div className="max-w-4xl">
-          {!isHTMLContent && <h1 className="text-4xl font-bold mb-8">{page.title}</h1>}
+          {!isHTMLContent && !page.content.trim().startsWith('#') && (
+            <h1 className="text-4xl font-bold mb-8">{page.title}</h1>
+          )}
           <div className={isFullHtmlDocument(page.content) ? "" : "prose prose-lg max-w-none"}>
             {isHTMLContent ? (
               <div 
