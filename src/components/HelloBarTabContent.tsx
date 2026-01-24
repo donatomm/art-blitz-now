@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
+import { useDebouncedInput } from "@/hooks/useDebouncedInput";
 import { useToast } from "@/hooks/use-toast";
 import { TabsContent } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
@@ -107,7 +108,40 @@ const HelloBarTabContent = () => {
     }
   }, [settings]);
   
+  // Debounced inputs for better INP performance
+  const debouncedHellobarText = useDebouncedInput(hellobarText, (val) => {
+    setHellobarText(val);
+    markChanged();
+  }, 150);
+
+  const debouncedButtonText = useDebouncedInput(hellobarButtonText, (val) => {
+    setHellobarButtonText(val);
+    markChanged();
+  }, 150);
+
+  const debouncedPopupContent = useDebouncedInput(hellobarPopupContent, (val) => {
+    setHellobarPopupContent(val);
+    markChanged();
+  }, 150);
+
+  const debouncedWhatsappNumber = useDebouncedInput(hellobarWhatsappNumber, (val) => {
+    setHellobarWhatsappNumber(val);
+    markChanged();
+  }, 150);
+
+  const debouncedContactEmail = useDebouncedInput(hellobarContactEmail, (val) => {
+    setHellobarContactEmail(val);
+    markChanged();
+  }, 150);
+
   const handleSave = async () => {
+    // Flush all debounced values before saving
+    debouncedHellobarText.flushSync();
+    debouncedButtonText.flushSync();
+    debouncedPopupContent.flushSync();
+    debouncedWhatsappNumber.flushSync();
+    debouncedContactEmail.flushSync();
+    
     try {
       await Promise.all([
         updateSetting.mutateAsync({ key: "hellobar_enabled", value: hellobarEnabled }),
@@ -179,8 +213,8 @@ const HelloBarTabContent = () => {
           <div>
             <Label>Testo Hello Bar</Label>
             <Input
-              value={hellobarText}
-              onChange={(e) => { setHellobarText(e.target.value); markChanged(); }}
+              value={debouncedHellobarText.value}
+              onChange={(e) => debouncedHellobarText.onChange(e.target.value)}
               placeholder="SPEDIZIONE GRATUITA in Italia..."
             />
           </div>
@@ -269,8 +303,8 @@ const HelloBarTabContent = () => {
               <div>
                 <Label>Testo Bottone</Label>
                 <Input
-                  value={hellobarButtonText}
-                  onChange={(e) => { setHellobarButtonText(e.target.value); markChanged(); }}
+                  value={debouncedButtonText.value}
+                  onChange={(e) => debouncedButtonText.onChange(e.target.value)}
                   placeholder="Dettagli"
                 />
               </div>
@@ -301,8 +335,8 @@ const HelloBarTabContent = () => {
           <div>
             <Label>Testo del Popup (mostrato quando si clicca "Dettagli")</Label>
             <Textarea
-              value={hellobarPopupContent}
-              onChange={(e) => { setHellobarPopupContent(e.target.value); markChanged(); }}
+              value={debouncedPopupContent.value}
+              onChange={(e) => debouncedPopupContent.onChange(e.target.value)}
               placeholder="Inserisci il contenuto del popup..."
               rows={10}
               className="mt-2 font-mono text-sm"
@@ -316,8 +350,8 @@ const HelloBarTabContent = () => {
             <div>
               <Label>Numero WhatsApp</Label>
               <Input
-                value={hellobarWhatsappNumber}
-                onChange={(e) => { setHellobarWhatsappNumber(e.target.value); markChanged(); }}
+                value={debouncedWhatsappNumber.value}
+                onChange={(e) => debouncedWhatsappNumber.onChange(e.target.value)}
                 placeholder="393666295174"
                 className="mt-1"
               />
@@ -328,8 +362,8 @@ const HelloBarTabContent = () => {
             <div>
               <Label>Indirizzo Email</Label>
               <Input
-                value={hellobarContactEmail}
-                onChange={(e) => { setHellobarContactEmail(e.target.value); markChanged(); }}
+                value={debouncedContactEmail.value}
+                onChange={(e) => debouncedContactEmail.onChange(e.target.value)}
                 placeholder="me@octowonders.com"
                 className="mt-1"
               />
