@@ -473,6 +473,24 @@ const HeroTabContent = () => {
   const [trustBarItems, setTrustBarItems] = useState<string[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
   
+  // Debounced inputs for better INP performance
+  const markChanged = () => setHasChanges(true);
+  
+  const debouncedHeroTitle = useDebouncedInput(heroTitle, (val) => {
+    setHeroTitle(val);
+    markChanged();
+  }, 150);
+  
+  const debouncedHeroSubtitle = useDebouncedInput(heroSubtitle, (val) => {
+    setHeroSubtitle(val);
+    markChanged();
+  }, 150);
+  
+  const debouncedHeroCtaText = useDebouncedInput(heroCtaText, (val) => {
+    setHeroCtaText(val);
+    markChanged();
+  }, 150);
+  
   // Load settings into local state
   useEffect(() => {
     if (settings) {
@@ -485,6 +503,11 @@ const HeroTabContent = () => {
   }, [settings]);
   
   const handleSave = async () => {
+    // Flush all debounced values before saving
+    debouncedHeroTitle.flushSync();
+    debouncedHeroSubtitle.flushSync();
+    debouncedHeroCtaText.flushSync();
+    
     try {
       await Promise.all([
         updateSetting.mutateAsync({ key: "hero_title", value: heroTitle }),
@@ -527,19 +550,19 @@ const HeroTabContent = () => {
   
   const handleAddTrustItem = () => {
     setTrustBarItems([...trustBarItems, "Nuovo elemento"]);
-    setHasChanges(true);
+    markChanged();
   };
   
   const handleRemoveTrustItem = (index: number) => {
     setTrustBarItems(trustBarItems.filter((_, i) => i !== index));
-    setHasChanges(true);
+    markChanged();
   };
   
   const handleUpdateTrustItem = (index: number, value: string) => {
     const updated = [...trustBarItems];
     updated[index] = value;
     setTrustBarItems(updated);
-    setHasChanges(true);
+    markChanged();
   };
   
   if (isLoading) {
@@ -573,11 +596,8 @@ const HeroTabContent = () => {
         <div>
           <Label>Titolo H1 (Hero)</Label>
           <Input
-            value={heroTitle}
-            onChange={(e) => {
-              setHeroTitle(e.target.value);
-              setHasChanges(true);
-            }}
+            value={debouncedHeroTitle.value}
+            onChange={(e) => debouncedHeroTitle.onChange(e.target.value)}
             placeholder="Opere magnetiche. Uniche. Non per tutti."
           />
         </div>
@@ -586,11 +606,8 @@ const HeroTabContent = () => {
         <div>
           <Label>Sottotitolo</Label>
           <Textarea
-            value={heroSubtitle}
-            onChange={(e) => {
-              setHeroSubtitle(e.target.value);
-              setHasChanges(true);
-            }}
+            value={debouncedHeroSubtitle.value}
+            onChange={(e) => debouncedHeroSubtitle.onChange(e.target.value)}
             placeholder="Trasforma la tua parete in un'esperienza visiva..."
             rows={3}
           />
@@ -600,11 +617,8 @@ const HeroTabContent = () => {
         <div>
           <Label>Testo CTA (bottone)</Label>
           <Input
-            value={heroCtaText}
-            onChange={(e) => {
-              setHeroCtaText(e.target.value);
-              setHasChanges(true);
-            }}
+            value={debouncedHeroCtaText.value}
+            onChange={(e) => debouncedHeroCtaText.onChange(e.target.value)}
             placeholder="ESPLORA LA COLLEZIONE"
           />
         </div>
