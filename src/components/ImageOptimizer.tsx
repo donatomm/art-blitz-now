@@ -232,10 +232,16 @@ const ImageOptimizer = () => {
         // Update product URLs in database
         await updateProductUrls(oldUrlData.publicUrl, newUrlData.publicUrl);
 
-        // Delete original file
-        await supabase.storage
-          .from('product-images')
-          .remove([image.fullPath]);
+        // Only delete original if the path actually changed
+        // (prevents self-deletion of re-optimized oversized-webp files)
+        if (newPath !== image.fullPath) {
+          await supabase.storage
+            .from('product-images')
+            .remove([image.fullPath]);
+          console.log(`🗑️ Deleted original: ${image.fullPath}`);
+        } else {
+          console.log(`♻️ Re-optimized in-place: ${image.fullPath}`);
+        }
 
         const saved = originalSize - newSize;
         totalSaved += saved;
