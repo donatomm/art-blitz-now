@@ -16,6 +16,10 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useDebouncedInput } from "@/hooks/useDebouncedInput";
+import { DebouncedInput, DebouncedTextarea } from "@/components/ui/debounced-input";
+import TrustBarItemInput from "./admin/TrustBarItemInput";
+import ProductSizeRow from "./admin/ProductSizeRow";
+import ProductDealRow from "./admin/ProductDealRow";
 import ImageUpload from "./ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult, CSVImportMode } from "@/utils/csvProductParser";
@@ -254,16 +258,17 @@ const PagesTabContent = () => {
           </div>
           <div>
             <Label>Titolo</Label>
-            <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} />
+            <DebouncedInput value={editTitle} onChange={setEditTitle} debounceMs={150} />
           </div>
           <div>
             <Label>Slug (URL)</Label>
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground">/</span>
-              <Input 
+              <DebouncedInput 
                 value={editSlug} 
-                onChange={e => setEditSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\/-]/g, ''))} 
+                onChange={(value) => setEditSlug(value.toLowerCase().replace(/[^a-z0-9\/-]/g, ''))} 
                 placeholder="nome-pagina o blog/articolo"
+                debounceMs={150}
               />
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -328,11 +333,12 @@ const PagesTabContent = () => {
             <div className="space-y-3">
               <div>
                 <Label>SEO Title <span className="text-xs text-muted-foreground ml-1">(max 60 caratteri)</span></Label>
-                <Input 
+                <DebouncedInput 
                   value={editSeoTitle} 
-                  onChange={e => setEditSeoTitle(e.target.value)} 
+                  onChange={setEditSeoTitle} 
                   placeholder="Es: Marco De Francesco - Artista | OctoWonders"
                   maxLength={60}
+                  debounceMs={150}
                 />
                 <p className="text-xs text-muted-foreground mt-1">{editSeoTitle.length}/60 caratteri</p>
               </div>
@@ -639,21 +645,13 @@ const HeroTabContent = () => {
           </div>
           <div className="space-y-2">
             {trustBarItems.map((item, index) => (
-              <div key={index} className="flex gap-2 items-center">
-                <Input
-                  value={item}
-                  onChange={(e) => handleUpdateTrustItem(index, e.target.value)}
-                  placeholder="Testo badge..."
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRemoveTrustItem(index)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+              <TrustBarItemInput
+                key={index}
+                value={item}
+                index={index}
+                onUpdate={handleUpdateTrustItem}
+                onRemove={handleRemoveTrustItem}
+              />
             ))}
             {trustBarItems.length === 0 && (
               <p className="text-xs text-muted-foreground py-2">
@@ -1390,23 +1388,24 @@ const AdminPanel = () => {
           {editProduct && <div className="space-y-4">
               <div>
                 <Label>Nome</Label>
-                <Input value={editProduct.name} onChange={e => setEditProduct({
-              ...editProduct,
-              name: e.target.value
-            })} />
+                <DebouncedInput 
+                  value={editProduct.name} 
+                  onChange={(value) => setEditProduct({...editProduct, name: value})}
+                  debounceMs={150}
+                />
               </div>
               <div>
                 <Label>URL Slug</Label>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground text-sm whitespace-nowrap">/prodotti/</span>
-                  <Input 
+                  <DebouncedInput 
                     value={editProduct.slug || ''} 
-                    onChange={e => {
-                      const raw = e.target.value;
-                      const normalized = raw ? normalizeSlug(raw) : undefined;
+                    onChange={(value) => {
+                      const normalized = value ? normalizeSlug(value) : undefined;
                       setEditProduct({...editProduct, slug: normalized});
                     }}
                     placeholder="inserisci-slug-qui"
+                    debounceMs={150}
                   />
                 </div>
                 {editProduct.slug && (
@@ -1417,10 +1416,11 @@ const AdminPanel = () => {
               </div>
               <div>
                 <Label>Tecnica</Label>
-                <Input value={editProduct.medium} onChange={e => setEditProduct({
-              ...editProduct,
-              medium: e.target.value
-            })} />
+                <DebouncedInput 
+                  value={editProduct.medium} 
+                  onChange={(value) => setEditProduct({...editProduct, medium: value})}
+                  debounceMs={150}
+                />
               </div>
               <ImageUpload label="Immagine Opera" currentUrl={editProduct.image_url} onUpload={url => setEditProduct({
             ...editProduct,
@@ -1510,10 +1510,13 @@ const AdminPanel = () => {
 
               <div>
                 <Label>Descrizione</Label>
-                <textarea value={editProduct.description} onChange={e => setEditProduct({
-              ...editProduct,
-              description: e.target.value
-            })} className="w-full min-h-[100px] px-3 py-2 text-sm rounded-md border border-input bg-background" placeholder="Descrizione dell'opera..." />
+                <DebouncedTextarea 
+                  value={editProduct.description} 
+                  onChange={(value) => setEditProduct({...editProduct, description: value})} 
+                  className="min-h-[100px]" 
+                  placeholder="Descrizione dell'opera..."
+                  debounceMs={150}
+                />
               </div>
 
               {/* SIZE + PRICE + STRIPE ID Table */}
@@ -1525,21 +1528,19 @@ const AdminPanel = () => {
                   <span>STRIPE ID</span>
                   <span></span>
                 </div>
-                {editProduct.sizes.map((size, i) => <div key={i} className="grid grid-cols-[1fr_80px_1fr_40px] gap-2 items-center">
-                    <Input placeholder="NNxNN" value={size.dimensions} onChange={e => updateEditSize(i, "dimensions", e.target.value)} />
-                    <Input placeholder="0" type="number" value={size.price || ""} onChange={e => updateEditSize(i, "price", Number(e.target.value))} />
-                    <Input placeholder="prod_ABC123" value={size.stripe_product_id || ""} onChange={e => updateEditSize(i, "stripe_product_id", e.target.value)} className="text-xs font-mono" />
-                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
-                if (!editProduct) return;
-                const newSizes = editProduct.sizes.filter((_, idx) => idx !== i);
-                setEditProduct({
-                  ...editProduct,
-                  sizes: newSizes
-                });
-              }}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>)}
+                {editProduct.sizes.map((size, i) => (
+                  <ProductSizeRow
+                    key={i}
+                    size={size}
+                    index={i}
+                    onUpdate={updateEditSize}
+                    onRemove={(idx) => {
+                      if (!editProduct) return;
+                      const newSizes = editProduct.sizes.filter((_, j) => j !== idx);
+                      setEditProduct({...editProduct, sizes: newSizes});
+                    }}
+                  />
+                ))}
                 <Button type="button" variant="outline" size="sm" className="w-full text-xs mt-2" onClick={() => {
               if (!editProduct) return;
               const newSizes: ProductSize[] = [...editProduct.sizes, {
@@ -1564,29 +1565,34 @@ const AdminPanel = () => {
                 <Label>Mock Room per Size</Label>
                 <p className="text-xs text-muted-foreground">Ogni size può avere un'immagine mock room associata</p>
                 <div className="space-y-3">
-                  {editProduct.sizes.map((size, i) => <div key={i} className="flex gap-2 items-center p-2 bg-muted/50 rounded-lg">
-                      <Input placeholder="SIZE" value={size.dimensions} onChange={e => updateEditSize(i, "dimensions", e.target.value)} className="w-24 bg-yellow-100 dark:bg-yellow-900/30 font-medium" />
+                  {editProduct.sizes.map((size, i) => (
+                    <div key={i} className="flex gap-2 items-center p-2 bg-muted/50 rounded-lg">
+                      <DebouncedInput 
+                        placeholder="SIZE" 
+                        value={size.dimensions} 
+                        onChange={(value) => updateEditSize(i, "dimensions", value)} 
+                        className="w-24 bg-yellow-100 dark:bg-yellow-900/30 font-medium"
+                        debounceMs={150}
+                      />
                       <div className="flex-1">
                         <ImageUpload label="" currentUrl={size.mock_room_url || ""} onUpload={url => updateEditSize(i, "mock_room_url", url || "")} folder="mockrooms" />
                       </div>
-                    </div>)}
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* Offerte del Giorno - collapsed section */}
               <div className="space-y-2 border-t pt-4">
                 <Label>Offerte del Giorno</Label>
-                {editProduct.sizes.map((size, i) => <div key={i} className="p-2 bg-muted/30 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium w-20">{size.dimensions || "—"}</span>
-                      <Switch checked={size.deal_label_enabled || false} onCheckedChange={checked => updateEditSize(i, "deal_label_enabled", checked)} />
-                      <span className="text-xs text-muted-foreground">Offerta</span>
-                      {size.deal_label_enabled && <>
-                          <Input placeholder="Prezzo Offerta €" type="number" value={size.deal_price || ""} onChange={e => updateEditSize(i, "deal_price", Number(e.target.value))} className="w-24 text-xs" />
-                          <Input value={size.deal_label_text || ""} onChange={e => updateEditSize(i, "deal_label_text", e.target.value)} className="flex-1 text-xs" placeholder="es. scade il 31 Dic." />
-                        </>}
-                    </div>
-                  </div>)}
+                {editProduct.sizes.map((size, i) => (
+                  <ProductDealRow
+                    key={i}
+                    size={size}
+                    index={i}
+                    onUpdate={updateEditSize}
+                  />
+                ))}
               </div>
  
                <Button onClick={handleSaveProduct} className="w-full">
@@ -1606,11 +1612,17 @@ const AdminPanel = () => {
           <div className="space-y-4">
             <div>
               <Label>JSON Mapping</Label>
-              <Textarea value={stripeImportJson} onChange={e => setStripeImportJson(e.target.value)} placeholder={`{
+              <DebouncedTextarea 
+                value={stripeImportJson} 
+                onChange={setStripeImportJson} 
+                placeholder={`{
   "Octoheaded": "prod_ABC123",
   "Octoghost": "prod_DEF456",
   "Octosuckers": "prod_GHI789"
-}`} className="min-h-[200px] font-mono text-sm" />
+}`} 
+                className="min-h-[200px] font-mono text-sm"
+                debounceMs={150}
+              />
               <p className="text-xs text-muted-foreground mt-2">
                 Inserisci un JSON con i nomi prodotto come chiavi e gli ID Stripe come valori.
                 Tutti i size variants di ogni prodotto saranno aggiornati con lo stesso ID.
