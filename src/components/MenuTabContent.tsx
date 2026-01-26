@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TabsContent } from "@/components/ui/tabs";
-import { Plus, Trash2, ArrowUp, ArrowDown, Loader2, Save } from "lucide-react";
+import { Plus, Loader2, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
+import MenuItemRow from "./admin/MenuItemRow";
 
 export interface NavItem {
   label: string;
@@ -92,7 +92,6 @@ const MenuTabContent = () => {
     try {
       await updateSetting.mutateAsync({ key: "nav_items", value: navItems as unknown as import("@/integrations/supabase/types").Json });
       setHasChanges(false);
-      setHasChanges(false);
       toast({
         title: "Menu salvato!",
         description: "Le voci di navigazione sono state aggiornate.",
@@ -124,55 +123,17 @@ const MenuTabContent = () => {
       
       <div className="space-y-3">
         {navItems.map((item, index) => (
-          <div key={index} className="flex gap-2 items-center p-3 bg-muted rounded-md">
-            <div className="flex flex-col gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={() => handleMoveUp(index)}
-                disabled={index === 0}
-              >
-                <ArrowUp className="h-3 w-3" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={() => handleMoveDown(index)}
-                disabled={index === navItems.length - 1}
-              >
-                <ArrowDown className="h-3 w-3" />
-              </Button>
-            </div>
-            
-            <div className="flex-1 space-y-2">
-              <Input
-                value={item.label}
-                onChange={(e) => handleUpdateItem(index, "label", e.target.value)}
-                placeholder="Etichetta menu"
-                className="h-8"
-              />
-              <Input
-                value={item.href}
-                onChange={(e) => handleUpdateItem(index, "href", e.target.value)}
-                placeholder="/slug-pagina"
-                className="h-8 font-mono text-sm"
-              />
-            </div>
-            
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => handleRemoveItem(index)}
-              className="text-destructive hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+          <MenuItemRow
+            key={index}
+            item={item}
+            index={index}
+            isFirst={index === 0}
+            isLast={index === navItems.length - 1}
+            onUpdate={handleUpdateItem}
+            onRemove={handleRemoveItem}
+            onMoveUp={handleMoveUp}
+            onMoveDown={handleMoveDown}
+          />
         ))}
         
         {navItems.length === 0 && (
