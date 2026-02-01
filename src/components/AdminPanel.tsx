@@ -25,6 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { parseCSVProducts, generateCSVTemplate, exportProductsToCSV, ParseResult, CSVImportMode } from "@/utils/csvProductParser";
 import SKUEditor from "./SKUEditor";
 import ImageOptimizer from "./ImageOptimizer";
+import BrokenImageCleanup from "./BrokenImageCleanup";
 import ArticleImageBrowser from "./ArticleImageBrowser";
 import HelloBarTabContent from "./HelloBarTabContent";
 import MenuTabContent from "./MenuTabContent";
@@ -1362,6 +1363,11 @@ const AdminPanel = () => {
                   Carica e gestisci immagini per le pagine HTML. Clicca per copiare l'URL.
                 </p>
                 <ArticleImageBrowser />
+              </div>
+              
+              <div className="border-t pt-4">
+                <h3 className="font-medium text-sm mb-2">🗑️ Pulizia Riferimenti Rotti</h3>
+                <BrokenImageCleanup />
               </div>
               
               <div className="border-t pt-4">
