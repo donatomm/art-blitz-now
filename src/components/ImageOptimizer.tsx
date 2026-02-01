@@ -3,7 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ImageIcon, CheckCircle, AlertCircle, Play, RefreshCw } from "lucide-react";
+import { Loader2, ImageIcon, CheckCircle, AlertCircle, Play, RefreshCw, Eye, Trash2, ShieldAlert } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface StorageImage {
   name: string;
@@ -18,14 +28,15 @@ interface ConversionResult {
   originalSize: number;
   newSize: number;
   saved: number;
-  status: 'success' | 'error';
+  status: 'success' | 'error' | 'dry-run';
   error?: string;
+  dbUpdateVerified?: boolean;
 }
 
 // Aggressive optimization for LCP < 2.5s target
-const WEBP_QUALITY = 0.72;      // 72% - visually identical, -40% file size
-const MAX_DIMENSION = 1400;     // 1400px max - sufficient for retina displays
-const TARGET_SIZE_KB = 200;     // Warn if output exceeds this
+const WEBP_QUALITY = 0.72;
+const MAX_DIMENSION = 1400;
+const TARGET_SIZE_KB = 200;
 
 const convertToWebP = (blob: Blob): Promise<Blob> => {
   return new Promise((resolve, reject) => {
@@ -81,6 +92,9 @@ const ImageOptimizer = () => {
   const [progress, setProgress] = useState(0);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [batchSize, setBatchSize] = useState<number | 'all'>('all');
+  const [isDryRun, setIsDryRun] = useState(true); // DEFAULT TO DRY-RUN FOR SAFETY
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'convert' | null>(null);
   const { toast } = useToast();
 
   const scanStorage = async () => {
@@ -103,7 +117,7 @@ const ImageOptimizer = () => {
         }
 
         for (const file of data || []) {
-          if (!file.name || file.id === null) continue; // Skip folders
+          if (!file.name || file.id === null) continue;
           
           const ext = file.name.split('.').pop()?.toLowerCase();
           const fullPath = `${folder}/${file.name}`;
@@ -114,14 +128,13 @@ const ImageOptimizer = () => {
           if (ext === 'gif') {
             type = 'skip-gif';
           } else if (ext === 'webp') {
-            // Check if WebP is oversized (> 200KB needs re-optimization)
             if (fileSize > TARGET_SIZE_KB * 1024) {
               type = 'oversized-webp';
             } else {
               type = 'already-webp';
             }
           } else if (!['jpg', 'jpeg', 'png'].includes(ext || '')) {
-            continue; // Skip non-image files
+            continue;
           }
 
           allImages.push({
@@ -156,8 +169,176 @@ const ImageOptimizer = () => {
     }
   };
 
+  const requestConversion = () => {
+    if (isDryRun) {
+      // Dry run doesn't need confirmation
+      convertAll();
+    } else {
+      // Real conversion requires confirmation
+      setPendingAction('convert');
+      setShowConfirmDialog(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    setShowConfirmDialog(false);
+    if (pendingAction === 'convert') {
+      convertAll();
+    }
+    setPendingAction(null);
+  };
+
+  const handleCancel = () => {
+    setShowConfirmDialog(false);
+    setPendingAction(null);
+  };
+
+  /**
+   * CRITICAL: Verify database update succeeded by re-fetching and comparing URLs
+   * Returns true ONLY if the database now contains the new URL
+   */
+  const verifyDatabaseUpdate = async (oldUrl: string, newUrl: string): Promise<boolean> => {
+    try {
+      const { data: products, error } = await supabase
+        .from('products')
+        .select('id, image_url, mock_rooms, sizes');
+
+      if (error || !products) {
+        console.error('❌ DB verification failed - could not fetch products:', error);
+        return false;
+      }
+
+      // Check if oldUrl still exists anywhere (it shouldn't after successful update)
+      for (const product of products) {
+        if (product.image_url === oldUrl) {
+          console.error(`❌ DB verification failed - old URL still in image_url for product ${product.id}`);
+          return false;
+        }
+        
+        if (Array.isArray(product.mock_rooms)) {
+          for (const mr of product.mock_rooms as any[]) {
+            if (mr.url === oldUrl) {
+              console.error(`❌ DB verification failed - old URL still in mock_rooms for product ${product.id}`);
+              return false;
+            }
+          }
+        }
+        
+        if (Array.isArray(product.sizes)) {
+          for (const size of product.sizes as any[]) {
+            if (size.mock_room_url === oldUrl) {
+              console.error(`❌ DB verification failed - old URL still in sizes for product ${product.id}`);
+              return false;
+            }
+          }
+        }
+      }
+
+      // Also verify that new URL exists somewhere (if the old URL was in DB)
+      let newUrlFound = false;
+      for (const product of products) {
+        if (product.image_url === newUrl) newUrlFound = true;
+        if (Array.isArray(product.mock_rooms)) {
+          for (const mr of product.mock_rooms as any[]) {
+            if (mr.url === newUrl) newUrlFound = true;
+          }
+        }
+        if (Array.isArray(product.sizes)) {
+          for (const size of product.sizes as any[]) {
+            if (size.mock_room_url === newUrl) newUrlFound = true;
+          }
+        }
+      }
+
+      console.log(`✅ DB verification passed - old URL removed, new URL ${newUrlFound ? 'found' : 'not applicable'}`);
+      return true;
+    } catch (err) {
+      console.error('❌ DB verification exception:', err);
+      return false;
+    }
+  };
+
+  const updateProductUrls = async (oldUrl: string, newUrl: string): Promise<boolean> => {
+    try {
+      const { data: products, error } = await supabase
+        .from('products')
+        .select('*');
+
+      if (error || !products) {
+        console.error('Failed to fetch products for URL update:', error);
+        return false;
+      }
+
+      let updatesMade = 0;
+      let updatesFailed = 0;
+
+      for (const product of products) {
+        let updated = false;
+        const updates: any = {};
+
+        if (product.image_url === oldUrl) {
+          updates.image_url = newUrl;
+          updated = true;
+        }
+
+        if (Array.isArray(product.mock_rooms)) {
+          const newMockRooms = product.mock_rooms.map((mr: any) => {
+            if (mr.url === oldUrl) {
+              updated = true;
+              return { ...mr, url: newUrl };
+            }
+            return mr;
+          });
+          if (updated) {
+            updates.mock_rooms = newMockRooms;
+          }
+        }
+
+        if (Array.isArray(product.sizes)) {
+          const newSizes = product.sizes.map((size: any) => {
+            if (size.mock_room_url === oldUrl) {
+              updated = true;
+              return { ...size, mock_room_url: newUrl };
+            }
+            return size;
+          });
+          if (updated && !updates.mock_rooms) {
+            updates.sizes = newSizes;
+          } else if (updated) {
+            updates.sizes = newSizes;
+          }
+        }
+
+        if (updated) {
+          const { error: updateError } = await supabase
+            .from('products')
+            .update(updates)
+            .eq('id', product.id);
+          
+          if (updateError) {
+            console.error(`Failed to update product ${product.name}:`, updateError);
+            updatesFailed++;
+          } else {
+            console.log(`✓ Updated product ${product.name} URLs`);
+            updatesMade++;
+          }
+        }
+      }
+
+      // Return true only if no updates failed
+      if (updatesFailed > 0) {
+        console.error(`⚠️ ${updatesFailed} product updates failed`);
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      console.error('Exception during URL update:', err);
+      return false;
+    }
+  };
+
   const convertAll = async () => {
-    // Include both convertible (jpg/png) and oversized-webp for re-optimization
     const allConvertible = images.filter(i => i.type === 'convertible' || i.type === 'oversized-webp');
     const toConvert = batchSize === 'all' ? allConvertible : allConvertible.slice(0, batchSize);
     
@@ -175,6 +356,7 @@ const ImageOptimizer = () => {
 
     const newResults: ConversionResult[] = [];
     let totalSaved = 0;
+    let deletionsPrevented = 0;
 
     for (let i = 0; i < toConvert.length; i++) {
       const image = toConvert[i];
@@ -197,17 +379,35 @@ const ImageOptimizer = () => {
         const webpBlob = await convertToWebP(downloadData);
         const newSize = webpBlob.size;
 
-        // Warn if still oversized
         if (newSize > TARGET_SIZE_KB * 1024) {
           console.warn(`⚠️ ${image.name} still ${(newSize/1024).toFixed(0)}KB > ${TARGET_SIZE_KB}KB target`);
         }
 
-        // Generate new path (keep .webp for oversized-webp, convert extension for others)
         const newPath = image.type === 'oversized-webp' 
           ? image.fullPath 
           : image.fullPath.replace(/\.(jpg|jpeg|png)$/i, '.webp');
 
-        // Upload WebP
+        const saved = originalSize - newSize;
+
+        // DRY-RUN MODE: Just simulate, don't modify anything
+        if (isDryRun) {
+          newResults.push({
+            originalPath: image.fullPath,
+            newPath,
+            originalSize,
+            newSize,
+            saved,
+            status: 'dry-run',
+            dbUpdateVerified: true,
+          });
+          totalSaved += saved;
+          console.log(`🔍 [DRY-RUN] ${image.name}: ${(originalSize / 1024).toFixed(1)}KB → ${(newSize / 1024).toFixed(1)}KB (would save ${(saved / 1024).toFixed(1)}KB)`);
+          continue;
+        }
+
+        // REAL MODE: Upload, verify DB, then conditionally delete
+
+        // Step 1: Upload WebP
         const { error: uploadError } = await supabase.storage
           .from('product-images')
           .upload(newPath, webpBlob, {
@@ -217,10 +417,10 @@ const ImageOptimizer = () => {
           });
 
         if (uploadError) {
-          throw new Error(uploadError.message);
+          throw new Error(`Upload failed: ${uploadError.message}`);
         }
 
-        // Get public URLs
+        // Step 2: Get public URLs
         const { data: oldUrlData } = supabase.storage
           .from('product-images')
           .getPublicUrl(image.fullPath);
@@ -229,21 +429,58 @@ const ImageOptimizer = () => {
           .from('product-images')
           .getPublicUrl(newPath);
 
-        // Update product URLs in database
-        await updateProductUrls(oldUrlData.publicUrl, newUrlData.publicUrl);
+        // Step 3: Update product URLs in database
+        const dbUpdateSuccess = await updateProductUrls(oldUrlData.publicUrl, newUrlData.publicUrl);
 
-        // Only delete original if the path actually changed
-        // (prevents self-deletion of re-optimized oversized-webp files)
-        if (newPath !== image.fullPath) {
-          await supabase.storage
-            .from('product-images')
-            .remove([image.fullPath]);
-          console.log(`🗑️ Deleted original: ${image.fullPath}`);
-        } else {
-          console.log(`♻️ Re-optimized in-place: ${image.fullPath}`);
+        if (!dbUpdateSuccess) {
+          console.error(`⚠️ DB update failed for ${image.name} - SKIPPING DELETION`);
+          deletionsPrevented++;
+          newResults.push({
+            originalPath: image.fullPath,
+            newPath,
+            originalSize,
+            newSize,
+            saved,
+            status: 'error',
+            error: 'Database update failed - original file preserved',
+            dbUpdateVerified: false,
+          });
+          continue;
         }
 
-        const saved = originalSize - newSize;
+        // Step 4: VERIFY database update actually succeeded
+        const dbVerified = await verifyDatabaseUpdate(oldUrlData.publicUrl, newUrlData.publicUrl);
+
+        if (!dbVerified) {
+          console.error(`❌ DB verification FAILED for ${image.name} - PREVENTING DELETION`);
+          deletionsPrevented++;
+          newResults.push({
+            originalPath: image.fullPath,
+            newPath,
+            originalSize,
+            newSize,
+            saved,
+            status: 'error',
+            error: 'Database verification failed - original file preserved for safety',
+            dbUpdateVerified: false,
+          });
+          continue;
+        }
+
+        // Step 5: ONLY delete if path changed AND DB update verified
+        if (newPath !== image.fullPath) {
+          console.log(`🗑️ DB verified, safe to delete: ${image.fullPath}`);
+          const { error: deleteError } = await supabase.storage
+            .from('product-images')
+            .remove([image.fullPath]);
+          
+          if (deleteError) {
+            console.error(`⚠️ Delete failed (non-critical): ${deleteError.message}`);
+          }
+        } else {
+          console.log(`♻️ Re-optimized in-place (verified): ${image.fullPath}`);
+        }
+
         totalSaved += saved;
 
         newResults.push({
@@ -253,6 +490,7 @@ const ImageOptimizer = () => {
           newSize,
           saved,
           status: 'success',
+          dbUpdateVerified: true,
         });
 
         console.log(`✓ ${image.name}: ${(originalSize / 1024).toFixed(1)}KB → ${(newSize / 1024).toFixed(1)}KB (saved ${(saved / 1024).toFixed(1)}KB)`);
@@ -267,6 +505,7 @@ const ImageOptimizer = () => {
           saved: 0,
           status: 'error',
           error: error.message,
+          dbUpdateVerified: false,
         });
       }
 
@@ -277,70 +516,20 @@ const ImageOptimizer = () => {
     setCurrentImage(null);
 
     const successCount = newResults.filter(r => r.status === 'success').length;
+    const dryRunCount = newResults.filter(r => r.status === 'dry-run').length;
     const errorCount = newResults.filter(r => r.status === 'error').length;
 
-    toast({
-      title: "Conversione completata!",
-      description: `${successCount} convertite, ${errorCount} errori. Risparmiati ${(totalSaved / 1024 / 1024).toFixed(2)}MB`,
-    });
-  };
-
-  const updateProductUrls = async (oldUrl: string, newUrl: string) => {
-    // Fetch all products
-    const { data: products, error } = await supabase
-      .from('products')
-      .select('*');
-
-    if (error || !products) return;
-
-    for (const product of products) {
-      let updated = false;
-      const updates: any = {};
-
-      // Check main image URL
-      if (product.image_url === oldUrl) {
-        updates.image_url = newUrl;
-        updated = true;
-      }
-
-      // Check mock_rooms URLs
-      if (Array.isArray(product.mock_rooms)) {
-        const newMockRooms = product.mock_rooms.map((mr: any) => {
-          if (mr.url === oldUrl) {
-            updated = true;
-            return { ...mr, url: newUrl };
-          }
-          return mr;
-        });
-        if (updated) {
-          updates.mock_rooms = newMockRooms;
-        }
-      }
-
-      // Check sizes mock_room_url
-      if (Array.isArray(product.sizes)) {
-        const newSizes = product.sizes.map((size: any) => {
-          if (size.mock_room_url === oldUrl) {
-            updated = true;
-            return { ...size, mock_room_url: newUrl };
-          }
-          return size;
-        });
-        if (updated && !updates.mock_rooms) {
-          updates.sizes = newSizes;
-        } else if (updated) {
-          updates.sizes = newSizes;
-        }
-      }
-
-      if (updated) {
-        await supabase
-          .from('products')
-          .update(updates)
-          .eq('id', product.id);
-        
-        console.log(`Updated product ${product.name} URLs`);
-      }
+    if (isDryRun) {
+      toast({
+        title: "🔍 Dry-run completato",
+        description: `${dryRunCount} immagini simulate. Potenziale risparmio: ${(totalSaved / 1024 / 1024).toFixed(2)}MB. Disattiva dry-run per applicare.`,
+      });
+    } else {
+      toast({
+        title: deletionsPrevented > 0 ? "⚠️ Conversione con protezioni" : "✅ Conversione completata!",
+        description: `${successCount} convertite, ${errorCount} errori, ${deletionsPrevented} file protetti. Risparmiati ${(totalSaved / 1024 / 1024).toFixed(2)}MB`,
+        variant: deletionsPrevented > 0 ? "destructive" : "default",
+      });
     }
   };
 
@@ -350,11 +539,24 @@ const ImageOptimizer = () => {
   const webpCount = images.filter(i => i.type === 'already-webp').length;
   const totalToConvert = convertibleCount + oversizedCount;
   const successCount = results.filter(r => r.status === 'success').length;
+  const dryRunCount = results.filter(r => r.status === 'dry-run').length;
   const errorCount = results.filter(r => r.status === 'error').length;
   const totalSaved = results.reduce((acc, r) => acc + r.saved, 0);
 
   return (
     <div className="space-y-4">
+      {/* Safety Warning Banner */}
+      <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-start gap-2">
+        <ShieldAlert className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+        <div className="text-sm">
+          <p className="font-semibold text-yellow-700">⚠️ Operazioni irreversibili</p>
+          <p className="text-yellow-600/80">
+            La cancellazione di immagini da Supabase Storage è <strong>permanente</strong>. 
+            Usa sempre la modalità Dry-Run prima di applicare modifiche reali.
+          </p>
+        </div>
+      </div>
+
       <p className="text-sm text-muted-foreground">
         Converti le immagini esistenti in WebP per ridurre dimensioni e velocizzare il sito.
       </p>
@@ -404,6 +606,27 @@ const ImageOptimizer = () => {
           
           {totalToConvert > 0 && (
             <div className="space-y-3">
+              {/* Dry-Run Toggle */}
+              <div className="flex items-center justify-between p-2 bg-background/50 rounded border">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm font-medium">Modalità Dry-Run</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs ${isDryRun ? 'text-green-600 font-bold' : 'text-red-500'}`}>
+                    {isDryRun ? '✓ ATTIVA (sicuro)' : '⚠️ DISATTIVATA'}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant={isDryRun ? "default" : "destructive"}
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setIsDryRun(!isDryRun)}
+                  >
+                    {isDryRun ? 'Simula' : 'Reale'}
+                  </Button>
+                </div>
+              </div>
+
               {/* Batch size selector */}
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground">Batch:</span>
@@ -430,7 +653,7 @@ const ImageOptimizer = () => {
                 </div>
               </div>
 
-              {/* Preview list of images to be converted */}
+              {/* Preview list */}
               <div className="bg-background/50 rounded p-2 max-h-32 overflow-y-auto">
                 <div className="text-xs font-bold text-blue-600 mb-1">
                   Immagini da ottimizzare ({convertibleCount} nuove + {oversizedCount} oversized):
@@ -450,9 +673,22 @@ const ImageOptimizer = () => {
                 </div>
               </div>
               
-              <Button onClick={convertAll} className="w-full">
-                <Play className="mr-2 h-4 w-4" />
-                Ottimizza {batchSize === 'all' ? totalToConvert : Math.min(batchSize as number, totalToConvert)} immagini (target &lt;{TARGET_SIZE_KB}KB)
+              <Button 
+                onClick={requestConversion} 
+                className={`w-full ${isDryRun ? '' : 'bg-red-600 hover:bg-red-700'}`}
+                variant={isDryRun ? "default" : "destructive"}
+              >
+                {isDryRun ? (
+                  <>
+                    <Eye className="mr-2 h-4 w-4" />
+                    🔍 Simula Ottimizzazione ({batchSize === 'all' ? totalToConvert : Math.min(batchSize as number, totalToConvert)} immagini)
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    ⚠️ Ottimizza REALMENTE ({batchSize === 'all' ? totalToConvert : Math.min(batchSize as number, totalToConvert)} immagini)
+                  </>
+                )}
               </Button>
             </div>
           )}
@@ -463,7 +699,7 @@ const ImageOptimizer = () => {
       {isConverting && (
         <div className="p-4 bg-muted rounded-lg space-y-3">
           <div className="flex items-center justify-between text-sm">
-            <span>Conversione in corso...</span>
+            <span>{isDryRun ? '🔍 Simulazione' : '⚡ Conversione'} in corso...</span>
             <span>{progress}%</span>
           </div>
           <Progress value={progress} className="h-2" />
@@ -479,21 +715,31 @@ const ImageOptimizer = () => {
       {results.length > 0 && !isConverting && (
         <div className="p-4 bg-muted rounded-lg space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Conversione completata!</span>
+            <span className="text-sm font-medium">
+              {dryRunCount > 0 ? '🔍 Dry-run completato!' : 'Conversione completata!'}
+            </span>
             <span className="text-xs text-muted-foreground">
-              💾 Risparmiati {(totalSaved / 1024 / 1024).toFixed(2)}MB
+              💾 {dryRunCount > 0 ? 'Potenziale risparmio' : 'Risparmiati'}: {(totalSaved / 1024 / 1024).toFixed(2)}MB
             </span>
           </div>
           
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="flex items-center gap-2 text-green-600">
-              <CheckCircle className="h-4 w-4" />
-              <span>{successCount} convertite</span>
-            </div>
+          <div className="grid grid-cols-3 gap-2 text-sm">
+            {dryRunCount > 0 && (
+              <div className="flex items-center gap-2 text-blue-600">
+                <Eye className="h-4 w-4" />
+                <span>{dryRunCount} simulate</span>
+              </div>
+            )}
+            {successCount > 0 && (
+              <div className="flex items-center gap-2 text-green-600">
+                <CheckCircle className="h-4 w-4" />
+                <span>{successCount} convertite</span>
+              </div>
+            )}
             {errorCount > 0 && (
               <div className="flex items-center gap-2 text-red-500">
                 <AlertCircle className="h-4 w-4" />
-                <span>{errorCount} errori</span>
+                <span>{errorCount} errori/protette</span>
               </div>
             )}
           </div>
@@ -503,16 +749,27 @@ const ImageOptimizer = () => {
             {results.map((r, i) => (
               <div 
                 key={i} 
-                className={`p-2 rounded ${r.status === 'success' ? 'bg-green-500/10' : 'bg-red-500/10'}`}
+                className={`p-2 rounded ${
+                  r.status === 'success' ? 'bg-green-500/10' : 
+                  r.status === 'dry-run' ? 'bg-blue-500/10' : 
+                  'bg-red-500/10'
+                }`}
               >
                 {r.status === 'success' ? (
                   <span>
                     ✓ {r.originalPath.split('/').pop()} → {(r.originalSize / 1024).toFixed(0)}KB → {(r.newSize / 1024).toFixed(0)}KB 
                     <span className="text-green-600 ml-1">(-{((r.saved / r.originalSize) * 100).toFixed(0)}%)</span>
+                    {r.dbUpdateVerified && <span className="ml-1 text-green-700">[DB ✓]</span>}
+                  </span>
+                ) : r.status === 'dry-run' ? (
+                  <span className="text-blue-600">
+                    🔍 {r.originalPath.split('/').pop()} → {(r.originalSize / 1024).toFixed(0)}KB → {(r.newSize / 1024).toFixed(0)}KB 
+                    <span className="ml-1">(-{((r.saved / r.originalSize) * 100).toFixed(0)}%)</span>
                   </span>
                 ) : (
                   <span className="text-red-500">
                     ✗ {r.originalPath.split('/').pop()}: {r.error}
+                    {!r.dbUpdateVerified && <span className="ml-1 font-bold">[FILE PRESERVED]</span>}
                   </span>
                 )}
               </div>
@@ -525,6 +782,38 @@ const ImageOptimizer = () => {
           </Button>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <ShieldAlert className="h-5 w-5" />
+              ⚠️ Conferma Operazione Irreversibile
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                Stai per <strong>convertire e cancellare</strong> {batchSize === 'all' ? totalToConvert : Math.min(batchSize as number, totalToConvert)} immagini originali.
+              </p>
+              <p className="text-red-500 font-semibold">
+                La cancellazione da Supabase Storage è PERMANENTE e non può essere annullata.
+              </p>
+              <p>
+                Assicurati di aver eseguito un <strong>backup locale</strong> delle immagini prima di procedere.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancel}>Annulla</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Procedi con la conversione
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
