@@ -5,9 +5,13 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Home, ShoppingBag, MessageCircle, Mail } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
 
 const CheckoutSuccess = () => {
   const { clearCart } = useCart();
+  const settings = useStaticSiteSettings();
+  const whatsappNumber = settings.hellobar_whatsapp_number;
+  const contactEmail = settings.hellobar_contact_email;
 
   // Clear cart on successful checkout
   useEffect(() => {
@@ -60,7 +64,7 @@ const CheckoutSuccess = () => {
                 Offerte esclusive 24h prima di tutti.
               </p>
               <a
-                href="https://wa.me/393666295174?text=VIP"
+                href={`https://wa.me/${whatsappNumber}?text=VIP`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block"
@@ -79,7 +83,7 @@ const CheckoutSuccess = () => {
             </p>
             <div className="flex justify-center gap-4 mt-3">
               <a
-                href="https://wa.me/393666295174?text=Ciao%2C%20ho%20una%20domanda%20sul%20mio%20ordine"
+                href={`https://wa.me/${whatsappNumber}?text=Ciao%2C%20ho%20una%20domanda%20sul%20mio%20ordine`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
@@ -88,7 +92,7 @@ const CheckoutSuccess = () => {
                 <span>WhatsApp</span>
               </a>
               <a
-                href="mailto:info@octowonders.com?subject=Domanda%20sul%20mio%20ordine"
+                href={`mailto:${contactEmail}?subject=Domanda%20sul%20mio%20ordine`}
                 className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
               >
                 <Mail className="h-5 w-5" />

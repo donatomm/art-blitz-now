@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Product, ProductSize } from "@/types/product";
+import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ interface BuyDialogProps {
 
 const BuyDialog = ({ product, open, onOpenChange }: BuyDialogProps) => {
   const [selectedSize, setSelectedSize] = useState<ProductSize | null>(null);
+  const settings = useStaticSiteSettings();
 
   if (!product) return null;
 
@@ -26,7 +28,7 @@ const BuyDialog = ({ product, open, onOpenChange }: BuyDialogProps) => {
     const message = encodeURIComponent(
       `Hi! I'm interested in purchasing:\n\n${product.name}\n${product.medium}\nSize: ${currentSize.dimensions}\nPrice: €${currentSize.price}\n\nPlease let me know the next steps!`
     );
-    return `https://wa.me/393666295174?text=${message}`;
+    return `https://wa.me/${settings.hellobar_whatsapp_number}?text=${message}`;
   };
 
   const getEmailLink = () => {
@@ -56,7 +58,7 @@ ____________________
 
 Grazie!`
     );
-    return `mailto:me@octowonders.com?subject=${subject}&body=${body}`;
+    return `mailto:${settings.hellobar_contact_email}?subject=${subject}&body=${body}`;
   };
 
   return (

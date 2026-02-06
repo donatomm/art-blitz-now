@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
 import Navigation from "@/components/Navigation";
+import ContactButtons from "@/components/ContactButtons";
 import NotFound from "@/pages/NotFound";
 import { usePage } from "@/hooks/usePages";
 import { getStaticPageBySlug } from "@/hooks/useStaticPages";
@@ -86,8 +87,13 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
     lines.forEach((line, index) => {
       const trimmedLine = line.trim();
       
+      // Handle {{CONTACT_BUTTONS}} token
+      if (trimmedLine === '{{CONTACT_BUTTONS}}') {
+        flushList();
+        elements.push(<ContactButtons key={`contact-${index}`} />);
+      }
       // Handle headings
-      if (trimmedLine.startsWith('## ')) {
+      else if (trimmedLine.startsWith('## ')) {
         flushList();
         elements.push(
           <h2 key={index} className="text-2xl font-bold mt-8 mb-4 text-foreground">
@@ -218,9 +224,23 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
           )}
           <div className={isFullHtmlDocument(page.content) ? "" : "prose prose-lg max-w-none"}>
             {isHTMLContent ? (
-              <div 
-                dangerouslySetInnerHTML={{ __html: processHTML(page.content) }}
-              />
+              (() => {
+                const htmlContent = processHTML(page.content);
+                if (htmlContent.includes('{{CONTACT_BUTTONS}}')) {
+                  const parts = htmlContent.split('{{CONTACT_BUTTONS}}');
+                  return (
+                    <>
+                      {parts.map((part, i) => (
+                        <div key={i}>
+                          <div dangerouslySetInnerHTML={{ __html: part }} />
+                          {i < parts.length - 1 && <ContactButtons />}
+                        </div>
+                      ))}
+                    </>
+                  );
+                }
+                return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
+              })()
             ) : (
               renderContent(page.content)
             )}
