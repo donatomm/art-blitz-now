@@ -1,93 +1,56 @@
 
 
-# Fix HelloBar On/Off Toggle: Make It Work Instantly on Production
+# Green + Gold Contact Buttons -- Implementation
 
-## Root Cause
+## Overview
 
-The HelloBar toggle saves correctly to the database, but production (octowonders.com) never reads the database. It uses a static file (`staticSiteSettings.ts`) that was baked on January 17th with `hellobar_enabled: true`. Toggling it to `false` in the admin panel has zero effect on what customers see.
+Update both contact button files to use branded `<a>` tags with real SVG logos, green (#25D366) and gold (#FFD700) styling, and dynamic contact data from site settings.
 
-The `useStaticSiteSettings` hook has a guard:
-```
-const isLovablePreview = hostname includes 'lovable.app' or 'localhost'
-```
-On octowonders.com, this is `false`, so the hook always returns the stale static file. The database is completely ignored.
+## File 1: `src/pages/Contact.tsx`
 
-## Solution
+**Remove:**
+- `import { MessageCircle, Mail } from "lucide-react"`
+- `import { Button } from "@/components/ui/button"`
+- Hardcoded WhatsApp number `393666295174` and email `me@octowonders.com`
 
-Make the production site fetch HelloBar settings live from the database after initial render. The static data is still used for the first paint (no loading flicker), but a lightweight background fetch overrides it with the live database values within ~200ms.
+**Add:**
+- `import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings"` for dynamic contact data
+- `const settings = useStaticSiteSettings()` inside the component
+- Build `whatsappLink` and `emailLink` from `settings.hellobar_whatsapp_number` and `settings.hellobar_contact_email`
 
-This means: toggle HelloBar off in admin panel --> customers see it disappear on next page load. No rebuild needed.
+**Replace button block with two plain `<a>` tags:**
 
-## What Changes
+- **WhatsApp**: green background (#25D366), white text, inline WhatsApp SVG logo (the same `<path>` already used in `HelloBar.tsx`), `rounded-lg`, `font-bold`, `text-lg`, `py-4 px-6`
+- **Email**: dark gradient background (#1a1a2e to #16213e), white text, Lucide-style Mail SVG icon, 3px gold border (#FFD700), gold glow shadow, same sizing
 
-### 1. `src/hooks/useStaticSiteSettings.ts`
+**Layout stays:** `flex flex-col sm:flex-row gap-4 mt-8` (stacked on mobile, side-by-side on desktop)
 
-Remove the `isLovablePreview` guard so the live-data fetch runs on ALL domains (including octowonders.com), not just lovable.app.
+## File 2: `src/components/ContactButtons.tsx`
 
-The hook already returns static data immediately (zero latency), then swaps in live data once fetched. This means:
-- First paint: uses static data (fast LCP, no loading state)
-- After ~200ms: live data from database replaces it
-- If database is unreachable: static data stays (graceful fallback)
+**Remove:**
+- `import { MessageCircle, Mail } from "lucide-react"`
+- `import { Button } from "@/components/ui/button"`
 
-The change is small: remove the `enabled: isLovablePreview` condition from the `useQuery` call, and remove the `isLovablePreview` variable.
+**Replace button block with the same styled `<a>` tags**, slightly smaller sizing (`py-3 px-5`, `text-base`) since these render inline within CMS page content.
 
-### 2. Why this is safe
+**Keep:** existing `useStaticSiteSettings` import, props interface, and link-building logic (already correct).
 
-- **No LCP regression**: Static data renders instantly. The live fetch happens in the background after hydration.
-- **Graceful fallback**: If the database query fails, the static data is used (current behavior).
-- **Minimal network cost**: One small SELECT query (~1KB response) per page load. The `site_settings` table is tiny.
-- **HelloBar flicker risk**: If static says `enabled: true` but DB says `false`, the bar shows for ~200ms then disappears. This is a one-time glitch until the next rebuild syncs the static file. Acceptable trade-off vs. the bar being permanently wrong.
+## SVG Logos (from HelloBar.tsx, proven working)
 
-### 3. What about other settings?
+- **WhatsApp**: official brand SVG path, `fill="currentColor"`, `viewBox="0 0 24 24"`
+- **Mail**: envelope outline SVG, `stroke="currentColor"`, `viewBox="0 0 24 24"`
 
-This fix makes ALL site settings live (hero text, nav items, trust bar, etc.), not just HelloBar. This is actually better -- any admin change takes effect immediately instead of requiring a rebuild. The static data just serves as the initial render value.
+Both are lightweight inline SVGs with `className="w-5 h-5"` -- no external dependencies.
 
-## Technical Detail
+## Summary
 
-Current code:
-```typescript
-const isLovablePreview = typeof window !== 'undefined' && 
-  (window.location.hostname.includes('lovable.app') || 
-   window.location.hostname.includes('lovableproject.com') ||
-   window.location.hostname.includes('localhost'));
+| What | Before | After |
+|------|--------|-------|
+| Contact data | Hardcoded in Contact.tsx | Dynamic from site settings |
+| WhatsApp icon | Generic Lucide MessageCircle | Official WhatsApp SVG logo |
+| WhatsApp color | shadcn Button variant | Green #25D366 background |
+| Email color | Plain gray button | Dark gradient + gold border + glow |
+| Wrapper | shadcn Button asChild | Plain `<a>` tags |
 
-// ...
-const { data: liveSettings } = useQuery({
-  // ...
-  enabled: isLovablePreview,  // <-- THIS blocks production from fetching
-});
-
-return isLovablePreview && liveSettings ? liveSettings : staticSiteSettings;
-```
-
-Fixed code:
-```typescript
-const { data: liveSettings } = useQuery({
-  // ...
-  enabled: true,  // Always fetch live data
-  staleTime: 30_000,  // Cache for 30s to avoid hammering DB on navigation
-});
-
-return liveSettings ?? staticSiteSettings;
-```
-
-Key changes:
-- Remove `isLovablePreview` variable entirely
-- Set `enabled: true` (always fetch)
-- Change `staleTime` from 0 to 30000 (30 seconds) -- in preview mode it was 0 for instant updates, but on production we don't need to re-fetch on every component mount
-- Keep `gcTime: 0` so stale data is discarded when the query is no longer used
-- Return `liveSettings ?? staticSiteSettings` (use live data when available, static as fallback)
-
-## Risk Assessment
-
-| Risk | Severity | Mitigation |
-|------|----------|------------|
-| Brief HelloBar flicker on first visit after toggle | Low | Only happens once per static/live mismatch; bar appears/disappears in ~200ms |
-| Extra database query per page load | Low | ~1KB response, cached 30s, site_settings table is tiny |
-| SSG hydration mismatch warning | None | React Query doesn't render during SSR; static data is used for server HTML, live data swaps in client-side |
-| Database unreachable | None | Falls back to static data (current behavior) |
-
-## Files Modified
-
-1 file: `src/hooks/useStaticSiteSettings.ts`
+2 files modified, 0 new files.
 
