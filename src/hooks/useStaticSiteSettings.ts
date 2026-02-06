@@ -8,12 +8,6 @@ import { useQuery } from '@tanstack/react-query';
 import { staticSiteSettings, StaticSiteSettings } from '@/generated/staticSiteSettings';
 import { supabase } from '@/integrations/supabase/client';
 
-// Check if running in Lovable preview (not production)
-const isLovablePreview = typeof window !== 'undefined' && 
-  (window.location.hostname.includes('lovable.app') || 
-   window.location.hostname.includes('lovableproject.com') ||
-   window.location.hostname.includes('localhost'));
-
 // Helper to get setting value with default
 const getSetting = (settings: any[], key: string, defaultValue: any) => {
   const setting = settings.find(s => s.key === key);
@@ -21,18 +15,16 @@ const getSetting = (settings: any[], key: string, defaultValue: any) => {
 };
 
 export const useStaticSiteSettings = (): StaticSiteSettings => {
-  // Fetch live settings in preview mode
+  // Always fetch live settings from database (all domains, including production)
   const { data: liveSettings } = useQuery({
     queryKey: ['site-settings-live'],
     queryFn: async () => {
-      console.log('[useStaticSiteSettings] Fetching LIVE settings for preview...');
       const { data, error } = await supabase
         .from('site_settings')
         .select('*');
       
       if (error) throw error;
       
-      // Transform array of settings to StaticSiteSettings object
       const settings = data || [];
       return {
         hero_title: getSetting(settings, 'hero_title', 'Arte Originale'),
@@ -61,14 +53,14 @@ export const useStaticSiteSettings = (): StaticSiteSettings => {
         build_timestamp: new Date().toISOString(),
       } as StaticSiteSettings;
     },
-    enabled: isLovablePreview,
-    staleTime: 0,
+    enabled: true,
+    staleTime: 30_000,
     gcTime: 0,
     refetchOnMount: 'always',
   });
   
-  // Use live data in preview, static data in production
-  return isLovablePreview && liveSettings ? liveSettings : staticSiteSettings;
+  // Live data when available, static as fallback (first paint + DB unreachable)
+  return liveSettings ?? staticSiteSettings;
 };
 
 export default useStaticSiteSettings;
