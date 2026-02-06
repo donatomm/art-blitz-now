@@ -169,7 +169,8 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
   };
 
   // Determine content type - use explicit content_type if available, fallback to detection
-  const isHTMLContent = page?.content_type === 'html' || (page?.content && containsHTML(page.content));
+  const isHTMLContent = page?.content_type === 'html' || 
+    (!page?.content_type && page?.content && containsHTML(page.content));
 
   // Only show loading skeleton if no static data (shouldn't happen for SSG pages)
   if (isLoading && !staticPage) {
