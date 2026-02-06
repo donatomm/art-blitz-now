@@ -1,58 +1,40 @@
 
-# Fix HelloBar Not Respecting Admin Settings
 
-## Problem Found
+# Fix Content Type Detection (1-line change)
 
-**The HelloBar settings from Admin Panel are ignored because live database fetching is disabled.**
+## The Problem
 
-The code checks if we're in "preview mode" to decide whether to fetch live data from the database. But the check is wrong:
+Line 172 of `src/components/PageContent.tsx`:
 
 ```typescript
-// Current check (BROKEN)
-const isLovablePreview = typeof window !== 'undefined' && 
-  (window.location.hostname.includes('lovable.app') || 
-   window.location.hostname.includes('localhost'));
+const isHTMLContent = page?.content_type === 'html' || (page?.content && containsHTML(page.content));
 ```
 
-Your preview runs on `248403b8-3b63-497c-a1bd-bb25e96e0f47.lovableproject.com` - which contains **`lovableproject.com`**, not `lovable.app`.
-
-**Result:** The live database query never runs. The app only shows the old bundled values from the last deploy.
-
----
+The `||` with `containsHTML()` overrides explicit `content_type: 'markdown'` whenever any HTML tag exists in the content (like a CTA button). This causes the entire page to bypass the markdown renderer.
 
 ## The Fix
 
-Update `src/hooks/useStaticSiteSettings.ts` to include the correct domain:
+**File:** `src/components/PageContent.tsx`, line 172
 
+Replace:
 ```typescript
-// Fixed check
-const isLovablePreview = typeof window !== 'undefined' && 
-  (window.location.hostname.includes('lovable.app') || 
-   window.location.hostname.includes('lovableproject.com') ||  // ADD THIS
-   window.location.hostname.includes('localhost'));
+const isHTMLContent = page?.content_type === 'html' || (page?.content && containsHTML(page.content));
 ```
 
----
+With:
+```typescript
+const isHTMLContent = page?.content_type === 'html' || 
+  (!page?.content_type && page?.content && containsHTML(page.content));
+```
 
-## What Changes
+Only auto-detect HTML when `content_type` is not explicitly set. If the database says `'markdown'`, respect it.
 
-| Before | After |
-|--------|-------|
-| Preview shows old bundled values | Preview fetches live database values |
-| Admin changes ignored until deploy | Admin changes visible immediately |
-| HelloBar shows despite being disabled | HelloBar respects your settings |
+## Result
 
----
+| `content_type` in DB | Has HTML tags? | Renderer used |
+|---|---|---|
+| `'markdown'` | Yes (CTA button) | Markdown renderer |
+| `'html'` | n/a | HTML renderer |
+| `null` / missing | Yes | HTML renderer (auto-detect) |
+| `null` / missing | No | Markdown renderer (auto-detect) |
 
-## Files to Modify
-
-**1 file:**
-- `src/hooks/useStaticSiteSettings.ts` - Add `lovableproject.com` to the preview domain check
-
----
-
-## After Approval
-
-1. I'll update the domain check
-2. HelloBar will immediately respect your Admin Panel settings in preview
-3. Production will still use bundled static data (requires Sync & Deploy to update)
