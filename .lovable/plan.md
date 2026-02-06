@@ -1,62 +1,58 @@
 
-# Fix: "Sync & Deploy" Button Not Visible on Mobile Admin Panel
+# Fix HelloBar Not Respecting Admin Settings
 
-## Problem
+## Problem Found
 
-The Admin Panel tabs use a fixed 8-column grid layout:
-```tsx
-<TabsList className="grid w-full grid-cols-8">
+**The HelloBar settings from Admin Panel are ignored because live database fetching is disabled.**
+
+The code checks if we're in "preview mode" to decide whether to fetch live data from the database. But the check is wrong:
+
+```typescript
+// Current check (BROKEN)
+const isLovablePreview = typeof window !== 'undefined' && 
+  (window.location.hostname.includes('lovable.app') || 
+   window.location.hostname.includes('localhost'));
 ```
 
-On mobile screens (less than 768px wide), this causes:
-- All 8 tabs to be compressed into a tiny space
-- The "Deploy" tab (8th column) to be either invisible or too small to tap
-- No horizontal scrolling enabled, so users cannot reach it
+Your preview runs on `248403b8-3b63-497c-a1bd-bb25e96e0f47.lovableproject.com` - which contains **`lovableproject.com`**, not `lovable.app`.
 
-## Solution
+**Result:** The live database query never runs. The app only shows the old bundled values from the last deploy.
 
-Make the TabsList horizontally scrollable on mobile with properly sized tabs.
+---
 
-## Technical Changes
+## The Fix
 
-### File: `src/components/AdminPanel.tsx`
+Update `src/hooks/useStaticSiteSettings.ts` to include the correct domain:
 
-**Current code (line 1267):**
-```tsx
-<TabsList className="grid w-full grid-cols-8">
+```typescript
+// Fixed check
+const isLovablePreview = typeof window !== 'undefined' && 
+  (window.location.hostname.includes('lovable.app') || 
+   window.location.hostname.includes('lovableproject.com') ||  // ADD THIS
+   window.location.hostname.includes('localhost'));
 ```
 
-**New code:**
-```tsx
-<TabsList className="flex overflow-x-auto w-full gap-1 pb-1">
-```
+---
 
-Also update each TabsTrigger to have minimum width for touch targets:
-```tsx
-<TabsTrigger value="products" className="min-w-[70px] text-xs sm:text-sm">
-```
+## What Changes
 
-### Summary of Changes
+| Before | After |
+|--------|-------|
+| Preview shows old bundled values | Preview fetches live database values |
+| Admin changes ignored until deploy | Admin changes visible immediately |
+| HelloBar shows despite being disabled | HelloBar respects your settings |
 
-1. Replace `grid grid-cols-8` with `flex overflow-x-auto` to enable horizontal scrolling
-2. Add `gap-1` for spacing between tabs
-3. Add `pb-1` for bottom padding (scroll indicator space)
-4. Add `min-w-[70px] text-xs sm:text-sm` to each TabsTrigger for:
-   - Minimum tap target size (70px)
-   - Smaller text on mobile (`text-xs`), normal on desktop (`sm:text-sm`)
+---
 
-### Alternative Approach (if preferred)
+## Files to Modify
 
-Use a responsive grid that changes columns based on screen size:
-```tsx
-<TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 gap-1">
-```
+**1 file:**
+- `src/hooks/useStaticSiteSettings.ts` - Add `lovableproject.com` to the preview domain check
 
-This would show 4 tabs per row on mobile (2 rows total) instead of scrolling.
+---
 
-## Impact
+## After Approval
 
-- Mobile users will be able to scroll horizontally to see all tabs including "Deploy"
-- Touch targets will be appropriately sized (minimum 70px width)
-- Desktop layout remains unchanged
-- No changes to tab functionality or content
+1. I'll update the domain check
+2. HelloBar will immediately respect your Admin Panel settings in preview
+3. Production will still use bundled static data (requires Sync & Deploy to update)
