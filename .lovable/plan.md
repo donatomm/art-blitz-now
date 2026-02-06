@@ -1,144 +1,93 @@
 
 
-# Implement No/Low Risk Changes: Remove Hardcoded Contact Details
+# Fix HelloBar On/Off Toggle: Make It Work Instantly on Production
 
-Only steps rated **None** or **Low** risk from the regression analysis. Skipping Product.tsx (medium), Contact.tsx deletion (high), and DB content updates (user action).
+## Root Cause
 
----
+The HelloBar toggle saves correctly to the database, but production (octowonders.com) never reads the database. It uses a static file (`staticSiteSettings.ts`) that was baked on January 17th with `hellobar_enabled: true`. Toggling it to `false` in the admin panel has zero effect on what customers see.
 
-## Step 1: Fix `usePages.ts` preview domain detection (Risk: None)
+The `useStaticSiteSettings` hook has a guard:
+```
+const isLovablePreview = hostname includes 'lovable.app' or 'localhost'
+```
+On octowonders.com, this is `false`, so the hook always returns the stale static file. The database is completely ignored.
 
-**File:** `src/hooks/usePages.ts`, lines 5-7
+## Solution
 
-Add `lovableproject.com` to `isLovablePreview` -- same fix already applied to `useStaticSiteSettings.ts`.
+Make the production site fetch HelloBar settings live from the database after initial render. The static data is still used for the first paint (no loading flicker), but a lightweight background fetch overrides it with the live database values within ~200ms.
 
+This means: toggle HelloBar off in admin panel --> customers see it disappear on next page load. No rebuild needed.
+
+## What Changes
+
+### 1. `src/hooks/useStaticSiteSettings.ts`
+
+Remove the `isLovablePreview` guard so the live-data fetch runs on ALL domains (including octowonders.com), not just lovable.app.
+
+The hook already returns static data immediately (zero latency), then swaps in live data once fetched. This means:
+- First paint: uses static data (fast LCP, no loading state)
+- After ~200ms: live data from database replaces it
+- If database is unreachable: static data stays (graceful fallback)
+
+The change is small: remove the `enabled: isLovablePreview` condition from the `useQuery` call, and remove the `isLovablePreview` variable.
+
+### 2. Why this is safe
+
+- **No LCP regression**: Static data renders instantly. The live fetch happens in the background after hydration.
+- **Graceful fallback**: If the database query fails, the static data is used (current behavior).
+- **Minimal network cost**: One small SELECT query (~1KB response) per page load. The `site_settings` table is tiny.
+- **HelloBar flicker risk**: If static says `enabled: true` but DB says `false`, the bar shows for ~200ms then disappears. This is a one-time glitch until the next rebuild syncs the static file. Acceptable trade-off vs. the bar being permanently wrong.
+
+### 3. What about other settings?
+
+This fix makes ALL site settings live (hero text, nav items, trust bar, etc.), not just HelloBar. This is actually better -- any admin change takes effect immediately instead of requiring a rebuild. The static data just serves as the initial render value.
+
+## Technical Detail
+
+Current code:
 ```typescript
 const isLovablePreview = typeof window !== 'undefined' && 
   (window.location.hostname.includes('lovable.app') || 
    window.location.hostname.includes('lovableproject.com') ||
    window.location.hostname.includes('localhost'));
+
+// ...
+const { data: liveSettings } = useQuery({
+  // ...
+  enabled: isLovablePreview,  // <-- THIS blocks production from fetching
+});
+
+return isLovablePreview && liveSettings ? liveSettings : staticSiteSettings;
 ```
 
----
-
-## Step 2: Create `ContactButtons` component (Risk: None -- new file)
-
-**New file:** `src/components/ContactButtons.tsx`
-
-A reusable React component that:
-- Reads `hellobar_whatsapp_number` and `hellobar_contact_email` from `useStaticSiteSettings()`
-- Accepts optional `whatsappMessage` and `emailSubject` / `emailBody` overrides
-- Renders WhatsApp (green CTA) + Email (secondary) buttons
-- Responsive: stacks vertically on mobile, side-by-side on desktop
-- Zero hardcoded contact details
-
----
-
-## Step 3: Add `{{CONTACT_BUTTONS}}` token to PageContent.tsx (Risk: Low)
-
-**File:** `src/components/PageContent.tsx`
-
-In both the markdown renderer (`renderContent`) and the HTML renderer:
-- Detect lines containing `{{CONTACT_BUTTONS}}`
-- Render the `ContactButtons` component at that position
-- For HTML mode: split content at `{{CONTACT_BUTTONS}}`, render HTML before it, then the component, then HTML after
-
-This allows any CMS page (markdown or HTML) to include dynamic contact buttons without hardcoding.
-
----
-
-## Step 4: Refactor `BuyDialog.tsx` (Risk: Low)
-
-**File:** `src/components/BuyDialog.tsx`
-
-- Import `useStaticSiteSettings`
-- Replace hardcoded `393666295174` (line 29) with `settings.hellobar_whatsapp_number`
-- Replace hardcoded `me@octowonders.com` (line 59) with `settings.hellobar_contact_email`
-- Keep the product-specific message templates unchanged
-
----
-
-## Step 5: Refactor `CheckoutSuccess.tsx` (Risk: Low)
-
-**File:** `src/pages/CheckoutSuccess.tsx`
-
-- Import `useStaticSiteSettings`
-- Replace 3 hardcoded WhatsApp links (lines 63, 82) with dynamic number from settings
-- Replace hardcoded `info@octowonders.com` (line 91) with `settings.hellobar_contact_email`
-- Keep custom `?text=` message parameters as-is (VIP, order support)
-
----
-
-## Step 6: Clean up `HelloBar.tsx` default params (Risk: Low)
-
-**File:** `src/components/HelloBar.tsx`, lines 64-65
-
-Replace hardcoded default parameter values:
+Fixed code:
 ```typescript
-// Before
-whatsappNumber = "393666295174",
-contactEmail = "me@octowonders.com",
+const { data: liveSettings } = useQuery({
+  // ...
+  enabled: true,  // Always fetch live data
+  staleTime: 30_000,  // Cache for 30s to avoid hammering DB on navigation
+});
 
-// After
-whatsappNumber = "",
-contactEmail = "",
+return liveSettings ?? staticSiteSettings;
 ```
 
-These are always overridden by props from Navigation (which reads from `useStaticSiteSettings`). Empty string defaults are safe -- the contact buttons in the popup simply won't render broken links if somehow props aren't passed.
+Key changes:
+- Remove `isLovablePreview` variable entirely
+- Set `enabled: true` (always fetch)
+- Change `staleTime` from 0 to 30000 (30 seconds) -- in preview mode it was 0 for instant updates, but on production we don't need to re-fetch on every component mount
+- Keep `gcTime: 0` so stale data is discarded when the query is no longer used
+- Return `liveSettings ?? staticSiteSettings` (use live data when available, static as fallback)
 
----
+## Risk Assessment
 
-## Step 7: Clean up `HelloBarTabContent.tsx` initial state (Risk: Low)
+| Risk | Severity | Mitigation |
+|------|----------|------------|
+| Brief HelloBar flicker on first visit after toggle | Low | Only happens once per static/live mismatch; bar appears/disappears in ~200ms |
+| Extra database query per page load | Low | ~1KB response, cached 30s, site_settings table is tiny |
+| SSG hydration mismatch warning | None | React Query doesn't render during SSR; static data is used for server HTML, live data swaps in client-side |
+| Database unreachable | None | Falls back to static data (current behavior) |
 
-**File:** `src/components/HelloBarTabContent.tsx`, lines 85-86
+## Files Modified
 
-Replace hardcoded initial state values:
-```typescript
-// Before
-const [hellobarWhatsappNumber, setHellobarWhatsappNumber] = useState("393666295174");
-const [hellobarContactEmail, setHellobarContactEmail] = useState("me@octowonders.com");
-
-// After
-const [hellobarWhatsappNumber, setHellobarWhatsappNumber] = useState("");
-const [hellobarContactEmail, setHellobarContactEmail] = useState("");
-```
-
-The `useEffect` on line 106-107 immediately overwrites these with real DB values. The empty string default shows briefly (admin-only, behind auth).
-
----
-
-## Step 8: Fix `SEO.tsx` JSON-LD schema (Risk: Low)
-
-**File:** `src/components/SEO.tsx`, line 39
-
-Import `staticSiteSettings` (the constant, not the hook -- keeps SEO as a pure render component) and use it for the email in JSON-LD:
-
-```typescript
-import { staticSiteSettings } from '@/generated/staticSiteSettings';
-
-// In getOrganizationSchema():
-email: staticSiteSettings.hellobar_contact_email || 'me@octowonders.com',
-```
-
----
-
-## Files Summary
-
-| File | Action | Risk |
-|------|--------|------|
-| `src/hooks/usePages.ts` | Add `lovableproject.com` to preview domain check | None |
-| `src/components/ContactButtons.tsx` | **NEW** -- reusable component, zero hardcoding | None |
-| `src/components/PageContent.tsx` | Add `{{CONTACT_BUTTONS}}` token support | Low |
-| `src/components/BuyDialog.tsx` | Replace 2 hardcoded values with settings hook | Low |
-| `src/pages/CheckoutSuccess.tsx` | Replace 3 hardcoded values with settings hook | Low |
-| `src/components/HelloBar.tsx` | Change 2 default params to empty strings | Low |
-| `src/components/HelloBarTabContent.tsx` | Change 2 initial state values to empty strings | Low |
-| `src/components/SEO.tsx` | Import static settings for JSON-LD email | Low |
-
-## What's NOT included (medium/high risk -- separate step)
-
-- `src/pages/Product.tsx` -- medium risk, has complex contact link logic
-- `src/pages/Contact.tsx` deletion + `src/routes.tsx` cleanup -- high risk, changes routing
-- `scripts/prebuild.ts` -- build fallback values, low-risk but out of scope for this batch
-- Database content migration (`{{CONTACT_BUTTONS}}` token insertion) -- user action after deploy
+1 file: `src/hooks/useStaticSiteSettings.ts`
 
