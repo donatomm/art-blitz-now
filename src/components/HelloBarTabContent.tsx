@@ -82,8 +82,8 @@ const HelloBarTabContent = () => {
   const [hellobarButtonBgColor, setHellobarButtonBgColor] = useState("#FFFFFF");
   const [hellobarButtonBorderColor, setHellobarButtonBorderColor] = useState("#FFFFFF");
   const [hellobarPopupContent, setHellobarPopupContent] = useState(DEFAULT_POPUP_CONTENT);
-  const [hellobarWhatsappNumber, setHellobarWhatsappNumber] = useState("393666295174");
-  const [hellobarContactEmail, setHellobarContactEmail] = useState("me@octowonders.com");
+  const [hellobarWhatsappNumber, setHellobarWhatsappNumber] = useState("");
+  const [hellobarContactEmail, setHellobarContactEmail] = useState("");
   
   // Load settings
   useEffect(() => {
@@ -103,8 +103,8 @@ const HelloBarTabContent = () => {
       setHellobarButtonBgColor(getSettingValue<string>(settings, "hellobar_button_bg_color", "#FFFFFF"));
       setHellobarButtonBorderColor(getSettingValue<string>(settings, "hellobar_button_border_color", "#FFFFFF"));
       setHellobarPopupContent(getSettingValue<string>(settings, "hellobar_popup_content", DEFAULT_POPUP_CONTENT));
-      setHellobarWhatsappNumber(getSettingValue<string>(settings, "hellobar_whatsapp_number", "393666295174"));
-      setHellobarContactEmail(getSettingValue<string>(settings, "hellobar_contact_email", "me@octowonders.com"));
+      setHellobarWhatsappNumber(getSettingValue<string>(settings, "hellobar_whatsapp_number", ""));
+      setHellobarContactEmail(getSettingValue<string>(settings, "hellobar_contact_email", ""));
     }
   }, [settings]);
   

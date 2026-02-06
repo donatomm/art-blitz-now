@@ -1,5 +1,6 @@
 import { Head } from 'vite-react-ssg';
 import { Product } from '@/types/product';
+import { staticSiteSettings } from '@/generated/staticSiteSettings';
 
 interface Breadcrumb {
   name: string;
@@ -36,7 +37,7 @@ const getOrganizationSchema = () => ({
   },
   contactPoint: {
     '@type': 'ContactPoint',
-    email: 'me@octowonders.com',
+    email: staticSiteSettings.hellobar_contact_email || 'me@octowonders.com',
     contactType: 'customer service',
   },
 });
