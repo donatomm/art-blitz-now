@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 // Check if running in Lovable preview (not production)
 const isLovablePreview = typeof window !== 'undefined' && 
   (window.location.hostname.includes('lovable.app') || 
+   window.location.hostname.includes('lovableproject.com') ||
    window.location.hostname.includes('localhost'));
 
 // Helper to get setting value with default
