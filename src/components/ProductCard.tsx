@@ -9,7 +9,6 @@ import { useDefaultPrices, getDefaultPrice } from "@/hooks/useDefaultPrices";
 interface ProductCardProps {
   product: Product;
   onBuyClick: (product: Product) => void;
-  onCustomOrder: (product: Product) => void;
   editMode?: boolean;
   onProductUpdate?: (product: Product) => void;
 }
@@ -17,7 +16,6 @@ interface ProductCardProps {
 const ProductCard = ({
   product,
   onBuyClick,
-  onCustomOrder,
   editMode = false,
   onProductUpdate
 }: ProductCardProps) => {

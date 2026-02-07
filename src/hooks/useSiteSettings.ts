@@ -41,6 +41,7 @@ export const useUpdateSiteSetting = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["site-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["site-settings-live"] });
     },
   });
 };

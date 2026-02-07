@@ -60,10 +60,7 @@ const Index = () => {
     setIsBuyDialogOpen(true);
   };
   
-  const handleCustomOrder = (product: Product) => {
-    const message = encodeURIComponent(`Hi! I'm interested in a custom order for:\n\n${product.name}\n${product.medium}\n\nPlease let me know the available options!`);
-    window.open(`https://wa.me/?text=${message}`, "_blank");
-  };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -104,7 +101,6 @@ const Index = () => {
         <MasonryGrid 
           products={products.filter(p => p.is_active)} 
           onBuyClick={handleBuyClick} 
-          onCustomOrder={handleCustomOrder} 
         />
       </main>
 

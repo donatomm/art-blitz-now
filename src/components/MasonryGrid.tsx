@@ -5,7 +5,6 @@ import ProductCard from "./ProductCard";
 interface MasonryGridProps {
   products: Product[];
   onBuyClick: (product: Product) => void;
-  onCustomOrder: (product: Product) => void;
   editMode?: boolean;
   onProductUpdate?: (product: Product) => void;
 }
@@ -13,7 +12,6 @@ interface MasonryGridProps {
 const MasonryGrid = ({
   products,
   onBuyClick,
-  onCustomOrder,
   editMode = false,
   onProductUpdate,
 }: MasonryGridProps) => {
@@ -39,7 +37,6 @@ const MasonryGrid = ({
           <ProductCard
             product={product}
             onBuyClick={onBuyClick}
-            onCustomOrder={onCustomOrder}
             editMode={editMode}
             onProductUpdate={onProductUpdate}
           />
