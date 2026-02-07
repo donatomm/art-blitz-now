@@ -1267,12 +1267,12 @@ const AdminPanel = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
             <TabsList className="flex w-full gap-0.5 pb-1">
               <TabsTrigger value="products" className="flex-1 text-xs px-1.5 py-1">Prodotti</TabsTrigger>
-              <TabsTrigger value="skus" className="flex-1 text-xs px-1.5 py-1">SKUs</TabsTrigger>
-              <TabsTrigger value="menu" className="flex-1 text-xs px-1.5 py-1">Menu</TabsTrigger>
-              <TabsTrigger value="hellobar" className="flex-1 text-xs px-1.5 py-1">Hello Bar</TabsTrigger>
+              <TabsTrigger value="skus" className="flex-1 text-xs px-1.5 py-1">SKU</TabsTrigger>
+              <TabsTrigger value="menu" className="flex-1 text-xs px-1.5 py-1">Menus</TabsTrigger>
+              <TabsTrigger value="hellobar" className="flex-1 text-xs px-1.5 py-1">Hello/Contct</TabsTrigger>
               <TabsTrigger value="hero" className="flex-1 text-xs px-1.5 py-1">Hero</TabsTrigger>
-              <TabsTrigger value="pages" className="flex-1 text-xs px-1.5 py-1">Pagine</TabsTrigger>
-              <TabsTrigger value="images" className="flex-1 text-xs px-1.5 py-1">Immagini</TabsTrigger>
+              <TabsTrigger value="pages" className="flex-1 text-xs px-1.5 py-1">Pagin</TabsTrigger>
+              <TabsTrigger value="images" className="flex-1 text-xs px-1.5 py-1">Imgs</TabsTrigger>
               <TabsTrigger value="deploy" className="flex-1 text-xs px-1.5 py-1 text-yellow-400">Deploy</TabsTrigger>
             </TabsList>
             
