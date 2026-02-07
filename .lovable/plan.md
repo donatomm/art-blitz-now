@@ -1,30 +1,98 @@
 
 
-# Reduce Admin Panel Tab Width -- Remove Scrollbar
+# Fix Plan: CMS Pages, Product Page, and Admin Tabs
 
-## Problem
+## What Went Wrong (Honest Assessment)
 
-The 8 admin tabs each have `min-w-[70px]`, forcing a minimum total width of ~570px plus gaps. On narrower screens (or even the dialog width), this overflows and triggers the horizontal scrollbar from `overflow-x-auto`.
+### What was done:
+- Global tab styling (`tabs.tsx`) was modified with `font-extralight`, `bg-primary text-primary-foreground` -- these were admin-specific styles that leaked into the global component, breaking tabs everywhere
+- Product page button styling was changed to Amazon-style yellow/orange pill buttons and layout was shifted with `md:pl-[68px]`
 
-## Solution
+### What was NOT done (but should have been):
+- Contact buttons were never added to generic CMS pages -- only Contatti works because `Contact.tsx` hardcodes them as children
+- The `ordine-personalizzato` page database content was never cleaned up -- it's a full `<!DOCTYPE html>` blog-template document with breadcrumb nav ("Back to Blog"), author byline, read time, and custom CSS that doesn't belong on a standard CMS page
 
-Remove `min-w-[70px]` from each tab trigger and replace with `flex-1` so all 8 tabs share the available width equally. Also remove `overflow-x-auto` from the `TabsList` since scrolling will no longer be needed. Keep the small text sizing (`text-xs sm:text-sm`) to ensure labels fit comfortably.
+### Why it went wrong:
+- Admin-specific styling was applied to the global `TabsTrigger` component instead of being scoped via className overrides
+- Product page buttons were redesigned without checking the site's existing design language
+- Contact buttons solution was proposed as a per-slug matching hack instead of understanding the architecture: `PageContent` is the single source of truth for ALL CMS pages (except `/blog`) and should always render contact buttons
 
-## Change (1 file)
+---
 
-**`src/components/AdminPanel.tsx`** (lines 1268-1277)
+## What Needs Fixing (3 items)
 
-- `TabsList`: change from `flex overflow-x-auto w-full gap-1 pb-1` to `flex flex-wrap w-full gap-1 pb-1`
-- Each `TabsTrigger`: change from `min-w-[70px] text-xs sm:text-sm` to `flex-1 text-xs sm:text-sm`
-- This gives each tab equal flexible width within the row, eliminating overflow
+### 1. CMS Contact Buttons -- The Right Way
+
+**Problem:** The `{{CONTACT_BUTTONS}}` token exists in PageContent but zero pages in the database use it. Only Contatti works because Contact.tsx hardcodes buttons as children.
+
+**Architecture Fix:** `PageContent.tsx` is the single rendering component for all CMS pages. It should ALWAYS append `ContactButtons` at the bottom of every page. No slug matching. No token needed. The component already imports and supports `ContactButtons`.
+
+**Changes:**
+- `PageContent.tsx`: After rendering page content and children, always render `<ContactButtons />` at the bottom (it's already imported)
+- `Contact.tsx`: Remove the hardcoded WhatsApp/Email buttons since PageContent will now handle them universally
+
+### 2. Fix `ordine-personalizzato` Database Content
+
+**Problem:** The database content for this page is a full HTML document (`<!DOCTYPE html>`) with blog-style markup:
+- `<nav>` breadcrumb with "Back to Blog" link
+- Author byline ("DMM") and read time metadata
+- Custom CSS classes and inline styles
+- Full `<html>/<head>/<body>` structure
+
+This makes it render completely differently from other CMS pages like `artista`, `spedizione`, `pricing-policy` which are clean Markdown.
+
+**Fix:** Convert `ordine-personalizzato` from HTML to clean Markdown content (matching the style of `artista`, `spedizione`, etc.) and update `content_type` to `markdown`. The actual informational content will be preserved -- just stripped of the blog template wrapper, nav, author byline, and custom CSS.
+
+### 3. Admin Tab Renaming
+
+**Current:** Prodotti | SKUs | Menu | Hello Bar | Hero | Pagine | Immagini | Deploy
+
+**New:** Prodotti | SKU | Menus | Hello/Contct | Hero | Pagin | Imgs | Deploy
+
+Only text labels change. No styling changes.
+
+---
+
+## What Will NOT Be Changed
+
+- `tabs.tsx` -- left alone as-is (user confirmed no fix needed)
+- Product page -- not in scope for this implementation
+- Mobile column layout -- confirmed good, no changes
+
+---
 
 ## Technical Details
 
-| Property | Before | After |
-|----------|--------|-------|
-| TabsList | `overflow-x-auto` (scrollbar) | `flex-wrap` (wraps if extremely narrow) |
-| TabsTrigger | `min-w-[70px]` (fixed minimum) | `flex-1` (equal share of space) |
-| Text size | `text-xs sm:text-sm` (unchanged) | `text-xs sm:text-sm` (unchanged) |
+### File: `src/components/PageContent.tsx`
+- After the `{children}` render inside `<div className="max-w-4xl">`, add `<ContactButtons />` unconditionally
+- The component already imports `ContactButtons`
 
-On typical dialog widths the 8 tabs will fit in a single row without a scrollbar. On very small mobile screens, `flex-wrap` ensures they gracefully wrap to a second row rather than overflowing.
+### File: `src/pages/Contact.tsx`
+- Remove the hardcoded WhatsApp/Email button JSX (lines 28-61)
+- Simplify to just render `<PageContent slug="contatti" breadcrumbs={...} />` without children
+- Remove unused imports (`useStaticSiteSettings`) and variables
+
+### Database: `ordine-personalizzato` page
+- Convert content from HTML blog template to clean Markdown
+- Change `content_type` from `html` to `markdown`
+- Preserve all actual content (steps, descriptions, contact info)
+- Remove: `<!DOCTYPE>`, `<html>/<head>/<body>`, nav breadcrumb, author byline, read time, custom CSS
+
+### File: `src/components/AdminPanel.tsx` (lines 1269-1276)
+- Rename tab labels only:
+  - "SKUs" to "SKU"
+  - "Menu" to "Menus"  
+  - "Hello Bar" to "Hello/Contct"
+  - "Pagine" to "Pagin"
+  - "Immagini" to "Imgs"
+
+---
+
+## Implementation Order
+
+1. Fix `PageContent.tsx` -- add universal ContactButtons
+2. Simplify `Contact.tsx` -- remove hardcoded buttons
+3. Convert `ordine-personalizzato` database content to Markdown
+4. Rename admin tabs in `AdminPanel.tsx`
+5. Verify each CMS page one by one: artista, spedizione, pricing-policy, contatti, ordine-personalizzato, faqs, resi-rimborsi
 
