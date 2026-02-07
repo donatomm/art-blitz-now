@@ -1273,7 +1273,7 @@ const AdminPanel = () => {
               <TabsTrigger value="hero" className="flex-1 text-xs px-1.5 py-1">Hero</TabsTrigger>
               <TabsTrigger value="pages" className="flex-1 text-xs px-1.5 py-1">Pagine</TabsTrigger>
               <TabsTrigger value="images" className="flex-1 text-xs px-1.5 py-1">Immagini</TabsTrigger>
-              <TabsTrigger value="deploy" className="flex-1 text-xs px-1.5 py-1 text-green-600">Deploy</TabsTrigger>
+              <TabsTrigger value="deploy" className="flex-1 text-xs px-1.5 py-1 text-yellow-400">Deploy</TabsTrigger>
             </TabsList>
             
             <TabsContent value="products" className="space-y-4">
