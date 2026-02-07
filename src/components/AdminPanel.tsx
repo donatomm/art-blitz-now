@@ -327,6 +327,16 @@ const PagesTabContent = () => {
               placeholder={isHtmlMode ? "Incolla qui il codice HTML..." : "Scrivi in Markdown..."}
             />
           </div>
+
+          {/* Contact Buttons Info Banner */}
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mt-2">
+            <p className="text-sm font-medium text-green-800 dark:text-green-300">
+              📱 I pulsanti WhatsApp + Email appaiono automaticamente in fondo a questa pagina.
+            </p>
+            <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+              Per cambiare numero o email, vai alla tab "Hello/Contct".
+            </p>
+          </div>
           
           {/* SEO Fields */}
           <div className="border-t pt-4 mt-4">
