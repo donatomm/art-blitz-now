@@ -445,7 +445,12 @@ const PagesTabContent = () => {
       <div className="space-y-2">
         {pages?.map(page => <div key={page.id} className="flex items-center justify-between p-3 bg-muted rounded-md">
             <div>
-              <p className="font-medium">{page.title}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium">{page.title}</p>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${page.content_type === 'html' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'}`}>
+                  {page.content_type === 'html' ? 'HTML' : 'MD'}
+                </span>
+              </div>
               <p className="text-xs text-muted-foreground">/{page.slug}</p>
               {page.seo_title && <p className="text-xs text-green-600 mt-1">🔍 SEO configurato</p>}
             </div>
