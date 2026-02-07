@@ -1265,15 +1265,15 @@ const AdminPanel = () => {
             </div>
           ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-            <TabsList className="flex overflow-x-auto w-full gap-1 pb-1">
-              <TabsTrigger value="products" className="min-w-[70px] text-xs sm:text-sm">Prodotti</TabsTrigger>
-              <TabsTrigger value="skus" className="min-w-[70px] text-xs sm:text-sm">SKUs</TabsTrigger>
-              <TabsTrigger value="menu" className="min-w-[70px] text-xs sm:text-sm">Menu</TabsTrigger>
-              <TabsTrigger value="hellobar" className="min-w-[70px] text-xs sm:text-sm">Hello Bar</TabsTrigger>
-              <TabsTrigger value="hero" className="min-w-[70px] text-xs sm:text-sm">Hero</TabsTrigger>
-              <TabsTrigger value="pages" className="min-w-[70px] text-xs sm:text-sm">Pagine</TabsTrigger>
-              <TabsTrigger value="images" className="min-w-[70px] text-xs sm:text-sm">Immagini</TabsTrigger>
-              <TabsTrigger value="deploy" className="min-w-[70px] text-xs sm:text-sm text-green-600">Deploy</TabsTrigger>
+            <TabsList className="flex flex-wrap w-full gap-1 pb-1">
+              <TabsTrigger value="products" className="flex-1 text-xs sm:text-sm">Prodotti</TabsTrigger>
+              <TabsTrigger value="skus" className="flex-1 text-xs sm:text-sm">SKUs</TabsTrigger>
+              <TabsTrigger value="menu" className="flex-1 text-xs sm:text-sm">Menu</TabsTrigger>
+              <TabsTrigger value="hellobar" className="flex-1 text-xs sm:text-sm">Hello Bar</TabsTrigger>
+              <TabsTrigger value="hero" className="flex-1 text-xs sm:text-sm">Hero</TabsTrigger>
+              <TabsTrigger value="pages" className="flex-1 text-xs sm:text-sm">Pagine</TabsTrigger>
+              <TabsTrigger value="images" className="flex-1 text-xs sm:text-sm">Immagini</TabsTrigger>
+              <TabsTrigger value="deploy" className="flex-1 text-xs sm:text-sm text-green-600">Deploy</TabsTrigger>
             </TabsList>
             
             <TabsContent value="products" className="space-y-4">
