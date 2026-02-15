@@ -50,14 +50,14 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
         elements.push(
           <ListTag
             key={elements.length}
-            className={`${listType === "ul" ? "list-disc" : "list-decimal"} pl-6 mb-4 space-y-1`}
-          >
-            {currentList.map((item, i) => (
-              <li key={i} className="text-muted-foreground">
+            className={`${listType === "ul" ? "list-disc" : "list-decimal"} pl-6 mb-4 space-y-1`}>
+
+            {currentList.map((item, i) =>
+            <li key={i} className="text-muted-foreground">
                 {renderInlineFormatting(item)}
               </li>
-            ))}
-          </ListTag>,
+            )}
+          </ListTag>
         );
         currentList = [];
         listType = null;
@@ -81,8 +81,8 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
           return (
             <strong key={i} className="text-foreground font-semibold">
               {part.slice(2, -2)}
-            </strong>
-          );
+            </strong>);
+
         }
         // Handle inline images ![alt](url) and links [text](url)
         const inlineParts = part.split(/(!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\))/g);
@@ -100,8 +100,8 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
             return (
               <a key={`${i}-${j}`} href={linkMatch[2]} className="text-primary underline hover:text-primary/80">
                 {linkMatch[1]}
-              </a>
-            );
+              </a>);
+
           }
           return inlinePart;
         });
@@ -141,7 +141,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
         elements.push(
           <h2 key={index} className="text-2xl font-bold mt-8 mb-4 text-foreground">
             {trimmedLine.slice(3)}
-          </h2>,
+          </h2>
         );
       } else if (trimmedLine.startsWith("# ")) {
         flushList();
@@ -149,7 +149,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
         elements.push(
           <h1 key={index} className="text-3xl font-bold mt-8 mb-4 text-foreground">
             {trimmedLine.slice(2)}
-          </h1>,
+          </h1>
         );
       }
       // Handle unordered list items
@@ -182,8 +182,8 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
               src={imageMatch[2]}
               alt={imageMatch[1]}
               className="w-full max-w-lg mx-auto rounded-lg shadow-md my-6"
-              loading="lazy"
-            />,
+              loading="lazy" />
+
           );
         }
       }
@@ -194,7 +194,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
         elements.push(
           <p key={index} className="text-muted-foreground mb-4 leading-relaxed">
             {renderInlineFormatting(trimmedLine)}
-          </p>,
+          </p>
         );
       }
       // Handle empty lines (paragraph breaks)
@@ -226,7 +226,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
 
   // Determine content type - use explicit content_type if available, fallback to detection
   const isHTMLContent =
-    page?.content_type === "html" || (!page?.content_type && page?.content && containsHTML(page.content));
+  page?.content_type === "html" || !page?.content_type && page?.content && containsHTML(page.content);
 
   // Only show loading skeleton if no static data (shouldn't happen for SSG pages)
   if (isLoading && !staticPage) {
@@ -240,8 +240,8 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
             <Skeleton className="h-4 w-3/4" />
           </div>
         </main>
-      </div>
-    );
+      </div>);
+
   }
 
   if (!page) {
@@ -250,13 +250,13 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
 
   return (
     <>
-      <Navigation />
+      
 
       {/* Fixed back button - unified style with Product pages */}
       <Link
         to="/"
-        className="fixed top-[68px] left-4 z-40 inline-flex items-center gap-2 px-4 py-1.5 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-90 hover:opacity-100 hover:scale-105 hover:shadow-xl text-sm"
-      >
+        className="fixed top-[68px] left-4 z-40 inline-flex items-center gap-2 px-4 py-1.5 rounded-full shadow-lg transition-all duration-300 font-medium bg-gold text-primary opacity-90 hover:opacity-100 hover:scale-105 hover:shadow-xl text-sm">
+
         <ArrowLeft className="h-4 w-4" />
         <span className="hidden sm:inline">Torna alla Galleria</span>
       </Link>
@@ -266,42 +266,42 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
           title={page.seo_title || page.title}
           description={page.seo_description || `${page.title} - OctoWonders`}
           url={`/${slug}`}
-          breadcrumbs={breadcrumbs}
-        />
+          breadcrumbs={breadcrumbs} />
+
 
         <main className="container mx-auto px-4 pt-20 pb-16">
           <div className="max-w-4xl">
-            {!isHTMLContent && !page.content.trim().startsWith("#") && (
-              <h1 className="text-4xl font-bold mb-8">{page.title}</h1>
-            )}
+            {!isHTMLContent && !page.content.trim().startsWith("#") &&
+            <h1 className="text-4xl font-bold mb-8">{page.title}</h1>
+            }
             <div className={isFullHtmlDocument(page.content) ? "" : "prose prose-lg max-w-none"}>
-              {isHTMLContent
-                ? (() => {
-                    const htmlContent = processHTML(page.content);
-                    if (htmlContent.includes("{{CONTACT_BUTTONS}}")) {
-                      const parts = htmlContent.split("{{CONTACT_BUTTONS}}");
-                      return (
-                        <>
-                          {parts.map((part, i) => (
-                            <div key={i}>
+              {isHTMLContent ?
+              (() => {
+                const htmlContent = processHTML(page.content);
+                if (htmlContent.includes("{{CONTACT_BUTTONS}}")) {
+                  const parts = htmlContent.split("{{CONTACT_BUTTONS}}");
+                  return (
+                    <>
+                          {parts.map((part, i) =>
+                      <div key={i}>
                               <div dangerouslySetInnerHTML={{ __html: part }} />
                               {i < parts.length - 1 && <ContactButtons />}
                             </div>
-                          ))}
-                        </>
-                      );
-                    }
-                    return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
-                  })()
-                : renderContent(page.content)}
+                      )}
+                        </>);
+
+                }
+                return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
+              })() :
+              renderContent(page.content)}
             </div>
             {children}
             <ContactButtons />
           </div>
         </main>
       </div>
-    </>
-  );
+    </>);
+
 };
 
 export default PageContent;
