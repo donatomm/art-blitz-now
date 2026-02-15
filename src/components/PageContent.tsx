@@ -296,7 +296,7 @@ const PageContent = ({ slug, children, breadcrumbs }: PageContentProps) => {
               renderContent(page.content)}
             </div>
             {children}
-            <ContactButtons />
+            
           </div>
         </main>
       </div>
