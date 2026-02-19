@@ -1,48 +1,49 @@
 
-# Fix: Restore Missing WhatsApp Button in ContactButtons.tsx
+# Fix: Hero Spacer Too Small on Mobile When HelloBar is Visible
 
-## What is broken
+## Root Cause
 
-`src/components/ContactButtons.tsx`, lines 30–43:
-
-```tsx
-{whatsappLink    // ← evaluates to the URL string
-                 // 12 blank lines — the <a> JSX was deleted
-}
-```
-
-React renders string values directly into the DOM. Since `whatsappLink` is a string like `https://wa.me/393666295174?text=...`, it prints as visible raw text — no button, no styling, no click. The Email button is unaffected because lines 44–60 are intact.
-
-## The fix — one surgical replacement
-
-Replace lines 30–43 with the correct conditional render:
+In `src/components/Hero.tsx`, line 45:
 
 ```tsx
-{whatsappLink && (
-  <a
-    href={whatsappLink}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg font-bold text-base py-3 px-5 transition-opacity hover:opacity-90"
-    style={{ background: "#25D366", color: "white" }}
-  >
-    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-    </svg>
-    WhatsApp
-  </a>
-)}
+<div className="pt-28 md:pt-20" />
 ```
 
-This is identical to the WhatsApp button used in `BuyDialog.tsx` — same SVG, same `#25D366` green, same layout pattern.
+- `pt-28` = 112px on mobile
+- `pt-20` = 80px on desktop
 
-## Files changed
+The fixed `<header>` stacks two things:
+1. Navigation bar: `h-16` = 64px (always)
+2. HelloBar: variable height — on desktop ~40px (single line), on mobile ~120px+ (wraps to 3 lines + button, as shown in the screenshot)
 
-- `src/components/ContactButtons.tsx` — lines 30–43 only: replace blank expression with proper `<a>` JSX
+So on mobile the actual header height when HelloBar is enabled = 64px nav + ~120px hellobar ≈ 184px. The current `pt-28` (112px) is 72px too short — the hero text box bleeds up into the HelloBar.
 
-## No other changes needed
+On desktop it works fine because `pt-20` = 80px and the HelloBar is ~40px tall = 120px total, and the hero content starts below (`mt-[50px]` gives extra breathing room).
 
-- No DB changes
-- No other component affected
-- WhatsApp number and email continue to come from `useStaticSiteSettings()` — no hardcoding
-- Email button (lines 44–60) is untouched
+## The Fix
+
+Increase the mobile spacer from `pt-28` to `pt-56` (224px) to safely clear the nav + tall mobile HelloBar.
+
+Also add an `md:pt-28` intermediate step for safety — on desktop the HelloBar fits in one line so `pt-20` + `mt-[50px]` is fine.
+
+Since the HelloBar can be disabled, and its height changes whether it's on or off, the cleanest approach is: bump the mobile padding to `pt-56` (enough to clear the tallest possible HelloBar on mobile), and keep desktop as-is.
+
+**File:** `src/components/Hero.tsx`, **line 45 only**
+
+```tsx
+// Before
+<div className="pt-28 md:pt-20" />
+
+// After
+<div className="pt-56 md:pt-20" />
+```
+
+`pt-56` = 224px. With the nav at 64px, this gives 160px of room for the HelloBar on mobile — enough for 3 wrapped lines + the button row visible in the screenshot.
+
+## Technical Details
+
+- Single line change, one file only
+- No DB changes, no SSG impact
+- Does not affect desktop layout (`md:pt-20` is unchanged)
+- Does not affect pages without a HelloBar (the spacer is always present in the Hero, but on those pages the hello bar is disabled, so the extra padding is wasted space — acceptable trade-off vs. the current breakage)
+- If HelloBar is disabled, the hero just has slightly more top padding on mobile — not visible because the hero image fills the full section anyway and the text is still centered vertically within `h-[calc(65vh-20px)]`
