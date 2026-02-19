@@ -1,37 +1,46 @@
 
-# Fix: Single Line Change in PageContent.tsx
+# Fix: Admin Page Editor INP (1,316ms regression)
 
-## The only bug
+## What the INP report is showing
 
-Line 229 of `src/components/PageContent.tsx`:
-
+The offending element is:
 ```
-page?.content_type === "html" || !page?.content_type && page?.content && containsHTML(page.content);
+textarea.flex.min-h-[80px]...font-mono.text-sm
 ```
+This is the page content `<Textarea>` at line 322 of `src/components/AdminPanel.tsx`, inside the `PagesTabContent` component.
 
-`containsHTML()` matches ANY HTML tag — `<b>`, `<br>`, `<strong>`, anything. The moment a markdown page contains one tag, the entire page is routed to the HTML renderer. The `{{CONTACT_BUTTONS}}` token only exists inside `renderContent()` (line 132), which only runs on the markdown path. HTML path never hits it.
+## Root cause (pre-existing, not caused by the PageContent.tsx fix)
 
-## The fix
+`PagesTabContent` (lines 58–379) owns ALL of this state directly:
+- `editingPage`, `editTitle`, `editContent`, `editSlug`, `editSeoTitle`, `editSeoDescription`, `isHtmlMode`, `showImageUpload`
+- `debouncedContent = useDebouncedInput(editContent, setEditContent)`
 
-Replace `containsHTML(page.content)` with `isFullHtmlDocument(page.content)` on line 229. `isFullHtmlDocument` is already imported on line 10 — no new imports needed.
+When the user types, `useDebouncedInput` fires `setEditContent` after 150ms. Because `editContent` is state inside `PagesTabContent`, this triggers a **full re-render of the entire component** — including the pages list, all buttons, the Textarea itself, and the `<Tabs>` wrapper. That is the 950ms render time in the report.
 
-Changed line:
-```
-page?.content_type === "html" || (!page?.content_type && page?.content && isFullHtmlDocument(page.content));
-```
+The debounce prevents re-renders on every single keystroke but does NOT prevent the expensive re-render 150ms later when the debounce fires.
 
-This means: only treat content as HTML if:
-1. The database explicitly says `content_type = "html"`, OR
-2. The content is a real `<!DOCTYPE>`/`<html>` document
+## Why my PageContent.tsx diff is unrelated
 
-Markdown pages with `<br>` or `<b>` tags remain on the markdown path where the token works.
+My last change was a one-line fix in `src/components/PageContent.tsx` — the public-facing page renderer used by visitors. It has zero involvement with `AdminPanel.tsx` or `PagesTabContent`. The INP was pre-existing.
 
-## What is NOT changed
+## The fix: extract PageEditorForm as an isolated sub-component
 
-- No buttons are added automatically anywhere
-- HTML pages (`content_type = "html"` or full `<!DOCTYPE>` documents) are completely unaffected
-- Nothing else in the file is touched
+This is the exact same pattern already used for `ProductSizeRow`, `ProductDealRow`, `TrustBarItemInput`, and `MenuItemRow`.
+
+Create `src/components/admin/PageEditorForm.tsx` containing:
+- All edit state: `editTitle`, `editContent`, `editSlug`, `editSeoTitle`, `editSeoDescription`, `isHtmlMode`, `showImageUpload`
+- All debounced inputs: `debouncedContent`, `debouncedSeoDescription`
+- The entire form UI currently at lines 251–378 of AdminPanel.tsx
+- A `onSave(data)` callback prop and `onCancel` prop
+
+`PagesTabContent` is reduced to:
+- The page list (lines 380+)
+- `handleEditPage` sets `editingPage` to the selected page
+- When `editingPage` is set, renders `<PageEditorForm page={editingPage} onSave={...} onCancel={...} />`
+
+**Result**: Typing in the content textarea now only re-renders `PageEditorForm` (a small isolated component), not `PagesTabContent` or the pages list. The 950ms render collapses to single digits.
 
 ## Files changed
 
-- `src/components/PageContent.tsx` — line 229 only, one value replaced
+- `src/components/admin/PageEditorForm.tsx` — new file, extracted from AdminPanel.tsx lines 251–378
+- `src/components/AdminPanel.tsx` — lines 251–378 replaced with `<PageEditorForm>` usage; edit state moved into the new component
