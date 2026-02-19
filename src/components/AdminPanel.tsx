@@ -31,6 +31,8 @@ import HelloBarTabContent from "./HelloBarTabContent";
 import MenuTabContent from "./MenuTabContent";
 import { usePages, useUpdatePage, useCreatePage, Page } from "@/hooks/usePages";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
+import PageEditorForm, { PageSaveData } from "./admin/PageEditorForm";
+
 // NavItem interface for menu sync
 interface NavItem {
   label: string;
@@ -56,96 +58,65 @@ const generateSlug = (title: string): string => {
 
 // Pages Editor sub-component
 const PagesTabContent = () => {
-  const {
-    data: pages,
-    isLoading: pagesLoading
-  } = usePages({ forceLive: true });
+  const { data: pages, isLoading: pagesLoading } = usePages({ forceLive: true });
   const { data: settings } = useSiteSettings();
   const updateSetting = useUpdateSiteSetting();
   const updatePage = useUpdatePage();
   const createPage = useCreatePage();
   const [editingPage, setEditingPage] = useState<Page | null>(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editContent, setEditContent] = useState("");
-  const [editSlug, setEditSlug] = useState("");
-  const [editSeoTitle, setEditSeoTitle] = useState("");
-  const [editSeoDescription, setEditSeoDescription] = useState("");
-  const [showImageUpload, setShowImageUpload] = useState(false);
-  const [isHtmlMode, setIsHtmlMode] = useState(false);
-  
+
   // New page creation state
   const [isCreating, setIsCreating] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newSlug, setNewSlug] = useState("");
   const [newContentType, setNewContentType] = useState<'markdown' | 'html'>('markdown');
-  
-  const {
-    toast
-  } = useToast();
 
-  // Debounced inputs for better INP
-  const debouncedContent = useDebouncedInput(editContent, setEditContent);
-  const debouncedSeoDescription = useDebouncedInput(editSeoDescription, setEditSeoDescription);
+  const { toast } = useToast();
 
-  const handleEditPage = (page: Page) => {
-    setEditingPage(page);
-    setEditSlug(page.slug);
-    setEditTitle(page.title);
-    setEditContent(page.content);
-    setEditSeoTitle(page.seo_title || "");
-    setEditSeoDescription(page.seo_description || "");
-    setShowImageUpload(false);
-    // Use saved content_type, don't detect
-    setIsHtmlMode(page.content_type === 'html');
-  };
-
-  const handleSavePage = async () => {
+  const handleSavePage = async (data: PageSaveData) => {
     if (!editingPage) return;
-    // Flush debounced values before saving
-    debouncedContent.flushSync();
-    debouncedSeoDescription.flushSync();
-    
-    const slugChanged = editSlug !== editingPage.slug;
-    
+
+    const slugChanged = data.slug !== editingPage.slug;
+
     // Check for duplicate slug if changed
-    if (slugChanged && pages?.some(p => p.id !== editingPage.id && p.slug.toLowerCase() === editSlug.toLowerCase())) {
+    if (slugChanged && pages?.some(p => p.id !== editingPage.id && p.slug.toLowerCase() === data.slug.toLowerCase())) {
       toast({
         title: "Errore",
         description: "Esiste già una pagina con questo slug.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-    
+
     try {
       await updatePage.mutateAsync({
         id: editingPage.id,
-        slug: slugChanged ? editSlug : undefined,
-        title: editTitle,
-        content: editContent,
-        content_type: isHtmlMode ? 'html' : 'markdown',
-        seo_title: editSeoTitle || null,
-        seo_description: editSeoDescription || null
+        slug: slugChanged ? data.slug : undefined,
+        title: data.title,
+        content: data.content,
+        content_type: data.isHtmlMode ? 'html' : 'markdown',
+        seo_title: data.seoTitle || null,
+        seo_description: data.seoDescription || null,
       });
 
       // Sync menu item if title or slug changed
       let menuSynced = false;
-      if ((editTitle !== editingPage.title || slugChanged) && settings) {
+      if ((data.title !== editingPage.title || slugChanged) && settings) {
         const navItems = getSettingValue<NavItem[]>(settings, "nav_items", []);
         const matchingIndex = navItems.findIndex(
           item => item.href === `/${editingPage.slug}` || item.href === editingPage.slug
         );
-        
+
         if (matchingIndex !== -1) {
           const updatedNavItems = [...navItems];
           updatedNavItems[matchingIndex] = {
             ...updatedNavItems[matchingIndex],
-            label: editTitle,
-            href: `/${editSlug}`
+            label: data.title,
+            href: `/${data.slug}`,
           };
-          await updateSetting.mutateAsync({ 
-            key: "nav_items", 
-            value: JSON.parse(JSON.stringify(updatedNavItems))
+          await updateSetting.mutateAsync({
+            key: "nav_items",
+            value: JSON.parse(JSON.stringify(updatedNavItems)),
           });
           menuSynced = true;
         }
@@ -153,16 +124,16 @@ const PagesTabContent = () => {
 
       toast({
         title: menuSynced ? "Pagina e Menu aggiornati!" : "Pagina salvata!",
-        description: menuSynced 
-          ? `"${editTitle}" aggiornata. Anche la voce di menu è stata sincronizzata.`
-          : `"${editTitle}" aggiornata con successo.`
+        description: menuSynced
+          ? `"${data.title}" aggiornata. Anche la voce di menu è stata sincronizzata.`
+          : `"${data.title}" aggiornata con successo.`,
       });
       setEditingPage(null);
-    } catch (error) {
+    } catch {
       toast({
         title: "Errore",
         description: "Impossibile salvare la pagina.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -172,7 +143,7 @@ const PagesTabContent = () => {
       toast({
         title: "Errore",
         description: "Inserisci titolo e slug.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -182,7 +153,7 @@ const PagesTabContent = () => {
       toast({
         title: "Errore",
         description: "Esiste già una pagina con questo slug.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -194,190 +165,70 @@ const PagesTabContent = () => {
         content: newContentType === 'html' ? '<p>Contenuto della pagina</p>' : '# ' + newTitle + '\n\nContenuto della pagina.',
         content_type: newContentType,
         seo_title: newTitle,
-        seo_description: null
+        seo_description: null,
       });
 
       // Add to nav_items
       if (settings) {
         const navItems = getSettingValue<NavItem[]>(settings, "nav_items", []);
         const maxOrder = navItems.length > 0 ? Math.max(...navItems.map(i => i.order)) : 0;
-        const updatedNavItems = [...navItems, { 
-          label: newTitle, 
-          href: `/${newSlug}`, 
-          order: maxOrder + 1 
+        const updatedNavItems = [...navItems, {
+          label: newTitle,
+          href: `/${newSlug}`,
+          order: maxOrder + 1,
         }];
-        await updateSetting.mutateAsync({ 
-          key: "nav_items", 
-          value: JSON.parse(JSON.stringify(updatedNavItems))
+        await updateSetting.mutateAsync({
+          key: "nav_items",
+          value: JSON.parse(JSON.stringify(updatedNavItems)),
         });
       }
 
       toast({
         title: "Pagina creata!",
-        description: `"${newTitle}" creata e aggiunta al menu. Ricorda di ri-pubblicare il sito per indicizzarla.`
+        description: `"${newTitle}" creata e aggiunta al menu. Ricorda di ri-pubblicare il sito per indicizzarla.`,
       });
-      
+
       setIsCreating(false);
       setNewTitle("");
       setNewSlug("");
       setNewContentType('markdown');
-    } catch (error) {
+    } catch {
       toast({
         title: "Errore",
         description: "Impossibile creare la pagina.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
-  const handleImageUploaded = (url: string) => {
-    const markdownImage = `\n![Immagine](${url})\n`;
-    debouncedContent.onChange(debouncedContent.value + markdownImage);
-    setShowImageUpload(false);
-    toast({
-      title: "Immagine inserita!",
-      description: "Il codice Markdown dell'immagine è stato aggiunto al contenuto."
-    });
-  };
-
   if (pagesLoading) {
-    return <TabsContent value="pages" className="space-y-4">
+    return (
+      <TabsContent value="pages" className="space-y-4">
         <div className="flex items-center justify-center py-8">
           <Loader2 className="h-6 w-6 animate-spin" />
         </div>
-      </TabsContent>;
+      </TabsContent>
+    );
   }
 
+  // Isolated editor: typing only re-renders PageEditorForm, not PagesTabContent
   if (editingPage) {
-    return <TabsContent value="pages" className="space-y-4">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Modifica: {editingPage.slug}</h3>
-            <Button variant="ghost" size="sm" onClick={() => setEditingPage(null)}>
-              Annulla
-            </Button>
-          </div>
-          <div>
-            <Label>Titolo</Label>
-            <DebouncedInput value={editTitle} onChange={setEditTitle} debounceMs={150} />
-          </div>
-          <div>
-            <Label>Slug (URL)</Label>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">/</span>
-              <DebouncedInput 
-                value={editSlug} 
-                onChange={(value) => setEditSlug(value.toLowerCase().replace(/[^a-z0-9\/-]/g, ''))} 
-                placeholder="nome-pagina o blog/articolo"
-                debounceMs={150}
-              />
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              💡 Usa "/" per percorsi annidati (es: blog/articolo, guide/tutorial)
-            </p>
-            <p className="text-xs text-amber-600 mt-1">
-              ⚠️ Modificare lo slug cambierà l'URL. I vecchi link non funzioneranno più.
-            </p>
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <Label>Contenuto</Label>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className={!isHtmlMode ? "font-medium" : "text-muted-foreground"}>Markdown</span>
-                  <Switch checked={isHtmlMode} onCheckedChange={setIsHtmlMode} />
-                  <span className={isHtmlMode ? "font-medium" : "text-muted-foreground"}>HTML</span>
-                </div>
-                {!isHtmlMode && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowImageUpload(!showImageUpload)}
-                  >
-                    <ImageIcon className="h-4 w-4 mr-1" />
-                    Immagine
-                  </Button>
-                )}
-              </div>
-            </div>
-            {isHtmlMode && (
-              <p className="text-xs text-amber-600 mb-2">
-                Incolla codice HTML da Termly o altri servizi
-              </p>
-            )}
-            {showImageUpload && !isHtmlMode && (
-              <div className="mb-3 p-3 border rounded-md bg-muted/50">
-                <ImageUpload
-                  label="Carica immagine per la pagina"
-                  currentUrl=""
-                  onUpload={handleImageUploaded}
-                  folder="pages"
-                />
-                <p className="text-xs text-muted-foreground mt-2">
-                  L'immagine verrà inserita alla fine del contenuto come Markdown.
-                </p>
-              </div>
-            )}
-            <Textarea 
-              value={debouncedContent.value} 
-              onChange={e => debouncedContent.onChange(e.target.value)} 
-              rows={isHtmlMode ? 20 : 12} 
-              className="font-mono text-sm" 
-              placeholder={isHtmlMode ? "Incolla qui il codice HTML..." : "Scrivi in Markdown..."}
-            />
-          </div>
-
-          {/* Contact Buttons Info Banner */}
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mt-2">
-            <p className="text-sm font-medium text-green-800 dark:text-green-300">
-              📱 I pulsanti WhatsApp + Email appaiono automaticamente in fondo a questa pagina.
-            </p>
-            <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-              Per cambiare numero o email, vai alla tab "Hello/Contct".
-            </p>
-          </div>
-          
-          {/* SEO Fields */}
-          <div className="border-t pt-4 mt-4">
-            <h4 className="font-bold text-sm mb-3 text-blue-600">🔍 SEO (per Google)</h4>
-            <div className="space-y-3">
-              <div>
-                <Label>SEO Title <span className="text-xs text-muted-foreground ml-1">(max 60 caratteri)</span></Label>
-                <DebouncedInput 
-                  value={editSeoTitle} 
-                  onChange={setEditSeoTitle} 
-                  placeholder="Es: Marco De Francesco - Artista | OctoWonders"
-                  maxLength={60}
-                  debounceMs={150}
-                />
-                <p className="text-xs text-muted-foreground mt-1">{editSeoTitle.length}/60 caratteri</p>
-              </div>
-              <div>
-                <Label>SEO Description <span className="text-xs text-muted-foreground ml-1">(max 160 caratteri)</span></Label>
-                <Textarea 
-                  value={debouncedSeoDescription.value} 
-                  onChange={e => debouncedSeoDescription.onChange(e.target.value)} 
-                  placeholder="Es: Scopri l'artista Marco De Francesco. Stampe su tela originali a tema marino."
-                  rows={2}
-                  maxLength={160}
-                />
-                <p className="text-xs text-muted-foreground mt-1">{debouncedSeoDescription.value.length}/160 caratteri</p>
-              </div>
-            </div>
-          </div>
-          
-          <Button onClick={handleSavePage} disabled={updatePage.isPending} className="w-full">
-            {updatePage.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            Salva Pagina
-          </Button>
-        </div>
-      </TabsContent>;
+    return (
+      <TabsContent value="pages" className="space-y-4">
+        <PageEditorForm
+          page={editingPage}
+          isSaving={updatePage.isPending}
+          onSave={handleSavePage}
+          onCancel={() => setEditingPage(null)}
+        />
+      </TabsContent>
+    );
   }
 
   // New page creation form
   if (isCreating) {
-    return <TabsContent value="pages" className="space-y-4">
+    return (
+      <TabsContent value="pages" className="space-y-4">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Nuova Pagina</h3>
@@ -387,12 +238,12 @@ const PagesTabContent = () => {
           </div>
           <div>
             <Label>Titolo</Label>
-            <Input 
-              value={newTitle} 
+            <Input
+              value={newTitle}
               onChange={e => {
                 setNewTitle(e.target.value);
                 setNewSlug(generateSlug(e.target.value));
-              }} 
+              }}
               placeholder="Es: Chi Siamo"
             />
           </div>
@@ -400,9 +251,9 @@ const PagesTabContent = () => {
             <Label>Slug (URL)</Label>
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground">/</span>
-              <Input 
-                value={newSlug} 
-                onChange={e => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\/-]/g, ''))} 
+              <Input
+                value={newSlug}
+                onChange={e => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\/-]/g, ''))}
                 placeholder="chi-siamo o blog/articolo"
               />
             </div>
@@ -415,20 +266,20 @@ const PagesTabContent = () => {
             <Label>Tipo di Contenuto</Label>
             <div className="flex items-center gap-4 mt-2">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input 
-                  type="radio" 
-                  name="contentType" 
-                  checked={newContentType === 'markdown'} 
-                  onChange={() => setNewContentType('markdown')} 
+                <input
+                  type="radio"
+                  name="contentType"
+                  checked={newContentType === 'markdown'}
+                  onChange={() => setNewContentType('markdown')}
                 />
                 <span>Markdown</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input 
-                  type="radio" 
-                  name="contentType" 
-                  checked={newContentType === 'html'} 
-                  onChange={() => setNewContentType('html')} 
+                <input
+                  type="radio"
+                  name="contentType"
+                  checked={newContentType === 'html'}
+                  onChange={() => setNewContentType('html')}
                 />
                 <span>HTML</span>
               </label>
@@ -439,10 +290,12 @@ const PagesTabContent = () => {
             Crea Pagina
           </Button>
         </div>
-      </TabsContent>;
+      </TabsContent>
+    );
   }
 
-  return <TabsContent value="pages" className="space-y-4">
+  return (
+    <TabsContent value="pages" className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           Modifica i contenuti delle pagine del sito e le impostazioni SEO.
@@ -453,7 +306,8 @@ const PagesTabContent = () => {
         </Button>
       </div>
       <div className="space-y-2">
-        {pages?.map(page => <div key={page.id} className="flex items-center justify-between p-3 bg-muted rounded-md">
+        {pages?.map(page => (
+          <div key={page.id} className="flex items-center justify-between p-3 bg-muted rounded-md">
             <div>
               <div className="flex items-center gap-2">
                 <p className="font-medium">{page.title}</p>
@@ -465,21 +319,23 @@ const PagesTabContent = () => {
               {page.seo_title && <p className="text-xs text-green-600 mt-1">🔍 SEO configurato</p>}
             </div>
             <div className="flex items-center gap-1">
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => window.open(`/${page.slug}`, '_blank')}
                 title="Anteprima"
               >
                 <Eye className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => handleEditPage(page)}>
+              <Button variant="ghost" size="icon" onClick={() => setEditingPage(page)}>
                 <Edit className="h-4 w-4" />
               </Button>
             </div>
-          </div>)}
+          </div>
+        ))}
       </div>
-    </TabsContent>;
+    </TabsContent>
+  );
 };
 
 // Hero Settings Tab sub-component
