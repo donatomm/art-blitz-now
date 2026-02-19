@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { TabsContent } from "@/components/ui/tabs";
 import { Plus, Loader2, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
@@ -20,6 +19,11 @@ const defaultNavItems: NavItem[] = [
   { label: "Contatti", href: "/contatti", order: 3 },
 ];
 
+/**
+ * MenuTabContent — NO TabsContent wrapper here.
+ * The TabsContent wrapper + lazy-mount guard live in AdminPanel.tsx.
+ * This is a pure content component. See docs/SAFETY-CHECK.md §11 Rule 2.
+ */
 const MenuTabContent = () => {
   const { data: settings, isLoading } = useSiteSettings();
   const updateSetting = useUpdateSiteSetting();
@@ -50,7 +54,6 @@ const MenuTabContent = () => {
   
   const handleRemoveItem = (index: number) => {
     const updated = navItems.filter((_, i) => i !== index);
-    // Re-order remaining items
     const reordered = updated.map((item, i) => ({ ...item, order: i }));
     setNavItems(reordered);
     setHasChanges(true);
@@ -67,7 +70,6 @@ const MenuTabContent = () => {
     if (index === 0) return;
     const updated = [...navItems];
     [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
-    // Update order values
     const reordered = updated.map((item, i) => ({ ...item, order: i }));
     setNavItems(reordered);
     setHasChanges(true);
@@ -77,7 +79,6 @@ const MenuTabContent = () => {
     if (index === navItems.length - 1) return;
     const updated = [...navItems];
     [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
-    // Update order values
     const reordered = updated.map((item, i) => ({ ...item, order: i }));
     setNavItems(reordered);
     setHasChanges(true);
@@ -107,16 +108,14 @@ const MenuTabContent = () => {
   
   if (isLoading) {
     return (
-      <TabsContent value="menu" className="space-y-4">
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin" />
-        </div>
-      </TabsContent>
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
     );
   }
   
   return (
-    <TabsContent value="menu" className="space-y-4">
+    <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
         Gestisci le voci del menu di navigazione.
       </p>
@@ -180,7 +179,7 @@ const MenuTabContent = () => {
         )}
         Salva Menu
       </Button>
-    </TabsContent>
+    </div>
   );
 };
 
