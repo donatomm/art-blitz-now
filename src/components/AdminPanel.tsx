@@ -214,88 +214,84 @@ const PagesTabContent = () => {
   // Isolated editor: typing only re-renders PageEditorForm, not PagesTabContent
   if (editingPage) {
     return (
-      <TabsContent value="pages" className="space-y-4">
-        <PageEditorForm
-          page={editingPage}
-          isSaving={updatePage.isPending}
-          onSave={handleSavePage}
-          onCancel={() => setEditingPage(null)}
-        />
-      </TabsContent>
+      <PageEditorForm
+        page={editingPage}
+        isSaving={updatePage.isPending}
+        onSave={handleSavePage}
+        onCancel={() => setEditingPage(null)}
+      />
     );
   }
 
   // New page creation form
   if (isCreating) {
     return (
-      <TabsContent value="pages" className="space-y-4">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Nuova Pagina</h3>
-            <Button variant="ghost" size="sm" onClick={() => setIsCreating(false)}>
-              Annulla
-            </Button>
-          </div>
-          <div>
-            <Label>Titolo</Label>
-            <Input
-              value={newTitle}
-              onChange={e => {
-                setNewTitle(e.target.value);
-                setNewSlug(generateSlug(e.target.value));
-              }}
-              placeholder="Es: Chi Siamo"
-            />
-          </div>
-          <div>
-            <Label>Slug (URL)</Label>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">/</span>
-              <Input
-                value={newSlug}
-                onChange={e => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\/-]/g, ''))}
-                placeholder="chi-siamo o blog/articolo"
-              />
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              L'URL sarà: octowonders.com/{newSlug}
-              {newSlug.includes('/') && <span className="text-green-600 ml-2">✓ Percorso annidato</span>}
-            </p>
-          </div>
-          <div>
-            <Label>Tipo di Contenuto</Label>
-            <div className="flex items-center gap-4 mt-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="contentType"
-                  checked={newContentType === 'markdown'}
-                  onChange={() => setNewContentType('markdown')}
-                />
-                <span>Markdown</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="contentType"
-                  checked={newContentType === 'html'}
-                  onChange={() => setNewContentType('html')}
-                />
-                <span>HTML</span>
-              </label>
-            </div>
-          </div>
-          <Button onClick={handleCreatePage} disabled={createPage.isPending} className="w-full">
-            {createPage.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
-            Crea Pagina
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium">Nuova Pagina</h3>
+          <Button variant="ghost" size="sm" onClick={() => setIsCreating(false)}>
+            Annulla
           </Button>
         </div>
-      </TabsContent>
+        <div>
+          <Label>Titolo</Label>
+          <Input
+            value={newTitle}
+            onChange={e => {
+              setNewTitle(e.target.value);
+              setNewSlug(generateSlug(e.target.value));
+            }}
+            placeholder="Es: Chi Siamo"
+          />
+        </div>
+        <div>
+          <Label>Slug (URL)</Label>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">/</span>
+            <Input
+              value={newSlug}
+              onChange={e => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\/-]/g, ''))}
+              placeholder="chi-siamo o blog/articolo"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            L'URL sarà: octowonders.com/{newSlug}
+            {newSlug.includes('/') && <span className="text-green-600 ml-2">✓ Percorso annidato</span>}
+          </p>
+        </div>
+        <div>
+          <Label>Tipo di Contenuto</Label>
+          <div className="flex items-center gap-4 mt-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="contentType"
+                checked={newContentType === 'markdown'}
+                onChange={() => setNewContentType('markdown')}
+              />
+              <span>Markdown</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="contentType"
+                checked={newContentType === 'html'}
+                onChange={() => setNewContentType('html')}
+              />
+              <span>HTML</span>
+            </label>
+          </div>
+        </div>
+        <Button onClick={handleCreatePage} disabled={createPage.isPending} className="w-full">
+          {createPage.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+          Crea Pagina
+        </Button>
+      </div>
     );
   }
 
   return (
-    <TabsContent value="pages" className="space-y-4">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           Modifica i contenuti delle pagine del sito e le impostazioni SEO.
@@ -334,11 +330,14 @@ const PagesTabContent = () => {
           </div>
         ))}
       </div>
-    </TabsContent>
+    </div>
   );
 };
 
 // Hero Settings Tab sub-component
+// NO useDebouncedInput here — lazy-mounted, isolated component.
+// Plain useState + direct onChange gives <5ms render cost per keystroke.
+// See docs/SAFETY-CHECK.md §11 Rule 1 before adding debounce.
 const HeroTabContent = () => {
   const { data: settings, isLoading } = useSiteSettings();
   const updateSetting = useUpdateSiteSetting();
@@ -351,23 +350,7 @@ const HeroTabContent = () => {
   const [trustBarItems, setTrustBarItems] = useState<string[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
   
-  // Debounced inputs for better INP performance
   const markChanged = () => setHasChanges(true);
-  
-  const debouncedHeroTitle = useDebouncedInput(heroTitle, (val) => {
-    setHeroTitle(val);
-    markChanged();
-  }, 150);
-  
-  const debouncedHeroSubtitle = useDebouncedInput(heroSubtitle, (val) => {
-    setHeroSubtitle(val);
-    markChanged();
-  }, 150);
-  
-  const debouncedHeroCtaText = useDebouncedInput(heroCtaText, (val) => {
-    setHeroCtaText(val);
-    markChanged();
-  }, 150);
   
   // Load settings into local state
   useEffect(() => {
@@ -381,11 +364,6 @@ const HeroTabContent = () => {
   }, [settings]);
   
   const handleSave = async () => {
-    // Flush all debounced values before saving
-    debouncedHeroTitle.flushSync();
-    debouncedHeroSubtitle.flushSync();
-    debouncedHeroCtaText.flushSync();
-    
     try {
       await Promise.all([
         updateSetting.mutateAsync({ key: "hero_title", value: heroTitle }),
@@ -445,16 +423,14 @@ const HeroTabContent = () => {
   
   if (isLoading) {
     return (
-      <TabsContent value="hero" className="space-y-4">
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin" />
-        </div>
-      </TabsContent>
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
     );
   }
   
   return (
-    <TabsContent value="hero" className="space-y-4">
+    <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
         Modifica i contenuti della sezione Hero della homepage.
       </p>
@@ -474,8 +450,8 @@ const HeroTabContent = () => {
         <div>
           <Label>Titolo H1 (Hero)</Label>
           <Input
-            value={debouncedHeroTitle.value}
-            onChange={(e) => debouncedHeroTitle.onChange(e.target.value)}
+            value={heroTitle}
+            onChange={(e) => { setHeroTitle(e.target.value); markChanged(); }}
             placeholder="Opere magnetiche. Uniche. Non per tutti."
           />
         </div>
@@ -484,8 +460,8 @@ const HeroTabContent = () => {
         <div>
           <Label>Sottotitolo</Label>
           <Textarea
-            value={debouncedHeroSubtitle.value}
-            onChange={(e) => debouncedHeroSubtitle.onChange(e.target.value)}
+            value={heroSubtitle}
+            onChange={(e) => { setHeroSubtitle(e.target.value); markChanged(); }}
             placeholder="Trasforma la tua parete in un'esperienza visiva..."
             rows={3}
           />
@@ -495,8 +471,8 @@ const HeroTabContent = () => {
         <div>
           <Label>Testo CTA (bottone)</Label>
           <Input
-            value={debouncedHeroCtaText.value}
-            onChange={(e) => debouncedHeroCtaText.onChange(e.target.value)}
+            value={heroCtaText}
+            onChange={(e) => { setHeroCtaText(e.target.value); markChanged(); }}
             placeholder="ESPLORA LA COLLEZIONE"
           />
         </div>
@@ -547,7 +523,7 @@ const HeroTabContent = () => {
           Salva Hero
         </Button>
       </div>
-    </TabsContent>
+    </div>
   );
 };
 
@@ -1216,38 +1192,52 @@ const AdminPanel = () => {
             </TabsContent>
 
             <TabsContent value="skus" className="space-y-4">
-              <SKUEditor products={products} onProductsChange={handleProductsChange} />
+              {activeTab === "skus" && <SKUEditor products={products} onProductsChange={handleProductsChange} />}
             </TabsContent>
 
-            <MenuTabContent />
+            <TabsContent value="menu" className="space-y-4">
+              {activeTab === "menu" && <MenuTabContent />}
+            </TabsContent>
 
-            <HeroTabContent />
+            <TabsContent value="hero" className="space-y-4">
+              {activeTab === "hero" && <HeroTabContent />}
+            </TabsContent>
 
-            <PagesTabContent />
+            <TabsContent value="pages" className="space-y-4">
+              {activeTab === "pages" && <PagesTabContent />}
+            </TabsContent>
 
-            <HelloBarTabContent />
+            <TabsContent value="hellobar" className="space-y-4">
+              {activeTab === "hellobar" && <HelloBarTabContent />}
+            </TabsContent>
             
             <TabsContent value="images" className="space-y-6">
-              <div className="space-y-2">
-                <h3 className="font-medium text-sm">📷 Libreria Immagini Articoli</h3>
-                <p className="text-xs text-muted-foreground">
-                  Carica e gestisci immagini per le pagine HTML. Clicca per copiare l'URL.
-                </p>
-                <ArticleImageBrowser />
-              </div>
-              
-              <div className="border-t pt-4">
-                <h3 className="font-medium text-sm mb-2">🗑️ Pulizia Riferimenti Rotti</h3>
-                <BrokenImageCleanup />
-              </div>
-              
-              <div className="border-t pt-4">
-                <h3 className="font-medium text-sm mb-2">🔧 Ottimizza Immagini Prodotti</h3>
-                <ImageOptimizer />
-              </div>
+              {activeTab === "images" && (
+                <>
+                  <div className="space-y-2">
+                    <h3 className="font-medium text-sm">📷 Libreria Immagini Articoli</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Carica e gestisci immagini per le pagine HTML. Clicca per copiare l'URL.
+                    </p>
+                    <ArticleImageBrowser />
+                  </div>
+                  
+                  <div className="border-t pt-4">
+                    <h3 className="font-medium text-sm mb-2">🗑️ Pulizia Riferimenti Rotti</h3>
+                    <BrokenImageCleanup />
+                  </div>
+                  
+                  <div className="border-t pt-4">
+                    <h3 className="font-medium text-sm mb-2">🔧 Ottimizza Immagini Prodotti</h3>
+                    <ImageOptimizer />
+                  </div>
+                </>
+              )}
             </TabsContent>
 
-            <DeployTabContent />
+            <TabsContent value="deploy" className="space-y-6">
+              {activeTab === "deploy" && <DeployTabContent />}
+            </TabsContent>
             
           </Tabs>
           )}

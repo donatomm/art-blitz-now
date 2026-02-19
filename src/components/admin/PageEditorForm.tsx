@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Save, Loader2, ImageIcon } from "lucide-react";
-import { useDebouncedInput } from "@/hooks/useDebouncedInput";
-import { DebouncedInput } from "@/components/ui/debounced-input";
 import ImageUpload from "@/components/ImageUpload";
 import { useToast } from "@/hooks/use-toast";
 import { Page } from "@/hooks/usePages";
@@ -30,7 +29,12 @@ interface PageEditorFormProps {
  * PageEditorForm - Isolated page editor component.
  * All edit state lives here so typing only re-renders this small component,
  * NOT the entire PagesTabContent (which includes the pages list).
- * This fixes the 1,316ms INP on the content textarea.
+ *
+ * NO useDebouncedInput here — this component is already isolated.
+ * Plain useState + direct onChange gives <5ms render cost.
+ * Adding debounce would only add 150ms artificial delay (INP regression).
+ *
+ * Anti-regression: See docs/SAFETY-CHECK.md §11 Rule 1 before adding debounce.
  */
 const PageEditorForm = ({ page, isSaving, onSave, onCancel }: PageEditorFormProps) => {
   const [editTitle, setEditTitle] = useState(page.title);
@@ -43,13 +47,9 @@ const PageEditorForm = ({ page, isSaving, onSave, onCancel }: PageEditorFormProp
 
   const { toast } = useToast();
 
-  // Debounced inputs — state changes stay inside this component only
-  const debouncedContent = useDebouncedInput(editContent, setEditContent);
-  const debouncedSeoDescription = useDebouncedInput(editSeoDescription, setEditSeoDescription);
-
   const handleImageUploaded = (url: string) => {
     const markdownImage = `\n![Immagine](${url})\n`;
-    debouncedContent.onChange(debouncedContent.value + markdownImage);
+    setEditContent(editContent + markdownImage);
     setShowImageUpload(false);
     toast({
       title: "Immagine inserita!",
@@ -58,16 +58,13 @@ const PageEditorForm = ({ page, isSaving, onSave, onCancel }: PageEditorFormProp
   };
 
   const handleSave = () => {
-    // Flush debounced buffers before handing data to parent
-    debouncedContent.flushSync();
-    debouncedSeoDescription.flushSync();
     onSave({
       title: editTitle,
       slug: editSlug,
-      content: debouncedContent.value,
+      content: editContent,
       isHtmlMode,
       seoTitle: editSeoTitle,
-      seoDescription: debouncedSeoDescription.value,
+      seoDescription: editSeoDescription,
     });
   };
 
@@ -82,18 +79,17 @@ const PageEditorForm = ({ page, isSaving, onSave, onCancel }: PageEditorFormProp
 
       <div>
         <Label>Titolo</Label>
-        <DebouncedInput value={editTitle} onChange={setEditTitle} debounceMs={150} />
+        <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
       </div>
 
       <div>
         <Label>Slug (URL)</Label>
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground">/</span>
-          <DebouncedInput
+          <Input
             value={editSlug}
-            onChange={(value) => setEditSlug(value.toLowerCase().replace(/[^a-z0-9\/-]/g, ""))}
+            onChange={(e) => setEditSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\/-]/g, ""))}
             placeholder="nome-pagina o blog/articolo"
-            debounceMs={150}
           />
         </div>
         <p className="text-xs text-muted-foreground mt-1">
@@ -148,8 +144,8 @@ const PageEditorForm = ({ page, isSaving, onSave, onCancel }: PageEditorFormProp
         )}
 
         <Textarea
-          value={debouncedContent.value}
-          onChange={(e) => debouncedContent.onChange(e.target.value)}
+          value={editContent}
+          onChange={(e) => setEditContent(e.target.value)}
           rows={isHtmlMode ? 20 : 12}
           className="font-mono text-sm"
           placeholder={isHtmlMode ? "Incolla qui il codice HTML..." : "Scrivi in Markdown..."}
@@ -175,12 +171,11 @@ const PageEditorForm = ({ page, isSaving, onSave, onCancel }: PageEditorFormProp
               SEO Title{" "}
               <span className="text-xs text-muted-foreground ml-1">(max 60 caratteri)</span>
             </Label>
-            <DebouncedInput
+            <Input
               value={editSeoTitle}
-              onChange={setEditSeoTitle}
+              onChange={(e) => setEditSeoTitle(e.target.value)}
               placeholder="Es: Marco De Francesco - Artista | OctoWonders"
               maxLength={60}
-              debounceMs={150}
             />
             <p className="text-xs text-muted-foreground mt-1">{editSeoTitle.length}/60 caratteri</p>
           </div>
@@ -190,14 +185,14 @@ const PageEditorForm = ({ page, isSaving, onSave, onCancel }: PageEditorFormProp
               <span className="text-xs text-muted-foreground ml-1">(max 160 caratteri)</span>
             </Label>
             <Textarea
-              value={debouncedSeoDescription.value}
-              onChange={(e) => debouncedSeoDescription.onChange(e.target.value)}
+              value={editSeoDescription}
+              onChange={(e) => setEditSeoDescription(e.target.value)}
               placeholder="Es: Scopri l'artista Marco De Francesco. Stampe su tela originali a tema marino."
               rows={2}
               maxLength={160}
             />
             <p className="text-xs text-muted-foreground mt-1">
-              {debouncedSeoDescription.value.length}/160 caratteri
+              {editSeoDescription.length}/160 caratteri
             </p>
           </div>
         </div>

@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSiteSettings, useUpdateSiteSetting, getSettingValue } from "@/hooks/useSiteSettings";
-import { useDebouncedInput } from "@/hooks/useDebouncedInput";
 import { useToast } from "@/hooks/use-toast";
-import { TabsContent } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,7 +31,6 @@ const ColorInput = ({
   onChange: (val: string) => void;
 }) => {
   const handleChange = (newValue: string) => {
-    // Remove any double ## and ensure single #
     let sanitized = newValue.replace(/^#+/, '#');
     if (sanitized && !sanitized.startsWith('#')) {
       sanitized = '#' + sanitized;
@@ -60,13 +57,22 @@ const ColorInput = ({
   );
 };
 
+/**
+ * HelloBarTabContent — NO useDebouncedInput here.
+ * This component is lazy-mounted (only mounts when tab is active).
+ * Plain useState + direct onChange gives <5ms render cost per keystroke.
+ * Adding debounce would only add 150ms artificial delay (INP regression).
+ *
+ * Anti-regression: See docs/SAFETY-CHECK.md §11 Rule 1 before adding debounce.
+ * TabsContent wrapper lives in AdminPanel.tsx (§11 Rule 2).
+ */
 const HelloBarTabContent = () => {
   const { data: settings, isLoading } = useSiteSettings();
   const updateSetting = useUpdateSiteSetting();
   const { toast } = useToast();
   const [hasChanges, setHasChanges] = useState(false);
   
-  // HelloBar state
+  // HelloBar state — plain useState, no debounce needed in isolated component
   const [hellobarEnabled, setHellobarEnabled] = useState(true);
   const [hellobarText, setHellobarText] = useState("");
   const [hellobarTextColor, setHellobarTextColor] = useState("#FFFFFF");
@@ -85,6 +91,8 @@ const HelloBarTabContent = () => {
   const [hellobarWhatsappNumber, setHellobarWhatsappNumber] = useState("");
   const [hellobarContactEmail, setHellobarContactEmail] = useState("");
   
+  const markChanged = () => setHasChanges(true);
+
   // Load settings
   useEffect(() => {
     if (settings) {
@@ -108,40 +116,7 @@ const HelloBarTabContent = () => {
     }
   }, [settings]);
   
-  // Debounced inputs for better INP performance
-  const debouncedHellobarText = useDebouncedInput(hellobarText, (val) => {
-    setHellobarText(val);
-    markChanged();
-  }, 150);
-
-  const debouncedButtonText = useDebouncedInput(hellobarButtonText, (val) => {
-    setHellobarButtonText(val);
-    markChanged();
-  }, 150);
-
-  const debouncedPopupContent = useDebouncedInput(hellobarPopupContent, (val) => {
-    setHellobarPopupContent(val);
-    markChanged();
-  }, 150);
-
-  const debouncedWhatsappNumber = useDebouncedInput(hellobarWhatsappNumber, (val) => {
-    setHellobarWhatsappNumber(val);
-    markChanged();
-  }, 150);
-
-  const debouncedContactEmail = useDebouncedInput(hellobarContactEmail, (val) => {
-    setHellobarContactEmail(val);
-    markChanged();
-  }, 150);
-
   const handleSave = async () => {
-    // Flush all debounced values before saving
-    debouncedHellobarText.flushSync();
-    debouncedButtonText.flushSync();
-    debouncedPopupContent.flushSync();
-    debouncedWhatsappNumber.flushSync();
-    debouncedContactEmail.flushSync();
-    
     try {
       await Promise.all([
         updateSetting.mutateAsync({ key: "hellobar_enabled", value: hellobarEnabled }),
@@ -176,20 +151,16 @@ const HelloBarTabContent = () => {
     }
   };
   
-  const markChanged = () => setHasChanges(true);
-  
   if (isLoading) {
     return (
-      <TabsContent value="hellobar" className="space-y-4">
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin" />
-        </div>
-      </TabsContent>
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
     );
   }
   
   return (
-    <TabsContent value="hellobar" className="space-y-4">
+    <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
         Configura la Hello Bar fissa in cima alla pagina.
       </p>
@@ -213,8 +184,8 @@ const HelloBarTabContent = () => {
           <div>
             <Label>Testo Hello Bar</Label>
             <Input
-              value={debouncedHellobarText.value}
-              onChange={(e) => debouncedHellobarText.onChange(e.target.value)}
+              value={hellobarText}
+              onChange={(e) => { setHellobarText(e.target.value); markChanged(); }}
               placeholder="SPEDIZIONE GRATUITA in Italia..."
             />
           </div>
@@ -263,7 +234,6 @@ const HelloBarTabContent = () => {
                   type="datetime-local"
                   value={hellobarCountdownEnd.slice(0, 16)}
                   onChange={(e) => { 
-                    // Ensure we save with seconds appended for proper parsing
                     const dateValue = e.target.value ? `${e.target.value}:00` : "";
                     setHellobarCountdownEnd(dateValue); 
                     markChanged(); 
@@ -303,8 +273,8 @@ const HelloBarTabContent = () => {
               <div>
                 <Label>Testo Bottone</Label>
                 <Input
-                  value={debouncedButtonText.value}
-                  onChange={(e) => debouncedButtonText.onChange(e.target.value)}
+                  value={hellobarButtonText}
+                  onChange={(e) => { setHellobarButtonText(e.target.value); markChanged(); }}
                   placeholder="Dettagli"
                 />
               </div>
@@ -335,8 +305,8 @@ const HelloBarTabContent = () => {
           <div>
             <Label>Testo del Popup (mostrato quando si clicca "Dettagli")</Label>
             <Textarea
-              value={debouncedPopupContent.value}
-              onChange={(e) => debouncedPopupContent.onChange(e.target.value)}
+              value={hellobarPopupContent}
+              onChange={(e) => { setHellobarPopupContent(e.target.value); markChanged(); }}
               placeholder="Inserisci il contenuto del popup..."
               rows={10}
               className="mt-2 font-mono text-sm"
@@ -350,8 +320,8 @@ const HelloBarTabContent = () => {
             <div>
               <Label>Numero WhatsApp</Label>
               <Input
-                value={debouncedWhatsappNumber.value}
-                onChange={(e) => debouncedWhatsappNumber.onChange(e.target.value)}
+                value={hellobarWhatsappNumber}
+                onChange={(e) => { setHellobarWhatsappNumber(e.target.value); markChanged(); }}
                 placeholder="393666295174"
                 className="mt-1"
               />
@@ -362,8 +332,8 @@ const HelloBarTabContent = () => {
             <div>
               <Label>Indirizzo Email</Label>
               <Input
-                value={debouncedContactEmail.value}
-                onChange={(e) => debouncedContactEmail.onChange(e.target.value)}
+                value={hellobarContactEmail}
+                onChange={(e) => { setHellobarContactEmail(e.target.value); markChanged(); }}
                 placeholder="me@octowonders.com"
                 className="mt-1"
               />
@@ -385,7 +355,7 @@ const HelloBarTabContent = () => {
           Salva Hello Bar
         </Button>
       </div>
-    </TabsContent>
+    </div>
   );
 };
 
