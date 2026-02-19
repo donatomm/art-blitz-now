@@ -43,8 +43,8 @@ const Hero = ({
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col">
-        {/* Spacer to account for fixed Navigation + HelloBar */}
-        <div className={helloBarEnabled ? "pt-56 md:pt-20" : "pt-20"} />
+        {/* Spacer that matches the real fixed header height (set as CSS var by Navigation) */}
+        <div style={{ height: "var(--header-height, 80px)" }} />
 
         {/* Hero Text Area */}
         <div className="flex h-[calc(65vh-20px)] min-h-[400px] flex-col items-center justify-center px-4 text-center mt-4 md:mt-[50px]">
