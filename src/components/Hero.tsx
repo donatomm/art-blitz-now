@@ -42,7 +42,7 @@ const Hero = ({
       {/* Main Content */}
       <div className="relative z-10 flex flex-col">
         {/* Spacer to account for fixed Navigation + HelloBar */}
-        <div className="pt-28 md:pt-20" />
+        <div className="pt-56 md:pt-20" />
 
         {/* Hero Text Area */}
         <div className="flex h-[calc(65vh-20px)] min-h-[400px] flex-col items-center justify-center px-4 text-center mt-4 md:mt-[50px]">
