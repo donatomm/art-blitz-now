@@ -95,6 +95,7 @@ const Index = () => {
         ctaText={heroCtaText} 
         onCtaClick={scrollToGallery}
         trustBarItems={trustBarItems}
+        helloBarEnabled={hellobarEnabled}
       />
 
       <main ref={galleryRef} className="p-1">
