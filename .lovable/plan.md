@@ -1,49 +1,60 @@
 
-# Fix: Hero Spacer Too Small on Mobile When HelloBar is Visible
+# Fix: Hero Spacer Must Adapt to HelloBar On/Off State
 
-## Root Cause
+## Problem
 
-In `src/components/Hero.tsx`, line 45:
+The screenshot shows the HelloBar is **disabled** (green bar is gone — only the nav is visible). But the spacer is hardcoded to `pt-56` (224px) regardless, so the hero image shows a large empty dark gap above the content box.
 
-```tsx
-<div className="pt-28 md:pt-20" />
-```
+- HelloBar **ON** → needs ~224px clearance (nav 64px + multi-line HelloBar ~120–160px)
+- HelloBar **OFF** → needs only ~80px clearance (nav 64px only)
 
-- `pt-28` = 112px on mobile
-- `pt-20` = 80px on desktop
+`pt-56` was correct to fix the overlap when HelloBar is on, but it's too much when it's off.
 
-The fixed `<header>` stacks two things:
-1. Navigation bar: `h-16` = 64px (always)
-2. HelloBar: variable height — on desktop ~40px (single line), on mobile ~120px+ (wraps to 3 lines + button, as shown in the screenshot)
+## The Fix: Pass `helloBarEnabled` Prop to Hero
 
-So on mobile the actual header height when HelloBar is enabled = 64px nav + ~120px hellobar ≈ 184px. The current `pt-28` (112px) is 72px too short — the hero text box bleeds up into the HelloBar.
+### 1. `src/components/Hero.tsx`
 
-On desktop it works fine because `pt-20` = 80px and the HelloBar is ~40px tall = 120px total, and the hero content starts below (`mt-[50px]` gives extra breathing room).
-
-## The Fix
-
-Increase the mobile spacer from `pt-28` to `pt-56` (224px) to safely clear the nav + tall mobile HelloBar.
-
-Also add an `md:pt-28` intermediate step for safety — on desktop the HelloBar fits in one line so `pt-20` + `mt-[50px]` is fine.
-
-Since the HelloBar can be disabled, and its height changes whether it's on or off, the cleanest approach is: bump the mobile padding to `pt-56` (enough to clear the tallest possible HelloBar on mobile), and keep desktop as-is.
-
-**File:** `src/components/Hero.tsx`, **line 45 only**
+Add a `helloBarEnabled?: boolean` prop. Apply it to the spacer `<div>`:
 
 ```tsx
-// Before
-<div className="pt-28 md:pt-20" />
-
-// After
+// Before (hardcoded)
 <div className="pt-56 md:pt-20" />
+
+// After (adaptive)
+<div className={helloBarEnabled ? "pt-56 md:pt-20" : "pt-20"} />
 ```
 
-`pt-56` = 224px. With the nav at 64px, this gives 160px of room for the HelloBar on mobile — enough for 3 wrapped lines + the button row visible in the screenshot.
+- HelloBar ON, mobile → `pt-56` (224px) — clears nav + tall wrapped HelloBar
+- HelloBar OFF, mobile → `pt-20` (80px) — clears nav only, matches desktop
+- Desktop always → `pt-20` (80px) — unchanged in both cases
 
-## Technical Details
+### 2. `src/pages/Index.tsx`
 
-- Single line change, one file only
-- No DB changes, no SSG impact
-- Does not affect desktop layout (`md:pt-20` is unchanged)
-- Does not affect pages without a HelloBar (the spacer is always present in the Hero, but on those pages the hello bar is disabled, so the extra padding is wasted space — acceptable trade-off vs. the current breakage)
-- If HelloBar is disabled, the hero just has slightly more top padding on mobile — not visible because the hero image fills the full section anyway and the text is still centered vertically within `h-[calc(65vh-20px)]`
+Pass the existing `hellobarEnabled` variable (already read from static settings on line 34) into the `<Hero>` component:
+
+```tsx
+<Hero
+  imageUrl={heroImageUrl}
+  title={heroTitle}
+  subtitle={heroSubtitle}
+  ctaText={heroCtaText}
+  onCtaClick={scrollToGallery}
+  trustBarItems={trustBarItems}
+  helloBarEnabled={hellobarEnabled}   // ← add this
+/>
+```
+
+`hellobarEnabled` is already computed from `useStaticSiteSettings()` — zero extra cost.
+
+## Files Changed
+
+- `src/components/Hero.tsx` — add `helloBarEnabled` prop, make spacer conditional (2 lines)
+- `src/pages/Index.tsx` — pass `helloBarEnabled={hellobarEnabled}` to `<Hero>` (1 line)
+
+## No Other Changes
+
+- No DB changes
+- No SSG impact
+- Desktop layout unchanged
+- Real iPhone 11 behaviour unchanged (HelloBar is on → still gets `pt-56`)
+- Preview with HelloBar off → gets `pt-20`, hero content sits just below the nav
