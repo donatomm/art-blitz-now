@@ -1,55 +1,37 @@
 
+# Fix: Single Line Change in PageContent.tsx
 
-# Add Contact Button Visibility to the Page Editor
+## The only bug
 
-## The Problem
-
-The WhatsApp and Email contact buttons are rendered automatically at the bottom of every CMS page by `PageContent.tsx`, but the admin page editor shows **zero indication** of this. When editing any page (AUTORE, CONTATTI, ORDINE-PERSONALIZZATO, RESI-E-RIMBORSI, SPEDIZIONE, TERMINI E CONDIZIONI), there is no visual cue that contact buttons will appear on the published page.
-
-The buttons are not hardcoded per-page and not hidden -- they are injected silently by `PageContent.tsx` with no admin-facing UI.
-
-## The Fix
-
-Add an **info banner** inside the page editor (between the content area and the SEO section) that tells the admin:
-
-1. Contact buttons (WhatsApp + Email) are **automatically shown** at the bottom of this page
-2. To change the phone number or email, go to the **Hello/Contct** tab
-3. A small live preview of what the buttons look like
-
-This is read-only information -- not a toggle. Every CMS page gets contact buttons, period. The admin just needs to **know** they exist and where to change them.
-
-## Technical Details
-
-### File: `src/components/AdminPanel.tsx`
-
-Between the content `<Textarea>` block (line ~328) and the SEO section (line ~331), insert an info box:
+Line 229 of `src/components/PageContent.tsx`:
 
 ```
---- After the content textarea, before the SEO section ---
-
-<div className="bg-green-50 dark:bg-green-900/20 border border-green-200 
-     dark:border-green-800 rounded-lg p-3 mt-2">
-  <p className="text-sm font-medium text-green-800 dark:text-green-300">
-    WhatsApp + Email buttons appear automatically at the bottom of this page.
-  </p>
-  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-    To change the number or email address, go to the "Hello/Contct" tab.
-  </p>
-</div>
+page?.content_type === "html" || !page?.content_type && page?.content && containsHTML(page.content);
 ```
 
-### No other files change
+`containsHTML()` matches ANY HTML tag — `<b>`, `<br>`, `<strong>`, anything. The moment a markdown page contains one tag, the entire page is routed to the HTML renderer. The `{{CONTACT_BUTTONS}}` token only exists inside `renderContent()` (line 132), which only runs on the markdown path. HTML path never hits it.
 
-- `PageContent.tsx` -- already renders `<ContactButtons />` unconditionally (no change needed)
-- `ContactButtons.tsx` -- already reads from site settings (no change needed)
-- Database -- no changes needed
+## The fix
 
-### What the admin will see
+Replace `containsHTML(page.content)` with `isFullHtmlDocument(page.content)` on line 229. `isFullHtmlDocument` is already imported on line 10 — no new imports needed.
 
-When editing any page, a green info box appears below the content editor that reads:
+Changed line:
+```
+page?.content_type === "html" || (!page?.content_type && page?.content && isFullHtmlDocument(page.content));
+```
 
-> **WhatsApp + Email buttons appear automatically at the bottom of this page.**
-> To change the number or email address, go to the "Hello/Contct" tab.
+This means: only treat content as HTML if:
+1. The database explicitly says `content_type = "html"`, OR
+2. The content is a real `<!DOCTYPE>`/`<html>` document
 
-This makes the invisible visible -- no more mystery about where the buttons come from.
+Markdown pages with `<br>` or `<b>` tags remain on the markdown path where the token works.
 
+## What is NOT changed
+
+- No buttons are added automatically anywhere
+- HTML pages (`content_type = "html"` or full `<!DOCTYPE>` documents) are completely unaffected
+- Nothing else in the file is touched
+
+## Files changed
+
+- `src/components/PageContent.tsx` — line 229 only, one value replaced
