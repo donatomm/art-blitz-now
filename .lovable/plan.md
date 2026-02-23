@@ -1,44 +1,75 @@
 
-# Fix: Double Gap Caused by Spacer + Margin-Top Stacking
+# Fix: Use ResizeObserver to Always Capture the True Header Height
 
-## Root Cause (Found It)
+## Root Cause
 
-In `src/components/Hero.tsx`, the hero text area has TWO sources of top spacing stacked on top of each other:
+The `updateHeaderHeight` function in `Navigation.tsx` calls `header.offsetHeight` **once on mount** (and once on resize). On a real device like iPhone 11, the HelloBar content (text wrapping, countdown timer) finishes rendering **after** that initial measurement fires. So `--header-height` gets set to a value that is too small — then the HelloBar finishes rendering and grows taller, but the CSS variable is never updated. The Hero spacer stays at the old (too-small) height, so the hero content overlaps or sits wrong.
 
-1. The spacer `<div style={{ height: "var(--header-height, 80px)" }} />` — this already pushes content down by the full header height (nav + HelloBar)
-2. Then the hero content div has `mt-4 md:mt-[50px]` — this adds ANOTHER 16px on mobile on top of the spacer
+The `window.addEventListener("resize", ...)` only fires on orientation change, not on the HelloBar growing taller due to text wrapping or countdown rendering.
 
-On **desktop** this was fine before because the old spacer was `pt-20` (80px) and the header was also ~80px, so the `mt-[50px]` was used to fill the visual gap between the fixed header and the hero box. But now the spacer already equals the exact header height, so `mt-4` stacks on top and creates the visible gap.
+## The Fix: Replace `resize` listener with `ResizeObserver`
 
-On **iPhone 11** the HelloBar wraps to multiple lines, making the header ~180px tall. The spacer becomes 180px, then `mt-4` adds 16px more = 196px total gap. That's the "2x" the user is seeing — the spacer already perfectly clears the header but the `mt-4` adds a visible extra strip.
+`ResizeObserver` fires **every time the element's dimensions change** — including when child content finishes painting and the element grows. This means the CSS variable will be updated correctly after:
+- Initial mount
+- HelloBar text wrapping
+- Countdown timer rendering
+- Font loading
+- Orientation change
 
-## The Fix
+### Change in `src/components/Navigation.tsx`
 
-Remove the `mt-4 md:mt-[50px]` from the hero content div in `src/components/Hero.tsx`. The spacer already positions the content correctly — no additional margin is needed.
+Replace the current `useEffect` that uses `window.addEventListener("resize", ...)`:
 
 ```tsx
-// Before — line 50
-<div className="flex h-[calc(65vh-20px)] min-h-[400px] flex-col items-center justify-center px-4 text-center mt-4 md:mt-[50px]">
+// BEFORE — fires only once on mount + on window resize
+useEffect(() => {
+  const updateHeaderHeight = () => {
+    const header = document.querySelector("header");
+    if (header) {
+      document.documentElement.style.setProperty(
+        "--header-height",
+        `${header.offsetHeight}px`
+      );
+    }
+  };
+  updateHeaderHeight();
+  window.addEventListener("resize", updateHeaderHeight);
+  return () => window.removeEventListener("resize", updateHeaderHeight);
+}, [showHelloBar]);
+```
 
-// After — remove mt-4 and md:mt-[50px]
-<div className="flex h-[calc(65vh-20px)] min-h-[400px] flex-col items-center justify-center px-4 text-center">
+```tsx
+// AFTER — fires every time the header element changes size
+useEffect(() => {
+  const header = document.querySelector("header");
+  if (!header) return;
+
+  const observer = new ResizeObserver(() => {
+    document.documentElement.style.setProperty(
+      "--header-height",
+      `${header.offsetHeight}px`
+    );
+  });
+
+  observer.observe(header);
+  return () => observer.disconnect();
+}, []); // no dependency needed — ResizeObserver watches the element continuously
 ```
 
 ## Why This Works
 
-- The `var(--header-height)` CSS variable is set by Navigation's `useEffect` using `header.offsetHeight` which accurately measures the real header (nav + HelloBar) on every device
-- With the margin removed, content appears exactly at the bottom of the header, no gap
-- The hero text is vertically centered within `h-[calc(65vh-20px)]` with `min-h-[400px]`, so it always looks visually balanced regardless of the top position
-- No changes needed to Navigation.tsx — the dynamic measurement is correct, it was just being double-counted
+- `ResizeObserver` on the `<header>` element fires whenever its height changes for any reason
+- HelloBar text wrapping on iPhone 11 increases the header height → `ResizeObserver` fires → CSS variable updated → Hero spacer matches exactly
+- Countdown timer content rendering → same
+- Orientation change → same
+- HelloBar toggled on/off → same
+- No more stale initial measurement
 
 ## Files Changed
 
-- `src/components/Hero.tsx` line 50 only — remove `mt-4 md:mt-[50px]`
+- `src/components/Navigation.tsx` — replace the `useEffect` with resize listener with a `ResizeObserver` (same lines, same location, cleaner logic)
 
 ## No Other Changes
 
-- No DB changes
-- No SSG impact
-- Desktop layout: the dynamic `var(--header-height)` spacer on desktop will be ~64px (nav only, no HelloBar on desktop), which is actually tighter than before — but the centered layout within the tall hero section compensates visually
-- iPhone 11 with HelloBar ON: spacer = real header height, no extra margin = correct
-- Preview (HelloBar OFF): spacer = 64px nav only, no extra margin = correct
+- `src/components/Hero.tsx` stays exactly as-is — the spacer `<div style={{ height: "var(--header-height, 80px)" }} />` is correct
+- No DB changes, no SSG impact, no other files touched
