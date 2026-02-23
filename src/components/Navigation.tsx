@@ -74,20 +74,19 @@ const Navigation = ({ isOverHero = false, helloBarProps }: NavigationProps) => {
 
   // Measure real header height and expose as CSS variable so Hero can use it
   useEffect(() => {
-    const updateHeaderHeight = () => {
-      const header = document.querySelector("header");
-      if (header) {
-        document.documentElement.style.setProperty(
-          "--header-height",
-          `${header.offsetHeight}px`
-        );
-      }
-    };
-    updateHeaderHeight();
-    // Re-measure on resize (orientation change, etc.)
-    window.addEventListener("resize", updateHeaderHeight);
-    return () => window.removeEventListener("resize", updateHeaderHeight);
-  }, [showHelloBar]); // re-run when HelloBar toggles (changes header height)
+    const header = document.querySelector("header");
+    if (!header) return;
+
+    const observer = new ResizeObserver(() => {
+      document.documentElement.style.setProperty(
+        "--header-height",
+        `${header.offsetHeight}px`
+      );
+    });
+
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
 
   const showTransparent = isOverHero && !isScrolled;
 
