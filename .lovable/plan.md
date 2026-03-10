@@ -1,75 +1,50 @@
 
-# Fix: Use ResizeObserver to Always Capture the True Header Height
 
-## Root Cause
+# Fix Missing `<head>` in Production SSG HTML
 
-The `updateHeaderHeight` function in `Navigation.tsx` calls `header.offsetHeight` **once on mount** (and once on resize). On a real device like iPhone 11, the HelloBar content (text wrapping, countdown timer) finishes rendering **after** that initial measurement fires. So `--header-height` gets set to a value that is too small — then the HelloBar finishes rendering and grows taller, but the CSS variable is never updated. The Hero spacer stays at the old (too-small) height, so the hero content overlaps or sits wrong.
+## Problem
 
-The `window.addEventListener("resize", ...)` only fires on orientation change, not on the HelloBar growing taller due to text wrapping or countdown rendering.
+The `onPageRendered` callback in `vite.config.ts` injects a `<head>` block, but beasties (CSS inliner used by vite-react-ssg) runs **after** `onPageRendered` and strips it out again. Production HTML still serves `<html><body>` with no `<head>`.
 
-## The Fix: Replace `resize` listener with `ResizeObserver`
+## Solution: Postbuild HTML Processor
 
-`ResizeObserver` fires **every time the element's dimensions change** — including when child content finishes painting and the element grows. This means the CSS variable will be updated correctly after:
-- Initial mount
-- HelloBar text wrapping
-- Countdown timer rendering
-- Font loading
-- Orientation change
+Add a postbuild step that runs **after the entire SSG + beasties pipeline** to scan all `.html` files in `dist/` and inject `<head>` where missing. This guarantees no subsequent process can strip it.
 
-### Change in `src/components/Navigation.tsx`
+## Changes
 
-Replace the current `useEffect` that uses `window.addEventListener("resize", ...)`:
+### 1. Create `scripts/postbuild-inject-head.cjs`
 
-```tsx
-// BEFORE — fires only once on mount + on window resize
-useEffect(() => {
-  const updateHeaderHeight = () => {
-    const header = document.querySelector("header");
-    if (header) {
-      document.documentElement.style.setProperty(
-        "--header-height",
-        `${header.offsetHeight}px`
-      );
-    }
-  };
-  updateHeaderHeight();
-  window.addEventListener("resize", updateHeaderHeight);
-  return () => window.removeEventListener("resize", updateHeaderHeight);
-}, [showHelloBar]);
+A Node.js script that:
+- Recursively finds all `.html` files in `dist/`
+- For each file missing `<head>`, injects a proper `<head>` block before `<body>`
+- Preserves any existing inline `<style>` tags that beasties may have placed inside `<body>` by moving them into `<head>`
+- Includes essential meta tags (charset, viewport, google verification, preconnects, font stylesheet, default title/description)
+- Logs a summary of files processed
+
+### 2. Update `package.json` build scripts
+
+Change `postbuild` to run both the CSS alias script AND the head injection script:
+
+```json
+"postbuild": "node scripts/postbuild-inject-head.cjs && node scripts/postbuild-css-alias.cjs"
 ```
 
-```tsx
-// AFTER — fires every time the header element changes size
-useEffect(() => {
-  const header = document.querySelector("header");
-  if (!header) return;
+### 3. Update `docs/ESCALATION-INDEXING-REPORT.md`
 
-  const observer = new ResizeObserver(() => {
-    document.documentElement.style.setProperty(
-      "--header-height",
-      `${header.offsetHeight}px`
-    );
-  });
-
-  observer.observe(header);
-  return () => observer.disconnect();
-}, []); // no dependency needed — ResizeObserver watches the element continuously
-```
+Add a status update noting the `onPageRendered` approach failed and the postbuild processor is the new fix. Mark Priority 1 as "In Progress — postbuild approach."
 
 ## Why This Works
 
-- `ResizeObserver` on the `<header>` element fires whenever its height changes for any reason
-- HelloBar text wrapping on iPhone 11 increases the header height → `ResizeObserver` fires → CSS variable updated → Hero spacer matches exactly
-- Countdown timer content rendering → same
-- Orientation change → same
-- HelloBar toggled on/off → same
-- No more stale initial measurement
+- Runs as the **very last step** in the build pipeline
+- No framework hook or plugin can undo it afterward  
+- Simple file I/O — no dependency on vite-react-ssg internals
+- Idempotent — safe to run multiple times
 
-## Files Changed
+## Files Modified
 
-- `src/components/Navigation.tsx` — replace the `useEffect` with resize listener with a `ResizeObserver` (same lines, same location, cleaner logic)
+| File | Action |
+|------|--------|
+| `scripts/postbuild-inject-head.cjs` | **Create** — postbuild HTML head injector |
+| `package.json` | **Edit** — add head injection to postbuild |
+| `docs/ESCALATION-INDEXING-REPORT.md` | **Edit** — update status |
 
-## No Other Changes
-
-- `src/components/Hero.tsx` stays exactly as-is — the spacer `<div style={{ height: "var(--header-height, 80px)" }} />` is correct
-- No DB changes, no SSG impact, no other files touched
