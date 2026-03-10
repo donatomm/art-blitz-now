@@ -1,77 +1,75 @@
 
+# Fix: Use ResizeObserver to Always Capture the True Header Height
 
-# Fix: Restore `<head>` in SSG Output
+## Root Cause
 
-## Problem
-`vite-react-ssg` 0.8.9 + beasties CSS inliner strips the `<head>` element during SSG build. Production HTML has `<html>` followed directly by `<body>` with no head section. All 20 non-indexed pages are affected.
+The `updateHeaderHeight` function in `Navigation.tsx` calls `header.offsetHeight` **once on mount** (and once on resize). On a real device like iPhone 11, the HelloBar content (text wrapping, countdown timer) finishes rendering **after** that initial measurement fires. So `--header-height` gets set to a value that is too small — then the HelloBar finishes rendering and grows taller, but the CSS variable is never updated. The Hero spacer stays at the old (too-small) height, so the hero content overlaps or sits wrong.
 
-## Solution: Use `onPageRendered` to force `<head>` injection
+The `window.addEventListener("resize", ...)` only fires on orientation change, not on the HelloBar growing taller due to text wrapping or countdown rendering.
 
-The `ssgOptions.onPageRendered` callback in `vite.config.ts` already exists (currently just logs). We use it to post-process the HTML and guarantee a `<head>` element exists with proper meta tags.
+## The Fix: Replace `resize` listener with `ResizeObserver`
 
-### Changes
+`ResizeObserver` fires **every time the element's dimensions change** — including when child content finishes painting and the element grows. This means the CSS variable will be updated correctly after:
+- Initial mount
+- HelloBar text wrapping
+- Countdown timer rendering
+- Font loading
+- Orientation change
 
-**1. `vite.config.ts` — Enhance `onPageRendered` callback**
+### Change in `src/components/Navigation.tsx`
 
-Add a post-processing step that:
-- Detects if `<head>` is missing from the rendered HTML
-- Extracts any `data-rh` attributes (helmet-managed tags) 
-- Injects a proper `<head>` block between `<html>` and `<body>` containing the original template head content (charset, viewport, fonts, google verification) merged with any per-page helmet output
-- Falls back to the template `<head>` content from `index.html` if helmet output is empty
+Replace the current `useEffect` that uses `window.addEventListener("resize", ...)`:
 
-```typescript
-onPageRendered: (route: string, html: string) => {
-  // If <head> is missing, inject it before <body>
-  if (!html.includes('<head>') && !html.includes('<head ')) {
-    const headContent = `<head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300&display=swap" />
-      <meta name="google-site-verification" content="piIPB5x5MjblaPWAVjsiaeV8Gc3AbIFnq1yZItrhUlM" />
-      <meta name="p:domain_verify" content="488c339e7167063621a6662be6c159b8" />
-      <title>OctoWonders by Marco De Francesco - Stampe d'Arte su Tela</title>
-      <meta name="description" content="Stampe d'arte originali su tela di alta qualità. Opere uniche a tema marino." />
-    </head>`;
-    html = html.replace('<body>', headContent + '\n<body>');
-  }
-  return html;
-}
+```tsx
+// BEFORE — fires only once on mount + on window resize
+useEffect(() => {
+  const updateHeaderHeight = () => {
+    const header = document.querySelector("header");
+    if (header) {
+      document.documentElement.style.setProperty(
+        "--header-height",
+        `${header.offsetHeight}px`
+      );
+    }
+  };
+  updateHeaderHeight();
+  window.addEventListener("resize", updateHeaderHeight);
+  return () => window.removeEventListener("resize", updateHeaderHeight);
+}, [showHelloBar]);
 ```
 
-**2. Optionally: Disable beasties entirely**
+```tsx
+// AFTER — fires every time the header element changes size
+useEffect(() => {
+  const header = document.querySelector("header");
+  if (!header) return;
 
-If the head injection fix works but beasties continues causing issues, set `beastiesOptions: false` in ssgOptions to disable CSS inlining entirely. The performance impact is minimal for this site size.
+  const observer = new ResizeObserver(() => {
+    document.documentElement.style.setProperty(
+      "--header-height",
+      `${header.offsetHeight}px`
+    );
+  });
 
-**3. `vercel.json` — Add missing CMS page rewrites**
-
-Add rewrites for CMS pages that currently fall through to the SPA shell:
-```json
-{ "source": "/blog", "destination": "/blog/index.html" },
-{ "source": "/privacy", "destination": "/privacy/index.html" },
-{ "source": "/terms", "destination": "/terms/index.html" },
-{ "source": "/ordine-personalizzato", "destination": "/ordine-personalizzato/index.html" },
-{ "source": "/sitemap", "destination": "/sitemap/index.html" },
-{ "source": "/colors", "destination": "/colors/index.html" },
-{ "source": "/faqs", "destination": "/faqs/index.html" },
-{ "source": "/cookies", "destination": "/cookies/index.html" }
+  observer.observe(header);
+  return () => observer.disconnect();
+}, []); // no dependency needed — ResizeObserver watches the element continuously
 ```
 
-**4. `vite.config.ts` — Remove `/colors` from sitemap generation**
+## Why This Works
 
-Exclude the developer debug page from `sitemap.xml` to save crawl budget.
+- `ResizeObserver` on the `<header>` element fires whenever its height changes for any reason
+- HelloBar text wrapping on iPhone 11 increases the header height → `ResizeObserver` fires → CSS variable updated → Hero spacer matches exactly
+- Countdown timer content rendering → same
+- Orientation change → same
+- HelloBar toggled on/off → same
+- No more stale initial measurement
 
-**5. Update `docs/ESCALATION-INDEXING-REPORT.md`**
+## Files Changed
 
-Add root cause finding: beasties CSS inliner strips `<head>` during SSG build.
+- `src/components/Navigation.tsx` — replace the `useEffect` with resize listener with a `ResizeObserver` (same lines, same location, cleaner logic)
 
-## What this does NOT fix (requires separate action)
+## No Other Changes
 
-- **Stale static data**: `npm run prebuild` must be run manually to refresh `staticProducts.ts` and `staticPages.ts` from the live database before deploying
-- **Empty blog content**: The `/blog` page content field is empty in the database; needs content to be added via admin panel
-
-## Risk
-
-Low. The `onPageRendered` callback is already in use (logging only). Adding head injection is a safe string transformation. The vercel.json rewrites are additive.
-
+- `src/components/Hero.tsx` stays exactly as-is — the spacer `<div style={{ height: "var(--header-height, 80px)" }} />` is correct
+- No DB changes, no SSG impact, no other files touched
