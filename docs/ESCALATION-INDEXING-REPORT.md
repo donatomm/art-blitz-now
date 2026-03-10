@@ -128,16 +128,17 @@ The `staticPages.ts` file has `"content": ""` for several HTML-type pages. The p
 
 ### Priority 1: Fix Missing `<head>` in SSG Output 🔴 CRITICAL
 
-**Options:**
-1. Debug `vite-react-ssg` `<Head>` component — may be a version bug or config issue
-2. Inject meta tags directly into `index.html` template as fallbacks
-3. Use `onPageRendered` callback in `ssgOptions` to post-process HTML and ensure `<head>` is present
-4. Consider switching from `vite-react-ssg` `<Head>` to direct DOM manipulation in the SSG build
+**Status: ✅ FIX IMPLEMENTED (2026-03-10) — Awaiting deployment verification**
 
-**Investigation needed:**
-- Check `vite-react-ssg` version `0.8.9` changelog for known `<Head>` issues
-- Inspect the actual `dist/` output after build to see if `<head>` exists pre-deployment
-- Determine if Vercel's serving layer strips `<head>` (unlikely but must rule out)
+**Approach 1 (FAILED):** `onPageRendered` callback in `vite.config.ts` — beasties CSS inliner runs *after* this hook and strips the injected `<head>` block.
+
+**Approach 2 (CURRENT):** Postbuild HTML processor (`scripts/postbuild-inject-head.cjs`) — runs as the absolute last step in the build pipeline via `package.json` postbuild script. Scans all `.html` files in `dist/`, injects `<head>` with essential meta tags where missing, and moves any orphaned `<style>` tags from `<body>` into `<head>`.
+
+**Verification checklist (post-deploy):**
+- [ ] `curl -s https://octowonders.com/ | grep '<head>'` returns a match
+- [ ] Product pages have `<title>`, `<meta name="description">`, `<link rel="canonical">`
+- [ ] Google Search Console "URL Inspection" shows meta tags for affected URLs
+- [ ] After 1-2 weeks, affected pages move from "Discovered" to "Crawled" or "Indexed"
 
 ### Priority 2: Add Missing Vercel Rewrites 🟠 HIGH
 
