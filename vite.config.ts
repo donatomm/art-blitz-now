@@ -37,7 +37,7 @@ const sitemapPlugin = () => ({
       const fixedRoutes = [
         { loc: '/', changefreq: 'weekly', priority: '1.0' },
         { loc: '/sitemap', changefreq: 'weekly', priority: '0.4' },
-        { loc: '/colors', changefreq: 'monthly', priority: '0.3' },
+        // /colors excluded from sitemap — developer tool, wastes crawl budget
       ];
 
       // Load CMS pages

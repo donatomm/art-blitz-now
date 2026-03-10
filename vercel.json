@@ -22,6 +22,14 @@
     { "source": "/spedizione", "destination": "/spedizione/index.html" },
     { "source": "/pricing-policy", "destination": "/pricing-policy/index.html" },
     { "source": "/resi-rimborsi", "destination": "/resi-rimborsi/index.html" },
+    { "source": "/blog", "destination": "/blog/index.html" },
+    { "source": "/privacy", "destination": "/privacy/index.html" },
+    { "source": "/terms", "destination": "/terms/index.html" },
+    { "source": "/ordine-personalizzato", "destination": "/ordine-personalizzato/index.html" },
+    { "source": "/sitemap", "destination": "/sitemap/index.html" },
+    { "source": "/colors", "destination": "/colors/index.html" },
+    { "source": "/faqs", "destination": "/faqs/index.html" },
+    { "source": "/cookies", "destination": "/cookies/index.html" },
 
     {
       "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots|artist|contact|shipping|resi-e-rimborsi|Octopus-Facts).*)",
