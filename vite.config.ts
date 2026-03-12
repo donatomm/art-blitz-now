@@ -155,25 +155,8 @@ export default defineConfig(({ mode }) => ({
       const hasContent = html.includes('<h1') && !html.includes('id="root"></div>');
       console.log(`[SSG] ${route}: ${hasContent ? '✅ Content rendered' : '❌ Empty body'}`);
 
-      // Fix: beasties CSS inliner strips <head> during SSG build.
-      // If <head> is missing, inject it before <body> with essential meta tags.
-      if (!html.includes('<head>') && !html.includes('<head ')) {
-        console.log(`[SSG] ${route}: ⚠️ Missing <head>, injecting fallback`);
-        const headBlock = `<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="google-site-verification" content="piIPB5x5MjblaPWAVjsiaeV8Gc3AbIFnq1yZItrhUlM" />
-    <link rel="preconnect" href="https://xqubydbsoucrwqhddodw.supabase.co" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300&display=swap" />
-    <meta name="p:domain_verify" content="488c339e7167063621a6662be6c159b8" />
-    <title>OctoWonders by Marco De Francesco - Stampe d'Arte su Tela</title>
-    <meta name="description" content="Stampe d'arte originali su tela di alta qualità. Opere uniche a tema marino." />
-    <meta name="author" content="Marco De Francesco" />
-  </head>`;
-        html = html.replace('<body>', headBlock + '\n  <body>');
-      }
+      // Note: <head> injection is handled by postbuild-inject-head.cjs
+      // Do NOT inject here — it causes duplicate <head> blocks.
 
       return html;
     },
