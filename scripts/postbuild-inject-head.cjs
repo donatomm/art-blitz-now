@@ -52,8 +52,8 @@ let skipped = 0;
 for (const file of files) {
   let html = fs.readFileSync(file, "utf-8");
 
-  // Already has <head> — skip
-  if (html.includes("<head>") || html.includes("<head ")) {
+  // Already has a proper <head> with <title> — skip
+  if ((html.includes("<head>") || html.includes("<head ")) && html.includes("<title>")) {
     skipped++;
     continue;
   }
