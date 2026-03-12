@@ -1,75 +1,49 @@
 
-# Fix: Use ResizeObserver to Always Capture the True Header Height
 
-## Root Cause
+# Incident Report: SSG Migration Broke Website Indexability
 
-The `updateHeaderHeight` function in `Navigation.tsx` calls `header.offsetHeight` **once on mount** (and once on resize). On a real device like iPhone 11, the HelloBar content (text wrapping, countdown timer) finishes rendering **after** that initial measurement fires. So `--header-height` gets set to a value that is too small — then the HelloBar finishes rendering and grows taller, but the CSS variable is never updated. The Hero spacer stays at the old (too-small) height, so the hero content overlaps or sits wrong.
+## Document to Create
 
-The `window.addEventListener("resize", ...)` only fires on orientation change, not on the HelloBar growing taller due to text wrapping or countdown rendering.
+A new file `docs/INCIDENT-SSG-REGRESSION.md` — a focused forensic report on the period when the broken SSG build made the website non-indexable.
 
-## The Fix: Replace `resize` listener with `ResizeObserver`
+## Content Summary
 
-`ResizeObserver` fires **every time the element's dimensions change** — including when child content finishes painting and the element grows. This means the CSS variable will be updated correctly after:
-- Initial mount
-- HelloBar text wrapping
-- Countdown timer rendering
-- Font loading
-- Orientation change
+The report will document:
 
-### Change in `src/components/Navigation.tsx`
+1. **The Single Causal Event**: Migration of `src/main.tsx` from standard React SPA entry (`createRoot` from `react-dom/client`) to `vite-react-ssg` (`ViteReactSSG`), and corresponding `package.json` build command change from `vite build` to `vite-react-ssg build`.
 
-Replace the current `useEffect` that uses `window.addEventListener("resize", ...)`:
+2. **Technical Mechanism**: How `vite-react-ssg@0.8.9` uses jsdom + `react-helmet-async` for SSG rendering, which sets `data-rh` attributes on `<html>` but fails to serialize `<head>` content into the final HTML output. The `<Head>` component in `SEO.tsx` (importing from `vite-react-ssg`) renders `<title>`, `<meta>`, `<link rel="canonical">`, JSON-LD — all of which were silently dropped.
 
-```tsx
-// BEFORE — fires only once on mount + on window resize
-useEffect(() => {
-  const updateHeaderHeight = () => {
-    const header = document.querySelector("header");
-    if (header) {
-      document.documentElement.style.setProperty(
-        "--header-height",
-        `${header.offsetHeight}px`
-      );
-    }
-  };
-  updateHeaderHeight();
-  window.addEventListener("resize", updateHeaderHeight);
-  return () => window.removeEventListener("resize", updateHeaderHeight);
-}, [showHelloBar]);
-```
+3. **Cascading Failures**: The SSG migration created three simultaneous breaks:
+   - All pages lost `<head>` (title, meta, canonical, structured data)
+   - CMS pages without Vercel rewrites fell through to a headless SPA shell
+   - Pages with empty DB `content` rendered as empty divs at build time
 
-```tsx
-// AFTER — fires every time the header element changes size
-useEffect(() => {
-  const header = document.querySelector("header");
-  if (!header) return;
+4. **Timeline with Evidence**:
+   - ~Dec 22-24, 2025: SSG deployed, 22 pages enter GSC "Discovered - not indexed"
+   - Jan 4 - Feb 10: Google served stale cached index (bug still live, not fixed)
+   - No deployments between Feb 7 and Feb 14 — confirming Feb 11 regression was a Google re-crawl, not a new deployment
+   - Feb 11 onward: Google re-crawled, found headless HTML, de-indexed 20 pages
+   - Mar 7: Still 20 pages not indexed
+   - Mar 10: Fix implemented (postbuild-inject-head.cjs)
 
-  const observer = new ResizeObserver(() => {
-    document.documentElement.style.setProperty(
-      "--header-height",
-      `${header.offsetHeight}px`
-    );
-  });
+5. **Production Evidence**: The exact broken HTML pattern served to Googlebot:
+   ```html
+   <!DOCTYPE html><html lang="it" data-rh="lang">
+     <body>
+       <div id="root" data-server-rendered="true">...
+   ```
+   No `<head>`, no `<title>`, no `<meta>`, no canonical, no JSON-LD.
 
-  observer.observe(header);
-  return () => observer.disconnect();
-}, []); // no dependency needed — ResizeObserver watches the element continuously
-```
+6. **Code Evidence**: The exact file changes that introduced the bug:
+   - `src/main.tsx`: `ViteReactSSG` import replacing `createRoot`
+   - `package.json` line 9: `vite-react-ssg build` replacing `vite build`
+   - `vite-react-ssg@0.8.9` added as dependency
+   - `SEO.tsx` using `Head` from `vite-react-ssg` (which silently fails during SSG serialization)
 
-## Why This Works
+7. **Key Finding**: No deployments occurred between Feb 7 and Feb 14, proving the Feb 11 "regression" was not a new code change but Google's re-crawl discovering the already-broken pages.
 
-- `ResizeObserver` on the `<header>` element fires whenever its height changes for any reason
-- HelloBar text wrapping on iPhone 11 increases the header height → `ResizeObserver` fires → CSS variable updated → Hero spacer matches exactly
-- Countdown timer content rendering → same
-- Orientation change → same
-- HelloBar toggled on/off → same
-- No more stale initial measurement
+## File
 
-## Files Changed
+Create `docs/INCIDENT-SSG-REGRESSION.md` with the complete forensic incident report.
 
-- `src/components/Navigation.tsx` — replace the `useEffect` with resize listener with a `ResizeObserver` (same lines, same location, cleaner logic)
-
-## No Other Changes
-
-- `src/components/Hero.tsx` stays exactly as-is — the spacer `<div style={{ height: "var(--header-height, 80px)" }} />` is correct
-- No DB changes, no SSG impact, no other files touched
