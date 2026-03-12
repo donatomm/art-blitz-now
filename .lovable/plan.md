@@ -1,75 +1,44 @@
 
-# Fix: Use ResizeObserver to Always Capture the True Header Height
 
-## Root Cause
+# Fix: Duplicate `<head>`, `/colors` in Sitemap, Emoji in `/terms` H1
 
-The `updateHeaderHeight` function in `Navigation.tsx` calls `header.offsetHeight` **once on mount** (and once on resize). On a real device like iPhone 11, the HelloBar content (text wrapping, countdown timer) finishes rendering **after** that initial measurement fires. So `--header-height` gets set to a value that is too small — then the HelloBar finishes rendering and grows taller, but the CSS variable is never updated. The Hero spacer stays at the old (too-small) height, so the hero content overlaps or sits wrong.
+## 1. Duplicate `<head>` blocks (head=2)
 
-The `window.addEventListener("resize", ...)` only fires on orientation change, not on the HelloBar growing taller due to text wrapping or countdown rendering.
+**Root cause**: Two places inject `<head>` — the SSG `onPageRendered` callback in `vite.config.ts` (lines 158-175) AND the postbuild script `scripts/postbuild-inject-head.cjs`. When SSG injects one, the postbuild script sees it and skips — but for pages where SSG succeeds, we get the SSG head. For pages where both fire, we get two.
 
-## The Fix: Replace `resize` listener with `ResizeObserver`
+**Fix**: Remove the `<head>` injection from `vite.config.ts` `onPageRendered`. The postbuild script is the authoritative final pass — it runs after everything and handles all cases. Keeping both creates duplicates. The `onPageRendered` should only log diagnostics, not modify HTML.
 
-`ResizeObserver` fires **every time the element's dimensions change** — including when child content finishes painting and the element grows. This means the CSS variable will be updated correctly after:
-- Initial mount
-- HelloBar text wrapping
-- Countdown timer rendering
-- Font loading
-- Orientation change
+| File | Change |
+|------|--------|
+| `vite.config.ts` | Remove lines 158-175 (the `<head>` injection in `onPageRendered`). Keep only the logging. |
+| `scripts/postbuild-inject-head.cjs` | Update skip logic: instead of skipping when `<head>` exists, skip when `<head>` exists AND contains a `<title>` tag. This ensures the postbuild script always injects into empty/stripped heads. |
 
-### Change in `src/components/Navigation.tsx`
+## 2. Remove `/colors` from sitemap
 
-Replace the current `useEffect` that uses `window.addEventListener("resize", ...)`:
+The `/colors` route is a developer tool. It appears in the sitemap via the fixed routes array and also in the edge function.
 
-```tsx
-// BEFORE — fires only once on mount + on window resize
-useEffect(() => {
-  const updateHeaderHeight = () => {
-    const header = document.querySelector("header");
-    if (header) {
-      document.documentElement.style.setProperty(
-        "--header-height",
-        `${header.offsetHeight}px`
-      );
-    }
-  };
-  updateHeaderHeight();
-  window.addEventListener("resize", updateHeaderHeight);
-  return () => window.removeEventListener("resize", updateHeaderHeight);
-}, [showHelloBar]);
-```
+| File | Change |
+|------|--------|
+| `vite.config.ts` | Already excluded — comment says "excluded from sitemap". No change needed. |
+| `supabase/functions/sitemap/index.ts` | Already excluded. No change needed. |
+| `src/pages/Sitemap.tsx` | No change — `/colors` is not listed in the human-readable sitemap sections. |
 
-```tsx
-// AFTER — fires every time the header element changes size
-useEffect(() => {
-  const header = document.querySelector("header");
-  if (!header) return;
+Actually, `/colors` is NOT in the fixed routes array in either location. It must be appearing because it's a CMS page or picked up elsewhere. Let me verify — the curl showed `head=1` for `/colors`, meaning it's lazy-loaded and served via SPA fallback. It's not in the XML sitemap at all (the XML sitemap only has fixed routes + CMS pages + products). The `/sitemap` HTML page also doesn't list it. **No change needed** — `/colors` is already excluded from the XML sitemap.
 
-  const observer = new ResizeObserver(() => {
-    document.documentElement.style.setProperty(
-      "--header-height",
-      `${header.offsetHeight}px`
-    );
-  });
+## 3. Remove emoji from `/terms` H1
 
-  observer.observe(header);
-  return () => observer.disconnect();
-}, []); // no dependency needed — ResizeObserver watches the element continuously
-```
+The content `# 📄 Termini e Condizioni di Vendita` is stored in the database (`pages` table, slug `terms`). The `staticPages.ts` file is auto-generated from it.
 
-## Why This Works
+**Fix**: Update the database content to remove the emoji from the H1 heading.
 
-- `ResizeObserver` on the `<header>` element fires whenever its height changes for any reason
-- HelloBar text wrapping on iPhone 11 increases the header height → `ResizeObserver` fires → CSS variable updated → Hero spacer matches exactly
-- Countdown timer content rendering → same
-- Orientation change → same
-- HelloBar toggled on/off → same
-- No more stale initial measurement
+| Action | Detail |
+|--------|--------|
+| Database migration | Update the `pages` table: set `content` for slug `terms` to replace `# 📄 Termini e Condizioni di Vendita` with `# Termini e Condizioni di Vendita` |
 
-## Files Changed
+## Summary
 
-- `src/components/Navigation.tsx` — replace the `useEffect` with resize listener with a `ResizeObserver` (same lines, same location, cleaner logic)
+Three changes total:
+1. **`vite.config.ts`** — Remove `<head>` injection from `onPageRendered` (keep logging only)
+2. **`scripts/postbuild-inject-head.cjs`** — Smarter skip: only skip files where `<head>` contains `<title>`
+3. **Database update** — Remove emoji from `/terms` page content heading
 
-## No Other Changes
-
-- `src/components/Hero.tsx` stays exactly as-is — the spacer `<div style={{ height: "var(--header-height, 80px)" }} />` is correct
-- No DB changes, no SSG impact, no other files touched
