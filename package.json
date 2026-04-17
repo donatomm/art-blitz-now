@@ -7,7 +7,7 @@
     "prebuild:products": "tsx scripts/prebuild.ts",
     "dev": "vite",
     "build": "npm run prebuild:products && vite-react-ssg build",
-    "postbuild": "node scripts/postbuild-inject-head.cjs && node scripts/postbuild-css-alias.cjs",
+    "postbuild": "node scripts/postbuild-inject-head.cjs && node scripts/postbuild-css-alias.cjs && node scripts/postbuild-uuid-redirects.cjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
