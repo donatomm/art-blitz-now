@@ -1,75 +1,43 @@
 
-# Fix: Use ResizeObserver to Always Capture the True Header Height
 
-## Root Cause
+## Goal
+Make `/product/bd62c326-772b-4337-9131-fe10a5e4a2bb` return a server-level redirect to `/product/trota-salmone-pesce-psichedelico-luce-stampa-tela-canvas` so Google consolidates the indexed UUID URL into the canonical slug URL.
 
-The `updateHeaderHeight` function in `Navigation.tsx` calls `header.offsetHeight` **once on mount** (and once on resize). On a real device like iPhone 11, the HelloBar content (text wrapping, countdown timer) finishes rendering **after** that initial measurement fires. So `--header-height` gets set to a value that is too small — then the HelloBar finishes rendering and grows taller, but the CSS variable is never updated. The Hero spacer stays at the old (too-small) height, so the hero content overlaps or sits wrong.
+## Current state
+- `src/pages/Product.tsx` (lines 78-82) already does a client-side `<Navigate replace>` from UUID → slug. This works for users but returns HTTP 200, so Googlebot may still treat the UUID as a separate URL.
+- `middleware.ts` and `public/_redirects` exist but are **not honored by Lovable hosting** (Lovable ignores `_redirects`, `vercel.json`, and Next-style middleware).
+- True server-side 301 is not configurable on Lovable hosting.
 
-The `window.addEventListener("resize", ...)` only fires on orientation change, not on the HelloBar growing taller due to text wrapping or countdown rendering.
+## Approach: build-time static redirect page (best available)
+Generate a physical file at `dist/product/bd62c326-772b-4337-9131-fe10a5e4a2bb/index.html` during the build. The file contains:
+- `<meta http-equiv="refresh" content="0; url=/product/trota-salmone-pesce-psichedelico-luce-stampa-tela-canvas">`
+- `<link rel="canonical" href="https://octowonders.com/product/trota-salmone-pesce-psichedelico-luce-stampa-tela-canvas">`
+- A small JS fallback `window.location.replace(...)`
+- Minimal noscript body with a link
 
-## The Fix: Replace `resize` listener with `ResizeObserver`
+Google explicitly documents that an instant `meta refresh` is interpreted as a permanent redirect, and the canonical link reinforces it. This is the strongest signal achievable on Lovable hosting.
 
-`ResizeObserver` fires **every time the element's dimensions change** — including when child content finishes painting and the element grows. This means the CSS variable will be updated correctly after:
-- Initial mount
-- HelloBar text wrapping
-- Countdown timer rendering
-- Font loading
-- Orientation change
+## Implementation steps
+1. Create `scripts/postbuild-uuid-redirects.cjs`:
+   - Read a small map: `{ "bd62c326-772b-4337-9131-fe10a5e4a2bb": "/product/trota-salmone-pesce-psichedelico-luce-stampa-tela-canvas" }`
+   - For each entry, write `dist/product/<uuid>/index.html` with the redirect HTML.
+2. Wire it into `package.json` build script (after existing `postbuild-inject-head.cjs`).
+3. Keep the existing client-side `<Navigate>` in `Product.tsx` as a safety net for UUIDs not in the map.
+4. Update `middleware.ts` map comment to note it's the source of truth for the postbuild script (or move the map into the script directly — simpler).
 
-### Change in `src/components/Navigation.tsx`
+## Files to change
+- `scripts/postbuild-uuid-redirects.cjs` (new)
+- `package.json` (build script chain)
+- No changes to `Product.tsx`, no changes to routing, no UX impact.
 
-Replace the current `useEffect` that uses `window.addEventListener("resize", ...)`:
-
-```tsx
-// BEFORE — fires only once on mount + on window resize
-useEffect(() => {
-  const updateHeaderHeight = () => {
-    const header = document.querySelector("header");
-    if (header) {
-      document.documentElement.style.setProperty(
-        "--header-height",
-        `${header.offsetHeight}px`
-      );
-    }
-  };
-  updateHeaderHeight();
-  window.addEventListener("resize", updateHeaderHeight);
-  return () => window.removeEventListener("resize", updateHeaderHeight);
-}, [showHelloBar]);
+## Verification after deploy
 ```
-
-```tsx
-// AFTER — fires every time the header element changes size
-useEffect(() => {
-  const header = document.querySelector("header");
-  if (!header) return;
-
-  const observer = new ResizeObserver(() => {
-    document.documentElement.style.setProperty(
-      "--header-height",
-      `${header.offsetHeight}px`
-    );
-  });
-
-  observer.observe(header);
-  return () => observer.disconnect();
-}, []); // no dependency needed — ResizeObserver watches the element continuously
+curl -sI https://octowonders.com/product/bd62c326-772b-4337-9131-fe10a5e4a2bb
+curl -s  https://octowonders.com/product/bd62c326-772b-4337-9131-fe10a5e4a2bb | grep -E 'refresh|canonical'
 ```
+Then in GSC: URL Inspection on the UUID URL → "Request Indexing" so Google re-crawls and sees the redirect signal.
 
-## Why This Works
+## Out of scope
+- True HTTP 301 (not possible on Lovable hosting today).
+- Removing the existing client-side Navigate (kept as fallback).
 
-- `ResizeObserver` on the `<header>` element fires whenever its height changes for any reason
-- HelloBar text wrapping on iPhone 11 increases the header height → `ResizeObserver` fires → CSS variable updated → Hero spacer matches exactly
-- Countdown timer content rendering → same
-- Orientation change → same
-- HelloBar toggled on/off → same
-- No more stale initial measurement
-
-## Files Changed
-
-- `src/components/Navigation.tsx` — replace the `useEffect` with resize listener with a `ResizeObserver` (same lines, same location, cleaner logic)
-
-## No Other Changes
-
-- `src/components/Hero.tsx` stays exactly as-is — the spacer `<div style={{ height: "var(--header-height, 80px)" }} />` is correct
-- No DB changes, no SSG impact, no other files touched
