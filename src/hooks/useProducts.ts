@@ -82,9 +82,9 @@ export const useUpdateProduct = () => {
       const { error } = await supabase
         .from("products")
         .update({
-          name: product.name,
-          medium: product.medium,
-          description: product.description,
+          name: product.name?.normalize("NFKC"),
+          medium: product.medium?.normalize("NFKC"),
+          description: product.description?.normalize("NFKC"),
           image_url: product.image_url,
           sizes: product.sizes as unknown as Json,
           display_order: product.display_order,
