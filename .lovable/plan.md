@@ -1,43 +1,55 @@
-
-
 ## Goal
-Make `/product/bd62c326-772b-4337-9131-fe10a5e4a2bb` return a server-level redirect to `/product/trota-salmone-pesce-psichedelico-luce-stampa-tela-canvas` so Google consolidates the indexed UUID URL into the canonical slug URL.
+Eliminate the runtime fetch of `/static-loader-data-manifest-<hash>.json` that intermittently fails after deploys (browser caches old HTML referencing a hash whose JSON is no longer at the edge → Vercel returns the 404 HTML → `JSON.parse` throws "Unexpected token 'T'").
 
-## Current state
-- `src/pages/Product.tsx` (lines 78-82) already does a client-side `<Navigate replace>` from UUID → slug. This works for users but returns HTTP 200, so Googlebot may still treat the UUID as a separate URL.
-- `middleware.ts` and `public/_redirects` exist but are **not honored by Lovable hosting** (Lovable ignores `_redirects`, `vercel.json`, and Next-style middleware).
-- True server-side 301 is not configurable on Lovable hosting.
+## Root cause (verified in `node_modules/vite-react-ssg/dist/index.mjs`)
+- `ViteReactSSG` wraps every route's `loader` with `transformStaticLoaderRoute`. On any SSR'd page (every page we ship has `data-server-rendered=true`), the very first navigation/hydration triggers:
+  ```js
+  if (window.__VITE_REACT_SSG_STATIC_LOADER_DATA__) { … }
+  else {
+    const manifestUrl = `/static-loader-data-manifest-${window.__VITE_REACT_SSG_HASH__}.json`;
+    staticLoadData = await (await fetch(manifestUrl)).json();   // ← throws when HTML is returned
+  }
+  ```
+- The hash is baked into each generated HTML at build time. If the HTML in the user's browser cache (or Vercel's HTML cache) was produced by an older deploy, the matching JSON file no longer exists → Vercel returns its 404 HTML → JSON.parse blows up → app crashes mid-hydration → user sees "Page could not be found" / blank product page.
+- We do not use `includeAllRoutes`, and we do not use react-router `loader` anywhere in `src/` (all data comes from React Query + static TS files). The manifest is therefore semantically empty for us — but the runtime still fetches it on every cold load.
 
-## Approach: build-time static redirect page (best available)
-Generate a physical file at `dist/product/bd62c326-772b-4337-9131-fe10a5e4a2bb/index.html` during the build. The file contains:
-- `<meta http-equiv="refresh" content="0; url=/product/trota-salmone-pesce-psichedelico-luce-stampa-tela-canvas">`
-- `<link rel="canonical" href="https://octowonders.com/product/trota-salmone-pesce-psichedelico-luce-stampa-tela-canvas">`
-- A small JS fallback `window.location.replace(...)`
-- Minimal noscript body with a link
+## Fix
+Pre-populate `window.__VITE_REACT_SSG_STATIC_LOADER_DATA__` inline in every generated HTML so the runtime never performs the fetch. Because we have zero route `loader`s, an empty object is functionally identical to the real manifest.
 
-Google explicitly documents that an instant `meta refresh` is interpreted as a permanent redirect, and the canonical link reinforces it. This is the strongest signal achievable on Lovable hosting.
+### Implementation
 
-## Implementation steps
-1. Create `scripts/postbuild-uuid-redirects.cjs`:
-   - Read a small map: `{ "bd62c326-772b-4337-9131-fe10a5e4a2bb": "/product/trota-salmone-pesce-psichedelico-luce-stampa-tela-canvas" }`
-   - For each entry, write `dist/product/<uuid>/index.html` with the redirect HTML.
-2. Wire it into `package.json` build script (after existing `postbuild-inject-head.cjs`).
-3. Keep the existing client-side `<Navigate>` in `Product.tsx` as a safety net for UUIDs not in the map.
-4. Update `middleware.ts` map comment to note it's the source of truth for the postbuild script (or move the map into the script directly — simpler).
+Add a new postbuild step `scripts/postbuild-inline-ssg-data.cjs` that:
+1. Walks every `*.html` under `dist/`.
+2. Injects, immediately before the existing `window.__VITE_REACT_SSG_HASH__ = '…'` script tag:
+   ```html
+   <script>window.__VITE_REACT_SSG_STATIC_LOADER_DATA__ = {};</script>
+   ```
+   (Idempotent — skip if already present.)
+3. Logs a count of files patched.
 
-## Files to change
-- `scripts/postbuild-uuid-redirects.cjs` (new)
-- `package.json` (build script chain)
-- No changes to `Product.tsx`, no changes to routing, no UX impact.
-
-## Verification after deploy
+Wire it into `package.json` after the existing postbuild chain so it runs last:
+```diff
+- "postbuild": "node scripts/postbuild-inject-head.cjs && node scripts/postbuild-css-alias.cjs && node scripts/postbuild-uuid-redirects.cjs"
++ "postbuild": "node scripts/postbuild-inject-head.cjs && node scripts/postbuild-css-alias.cjs && node scripts/postbuild-uuid-redirects.cjs && node scripts/postbuild-inline-ssg-data.cjs"
 ```
-curl -sI https://octowonders.com/product/bd62c326-772b-4337-9131-fe10a5e4a2bb
-curl -s  https://octowonders.com/product/bd62c326-772b-4337-9131-fe10a5e4a2bb | grep -E 'refresh|canonical'
+
+### Why this is safe
+- We grep'd `src/` — no `loader:` in `routes.tsx` or pages. `staticLoaderDataManifest[path] = routerContext?.loaderData` therefore writes `undefined` for every path, so the live manifest is `{}`.
+- Even if a loader is added later, the symptom would be missing loader data (a clean `null` return per the runtime's `routeData ?? null`), not an app-crashing JSON parse exception.
+- The change is HTML-only and additive; no source/runtime/SSG-config changes, no library upgrade, no rebuild semantics changed.
+
+### Verification after deploy
 ```
-Then in GSC: URL Inspection on the UUID URL → "Request Indexing" so Google re-crawls and sees the redirect signal.
+curl -s https://octowonders.com/product/polpo-octopus-ventose-colori-accesi-stampa-tela \
+  | grep -E "__VITE_REACT_SSG_STATIC_LOADER_DATA__|__VITE_REACT_SSG_HASH__"
+```
+Expect both scripts present, the STATIC_LOADER_DATA one appearing before the HASH one. Then hard-reload an existing tab with a stale cached HTML — no JSON parse error in console, page hydrates normally.
 
 ## Out of scope
-- True HTTP 301 (not possible on Lovable hosting today).
-- Removing the existing client-side Navigate (kept as fallback).
+- Upgrading or replacing `vite-react-ssg`.
+- Switching to `single-page` entry (would change SSG behavior for all pages — bigger blast radius).
+- Touching `includeAllRoutes` — we already don't set it; default is `false`. The bug is unrelated to that flag despite earlier hypothesis.
 
+## Files changed
+- `scripts/postbuild-inline-ssg-data.cjs` (new)
+- `package.json` (extend `postbuild`)
