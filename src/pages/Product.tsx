@@ -290,8 +290,8 @@ Grazie!`);
         </DialogContent>
       </Dialog>
       <SEO 
-        title={product.name}
-        description={product.description || `${product.name} - ${product.medium}. Stampa su tela di alta qualità. Da €${minPrice}. Spedizione gratuita in Italia.`}
+        title={(product as any).seo_title || product.name}
+        description={(product as any).seo_description || product.description || `${product.name} - ${product.medium}. Stampa su tela di alta qualità. Da €${minPrice}. Spedizione gratuita in Italia.`}
         image={product.image_url}
         url={`/product/${product.slug}`}
         type="product"
