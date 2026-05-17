@@ -88,6 +88,8 @@ export type Database = {
           medium: string
           mock_rooms: Json
           name: string
+          seo_description: string | null
+          seo_title: string | null
           sizes: Json
           slug: string | null
           tags: string[] | null
@@ -106,6 +108,8 @@ export type Database = {
           medium: string
           mock_rooms?: Json
           name: string
+          seo_description?: string | null
+          seo_title?: string | null
           sizes?: Json
           slug?: string | null
           tags?: string[] | null
@@ -124,6 +128,8 @@ export type Database = {
           medium?: string
           mock_rooms?: Json
           name?: string
+          seo_description?: string | null
+          seo_title?: string | null
           sizes?: Json
           slug?: string | null
           tags?: string[] | null
