@@ -36,7 +36,7 @@ const sitemapPlugin = () => ({
       // Fixed routes (not from CMS)
       const fixedRoutes = [
         { loc: '/', changefreq: 'weekly', priority: '1.0' },
-        { loc: '/sitemap', changefreq: 'weekly', priority: '0.4' },
+        // /sitemap (HTML sitemap page) excluded — wastes crawl budget
         // /colors excluded from sitemap — developer tool, wastes crawl budget
       ];
 
