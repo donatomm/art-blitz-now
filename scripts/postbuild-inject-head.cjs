@@ -18,6 +18,10 @@ if (!fs.existsSync(distDir)) {
   process.exit(1);
 }
 
+// Minimal static head block — used ONLY as a last-resort fallback when SSG
+// produced an HTML file with no <head> at all. It intentionally does NOT
+// contain <title> or <meta name="description"> so it can never override the
+// per-route Helmet tags rendered by vite-react-ssg.
 const HEAD_BLOCK = `<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,8 +31,6 @@ const HEAD_BLOCK = `<head>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300&display=swap" />
     <meta name="p:domain_verify" content="488c339e7167063621a6662be6c159b8" />
-    <title>OctoWonders by Marco De Francesco - Stampe d'Arte su Tela</title>
-    <meta name="description" content="Stampe d'arte originali su tela di alta qualità. Opere uniche a tema marino." />
     <meta name="author" content="Marco De Francesco" />
   </head>`;
 
@@ -49,11 +51,16 @@ const files = getAllHtmlFiles(distDir);
 let fixed = 0;
 let skipped = 0;
 
+// Detect any <title ...> tag (including Helmet's <title data-rh="true">),
+// not just the bare literal "<title>". Same for <head>.
+const HAS_HEAD = /<head[\s>]/i;
+const HAS_TITLE = /<title[\s>]/i;
+
 for (const file of files) {
   let html = fs.readFileSync(file, "utf-8");
 
-  // Already has a proper <head> with <title> — skip
-  if ((html.includes("<head>") || html.includes("<head ")) && html.includes("<title>")) {
+  // Already has a proper <head> with a <title> (Helmet or otherwise) — skip
+  if (HAS_HEAD.test(html) && HAS_TITLE.test(html)) {
     skipped++;
     continue;
   }
