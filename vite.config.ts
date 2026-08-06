@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
+import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
 import * as fs from "fs";
 
 /**
@@ -116,6 +117,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     sitemapPlugin(),
+    mcpPlugin(),
     react(),
     mode === "development" && componentTagger(),
     ViteImageOptimizer({
