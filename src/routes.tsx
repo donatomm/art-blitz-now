@@ -98,6 +98,11 @@ export const routes: RouteRecord[] = [
         path: "image-rename-tool",
         element: withSuspense(ImageRenamerTool),
       },
+      {
+        path: ".lovable/oauth/consent",
+        element: withSuspense(OAuthConsent),
+      },
+
       // Legacy URL redirects (for external links, bookmarks, search engines)
       {
         path: "artist",
