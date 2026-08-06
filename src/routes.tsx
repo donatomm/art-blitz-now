@@ -22,6 +22,7 @@ const Cookies = lazy(() => import("./pages/Cookies"));
 const Contact = lazy(() => import("./pages/Contact"));
 const ImageRename = lazy(() => import("./pages/ImageRename"));
 const ImageRenamerTool = lazy(() => import("./pages/ImageRenamerTool"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -97,6 +98,11 @@ export const routes: RouteRecord[] = [
         path: "image-rename-tool",
         element: withSuspense(ImageRenamerTool),
       },
+      {
+        path: ".lovable/oauth/consent",
+        element: withSuspense(OAuthConsent),
+      },
+
       // Legacy URL redirects (for external links, bookmarks, search engines)
       {
         path: "artist",

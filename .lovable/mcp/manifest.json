@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://xqubydbsoucrwqhddodw.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "octowonders-com",
+      "version": "0.1.0",
+      "title": "OCTOWONDERS.COM"
+    },
+    "tools": [
+      {
+        "name": "list_products",
+        "title": "List products",
+        "description": "List OctoWonders art print products with slug, name, medium and SEO fields.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "only_active": {
+              "type": "boolean",
+              "description": "Only return published products. Defaults to true."
+            },
+            "search": {
+              "type": "string",
+              "description": "Optional case-insensitive filter on the product name."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum number of products to return (default 50)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_product",
+        "title": "Get product",
+        "description": "Get one OctoWonders product by slug, including description, sizes and prices.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "description": "The product slug, e.g. quadro-polpo-psichedelico."
+            }
+          },
+          "required": [
+            "slug"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_pages",
+        "title": "List content pages",
+        "description": "List the CMS pages of the site (slug, title and SEO fields).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "search": {
+              "type": "string",
+              "description": "Optional case-insensitive filter on slug or title."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_page",
+        "title": "Get content page",
+        "description": "Get the full content of one CMS page by slug (e.g. artista, blog/my-article).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "description": "The page slug, without a leading slash."
+            }
+          },
+          "required": [
+            "slug"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_product_seo",
+        "title": "Update product SEO fields",
+        "description": "Update the SEO title and/or SEO description of a product by slug. Requires an admin account; the artistic name and page content are not changed.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "description": "The product slug to update."
+            },
+            "seo_title": {
+              "type": "string",
+              "description": "New SEO title (keep it under 60 characters)."
+            },
+            "seo_description": {
+              "type": "string",
+              "description": "New SEO meta description (keep it under 160 characters)."
+            }
+          },
+          "required": [
+            "slug"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
