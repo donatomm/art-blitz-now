@@ -22,6 +22,7 @@ const Cookies = lazy(() => import("./pages/Cookies"));
 const Contact = lazy(() => import("./pages/Contact"));
 const ImageRename = lazy(() => import("./pages/ImageRename"));
 const ImageRenamerTool = lazy(() => import("./pages/ImageRenamerTool"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
 // Minimal loading fallback
 const PageLoader = () => (
