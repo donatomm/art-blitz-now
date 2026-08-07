@@ -29,6 +29,8 @@ export interface Product {
   is_new?: boolean;
   slug?: string;
   tags?: string[];
+  seo_title?: string | null;
+  seo_description?: string | null;
   created_at?: string;
   updated_at?: string;
 }

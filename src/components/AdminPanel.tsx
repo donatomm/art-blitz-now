@@ -624,25 +624,26 @@ const AdminPanel = () => {
 
   // Check if already authenticated via Supabase session and has admin role
   useEffect(() => {
+    const checkAdminRole = async (userId: string) => {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .maybeSingle();
+      return !!data;
+    };
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: hasAdminRole } = await supabase.rpc('has_role', {
-          _user_id: session.user.id,
-          _role: 'admin'
-        });
-        setIsAuthenticated(!!hasAdminRole);
+        setIsAuthenticated(await checkAdminRole(session.user.id));
       }
     };
     checkSession();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setTimeout(async () => {
-          const { data: hasAdminRole } = await supabase.rpc('has_role', {
-            _user_id: session.user.id,
-            _role: 'admin'
-          });
-          setIsAuthenticated(!!hasAdminRole);
+          setIsAuthenticated(await checkAdminRole(session.user.id));
         }, 0);
       } else {
         setIsAuthenticated(false);
