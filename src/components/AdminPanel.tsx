@@ -667,10 +667,13 @@ const AdminPanel = () => {
         toast({ title: "Errore di autenticazione", description: "Email o password non corretti.", variant: "destructive" });
         return;
       }
-      const { data: hasAdminRole } = await supabase.rpc('has_role', {
-        _user_id: signInData.user.id,
-        _role: 'admin'
-      });
+      const { data: adminRole } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', signInData.user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+      const hasAdminRole = !!adminRole;
       if (!hasAdminRole) {
         await supabase.auth.signOut();
         toast({ title: "Accesso negato", description: "Non hai i permessi di amministratore.", variant: "destructive" });
