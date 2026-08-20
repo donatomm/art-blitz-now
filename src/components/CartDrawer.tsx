@@ -3,14 +3,24 @@ import { useProducts } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Minus, Plus, Trash2, ShoppingCart, Loader2, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { prepareCheckoutWindow, navigateToCheckout, closeCheckoutWindow } from "@/lib/openCheckout";
+
 import { useToast } from "@/hooks/use-toast";
 
 const CartDrawer = () => {
   const { items, removeFromCart, updateQuantity, clearCart, isCartOpen, setIsCartOpen } = useCart();
   const { data: products, isLoading: productsLoading } = useProducts({ enabled: isCartOpen });
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+
+  // Reset the checkout spinner when the user returns from Stripe (incl. bfcache restore)
+  useEffect(() => {
+    const onPageShow = () => setIsCheckoutLoading(false);
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
   const { toast } = useToast();
 
   // Enrich cart items with fresh product data
@@ -42,7 +52,10 @@ const CartDrawer = () => {
 
   const handleCheckout = async () => {
     if (validItems.length === 0) return;
+    if (isCheckoutLoading) return; // guard against double taps on slow networks
 
+    // Must be reserved synchronously, before any await, or mobile browsers block it.
+    const checkoutTarget = prepareCheckoutWindow();
     setIsCheckoutLoading(true);
     try {
       const cartItems = validItems.map((item) => ({
@@ -59,19 +72,19 @@ const CartDrawer = () => {
       if (data?.error) throw new Error(data.error);
       if (!data?.url) throw new Error("No checkout URL received");
 
-      // Open Stripe Checkout in new tab
-      window.open(data.url, "_blank");
+      navigateToCheckout(checkoutTarget, data.url);
     } catch (error) {
+      closeCheckoutWindow(checkoutTarget);
       console.error("Cart checkout error:", error);
       toast({
         title: "Errore",
         description: error instanceof Error ? error.message : "Impossibile avviare il pagamento. Riprova.",
         variant: "destructive",
       });
-    } finally {
       setIsCheckoutLoading(false);
     }
   };
+
 
   return (
     <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
