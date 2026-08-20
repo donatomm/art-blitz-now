@@ -16,6 +16,8 @@ import {
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { prepareCheckoutWindow, navigateToCheckout, closeCheckoutWindow } from "@/lib/openCheckout";
+
 import { useToast } from "@/hooks/use-toast";
 import { TreePine } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -48,6 +50,14 @@ const Product = () => {
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+
+  // Reset the checkout spinner when the user returns from Stripe (incl. bfcache restore)
+  useEffect(() => {
+    const onPageShow = () => setIsCheckoutLoading(false);
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
@@ -231,6 +241,7 @@ Grazie!`);
   };
   const handleCheckout = async () => {
     if (!product) return;
+    if (isCheckoutLoading) return; // guard against double taps on slow networks
     const sizeData = activeSizes[selectedSize];
     if (!sizeData?.stripe_product_id) {
       toast({
@@ -240,6 +251,8 @@ Grazie!`);
       });
       return;
     }
+    // Must be reserved synchronously, before any await, or mobile browsers block it.
+    const checkoutTarget = prepareCheckoutWindow();
     setIsCheckoutLoading(true);
     try {
       const {
@@ -255,19 +268,19 @@ Grazie!`);
       if (data?.error) throw new Error(data.error);
       if (!data?.url) throw new Error("No checkout URL received");
 
-      // Open Stripe Checkout in new tab (works better in iframe previews)
-      window.open(data.url, '_blank');
+      navigateToCheckout(checkoutTarget, data.url);
     } catch (error) {
+      closeCheckoutWindow(checkoutTarget);
       console.error('Checkout error:', error);
       toast({
         title: "Errore",
         description: error instanceof Error ? error.message : "Impossibile avviare il pagamento. Riprova o contattaci.",
         variant: "destructive"
       });
-    } finally {
       setIsCheckoutLoading(false);
     }
   };
+
   const getCustomEmailLink = () => {
     const subject = `Formato Personalizzato - ${product.name}`;
     const body = `Ciao!\n\nVorrei richiedere un FORMATO PERSONALIZZATO per:\n- Opera: ${product.name}\n- Tecnica: ${product.medium}\n\nPer favore contattatemi per discutere dimensioni e preventivo.\n\nGrazie!`;
