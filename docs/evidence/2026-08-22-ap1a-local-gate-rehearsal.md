@@ -16,7 +16,7 @@ The saved source result was red with 11 findings:
 - 2 discoverability findings: the required article is redirected to the blog, and a broad fallback can replace unrelated addresses with homepage content.
 - 9 transaction-readiness findings: one active artwork has no public address, the same artwork has no visible positive-price size, six visible sizes have no payment connection, and one visible size has a malformed dimension.
 
-Subsequent owner correction: the `2x90x60` value was Donato's deliberate catalogue choice, not a software bug. Donato will revoke that choice directly. In this historical report the raw source result remains 11, but the occurrence must not be counted as a P0 bug. The rule was later narrowed before activation; the current result is routed through the subsequent evidence note above.
+Subsequent owner correction: the `2x90x60` value was Donato's deliberate catalogue choice, not a software bug. Donato later reported changing the exact Lovable value to `2x9060`. In this historical report the raw source result remains 11, but the occurrence must not be counted as a P0 bug. The rule was later narrowed before activation; the current result is routed through the subsequent evidence note above.
 
 The finished local website result was red with 87 discoverability findings:
 

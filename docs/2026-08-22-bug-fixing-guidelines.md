@@ -100,7 +100,7 @@ Subsequent final or provisional priority decisions based on targeted evidence ar
 
 These are P0 candidates because their formulated consequences reach a protected pillar. Trigger presence, router behavior, current data conformance and actual reach remain to be rehearsed. Their presence here does not imply that other P0 conditions are absent.
 
-Owner correction: the current `2x90x60` catalogue value is a deliberate content decision that Donato will revoke, not a software bug. It is not evidence that the malformed-size P0 probe has triggered. A generic detector rejecting an owner-authored format must not convert that content decision into a P0 classification.
+Owner correction: the former `2x90x60` catalogue value was a deliberate content decision, not a software bug. Donato reports that the exact current Lovable value is now `2x9060`. This exact owner-defined label is valid content. For every ordinary two-number dimension, orientation has no product meaning: `NxM` and `MxN` are the same size, for example `120x80` equals `80x120`. The safety checker must preserve the exact displayed label while comparing ordinary sizes without orientation. A generic detector rejecting an owner-authored format must not convert that content decision into a P0 classification.
 
 ### P1 starting probes
 

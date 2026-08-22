@@ -11,6 +11,8 @@ Neither decision is active outside the local worktree.
 
 The false P0 classification for the owner-authored `2x90x60` label is removed. Non-public artwork records and drafts without sellable sizes are kept out of the P0 release result. Repeated identical page-identity text is kept out of P0, while missing or conflicting page identity remains P0.
 
+Subsequent owner update: Donato reports that the exact current Lovable value is now `2x9060`, and that every ordinary two-number orientation is equivalent, for example `120x80` equals `80x120`. This update was not independently fetched from production. It does not change the 73-condition count because the owner-defined label had already been removed from P0.
+
 The final strict reports were generated against committed safety code `0c168bcbdcdda63ae83d30f26438f3919e80a5c4`:
 
 | Result | Availability | Discoverability | Transaction readiness | Total |
@@ -31,7 +33,7 @@ The following controlled examples were observed failing before their minimum imp
 4. Repeated identical title, description and primary-heading text was promoted to P0 before page identity was compared by value.
 5. Non-public and no-sellable-size draft records produced P0 findings before they were separated from public purchase failures.
 
-After the minimum changes, `npm run test:safety` exited `0` with 51 passing examples and no failed, skipped or cancelled example. `npm run typecheck:safety` exited `0`.
+After the minimum changes and the later owner-label characterization, `npm run test:safety` exited `0` with 52 passing examples and no failed, skipped or cancelled example. `npm run typecheck:safety` exited `0`.
 
 Final verification also established:
 

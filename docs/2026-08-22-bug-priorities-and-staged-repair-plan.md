@@ -6,7 +6,7 @@ Status: prepared locally for Donato's review. This document authorizes no repair
 
 The current safety result is still red after removing four false P0 classifications:
 
-- Donato's deliberate `2x90x60` catalogue label is not a software bug.
+- Donato's former `2x90x60` catalogue label was not a software bug. Donato reports that the exact current Lovable value is `2x9060`; it remains owner-defined content, not a software P0. Ordinary two-number dimensions are compared without orientation under the rule in the bug-fixing guidelines.
 - A non-public artwork record without an address is not a current customer-path P0.
 - A draft artwork without a sellable size is not a current customer-path P0.
 - Repeated primary headings with the same words are incorrect, but are not a credible blocking failure.
@@ -316,7 +316,7 @@ The following are not software repairs and must not be silently decided by a dev
 1. Supply or approve the organization logo.
 2. Supply or approve the default social-sharing image.
 3. Remove the extra primary heading from the FAQ content when Stage 6 is approved.
-4. Correct, retire or retain unusual catalogue labels and draft records through the catalogue process.
+4. Correct, retire or retain unusual catalogue labels and draft records through the catalogue process. The current owner-reported `2x9060` label must not be silently rewritten, and ordinary size orientation must not be treated as a different product.
 5. Review any route-specific title or description flagged as weak after the shared duplication is removed.
 6. Confirm the intended publication state of the draft “not for sale yet” record.
 

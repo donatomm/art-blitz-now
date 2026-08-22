@@ -51,6 +51,13 @@ test("does not call a mapped positive composite owner label a software P0", () =
   }]), []);
 });
 
+test("does not call the exact current mapped owner label a software P0", () => {
+  assert.deepEqual(validateCatalog([{
+    ...healthy,
+    sizes: [{ dimensions: "2x9060", price: 80, stripe_product_id: "prod_x" }],
+  }]), []);
+});
+
 test("reports a visible size whose label cannot identify a positive size", () => {
   assert.ok(codesFor({
     ...healthy,
@@ -62,8 +69,8 @@ test("reports one size represented in both orientations", () => {
   assert.ok(codesFor({
     ...healthy,
     sizes: [
-      { dimensions: "40x60", price: 45, stripe_product_id: "prod_x" },
-      { dimensions: "60x40", price: 45, stripe_product_id: "prod_x" },
+      { dimensions: "120x80", price: 45, stripe_product_id: "prod_x" },
+      { dimensions: "80x120", price: 45, stripe_product_id: "prod_x" },
     ],
   }).includes("CATALOG_DUPLICATE_CANONICAL_SIZE"));
 });
