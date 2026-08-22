@@ -26,15 +26,15 @@ test("ignores an inactive artwork", () => {
   }]), []);
 });
 
-test("reports an active artwork without a public address", () => {
-  assert.ok(codesFor({ ...healthy, slug: "   " }).includes("CATALOG_ACTIVE_PRODUCT_NO_SLUG"));
+test("does not promote a non-public artwork record to a software P0", () => {
+  assert.deepEqual(validateCatalog([{ ...healthy, slug: "   " }]), []);
 });
 
-test("reports an active artwork without a positive-price size", () => {
-  assert.ok(codesFor({
+test("does not promote a draft without a positive-price size to a software P0", () => {
+  assert.deepEqual(validateCatalog([{
     ...healthy,
     sizes: [{ dimensions: "40x60", price: 0, stripe_product_id: "" }],
-  }).includes("CATALOG_NO_VISIBLE_SIZE"));
+  }]), []);
 });
 
 test("reports a visible size without a payment mapping", () => {

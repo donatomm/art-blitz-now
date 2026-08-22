@@ -42,16 +42,11 @@ export function validateCatalog(products: ProductInput[]): P0Finding[] {
   const findings: P0Finding[] = [];
   for (const product of products) {
     if (product.is_active === false) continue;
-    if (!text(product.slug)) {
-      findings.push(finding("CATALOG_ACTIVE_PRODUCT_NO_SLUG", product, "Active artwork has no public address."));
-    }
+    if (!text(product.slug)) continue;
 
     const sizes = Array.isArray(product.sizes) ? product.sizes as SizeInput[] : [];
     const visible = sizes.filter((size) => typeof size.price === "number" && size.price > 0);
-    if (visible.length === 0) {
-      findings.push(finding("CATALOG_NO_VISIBLE_SIZE", product, "Active artwork has no visible positive-price size."));
-      continue;
-    }
+    if (visible.length === 0) continue;
 
     const seen = new Set<string>();
     for (const size of visible) {
