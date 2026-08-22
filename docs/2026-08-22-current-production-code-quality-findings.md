@@ -6,7 +6,7 @@ This document records the untouched starting-code result from the current produc
 
 These are 74 checker findings, not 74 confirmed customer-facing bugs. The checker reports a mixture of possible runtime hazards, missing future safeguards, development-only warnings and formatting rules with no runtime effect.
 
-No final P0 to P2 priority is assigned here. Donato's approved framework is recorded in `docs/2026-08-22-bug-fixing-guidelines.md`. Each group instead records the causal question needed for later prioritization: if this is left alone, what specific trigger could turn it into a malfunction, what would be affected, and what evidence or counterexample limits that claim? The listed conditions are starting probes, not an exhaustive safety checklist.
+This inventory itself does not assign final P0 to P2 priority. Donato's approved framework is recorded in `docs/2026-08-22-bug-fixing-guidelines.md`. The subsequent evidence-based decisions and staged disposition are recorded in `docs/2026-08-22-bug-priorities-and-staged-repair-plan.md`. Each group here preserves the causal question used for that later prioritization: if this is left alone, what specific trigger could turn it into a malfunction, what would be affected, and what evidence or counterexample limits that claim? The listed conditions are starting probes, not an exhaustive safety checklist.
 
 Headline evidence:
 

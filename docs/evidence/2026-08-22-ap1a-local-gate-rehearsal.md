@@ -6,6 +6,8 @@ The local safety system worked as intended. It accepted 41 controlled examples, 
 
 This was a local rehearsal only. It is not production proof. Nothing was published, no outside account changed and no customer or payment action occurred.
 
+Subsequent status: this document preserves the original 11 and 87 results as historical evidence. The corrected current definitions and current 8-source plus 65-built-store results are recorded in `docs/evidence/2026-08-22-ap1b-local-repair-door-and-priority-rehearsal.md`. Do not use the historical raw counts as the current priority count.
+
 ## Result
 
 The saved source result was red with 11 findings:
@@ -14,7 +16,7 @@ The saved source result was red with 11 findings:
 - 2 discoverability findings: the required article is redirected to the blog, and a broad fallback can replace unrelated addresses with homepage content.
 - 9 transaction-readiness findings: one active artwork has no public address, the same artwork has no visible positive-price size, six visible sizes have no payment connection, and one visible size has a malformed dimension.
 
-Subsequent owner correction: the `2x90x60` value was Donato's deliberate catalogue choice, not a software bug. Donato will revoke that choice directly. Until the saved catalogue is refreshed, the raw source report remains at 11 findings, but this occurrence must not be counted as a P0 bug. The dimension rule must be reclassified or narrowed before any release-blocking activation so an owner-authored format cannot create a false P0.
+Subsequent owner correction: the `2x90x60` value was Donato's deliberate catalogue choice, not a software bug. Donato will revoke that choice directly. In this historical report the raw source result remains 11, but the occurrence must not be counted as a P0 bug. The rule was later narrowed before activation; the current result is routed through the subsequent evidence note above.
 
 The finished local website result was red with 87 discoverability findings:
 
@@ -25,7 +27,7 @@ The finished local website result was red with 87 discoverability findings:
 
 No expected built page was missing. The finished sitemap contained every expected address exactly once and contained no unexpected address. These local results do not prove that the live store serves the same files or responses.
 
-The duplicate page identity is a proven defect, but it is not by itself a proven explanation for differential indexing. Earlier live evidence found the same duplication on indexed control pages. The missing shared images are unconditional defects and agree with the earlier live observations: the logo address returned homepage HTML and the default social image address returned a missing-file response.
+The duplicate page identity is a proven defect, but this original count alone was not a proven explanation for differential indexing. Earlier live evidence found the same duplication on indexed control pages. Later full-build comparison showed that descriptions conflict on all 32 routes and titles conflict on 31, while repeated primary headings use the same words. The current severity decisions are recorded in the subsequent priority plan. The missing shared images are unconditional defects and agree with the earlier live observations: the logo address returned homepage HTML and the default social image address returned a missing-file response.
 
 Payment-provider and payment-confirmation inspection remained paused. Only missing local payment connections were detected.
 

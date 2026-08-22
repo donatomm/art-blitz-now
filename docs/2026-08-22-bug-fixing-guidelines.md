@@ -88,6 +88,8 @@ The reviewer does not finish by checking every known item. The reviewer asks wha
 
 The conditions below were detected or formulated during AP0 and AP1A analysis. They are dated starting probes, not acceptance criteria, a complete threat model or final classifications.
 
+Subsequent final or provisional priority decisions based on targeted evidence are recorded in `docs/2026-08-22-bug-priorities-and-staged-repair-plan.md`. That later document does not replace the framework above.
+
 ### P0 starting probes
 
 - An old product address can redirect before all product-screen state is established. If the router reuses the same screen, the next render can change state order and block the canonical product page.

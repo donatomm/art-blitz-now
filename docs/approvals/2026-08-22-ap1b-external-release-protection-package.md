@@ -6,7 +6,7 @@ Status: prepared for Donato's review. Nothing in this package has been applied o
 
 The local safety check is prepared and proven unable to publish, send alerts or change an outside account. It is not active.
 
-The direction remains sound: every proposed store change should be reviewed and tested before it can reach customers. However, the prepared check must not be made compulsory unchanged today. It currently reports the store's known search problems as red, and one catalogue rule still misreads Donato's deliberate `2x90x60` entry as a software danger. Turning it on unchanged would block repair proposals as well as unsafe proposals.
+Subsequent local preparation corrected the false `2x90x60` classification and added the two distinct results described below. The repair result admits only a proposal that removes at least one P0 condition and introduces none. The live-store result remains red until every true P0 condition is gone. Neither result has been pushed or activated.
 
 The safest next design has two doors:
 
@@ -42,7 +42,7 @@ Use two distinct results:
 - **Repair safety:** permits a reviewed repair to join the main version only when it creates no new finding and worsens no known finding.
 - **Live-store safety:** permits public publishing only when all three P0 outcomes are green, with no allowance for known P0 failures.
 
-The current local file prepares the second, stricter result. The first result has not yet been written and therefore this outside change is not ready to apply.
+Both results are now written and locally proven. This outside change is still not ready to apply because the one-time bootstrap, named human roles and exact outside screens remain unapproved.
 
 **Benefit**
 
@@ -325,8 +325,8 @@ Reduce retention only after preserving evidence for open incidents. Increasing r
 
 ## 10. Conditions that must be satisfied before applying any setting
 
-1. Narrow or reclassify the unusual-dimension rule so Donato's `2x90x60` entry is not treated as a software P0.
-2. Add and prove the repair-safety result, separate from the absolute live-store result.
+1. Completed locally: Donato's `2x90x60` entry is no longer treated as a software P0.
+2. Completed locally: the repair-safety result is separate from the absolute live-store result and has been rehearsed against preserved reports.
 3. Name a qualified technical reviewer.
 4. Name a release operator and technical incident owner. One person may fill both roles if qualified.
 5. Decide whether current repair work may join `main` while public publication remains frozen.
@@ -340,11 +340,11 @@ Reduce retention only after preserving evidence for open incidents. Increasing r
 
 ### Apply now
 
-Not recommended. The current strict result is red and includes one false software classification. The repair door, named technical roles and complete alert path do not yet exist.
+Not recommended. The strict result is correctly red. The one-time bootstrap, named technical roles, exact outside settings and complete alert path do not yet exist.
 
 ### Change, then apply
 
-Recommended. Approve the two-door direction, correct the dimension rule, prepare the no-regression repair result, name the human roles, recheck the actual account screens and costs, then return with the exact outside settings for a separate yes or no. Public publishing remains unchanged until then.
+Recommended. The dimension rule and two local results are prepared. Name the human roles, recheck the actual account screens and costs, prepare the one-time bootstrap, then return with the exact outside settings for a separate yes or no. Public publishing remains unchanged until then.
 
 ### Postpone
 

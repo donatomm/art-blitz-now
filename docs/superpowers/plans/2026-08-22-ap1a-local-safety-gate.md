@@ -1143,6 +1143,8 @@ rg -n "push:|git push|deploy|repository_dispatch|workflow_run|schedule:" .github
 
 Expected: no matches. Confirm `permissions` grants only `contents: read`.
 
+Subsequent AP1B note: the prepared file now intentionally listens after a change reaches `main` so the absolute live-store check can run. That incoming event is not permission to send changes. The current command-level test confirms that the workflow still contains no command that pushes, publishes, changes data or calls an alert service.
+
 - [x] **Step 3: Write the outside-change approval package**
 
 Create `docs/approvals/2026-08-22-ap1b-external-release-protection-package.md` in plain English. It must list these proposed changes separately and explain benefit, risk, cost, owner and reversal procedure for each:

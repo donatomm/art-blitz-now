@@ -2,7 +2,7 @@
 
 **Last reconciled:** 2026-08-22  
 **Verified GitHub head:** `ffe0b380166bd6b9bae7e3d89711a1078867e41d`  
-**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A is complete in the isolated local work area and has stopped at the outside-change boundary. The full local rehearsal built 83 files from saved data and honestly stopped the snapshot. The raw source gate found 11 conditions: 0 availability, 2 discoverability and 9 transaction readiness. Donato subsequently confirmed that the reported `2x90x60` value is his deliberate catalogue choice, not a software bug, and that he will revoke it directly. That occurrence is a false P0 and the dimension rule must not be activated unchanged. The built-site gate found 87 discoverability conditions: 32 duplicate titles, 32 duplicate descriptions, 21 duplicate primary headings and 2 missing shared images. No expected built route or sitemap address was absent, duplicated or unexpected. Private evidence is restricted to approved fields and private file permissions. The prepared release check was locally validated as read-only and unable to push, publish, roll back or alert. The separate AP1B package recommends changing the proposal before applying it: add a no-regression repair door, preserve an absolute live-store door, correct the false dimension classification and name the missing human technical roles. Missing-payment-connection detection is complete. All further payment inspection is paused by Donato. The untouched production-source code-quality baseline is fully documented. No application repair, live change or outside-setting change has begun.
+**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A is complete in the isolated local work area and remains stopped at the outside-change boundary. The false `2x90x60` P0 classification has been removed. Non-public and draft catalogue records no longer become software P0s merely because they have no public address or sellable size. A repair result and a separate absolute live-store result are prepared locally. The first compatible before-and-after rehearsal admitted a change from 98 to 97 conditions because it removed only the false dimension finding and introduced none. Subsequent evidence refinement moved 21 repeated identical primary headings to P1. The corrected current strict result now contains 73 P0 conditions: 0 availability, 67 discoverability and 6 transaction readiness. The 67 discoverability conditions are 2 routing failures, 31 conflicting titles, 32 conflicting descriptions and 2 missing shared identity images. The six transaction conditions are the already detected missing payment connections; all further payment work remains paused by Donato. The prepared release files remain read-only and unable to push, publish, roll back or alert. The complete bug priorities and staged repair plan is prepared. No application repair, push, review request, deployment, live change or outside-setting change has begun.
 
 ## Read in this order
 
@@ -14,6 +14,8 @@
 6. `docs/2026-08-22-bug-fixing-guidelines.md`: Donato's approved severity framework, non-exhaustive review posture and current condition register.
 7. `docs/2026-08-22-current-production-code-quality-findings.md`: complete 67-error and 7-warning inventory, causal analysis, counterexamples and prioritization unknowns.
 8. `docs/approvals/2026-08-22-ap1b-external-release-protection-package.md`: prepared outside release-protection choices, current watcher cost limit, owners, permissions, reversals and remaining conditions.
+9. `docs/2026-08-22-bug-priorities-and-staged-repair-plan.md`: evidence-based P0, P1 and P2 decisions, content-owner actions, counterexamples and one-root-at-a-time repair stages.
+10. `docs/evidence/2026-08-22-ap1b-local-repair-door-and-priority-rehearsal.md`: test-first proof, compatible 98-to-97 repair rehearsal, corrected 73-condition strict result and judge-change limitation.
 
 Read the handoff completely before acting. Use the action plan for execution detail and open the SEO brief when working on AP2/WS1 or checking its evidence.
 
@@ -29,18 +31,17 @@ A failure of any one is a P0 incident. A change-caused failure is also a P0 regr
 
 ## Exact next task
 
-Stop for Donato's choice in `docs/approvals/2026-08-22-ap1b-external-release-protection-package.md`. The recommended choice is **Change, then apply**.
+Stop for Donato's review of `docs/2026-08-22-bug-priorities-and-staged-repair-plan.md` and the updated `docs/approvals/2026-08-22-ap1b-external-release-protection-package.md`.
 
-If Donato gives that greenlight, execute only the next local preparation milestone:
+If Donato approves the staged plan, execute only the next preparation milestone:
 
-1. narrow or reclassify the unusual-dimension rule so owner-authored `2x90x60` content is not treated as a software P0;
-2. prepare and prove a separate no-regression repair result while preserving the absolute live-store result;
-3. identify the qualified technical reviewer, release operator and technical incident owner that must be named before activation;
-4. prepare the evidence-based bug priorities and staged repair plan under Donato's severity framework, with payment work still paused;
-5. return with the exact outside settings before any execution.
+1. present the exact Stage 0 GitHub and Vercel before-and-after settings, including the one-time safety bootstrap and manual public-domain hold;
+2. identify the qualified technical reviewer, release operator and technical incident owner that must be named before activation;
+3. prepare the Stage 1 route and article tests and implementation plan without changing application code;
+4. return for execution approval.
 
-Do not push, open a review request, change GitHub or Vercel, activate monitoring, create alert accounts, send an alert or repair the application without the next greenlight. Do not start payment, image or unrelated feature work. Do not deploy, request indexing, mutate production data, perform a checkout, purchase or refund, or enable automatic rollback.
+Do not push, open a review request, change GitHub or Vercel, activate monitoring, create alert accounts, send an alert or repair the application without the next greenlight. Keep payment and destructive image work paused. Do not deploy, request indexing, mutate production data, perform a checkout, purchase or refund, or enable automatic rollback.
 
 ## Bootstrap prompt
 
-> Continue the OctoWonders stabilization program from `/Users/donatomm/---OCTOPRO.PRO/OCTOWONDERS/art-blitz-now/docs/handoffs/CURRENT.md`. Follow its reading order and treat the full dated handoff as controlling. AP1A is complete locally and stopped at the outside-change boundary. Read the AP1B outside release-protection package and await Donato's choice. If he approves the recommended change-first path, correct the false unusual-dimension classification, prepare separate repair and live-store safety doors, identify the missing human roles, and prepare the staged bug-priority plan. Keep payment work paused, automatic rollback disabled and release reopening manual. Do not push, publish, repair the application or change any outside account or setting without the next approval.
+> Continue the OctoWonders stabilization program from `/Users/donatomm/---OCTOPRO.PRO/OCTOWONDERS/art-blitz-now/docs/handoffs/CURRENT.md`. Follow its reading order and treat the full dated handoff as controlling. AP1A and the local two-door safety preparation are complete and stopped at the outside-change boundary. Read the bug priorities and staged repair plan plus the updated AP1B outside release-protection package, then await Donato's choice. If he approves the staged plan, present the exact Stage 0 outside settings, identify the missing qualified human roles and prepare the Stage 1 route/article implementation plan without changing application code. Keep payment and destructive image work paused, automatic rollback disabled and release reopening manual. Do not push, publish, repair the application or change any outside account or setting without the next approval.
