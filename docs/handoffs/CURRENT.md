@@ -2,7 +2,7 @@
 
 **Last reconciled:** 2026-08-22  
 **Verified GitHub head:** `ffe0b380166bd6b9bae7e3d89711a1078867e41d`  
-**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A milestone 1 is complete in the isolated local work area. The untouched production-source code-quality baseline is fully documented. No application repair, live change or outside-setting change has begun.
+**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A milestones 1 and 2 are complete in the isolated local work area. Missing-payment-connection detection is complete. All further payment inspection is paused by Donato. The untouched production-source code-quality baseline is fully documented. No application repair, live change or outside-setting change has begun.
 
 ## Read in this order
 
@@ -30,12 +30,13 @@ A failure of any one is a P0 incident. A change-caused failure is also a P0 regr
 
 Execute only AP1A from `docs/superpowers/plans/2026-08-22-ap1a-local-safety-gate.md`:
 
-1. continue with the catalogue, visible-size, price and payment-mapping safety checker using failing examples first;
-2. complete the remaining local safety checkers and run them against the saved current-store version;
-3. preserve the honest red result;
-4. prepare, but do not activate, the release check;
-5. write the separate plain-English AP1B outside-change package;
-6. stop before pushing, publishing or changing any outside account or setting.
+1. skip the paused payment-confirmation source guard;
+2. continue with the expected public-page contract using failing examples first;
+3. complete the remaining non-payment local safety checkers and run them against the saved current-store version;
+4. preserve the honest red result;
+5. prepare, but do not activate, the release check;
+6. write the separate plain-English AP1B outside-change package;
+7. stop before pushing, publishing or changing any outside account or setting.
 
 Do not start the blog, sitemap, payment, image or other application repairs. Do not deploy, request indexing, mutate production data, perform a checkout, purchase or refund, send an alert, activate monitoring or enable automatic rollback.
 

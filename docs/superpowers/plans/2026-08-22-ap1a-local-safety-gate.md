@@ -27,6 +27,10 @@ This first block adds a safety inspection beside the store. It does not change w
 - Local and Preview results are rehearsal only, never production proof.
 - Each task follows red, green, review: write a failing test, observe failure, add the smallest implementation, observe the pass, review, then commit locally.
 
+## Subsequent payment-scope decision
+
+Donato approved only the missing-payment-connection detection completed in Task 2. Task 3 and all further payment inspection, provider validation and payment rehearsal are paused. Do not implement Task 3 unless Donato separately reopens payment scope. Continue AP1A with Task 4 and the remaining non-payment safety work.
+
 ## File structure
 
 | Path | Responsibility |
