@@ -98,6 +98,8 @@ The conditions below were detected or formulated during AP0 and AP1A analysis. T
 
 These are P0 candidates because their formulated consequences reach a protected pillar. Trigger presence, router behavior, current data conformance and actual reach remain to be rehearsed. Their presence here does not imply that other P0 conditions are absent.
 
+Owner correction: the current `2x90x60` catalogue value is a deliberate content decision that Donato will revoke, not a software bug. It is not evidence that the malformed-size P0 probe has triggered. A generic detector rejecting an owner-authored format must not convert that content decision into a P0 classification.
+
 ### P1 starting probes
 
 - Administrator image operations can mishandle an unusually shaped error and hide the original explanation while leaving the customer shop operational.

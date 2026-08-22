@@ -14,6 +14,8 @@ The saved source result was red with 11 findings:
 - 2 discoverability findings: the required article is redirected to the blog, and a broad fallback can replace unrelated addresses with homepage content.
 - 9 transaction-readiness findings: one active artwork has no public address, the same artwork has no visible positive-price size, six visible sizes have no payment connection, and one visible size has a malformed dimension.
 
+Subsequent owner correction: the `2x90x60` value was Donato's deliberate catalogue choice, not a software bug. Donato will revoke that choice directly. Until the saved catalogue is refreshed, the raw source report remains at 11 findings, but this occurrence must not be counted as a P0 bug. The dimension rule must be reclassified or narrowed before any release-blocking activation so an owner-authored format cannot create a false P0.
+
 The finished local website result was red with 87 discoverability findings:
 
 - 32 of 32 intended pages contain two document titles.

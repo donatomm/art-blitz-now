@@ -51,6 +51,10 @@ Task 7 is complete. The report writer keeps only approved evidence fields, redac
 
 Task 8 is complete. All 41 controlled examples passed and the safety-file agreement check exited `0`. The saved-data build exited `0` and produced 83 files without refreshing catalogue or page data. The source gate exited `1` with the same 11 red findings. The artifact gate exited `1` with 87 discoverability findings: 32 duplicate title conditions, 32 duplicate description conditions, 21 duplicate primary-heading conditions and 2 missing shared images. No expected built route or sitemap address was missing, duplicated or unexpected. The private evidence scan found none of the tested contact, card or secret patterns. Build warnings were recorded separately in `docs/evidence/2026-08-22-ap1a-local-gate-rehearsal.md`; none was repaired or automatically classified by appearance alone. Local rehearsal is not production proof.
 
+## Subsequent dimension decision
+
+Donato confirmed that the current `2x90x60` value is his deliberate catalogue choice, not a software bug, and that he will revoke it directly. The saved rehearsal evidence remains an accurate record of what the checker reported, but this occurrence is not a P0 bug. Do not activate the dimension rule as a release blocker until it is reclassified or narrowed so owner-authored formats cannot create a false P0. Do not change the catalogue value from this worktree.
+
 ## File structure
 
 | Path | Responsibility |
