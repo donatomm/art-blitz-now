@@ -31,6 +31,10 @@ This first block adds a safety inspection beside the store. It does not change w
 
 Donato approved only the missing-payment-connection detection completed in Task 2. Task 3 and all further payment inspection, provider validation and payment rehearsal are paused. Do not implement Task 3 unless Donato separately reopens payment scope. Continue AP1A with Task 4 and the remaining non-payment safety work.
 
+## Subsequent route-contract correction
+
+Task 4 review found that the proposed shared address pattern would accept product addresses containing `/` and CMS page addresses deeper than the router supports. The implemented contract allows one segment for an artwork and at most two segments for a CMS page. Controlled broken examples cover both unreachable-address conditions. This changes only the local safety checker, not store routing.
+
 ## File structure
 
 | Path | Responsibility |
