@@ -4,7 +4,7 @@ import { normalizeDimension } from "@/hooks/useDefaultPrices";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingCart, Loader2, ChevronDown } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, ShoppingCart, Loader2, ChevronDown } from "lucide-react";
 import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
 import {
   Select,
