@@ -16,7 +16,7 @@ This first block adds a safety inspection beside the store. It does not change w
 
 ## Global constraints
 
-- Work only in the local branch `codex/ap1-safety-foundation`.
+- Keep the clean root clone on `codex/ap1-safety-foundation`. Perform AP1A in the isolated linked worktree branch `codex/ap1a-local-safety-gate`, which must descend from it.
 - Do not push, open a pull request, merge, deploy or change any outside account or setting.
 - Do not run `npm run prebuild:products`; use the committed data snapshot.
 - Do not request indexing, perform checkout, make a payment, issue a refund or change production data.
@@ -92,11 +92,11 @@ Donato confirmed that the current `2x90x60` value is his deliberate catalogue ch
 - Produces: `canonicalDimension(input: unknown): string | null`.
 - Both `40x60` and `60×40` become `40x60`; composite and malformed values return `null`.
 
-- [ ] **Step 1: Install only the locked packages**
+- [x] **Step 1: Install only the locked packages**
 
 Run `npm ci`. Expected: exit `0`; `package-lock.json` remains unchanged.
 
-- [ ] **Step 2: Add strict checking for the safety folder**
+- [x] **Step 2: Add strict checking for the safety folder**
 
 Create `safety/tsconfig.json`:
 
@@ -116,7 +116,7 @@ Create `safety/tsconfig.json`:
 }
 ```
 
-- [ ] **Step 3: Write the failing size tests**
+- [x] **Step 3: Write the failing size tests**
 
 Create `safety/p0/dimensions.test.ts`:
 
@@ -138,11 +138,11 @@ test("rejects empty, zero, malformed and composite dimensions", () => {
 });
 ```
 
-- [ ] **Step 4: Observe the missing implementation**
+- [x] **Step 4: Observe the missing implementation**
 
 Run `npx tsx --test safety/p0/dimensions.test.ts`. Expected: fail because `./dimensions` does not exist.
 
-- [ ] **Step 5: Add the shared shapes**
+- [x] **Step 5: Add the shared shapes**
 
 Create `safety/p0/types.ts`:
 
@@ -169,7 +169,7 @@ export interface GateReport {
 }
 ```
 
-- [ ] **Step 6: Add the size parser**
+- [x] **Step 6: Add the size parser**
 
 Create `safety/p0/dimensions.ts`:
 
@@ -187,7 +187,7 @@ export function canonicalDimension(input: unknown): string | null {
 }
 ```
 
-- [ ] **Step 7: Add reusable commands**
+- [x] **Step 7: Add reusable commands**
 
 Add to `package.json` scripts:
 
@@ -196,7 +196,7 @@ Add to `package.json` scripts:
 "typecheck:safety": "tsc -p safety/tsconfig.json"
 ```
 
-- [ ] **Step 8: Verify and commit locally**
+- [x] **Step 8: Verify and commit locally**
 
 Run `npm run test:safety` and `npm run typecheck:safety`. Expected: both exit `0`; two tests pass.
 
@@ -219,7 +219,7 @@ git commit -m "test: define P0 findings and canonical sizes"
 - Consumes: `P0Finding`, `canonicalDimension`.
 - Produces: `validateCatalog(products: ProductInput[]): P0Finding[]`.
 
-- [ ] **Step 1: Write failing healthy and broken examples**
+- [x] **Step 1: Write failing healthy and broken examples**
 
 Create `safety/p0/catalog.test.ts`:
 
@@ -255,11 +255,11 @@ test("reports lifecycle, size, mapping and orientation failures", () => {
 });
 ```
 
-- [ ] **Step 2: Observe the missing implementation**
+- [x] **Step 2: Observe the missing implementation**
 
 Run `npx tsx --test safety/p0/catalog.test.ts`. Expected: fail because `./catalog` does not exist.
 
-- [ ] **Step 3: Implement the catalogue checker**
+- [x] **Step 3: Implement the catalogue checker**
 
 Create `safety/p0/catalog.ts`:
 
@@ -311,7 +311,7 @@ export function validateCatalog(products: ProductInput[]): P0Finding[] {
 }
 ```
 
-- [ ] **Step 4: Verify and commit locally**
+- [x] **Step 4: Verify and commit locally**
 
 Run `npm run test:safety` and `npm run typecheck:safety`. Expected: both exit `0`; four tests pass.
 
@@ -412,7 +412,7 @@ git commit -m "test: require verified payment success"
 - Produces: `buildRouteContract(products, pages): RouteContractResult`.
 - Later built-site checks consume `RouteContractResult.routes`.
 
-- [ ] **Step 1: Write failing page-list tests**
+- [x] **Step 1: Write failing page-list tests**
 
 Create `safety/p0/routes.test.ts`:
 
@@ -446,11 +446,11 @@ test("reports duplicate, malformed and missing required routes", () => {
 });
 ```
 
-- [ ] **Step 2: Observe the missing implementation**
+- [x] **Step 2: Observe the missing implementation**
 
 Run `npx tsx --test safety/p0/routes.test.ts`. Expected: fail because `./routes` does not exist.
 
-- [ ] **Step 3: Implement the route contract**
+- [x] **Step 3: Implement the route contract**
 
 Create `safety/p0/routes.ts`:
 
@@ -513,7 +513,7 @@ export function buildRouteContract(products: ProductInput[], pages: PageInput[])
 }
 ```
 
-- [ ] **Step 4: Verify and commit locally**
+- [x] **Step 4: Verify and commit locally**
 
 Run `npm run test:safety` and `npm run typecheck:safety`. Expected: both exit `0`; eight tests pass.
 
@@ -1062,7 +1062,7 @@ git commit -m "docs: record AP1A local gate rehearsal"
 - Produces a prepared release check and a separate plain-English approval package.
 - Neither file is pushed or activated in AP1A.
 
-- [ ] **Step 1: Create the prepared release check**
+- [x] **Step 1: Create the prepared release check**
 
 Create `.github/workflows/p0-safety.yml`:
 
@@ -1133,7 +1133,7 @@ jobs:
 
 This prepared file is limited to reviewed proposals and manual rehearsal. It cannot push, publish, change data or call an alert service.
 
-- [ ] **Step 2: Validate the prepared file locally**
+- [x] **Step 2: Validate the prepared file locally**
 
 Run:
 
@@ -1143,7 +1143,7 @@ rg -n "push:|git push|deploy|repository_dispatch|workflow_run|schedule:" .github
 
 Expected: no matches. Confirm `permissions` grants only `contents: read`.
 
-- [ ] **Step 3: Write the outside-change approval package**
+- [x] **Step 3: Write the outside-change approval package**
 
 Create `docs/approvals/2026-08-22-ap1b-external-release-protection-package.md` in plain English. It must list these proposed changes separately and explain benefit, risk, cost, owner and reversal procedure for each:
 
@@ -1158,7 +1158,7 @@ Create `docs/approvals/2026-08-22-ap1b-external-release-protection-package.md` i
 
 The package must state clearly that none of these outside changes has been executed.
 
-- [ ] **Step 4: Run final local checks**
+- [x] **Step 4: Run final local checks**
 
 Run:
 
@@ -1171,14 +1171,14 @@ git status --short
 
 Expected: unit and agreement checks exit `0`; formatting exits `0`; only the prepared release check and approval package are uncommitted.
 
-- [ ] **Step 5: Commit the preparation locally**
+- [x] **Step 5: Commit the preparation locally**
 
 ```bash
 git add .github/workflows/p0-safety.yml docs/approvals/2026-08-22-ap1b-external-release-protection-package.md
 git commit -m "ci: prepare P0 release safety approval"
 ```
 
-- [ ] **Step 6: Stop at the outside-change boundary**
+- [x] **Step 6: Stop at the outside-change boundary**
 
 Do not push the branch, open a pull request or change GitHub rules, Vercel publishing, monitoring, DNS, Meta WhatsApp, Resend, Supabase or Stripe. Present Donato with the AP1A result and AP1B approval package.
 
@@ -1186,7 +1186,7 @@ Do not push the branch, open a pull request or change GitHub rules, Vercel publi
 
 AP1A is complete only when:
 
-1. The clean local clone remains on `codex/ap1-safety-foundation` and descends from the proven live commit.
+1. The clean root clone remains on `codex/ap1-safety-foundation`; the isolated AP1A worktree branch `codex/ap1a-local-safety-gate` descends from it and from the proven live commit.
 2. Safety unit and agreement checks pass.
 3. Current source and built-site gates report known current problems as red instead of hiding them.
 4. Evidence contains no private contact, secret or customer/payment data.
