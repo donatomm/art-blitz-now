@@ -1,6 +1,6 @@
 # AP1B local repair-door and priority rehearsal
 
-**Subsequent evidence:** this document records a local saved-copy rehearsal. After the public build created on 22 August 2026 at 23:44, the exact label `2x9060` was independently visible and the public discoverability count changed. The current public evidence is `docs/evidence/2026-08-23-live-rebaseline-after-lovable-catalogue-change.md`. Do not use the 73 below as an exact current-production total.
+**Subsequent evidence:** this document records a local saved-copy rehearsal. The exact label `2x9060` was independently visible in the later 23:44 public build, but another public application build appeared at 00:30 on 23 August. Read `docs/evidence/2026-08-23-live-rebaseline-after-lovable-catalogue-change.md` and then `docs/evidence/2026-08-23-stage0-stop-new-lovable-public-build.md`. Do not use the 73 below as an exact current-production total.
 
 ## Result
 

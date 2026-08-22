@@ -2,7 +2,7 @@
 
 Status: prepared locally for Donato's review. This document authorizes no repair, push, publication, outside setting, production-data change, indexing request, transaction, refund or rollback.
 
-**23 August evidence update:** the 73-condition result below is the last complete local saved-copy result. It is not the exact total for the public build created on 22 August at 23:44. The subsequent read-only public rebaseline found 64 discoverability conditions: two route failures, 30 conflicting titles, 30 conflicting descriptions and two missing or invalid shared identity images. Payment remained paused, so the six last-known missing payment connections were not rechecked and no new combined public total is claimed. See `docs/evidence/2026-08-23-live-rebaseline-after-lovable-catalogue-change.md`.
+**23 August evidence update:** the 73-condition result below is the last complete local saved-copy result. The read-only public rebaseline of the build created on 22 August at 23:44 found 64 discoverability conditions: two route failures, 30 conflicting titles, 30 conflicting descriptions and two missing or invalid shared identity images. A newer public build appeared at 00:30 on 23 August and includes an application change, so 64 is now historical too. Payment remained paused, and no current combined public total is claimed. See `docs/evidence/2026-08-23-live-rebaseline-after-lovable-catalogue-change.md` and `docs/evidence/2026-08-23-stage0-stop-new-lovable-public-build.md`.
 
 ## Quick orientation
 

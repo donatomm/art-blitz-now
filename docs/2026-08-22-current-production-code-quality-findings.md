@@ -1,6 +1,6 @@
 # Current Production Code-Quality Findings
 
-**23 August provenance note:** GitHub `main` is now `9760359b429fe34c979bdf3c9af420b9c42216bd`, but the GitHub comparison from the source version below found no application-code change, only two Lovable planning files. The 67-error and 7-warning application baseline therefore still applies to the current Git application source. The public build itself was regenerated with live catalogue data and is covered separately by `docs/evidence/2026-08-23-live-rebaseline-after-lovable-catalogue-change.md`.
+**23 August provenance note:** the 67-error and 7-warning result is exact for the application source measured below. It initially remained applicable when GitHub changed only Lovable planning files. GitHub `main` later moved to `d3466b7e75649f4dc8d834cc9ab2e36d9b96d124`, which changes `src/pages/Product.tsx`. The 67 and 7 figures must therefore be treated as the previous baseline until the newer source is rechecked. See `docs/evidence/2026-08-23-stage0-stop-new-lovable-public-build.md`.
 
 ## Quick orientation
 

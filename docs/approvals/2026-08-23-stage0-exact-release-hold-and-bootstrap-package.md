@@ -1,6 +1,6 @@
 # Stage 0 exact release hold and safety-bootstrap approval package
 
-**Status:** prepared for Donato's approval. Nothing in this package has been applied.
+**Status:** approved in principle by Donato under the two-person model, but execution stopped before the first outside change. A newer public build appeared after this package's exact starting point. Do not execute the values below until the rebaseline and package update described in `docs/evidence/2026-08-23-stage0-stop-new-lovable-public-build.md` are complete.
 
 **Public starting point to preserve:** the build created on 22 August 2026 at 23:44 Rome time.
 
@@ -19,7 +19,7 @@ The recommended first move is a temporary hold, not a repair:
 3. tell Vercel that only that held branch may create future public builds;
 4. place the prepared safety checks on `main` without publishing them;
 5. protect both branches after the check names have appeared once;
-6. keep the public branch unchanged until Stage 1 repairs have independent review and Donato separately approves publication.
+6. keep the public branch unchanged until Stage 1 repairs pass every automated safety result, Codex completes a separate evidence review, and Donato separately approves publication.
 
 No store repair belongs in this bootstrap. Payment remains out of scope.
 
@@ -66,37 +66,44 @@ Vercel's signed-in settings page did not load reliably enough to claim a direct 
 
 The proposed value below is exact, but it has not been seen or saved on that screen. If the screen does not expose the documented field exactly as expected, execution must stop before any change.
 
-## 2. People required before activation
+## 2. Approved two-person operating model
 
 ### Donato
 
-Role: business owner and manual publication approver.
+Role: business owner, accountable release owner, incident decision owner and manual publication approver.
 
-Donato decides when the held public branch may move. He receives the plain-English before-and-after evidence. He is not expected to judge code or investigate an incident alone.
+Donato decides when the held public branch may move. He receives the plain-English before-and-after evidence and authorizes each outside change separately. He is not required to inspect code unaided; Codex must translate every result into customer, search and business consequences.
 
-### One named senior engineer
+### Codex
 
-This person is required before the protections are activated. The role is currently unfilled.
+Role: technical preparer, evidence checker and technical adviser.
 
-The person must be able to:
+Codex must:
 
-- independently review GitHub and Vercel release-control changes;
-- understand the current React, Vite and prebuilt-page setup;
-- review route, search and build-safety evidence;
-- respond during an approved release or incident;
-- avoid approving their own latest change.
+- prepare the smallest proposed change;
+- run the safety checks and preserve the evidence;
+- perform a separate review pass after preparation;
+- explain the result to Donato without requiring him to read code;
+- stop when the evidence is incomplete, contradictory or outside the approved scope.
 
-Recommended assignment for the initial phase:
+Codex cannot be a human approver, cannot provide organizational independence from its own work and cannot own the business decision.
 
-- technical reviewer;
-- person who performs an approved public release;
-- technical incident owner.
+### Accepted limitation and compensating safeguards
 
-If that engineer authors a change, a second qualified person must approve that particular change. Codex may prepare changes and evidence, but cannot be the independent approver or the accountable incident owner.
+Donato decided on 23 August 2026 that no senior engineer will be assigned. The operating team is Donato, a skilled product manager, and Codex. This is weaker than independent human technical review and must not be described as equivalent.
 
-No Stripe, payment, Supabase-data, billing or account-owner permission is needed for this Stage 0 role.
+The compensating safeguards are:
 
-**Blocking input before activation:** Donato must name the senior engineer and confirm that person's availability. No name is invented in this package.
+- zero automatic publication from the working branch;
+- every outside setting shown to Donato before execution;
+- one outside change at a time, followed by a public-store check and a pause;
+- all automated safety results required before a public release;
+- a separate Codex review pass after Codex prepares a change;
+- Donato's recorded manual publication decision;
+- automatic rollback disabled and release reopening manual;
+- mandatory outside specialist help if evidence is ambiguous or the work reaches payments, stored customer data, security credentials, irreversible actions or an unfamiliar platform failure.
+
+No Stripe, payment, Supabase-data, billing or additional account-owner permission is needed for this Stage 0 model.
 
 ## 3. Exact change 1: create the held public branch
 
@@ -198,8 +205,8 @@ This is a GitHub version change, not an application repair. It must happen only 
 1. bring the local safety work onto the current GitHub starting version without changing the application;
 2. adjust the safety-run trigger so `P0 Repair Admission` runs only for repair requests into `main`, while `P0 Live Store Safety` also runs for requests into and changes to `production`;
 3. prove that trigger behavior with controlled examples before joining it;
-4. have the named senior engineer review the one-time bootstrap;
-5. ask Donato to approve the bootstrap review request;
+4. have Codex perform a separate evidence review of the one-time bootstrap and state explicitly that it is not independent human review;
+5. show Donato the complete changed-file list and plain-English consequences, then obtain his recorded approval;
 6. join only the safety files and documents to `main`;
 7. allow the two prepared results to run once so GitHub records their exact names.
 
@@ -224,7 +231,8 @@ The trigger adjustment is mandatory. The current local preparation listens only 
 Stop before joining the bootstrap if:
 
 - the application comparison contains an application, route, page, sitemap, image, catalogue or payment change;
-- no independent senior engineer has reviewed it;
+- Codex has not completed and documented the separate evidence-review pass;
+- Donato has not approved the complete changed-file list and plain-English consequences;
 - `main` still has automatic public authority;
 - the public domains have moved from the preserved 23:44 build;
 - the safety tests or saved-data build do not reproduce their documented results.
@@ -239,9 +247,9 @@ Create an active GitHub ruleset named exactly `OctoWonders main repair protectio
 | --- | --- | --- |
 | Target branch | none | branch named exactly `main` |
 | Changes must use a review request | off | on |
-| Required approvals | 0 | 1 |
-| Remove old approvals after new changes | off | on |
-| Latest change needs an independent approval | off | on |
+| Required GitHub approvals | 0 | 0, because Donato is the only human operator |
+| Remove old approvals after new changes | off | off, because no GitHub approval is required |
+| Latest change needs an independent approval | off | off, because no independent human is available |
 | All review conversations resolved | off | on |
 | Required safety result | none | `P0 Repair Admission` |
 | Result must use the latest `main` version | off | on |
@@ -257,7 +265,7 @@ No ordinary person or automatic routine can silently replace the working version
 
 ### Risk
 
-An incorrect result name or unavailable reviewer can stop all work. Confirm the exact result appears in GitHub and the named engineer can review before saving the rule.
+An incorrect result name can stop all work. Confirm the exact result appears in GitHub before saving the rule. The absence of a required human approval is an accepted limitation, not proof that the change has been independently reviewed.
 
 ### Reversal
 
@@ -273,9 +281,9 @@ Create an active GitHub ruleset named exactly `OctoWonders public release protec
 | --- | --- | --- |
 | Target branch | none | branch named exactly `production` |
 | Changes must use a review request | off | on |
-| Required approvals | 0 | 1 |
-| Remove old approvals after new changes | off | on |
-| Latest change needs an independent approval | off | on |
+| Required GitHub approvals | 0 | 0, because Donato is the only human operator |
+| Remove old approvals after new changes | off | off, because no GitHub approval is required |
+| Latest change needs an independent approval | off | off, because no independent human is available |
 | All review conversations resolved | off | on |
 | Required safety result | none | `P0 Live Store Safety` |
 | Result must use the latest public-branch version | off | on |
@@ -283,11 +291,11 @@ Create an active GitHub ruleset named exactly `OctoWonders public release protec
 | Delete branch | allowed by absence of rule | blocked |
 | Routine bypass | unrestricted by rule | no routine bypass entry |
 
-Donato's manual publication approval is an additional human decision. GitHub's one approval does not replace it.
+Donato's recorded manual publication approval is the human decision. GitHub cannot independently enforce this part of the two-person process, so the strict safety result and held public branch remain essential.
 
 ### Benefit
 
-The public branch cannot move while any P0 condition remains or without independent review and Donato's separate approval.
+The public branch cannot move while any P0 condition remains. The operating procedure also requires Codex's separate evidence-review pass and Donato's recorded approval, although these are not independent human review.
 
 ### Risk
 
@@ -295,7 +303,7 @@ The present store has true P0 search conditions, so this branch will intentional
 
 ### Reversal
 
-Do not disable the rule merely to make a red result green. Reversal requires Donato's recorded approval, the senior engineer's incident assessment and a documented replacement or accepted exposure.
+Do not disable the rule merely to make a red result green. Reversal requires Donato's recorded approval, Codex's documented incident evidence and a documented replacement or accepted exposure. If the evidence is ambiguous, obtain outside specialist help before reversal.
 
 ## 8. Settings deliberately left unchanged
 
@@ -347,11 +355,11 @@ The following are never automatic rollback cases: an outside-provider outage, a 
 
 Each numbered item is a separate approval boundary during execution. Before performing it, the exact screen, current value and proposed value must be shown to Donato again.
 
-1. Name and confirm the senior engineer. Pause.
+1. Confirm the Donato-plus-Codex operating model and its accepted lack of independent human technical review. Completed on 23 August 2026. Pause.
 2. Reconfirm the public build, domains and current GitHub version. Pause if anything differs.
 3. Create `production` at `9760359b...`. Recheck public domains and pages. Pause.
 4. Change only Vercel Branch Tracking from `main` to `production`. Recheck public domains and pages. Pause.
-5. Reconcile and independently review the safety-only bootstrap. Show the complete changed-file list. Pause.
+5. Reconcile the safety-only bootstrap, then have Codex perform a separate evidence-review pass. Show Donato the complete changed-file list and explicitly state that this is not independent human review. Pause.
 6. Join the safety bootstrap to `main`. Confirm it made only a non-public preview and register the two result names. Pause.
 7. Create `OctoWonders main repair protection` with the exact values in Section 6. Prove a direct change is blocked. Pause.
 8. Create `OctoWonders public release protection` with the exact values in Section 7. Prove the branch remains frozen. Pause.
@@ -368,12 +376,13 @@ Stop immediately and do not improvise if:
 - the bootstrap contains an application or catalogue change;
 - the two exact safety-result names do not appear;
 - a required protection is unavailable on the current account plan;
-- no qualified independent reviewer is named;
+- Codex cannot produce complete, consistent evidence that Donato can evaluate in plain English;
+- the change reaches payments, stored customer data, security credentials, irreversible actions or an unfamiliar platform failure without outside specialist help;
 - a secret, payment action or production-data change becomes necessary.
 
 ## 12. Approval requested
 
-Recommended decision: approve Stage 0 execution only after naming the senior engineer.
+Donato approved Stage 0 execution on 23 August 2026 under the two-person operating model in Section 2. No outside change is approved silently: each exact before-and-after setting must still be presented immediately before execution.
 
 Approval of this package would authorize only the nine controlled steps in Section 10. It would not authorize an application repair, payment work, a public release, monitoring activation, alerts, indexing, automatic rollback or release reopening.
 

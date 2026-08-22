@@ -1,5 +1,7 @@
 # Live rebaseline after the Lovable catalogue change
 
+**Subsequent public change:** this is exact evidence for the build created at 23:44. A newer build, `dpl_6s4aHvu6dSYRLw1jvQZ88YcgPRt2`, became public at 00:30 on 23 August and includes an application change. The 64-condition count below is therefore historical until the newer build is rebaselined. See `docs/evidence/2026-08-23-stage0-stop-new-lovable-public-build.md`.
+
 **Evidence time:** 23 August 2026, 00:00 Rome time
 
 **Public build being checked:** 22 August 2026, 23:44 Rome time
@@ -8,11 +10,11 @@
 
 ## Quick orientation
 
-The current public build is not the earlier build used by the local AP1A rehearsal. Lovable's catalogue change caused a new GitHub version and two new Vercel builds. The OctoWonders public domains now point to the build created at 23:44 Rome time.
+The build checked here was not the earlier build used by the local AP1A rehearsal. Lovable's catalogue change caused a new GitHub version and two new Vercel builds. At this evidence time, the OctoWonders public domains pointed to the build created at 23:44 Rome time.
 
 The current public shop remained reachable in this check. The exact owner label `2x9060` was visible on the checked product page. The known search problems remained present. The old local count of 73 P0 conditions is therefore historical evidence, not a current-production total.
 
-## 1. Exact current public build
+## 1. Exact public build checked
 
 | Item | Read-only evidence |
 | --- | --- |
