@@ -39,6 +39,10 @@ Task 4 review found that the proposed shared address pattern would accept produc
 
 Task 5 is complete. The local checker reports both hosting contradictions present in the saved current-store version: the required article is redirected to the blog, and a broad fallback can substitute homepage HTML for unrelated addresses. The checker does not change or repair the hosting rules. Its result is local evidence, not a live-production test.
 
+## Subsequent built-site-check result
+
+Task 6 is complete against controlled healthy and broken folders. The implementation detects missing built pages; missing, duplicate and unexpected sitemap entries; duplicate or conflicting page identity; indexing exclusion; homepage HTML at an image address; truncated shared images; and missing shared images. The planned image check was strengthened so that a correct opening signature alone cannot make a truncated file pass. The worktree has no saved `dist` folder, so the current-store artifact has not yet been run through this checker. That run remains in the later approved build-and-gate task. This checker changes no page, sitemap or image.
+
 ## File structure
 
 | Path | Responsibility |
@@ -617,7 +621,7 @@ git commit -m "test: detect false homepage routing"
 - Produces: `inspectHtml(html, route): P0Finding[]`.
 - Produces: `validateArtifact(distDir, routes): P0Finding[]`.
 
-- [ ] **Step 1: Write failing page-identity tests**
+- [x] **Step 1: Write failing page-identity tests**
 
 Create `safety/p0/html.test.ts`:
 
@@ -640,11 +644,11 @@ test("reports duplicate and conflicting identity", () => {
 });
 ```
 
-- [ ] **Step 2: Observe the missing implementation**
+- [x] **Step 2: Observe the missing implementation**
 
 Run `npx tsx --test safety/p0/html.test.ts`. Expected: fail because `./html` does not exist.
 
-- [ ] **Step 3: Implement page inspection**
+- [x] **Step 3: Implement page inspection**
 
 Create `safety/p0/html.ts`:
 
@@ -688,7 +692,7 @@ export function inspectHtml(html: string, route: RouteContractEntry): P0Finding[
 }
 ```
 
-- [ ] **Step 4: Write failing built-folder tests**
+- [x] **Step 4: Write failing built-folder tests**
 
 Create `safety/p0/artifact.test.ts`:
 
@@ -728,11 +732,11 @@ test("reports missing pages, sitemap drift and invalid shared images", () => {
 });
 ```
 
-- [ ] **Step 5: Observe the missing artifact implementation**
+- [x] **Step 5: Observe the missing artifact implementation**
 
 Run `npx tsx --test safety/p0/artifact.test.ts`. Expected: fail because `./artifact` does not exist.
 
-- [ ] **Step 6: Implement the built-site checker**
+- [x] **Step 6: Implement the built-site checker**
 
 Create `safety/p0/artifact.ts`:
 
@@ -794,9 +798,9 @@ export function validateArtifact(distDir: string, routes: RouteContractEntry[]):
 }
 ```
 
-- [ ] **Step 7: Verify and commit locally**
+- [x] **Step 7: Verify and commit locally**
 
-Run `npm run test:safety` and `npm run typecheck:safety`. Expected: both exit `0`; fourteen tests pass.
+Run `npm run test:safety` and `npm run typecheck:safety`. Observed: both exited `0`; the current set of 37 safety examples passed.
 
 ```bash
 git add safety/p0/html.ts safety/p0/html.test.ts safety/p0/artifact.ts safety/p0/artifact.test.ts
