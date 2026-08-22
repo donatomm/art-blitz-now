@@ -1,5 +1,7 @@
 # AP1B outside release-protection approval package
 
+**Subsequent package:** the exact current settings, the 22 August 23:44 public build and the safe branch-hold bootstrap are now in `docs/approvals/2026-08-23-stage0-exact-release-hold-and-bootstrap-package.md`. That later package controls Stage 0 execution. This document remains the design rationale and cost/permission record.
+
 Status: prepared for Donato's review. Nothing in this package has been applied outside the local working copy.
 
 ## Quick orientation

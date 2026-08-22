@@ -1,5 +1,7 @@
 # Current Production Code-Quality Findings
 
+**23 August provenance note:** GitHub `main` is now `9760359b429fe34c979bdf3c9af420b9c42216bd`, but the GitHub comparison from the source version below found no application-code change, only two Lovable planning files. The 67-error and 7-warning application baseline therefore still applies to the current Git application source. The public build itself was regenerated with live catalogue data and is covered separately by `docs/evidence/2026-08-23-live-rebaseline-after-lovable-catalogue-change.md`.
+
 ## Quick orientation
 
 This document records the untouched starting-code result from the current production source: 67 errors and 7 warnings reported by the code-quality checker across 29 files.

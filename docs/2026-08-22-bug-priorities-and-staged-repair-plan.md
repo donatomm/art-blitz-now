@@ -2,18 +2,20 @@
 
 Status: prepared locally for Donato's review. This document authorizes no repair, push, publication, outside setting, production-data change, indexing request, transaction, refund or rollback.
 
+**23 August evidence update:** the 73-condition result below is the last complete local saved-copy result. It is not the exact total for the public build created on 22 August at 23:44. The subsequent read-only public rebaseline found 64 discoverability conditions: two route failures, 30 conflicting titles, 30 conflicting descriptions and two missing or invalid shared identity images. Payment remained paused, so the six last-known missing payment connections were not rechecked and no new combined public total is claimed. See `docs/evidence/2026-08-23-live-rebaseline-after-lovable-catalogue-change.md`.
+
 ## Quick orientation
 
-The current safety result is still red after removing four false P0 classifications:
+The local saved-copy safety result remained red after removing four false P0 classifications:
 
 - Donato's former `2x90x60` catalogue label was not a software bug. Donato reports that the exact current Lovable value is `2x9060`; it remains owner-defined content, not a software P0. Ordinary two-number dimensions are compared without orientation under the rule in the bug-fixing guidelines.
 - A non-public artwork record without an address is not a current customer-path P0.
 - A draft artwork without a sellable size is not a current customer-path P0.
 - Repeated primary headings with the same words are incorrect, but are not a credible blocking failure.
 
-The corrected current result contains 73 P0 conditions, not 73 separate bugs:
+That corrected local saved-copy result contains 73 P0 conditions, not 73 separate bugs:
 
-| Protected outcome | Current P0 conditions | Root meaning |
+| Protected outcome | Local saved-copy P0 conditions | Root meaning |
 | --- | ---: | --- |
 | Availability | 0 | The local built-store check found no missing intended page. This is not continuous production proof. |
 | Discoverability and citability | 67 | Two routing failures, 31 conflicting titles, 32 conflicting descriptions and two missing shared identity images. |

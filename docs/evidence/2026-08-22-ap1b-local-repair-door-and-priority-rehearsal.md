@@ -1,5 +1,7 @@
 # AP1B local repair-door and priority rehearsal
 
+**Subsequent evidence:** this document records a local saved-copy rehearsal. After the public build created on 22 August 2026 at 23:44, the exact label `2x9060` was independently visible and the public discoverability count changed. The current public evidence is `docs/evidence/2026-08-23-live-rebaseline-after-lovable-catalogue-change.md`. Do not use the 73 below as an exact current-production total.
+
 ## Result
 
 The local safety preparation now has two distinct decisions:
@@ -11,7 +13,7 @@ Neither decision is active outside the local worktree.
 
 The false P0 classification for the owner-authored `2x90x60` label is removed. Non-public artwork records and drafts without sellable sizes are kept out of the P0 release result. Repeated identical page-identity text is kept out of P0, while missing or conflicting page identity remains P0.
 
-Subsequent owner update: Donato reports that the exact current Lovable value is now `2x9060`, and that every ordinary two-number orientation is equivalent, for example `120x80` equals `80x120`. This update was not independently fetched from production. It does not change the 73-condition count because the owner-defined label had already been removed from P0.
+Subsequent owner update at the time of this rehearsal: Donato reported that the exact Lovable value was `2x9060`, and that every ordinary two-number orientation is equivalent, for example `120x80` equals `80x120`. This update was not independently fetched during this rehearsal. The later 23 August evidence did confirm `2x9060` on the public product page. It does not change this historical 73-condition local count because the owner-defined label had already been removed from P0.
 
 The final strict reports were generated against committed safety code `0c168bcbdcdda63ae83d30f26438f3919e80a5c4`:
 
