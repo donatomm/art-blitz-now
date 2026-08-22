@@ -2,7 +2,7 @@
 
 **Evidence time:** 23 August 2026
 
-**Status:** mandatory stop before the first Stage 0 outside change. Read-only evidence only.
+**Status:** resolved without an outside change. Donato confirmed that the product-page GUI work was intentional. The final version and fresh whole-store evidence are recorded in `docs/evidence/2026-08-23-live-rebaseline-after-intended-product-gui-change.md`.
 
 ## What changed
 
@@ -70,3 +70,7 @@ If the changes were not intended, do not roll back automatically. Preserve the e
 - No source, public domain, deployment, production data, catalogue value or payment connection changed.
 - No checkout, purchase, refund, alert, indexing request or rollback occurred.
 - Automatic rollback remained disabled and release reopening remained manual.
+
+## Resolution
+
+The final intended GitHub version is `063cf2a3dbadd913e5e37c11703d52b52a82a340`, and the final public build is `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`, created at 00:36 on 23 August. The later rebaseline confirmed the exact helper sentence Donato supplied, no checkout-logic change, the current 65-condition discoverability result, and the unchanged 67-error/7-warning code-quality baseline. Stage 0 may use those later exact values after one final immediate recheck.

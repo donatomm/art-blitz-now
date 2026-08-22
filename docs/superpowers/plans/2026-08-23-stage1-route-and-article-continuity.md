@@ -328,7 +328,7 @@
   - `/sitemap.json`
   - `/images/this-image-must-not-exist.webp`
 
-- [ ] Recheck the public OctoWonders domains and prove they still point to the held 23:44 build. A Preview result is not public-production proof.
+- [ ] Recheck the public OctoWonders domains and prove they still point to the exact build held during Stage 0. A Preview result is not public-production proof.
 
 - [ ] Record counterexamples, remaining P0 conditions and all unknowns in the evidence document. Do not call Stage 1 published or complete.
 
@@ -365,6 +365,6 @@ Stage 1 preparation is ready for a publication decision only when:
 - deliberately false pages and assets return a real not-found result;
 - the repair decision shows an improvement with no new P0 condition;
 - the strict result remains honestly red for all unrepaired P0 conditions;
-- the public domains still serve the held 23:44 build;
+- the public domains still serve the exact build held during Stage 0;
 - the named senior engineer has independently approved the evidence;
 - Donato receives a separate plain-English publication package.

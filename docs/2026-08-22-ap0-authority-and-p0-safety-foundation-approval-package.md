@@ -1,6 +1,6 @@
 # AP0 authority and P0 safety-foundation approval package
 
-**Subsequent authority update:** this package records the AP0 starting point. GitHub and Vercel changed again after the 22 August 23:44 evidence. The verified public starting point is now GitHub `d3466b7e75649f4dc8d834cc9ab2e36d9b96d124` and Vercel build `dpl_6s4aHvu6dSYRLw1jvQZ88YcgPRt2`, created on 23 August 2026 at 00:30 Rome time. Stage 0 stopped before any outside change. See `docs/evidence/2026-08-23-stage0-stop-new-lovable-public-build.md`. Do not use the earlier heads below as current public provenance.
+**Subsequent authority update:** this package records the AP0 starting point. Donato later completed an intended product-page GUI adjustment. The verified current public starting point is GitHub `063cf2a3dbadd913e5e37c11703d52b52a82a340` and Vercel build `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`, created on 23 August 2026 at 00:36 Rome time. See `docs/evidence/2026-08-23-live-rebaseline-after-intended-product-gui-change.md`. Do not use the earlier heads below as current public provenance.
 
 Status: approved by Donato Marco Mangialardo on 2026-08-22 for AP1 planning and safe local preparation under the safeguards in this document. No application code, deployment, production data, transaction, indexing request, or external setting was changed during AP0.
 

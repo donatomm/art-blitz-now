@@ -1,8 +1,8 @@
 # Stage 0 exact release hold and safety-bootstrap approval package
 
-**Status:** approved in principle by Donato under the two-person model, but execution stopped before the first outside change. A newer public build appeared after this package's exact starting point. Do not execute the values below until the rebaseline and package update described in `docs/evidence/2026-08-23-stage0-stop-new-lovable-public-build.md` are complete.
+**Status:** approved by Donato under the two-person model. The intended GUI change has been rebaselined and the exact starting values below are current. Nothing in this package has yet been applied outside the local working copy. Reconfirm these values immediately before the first change.
 
-**Public starting point to preserve:** the build created on 22 August 2026 at 23:44 Rome time.
+**Public starting point to preserve:** the build created on 23 August 2026 at 00:36 Rome time.
 
 **Automatic rollback:** disabled.
 
@@ -10,11 +10,11 @@
 
 ## Quick orientation
 
-The 23:44 build is public and the shop is reachable, but it still has known search failures. A Lovable catalogue change caused it to publish automatically even though the GitHub application files did not change. That proves the release-control gap is active now.
+The 00:36 build is public and the shop is reachable, but it still has known search failures. Donato's intended product-page GUI adjustment caused several public builds to publish automatically while he refined it. That proves the release-control gap is active now.
 
 The recommended first move is a temporary hold, not a repair:
 
-1. preserve the current 23:44 public build;
+1. preserve the current 00:36 public build;
 2. create a separate `production` branch at the exact current GitHub version;
 3. tell Vercel that only that held branch may create future public builds;
 4. place the prepared safety checks on `main` without publishing them;
@@ -31,10 +31,10 @@ No store repair belongs in this bootstrap. Payment remains out of scope.
 | --- | --- |
 | Public Vercel project | `art-blitz-now` |
 | Public Vercel project ID | `prj_RQiswgJu779Ix9Lb0ffAIExPkzFh` |
-| Public build | `dpl_DT1LdiLZ4TD3WAseAFb4GrgatjQo` |
-| Build time | 22 August 2026, 23:44:10 Rome time |
-| Ready time | 22 August 2026, 23:44:49 Rome time |
-| GitHub version used | `9760359b429fe34c979bdf3c9af420b9c42216bd` |
+| Public build | `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo` |
+| Build time | 23 August 2026, 00:36:13 Rome time |
+| Ready time | 23 August 2026, 00:37:02 Rome time |
+| GitHub version used | `063cf2a3dbadd913e5e37c11703d52b52a82a340` |
 | Public addresses | `octowonders.com` and `www.octowonders.com` point to this build |
 | Current public-build branch | effectively `main`, proven by the live build record |
 
@@ -111,13 +111,13 @@ No Stripe, payment, Supabase-data, billing or additional account-owner permissio
 
 - GitHub has `main` as the default branch.
 - No `production` branch is being used as the held public source.
-- Current exact version: `9760359b429fe34c979bdf3c9af420b9c42216bd`.
+- Current exact version: `063cf2a3dbadd913e5e37c11703d52b52a82a340`.
 
 ### Proposed action
 
 On GitHub, create a branch named exactly `production` from exactly:
 
-`9760359b429fe34c979bdf3c9af420b9c42216bd`
+`063cf2a3dbadd913e5e37c11703d52b52a82a340`
 
 Do not add, remove or rewrite any file while creating it.
 
@@ -133,7 +133,7 @@ There is a fixed public starting point that can remain unchanged while repairs a
 
 ### Risk
 
-Creating the branch can cause a non-public Vercel preview. It must not change the OctoWonders public domains. If a public domain moves, stop immediately and restore the 23:44 build before doing anything else.
+Creating the branch can cause a non-public Vercel preview. It must not change the OctoWonders public domains. If a public domain moves, stop immediately and restore the 00:36 build before doing anything else.
 
 ### Reversal
 
@@ -141,8 +141,8 @@ The branch can be deleted only after Vercel is confirmed to use `main` again. De
 
 ### Immediate proof required
 
-- `production` and `main` both show version `9760359b...`;
-- `octowonders.com` still points to `dpl_DT1LdiLZ4TD3WAseAFb4GrgatjQo`;
+- `production` and `main` both show version `063cf2a3...`;
+- `octowonders.com` still points to `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`;
 - the public homepage and one product page still return normally.
 
 ## 4. Exact change 2: make the held branch the only automatic public branch
@@ -169,7 +169,7 @@ Do not change domains, build commands, variables, integrations, protection, cach
 
 - only a change to `production` automatically creates a public build;
 - changes to `main` create non-public previews;
-- the current 23:44 build should remain on the public domains because both branches begin at the same exact version.
+- the current 00:36 build should remain on the public domains because both branches begin at the same exact version.
 
 ### Benefit
 
@@ -177,7 +177,7 @@ A repair can be reviewed and checked on `main` without being published merely be
 
 ### Risk
 
-Vercel may create or reclassify a build when the branch setting is saved. The public domains must be checked immediately. If they no longer point to the healthy 23:44 build, stop and restore that assignment. Do not continue to GitHub protections.
+Vercel may create or reclassify a build when the branch setting is saved. The public domains must be checked immediately. If they no longer point to the preserved 00:36 build, stop and restore that assignment. Do not continue to GitHub protections.
 
 ### Reversal
 
@@ -186,7 +186,7 @@ Change Branch Tracking back from `production` to `main`, then prove which build 
 ### Immediate proof required
 
 - Branch Tracking reads exactly `production`;
-- the public domains still point to `dpl_DT1LdiLZ4TD3WAseAFb4GrgatjQo`;
+- the public domains still point to `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`;
 - `main` no longer has automatic public authority;
 - the public homepage, article behavior and one product page match the preserved starting evidence.
 
@@ -224,7 +224,7 @@ The trigger adjustment is mandatory. The current local preparation listens only 
 - GitHub recognizes both safety-result names;
 - `main` contains the prepared safety judge and evidence rules;
 - Vercel creates at most a non-public preview from `main`;
-- `production` remains unchanged at `9760359b...`.
+- `production` remains unchanged at `063cf2a3...`.
 
 ### Stop conditions
 
@@ -234,7 +234,7 @@ Stop before joining the bootstrap if:
 - Codex has not completed and documented the separate evidence-review pass;
 - Donato has not approved the complete changed-file list and plain-English consequences;
 - `main` still has automatic public authority;
-- the public domains have moved from the preserved 23:44 build;
+- the public domains have moved from the preserved 00:36 build;
 - the safety tests or saved-data build do not reproduce their documented results.
 
 ## 6. Exact change 4: protect `main`
@@ -324,9 +324,9 @@ This is the non-destructive rollback rehearsal. It does not execute a rollback.
 
 ### Eligible target recorded
 
-The 23:44 build is the current preservation target:
+The 00:36 build is the current preservation target:
 
-`dpl_DT1LdiLZ4TD3WAseAFb4GrgatjQo`
+`dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`
 
 It is eligible only as a manual restoration target for a later change-caused regression because:
 
@@ -342,7 +342,7 @@ It is not a fully healthy future automatic-rollback target because it still has 
 A future build may be manually restored to this target only when all are true:
 
 1. the failure began after a specific approved publication;
-2. the previous 23:44 build does not contain that new failure;
+2. the previous 00:36 build does not contain that new failure;
 3. no external provider outage explains the failure;
 4. no unknown data corruption or irreversible state change is involved;
 5. the restoration does not undo a required database or payment change;
@@ -357,7 +357,7 @@ Each numbered item is a separate approval boundary during execution. Before perf
 
 1. Confirm the Donato-plus-Codex operating model and its accepted lack of independent human technical review. Completed on 23 August 2026. Pause.
 2. Reconfirm the public build, domains and current GitHub version. Pause if anything differs.
-3. Create `production` at `9760359b...`. Recheck public domains and pages. Pause.
+3. Create `production` at `063cf2a3...`. Recheck public domains and pages. Pause.
 4. Change only Vercel Branch Tracking from `main` to `production`. Recheck public domains and pages. Pause.
 5. Reconcile the safety-only bootstrap, then have Codex perform a separate evidence-review pass. Show Donato the complete changed-file list and explicitly state that this is not independent human review. Pause.
 6. Join the safety bootstrap to `main`. Confirm it made only a non-public preview and register the two result names. Pause.
@@ -372,7 +372,7 @@ Stop immediately and do not improvise if:
 - the current GitHub version or public build differs from the starting point in this package;
 - the Vercel screen does not expose the documented Branch Tracking field;
 - changing the branch moves a public domain to a different build;
-- the `production` branch does not point exactly to `9760359b...`;
+- the `production` branch does not point exactly to `063cf2a3...`;
 - the bootstrap contains an application or catalogue change;
 - the two exact safety-result names do not appear;
 - a required protection is unavailable on the current account plan;

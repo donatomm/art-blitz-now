@@ -1,6 +1,6 @@
 # Current Production Code-Quality Findings
 
-**23 August provenance note:** the 67-error and 7-warning result is exact for the application source measured below. It initially remained applicable when GitHub changed only Lovable planning files. GitHub `main` later moved to `d3466b7e75649f4dc8d834cc9ab2e36d9b96d124`, which changes `src/pages/Product.tsx`. The 67 and 7 figures must therefore be treated as the previous baseline until the newer source is rechecked. See `docs/evidence/2026-08-23-stage0-stop-new-lovable-public-build.md`.
+**23 August provenance note:** the exact current GitHub source `063cf2a3dbadd913e5e37c11703d52b52a82a340` was rechecked after Donato's intended product-page GUI adjustment. The result remains exactly 67 errors and 7 warnings, and the full application type check passes. The GUI change introduced no new checker message. See `docs/evidence/2026-08-23-live-rebaseline-after-intended-product-gui-change.md`.
 
 ## Quick orientation
 
@@ -12,7 +12,8 @@ This inventory itself does not assign final P0 to P2 priority. Donato's approved
 
 Headline evidence:
 
-- Current production Git source: `ffe0b380166bd6b9bae7e3d89711a1078867e41d`.
+- Original measured Git source: `ffe0b380166bd6b9bae7e3d89711a1078867e41d`.
+- Current rechecked Git source: `063cf2a3dbadd913e5e37c11703d52b52a82a340`.
 - Local AP1A evidence snapshot: `d9b6e101db2856c8f5b6f99022bfadf15c36d564`.
 - The application, build and hosted-function files listed here have no changes between those two snapshots.
 - `npm run lint -- --format stylish` reports exactly 67 errors and 7 warnings.
