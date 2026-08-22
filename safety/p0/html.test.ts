@@ -61,6 +61,19 @@ test("reports multiple primary headings", () => {
   assert.ok(codesFor(identity(healthyHead, "<h1>One</h1><h1>Two</h1>")).includes("HTML_H1_COUNT"));
 });
 
+test("does not promote repeated identical identity text to P0", () => {
+  const head = [
+    healthyHead,
+    "<title>Art</title>",
+    '<meta name="description" content="One">',
+  ].join("");
+  const findings = inspectHtml(identity(head, "<h1>Art</h1><h1>Art</h1>"), route);
+
+  assert.equal(findings.some((finding) => finding.code === "HTML_TITLE_COUNT"), false);
+  assert.equal(findings.some((finding) => finding.code === "HTML_DESCRIPTION_COUNT"), false);
+  assert.equal(findings.some((finding) => finding.code === "HTML_H1_COUNT"), false);
+});
+
 test("reports an intended public route marked not for indexing", () => {
   const head = `${healthyHead}<meta name="robots" content="noindex, follow">`;
 

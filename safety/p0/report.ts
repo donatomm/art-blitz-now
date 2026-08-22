@@ -10,6 +10,7 @@ const SAFE_EVIDENCE_KEYS = new Set([
   "destination",
   "dimensions",
   "expected",
+  "identityHash",
   "path",
   "productId",
   "productName",
