@@ -1,39 +1,38 @@
-# Propagate the renamed SKU `2x9060`
+# Fix the `2x90x60` default price key
 
-You renamed the irregular size on OCTOBLUE SUCKERS from `2x90x60` to `2x9060` in the product's sizes. The old string is still present in two places that matter, plus one cosmetic one.
+## Goal
+Keep the `default_prices` table as it is today, but correct the one stale key so the renamed SKU `2x9060` matches its listino price of 299.
 
-## What I verified (read-only)
+## The single change
+One database row update:
 
-- Product `OCTOBLUE SUCKERS` (`polpo-octopus-blue-wow-stampa-tela`) now has size `2x9060`, price 129, deal_price 129, Stripe id `prod_TefKwgzZVvw3f3`. This is the only `2x...` size in the catalogue.
-- `default_prices` table still holds a row `2x90x60 = 299`. There is no row for `2x9060`.
-- `src/generated/staticProducts.ts` (build-time snapshot of the catalogue, line ~433) still contains `"dimensions": "2x90x60"` with the old data.
-- The mockroom image filename for that size is still `octoblue-double-suckers-2x60x90.webp`.
-- Site settings and CMS pages contain no reference to the old string.
+```text
+default_prices: dimension "2x90x60"  ->  "2x9060"   (price stays 299)
+```
 
-## Where this shows up
+Nothing else. No code edits, no URL changes, no image renames, no redeploy required.
 
-1. **Listino / default price ("prezzo di listino") is now unmatched.** `getDefaultPrice()` normalises and looks up the exact dimension string. With `2x9060` absent from `default_prices`, this SKU no longer gets a listing price: the crossed-out reference price disappears in the gallery cards, and the SKU Editor's "Applica prezzi di listino" bulk action skips it. The SKU Editor also lists `2x9060` as its own dimension group, separate from the old `2x90x60` group.
-2. **Live pages still serve the old label and old price.** The published site renders from `src/generated/staticProducts.ts`, which was generated before your edit. Until a new deploy regenerates it, product pages and gallery cards fetched statically still show `2x90x60`. This is the "price in product page" mismatch you saw.
-3. **Cosmetic:** the mockroom image file for that size is still named with the old convention (`2x60x90`). Only the filename; the image itself is correct.
+## Safety check (docs/SAFETY-CHECK.md)
 
-## Proposed fix
+| Area | Status | Notes | Risk | Recommendation |
+|---|---|---|---|---|
+| SSG | OK | `default_prices` is not part of the prebuild snapshot (`src/generated/*` contains only products, pages, site settings). It is fetched at runtime via `useDefaultPrices` (react-query). No rebuild needed. | None | Proceed |
+| SEO | OK | No meta tags, URLs, slugs, sitemap, canonical or JSON-LD touched. Product page prices come from the product's own `sizes`, not this table. | None | Proceed |
+| LCP / Performance | OK | Same query, same row count, same payload size. No new requests. | None | Proceed |
+| Build process | OK | No `package.json`, `vercel.json` or postbuild script touched. | None | Proceed |
+| Database / Backend | OK | Single `UPDATE` on one row of an existing table. RLS and grants unchanged (admins write, everyone reads). | Low | Proceed |
+| Admin INP | OK | No admin component changed. | None | Proceed |
+| Hydration / Browser APIs | OK | No new client-only code. | None | Proceed |
 
-1. Update the `default_prices` row `2x90x60` to `2x9060` (keeping the 299 value, or a value you specify) so the listing price matches again — one DB update, no code change.
-2. Redeploy so the prebuild step regenerates `src/generated/staticProducts.ts` from the live database and the public pages pick up `2x9060` and price 129.
+## Regression risks, double-checked
 
-**Constraint:** No URLs will be changed. The mockroom image filename stays exactly as it is, and no storage paths or page routes are touched.
+1. **Gallery strikethrough (`ProductCard.tsx`)** — this is the only customer-visible effect. Today `OCTOBLUE SUCKERS / 2x9060` finds no default, so the strikethrough falls back to the size's own price. After the fix it will use 299. Visible only when that size has an active deal label and 299 is higher than the deal price. Verify on the gallery after the change.
+2. **Admin "Reset a Default" button (`SKUEditor.tsx`)** — after the fix, pressing it will fill `2x9060` with 299 instead of leaving it untouched. It is a form filler only; nothing is persisted until "Salva". No silent price change.
+3. **Product detail page** — unaffected: it computes the strikethrough from the size's own `price`, never from `default_prices`.
+4. **Checkout / Stripe** — unaffected: prices come from the product's `sizes`, fetched fresh at checkout.
+5. **Dimension normalization** — verified: `normalizeDimension("2x9060")` returns `2x9060` unchanged (it parses as `2` x `9060`), so the lookup key matches exactly. No collision with any other row.
+6. **Rollback** — trivial and lossless: set the dimension back to `2x90x60`. No storage files, no URLs, nothing irreversible.
+7. **Untouched by design** — the mockroom image filename still says `2x60x90`. Cosmetic only; it stays as is per your instruction not to touch any URL.
 
-Nothing else needs to change: the size label, price, deal price and Stripe id on the product itself are already consistent, and `normalizeDimension()` handles `2x9060` without confusing it with other sizes.
-
-## Confirmations I need
-
-- Should the default price for `2x9060` stay 299, or be a different number?
-- Do you want me to run `docs/SAFETY-CHECK.md` before touching anything?
-- Confirm: leave the mockroom image URL exactly as-is (`octoblue-double-suckers-2x60x90.webp`).
-
-## Risks
-
-- Editing `default_prices` changes the crossed-out reference price shown next to offers for that SKU; it does not change what a customer pays (the sale price lives on the product size).
-- If the value is set below the current 129 sale price, the offer display logic hides the strikethrough.
-- Regenerating the static snapshot pulls in every other change made in the database since the last deploy — expected, but worth knowing.
-- No URLs are changed, so existing image links, product routes, and cached references remain valid.
+## What stays broken on purpose
+The gallery card and the product page still derive the strikethrough from two different sources. That inconsistency predates this change and is out of scope here — flag it if you want it unified later.
