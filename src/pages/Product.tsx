@@ -4,7 +4,7 @@ import { normalizeDimension } from "@/hooks/useDefaultPrices";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingCart, Loader2, ChevronDown } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, ShoppingCart, Loader2, ChevronDown } from "lucide-react";
 import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
 import {
   Select,
@@ -555,7 +555,12 @@ Grazie!`);
                 </div>
 
                 {/* Terms Acceptance Checkbox */}
-                <div className="p-4 bg-card rounded-lg border-2 border-gold/30">
+                <div className={`relative p-4 bg-card rounded-lg border-2 transition-colors duration-200 ${showTermsError ? 'border-destructive bg-destructive/5 pl-12' : 'border-gold/30'}`}>
+                  {showTermsError && (
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-destructive animate-bounce hidden sm:block" aria-hidden="true">
+                      <ArrowRight className="h-6 w-6" />
+                    </div>
+                  )}
                   <div className="flex items-start gap-3">
                     <Checkbox 
                       id="accetta-condizioni" 
@@ -564,7 +569,7 @@ Grazie!`);
                         setTermsAccepted(checked === true);
                         if (checked) setShowTermsError(false);
                       }}
-                      className="mt-1 h-5 w-5 border-2 border-foreground data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
+                      className={`mt-1 h-5 w-5 border-2 data-[state=checked]:bg-foreground data-[state=checked]:border-foreground ${showTermsError ? 'border-destructive' : 'border-foreground'}`}
                     />
                     <label htmlFor="accetta-condizioni" className="text-base text-foreground cursor-pointer leading-relaxed">
                       Confermando il tuo ordine accetti i{" "}
@@ -579,7 +584,7 @@ Grazie!`);
                     </label>
                   </div>
                   {showTermsError && (
-                    <p className="text-red-500 text-sm font-medium mt-3 ml-8">
+                    <p className="text-destructive text-sm font-medium mt-3 ml-8">
                       Per continuare devi accettare i Termini e Condizioni e l'obbligo di pagamento.
                     </p>
                   )}
