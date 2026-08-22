@@ -20,7 +20,8 @@ You renamed the irregular size on OCTOBLUE SUCKERS from `2x90x60` to `2x9060` in
 
 1. Update the `default_prices` row `2x90x60` to `2x9060` (keeping the 299 value, or a value you specify) so the listing price matches again — one DB update, no code change.
 2. Redeploy so the prebuild step regenerates `src/generated/staticProducts.ts` from the live database and the public pages pick up `2x9060` and price 129.
-3. Optional: rename the mockroom image to the new convention and update the size's `mock_room_url`.
+
+**Constraint:** No URLs will be changed. The mockroom image filename stays exactly as it is, and no storage paths or page routes are touched.
 
 Nothing else needs to change: the size label, price, deal price and Stripe id on the product itself are already consistent, and `normalizeDimension()` handles `2x9060` without confusing it with other sizes.
 
