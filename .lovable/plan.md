@@ -1,22 +1,27 @@
-# Plan: Trim Terms Checkbox Label
+# Plan: Refine Terms Checkbox Error Indicator
 
 ## What to change
-In `src/pages/Product.tsx`, remove the trailing clause from the terms-and-conditions checkbox label so it ends at `(PDF)`.
+In `src/pages/Product.tsx`, adjust the existing error-state visual indicator around the terms checkbox so the arrow points at the checkbox itself, and simplify the helper sentence below.
 
-## Current text
-```
-Confermando il tuo ordine accetti i Termini e Condizioni di Vendita (PDF) e dichiari di essere consapevole che l'ordine comporta un obbligo di pagamento.
-```
+## Changes
 
-## New text
-```
-Confermando il tuo ordine accetti i Termini e Condizioni di Vendita (PDF)
-```
+### 1. Arrow must point at the checkbox
+- Reposition the bouncing `ArrowRight` icon so it sits **before / beside the checkbox**, pointing right at the checkbox (not floating on the left side of the label text).
+- Keep it hidden on very narrow screens (`hidden sm:block`) and `aria-hidden="true"`.
+- Maintain the red error styling on the checkbox container (`border-destructive bg-destructive/5`).
 
-## Implementation
-- Edit the `<label>` at approximately line 574–584 in `src/pages/Product.tsx`.
-- Remove the `{" "}e dichiari di essere consapevole che l'ordine comporta un obbligo di pagamento.` fragment.
-- Keep the link, its `download` attribute, and the existing error paragraph unchanged.
+### 2. Simplify the error sentence
+- Current: `Per continuare devi accettare i Termini e Condizioni e l'obbligo di pagamento.`
+- New: `Per continuare devi accettare i Termini e Condizioni.`
+- Remove the word "Obbligo" and the payment-clause fragment.
+
+### 3. Trim the checkbox label (previous request)
+- Current label ends with: `e dichiari di essere consapevole che l'ordine comporta un obbligo di pagamento.`
+- New label ends at: `Termini e Condizioni di Vendita (PDF)`
+- Remove the `{" "}e dichiari...` fragment.
+
+## Scope
+Only `src/pages/Product.tsx` around the terms-and-conditions block (lines ~560–590). No logic, validation, URLs, or checkout behavior changes.
 
 ## Risk
-Very low. This is a pure copy change inside an existing label; no logic, URLs, or validation change.
+Very low. Pure copy and positioning adjustments inside an existing UI element.
