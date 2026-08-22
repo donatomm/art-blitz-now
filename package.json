@@ -15,6 +15,7 @@
     "typecheck:safety": "tsc -p safety/tsconfig.json",
     "p0:check:source": "tsx safety/p0/check-source.ts",
     "p0:check:artifact": "tsx safety/p0/check-artifact.ts",
+    "p0:check:repair": "tsx safety/p0/check-repair.ts",
     "preview": "vite preview"
   },
   "dependencies": {

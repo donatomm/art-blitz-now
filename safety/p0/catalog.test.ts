@@ -44,10 +44,17 @@ test("reports a visible size without a payment mapping", () => {
   }).includes("CATALOG_MISSING_STRIPE_MAPPING"));
 });
 
-test("reports a visible size with a malformed composite dimension", () => {
-  assert.ok(codesFor({
+test("does not call a mapped positive composite owner label a software P0", () => {
+  assert.deepEqual(validateCatalog([{
     ...healthy,
     sizes: [{ dimensions: "2x90x60", price: 80, stripe_product_id: "prod_x" }],
+  }]), []);
+});
+
+test("reports a visible size whose label cannot identify a positive size", () => {
+  assert.ok(codesFor({
+    ...healthy,
+    sizes: [{ dimensions: "axb", price: 80, stripe_product_id: "prod_x" }],
   }).includes("CATALOG_INVALID_DIMENSION"));
 });
 

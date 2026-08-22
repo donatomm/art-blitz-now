@@ -1,4 +1,4 @@
-import { canonicalDimension } from "./dimensions";
+import { canonicalDimension, positiveCompositeDimension } from "./dimensions";
 import type { P0Finding } from "./types";
 
 export interface SizeInput {
@@ -56,16 +56,17 @@ export function validateCatalog(products: ProductInput[]): P0Finding[] {
     const seen = new Set<string>();
     for (const size of visible) {
       const canonical = canonicalDimension(size.dimensions);
-      if (!canonical) {
+      const composite = positiveCompositeDimension(size.dimensions);
+      if (!canonical && !composite) {
         findings.push(finding(
           "CATALOG_INVALID_DIMENSION",
           product,
-          "Visible size is not one ordinary dimension.",
+          "Visible size does not identify a positive ordinary or owner-authored composite size.",
           { dimensions: text(size.dimensions) || null },
         ));
         continue;
       }
-      if (seen.has(canonical)) {
+      if (canonical && seen.has(canonical)) {
         findings.push(finding(
           "CATALOG_DUPLICATE_CANONICAL_SIZE",
           product,
@@ -73,14 +74,14 @@ export function validateCatalog(products: ProductInput[]): P0Finding[] {
           { canonicalSize: canonical },
         ));
       }
-      seen.add(canonical);
+      if (canonical) seen.add(canonical);
 
       if (!text(size.stripe_product_id)) {
         findings.push(finding(
           "CATALOG_MISSING_STRIPE_MAPPING",
           product,
           "Visible size has no exact payment mapping.",
-          { canonicalSize: canonical },
+          canonical ? { canonicalSize: canonical } : { dimensions: composite },
         ));
       }
       if (size.deal_label_enabled === true && (typeof size.deal_price !== "number" || size.deal_price <= 0)) {
@@ -88,7 +89,7 @@ export function validateCatalog(products: ProductInput[]): P0Finding[] {
           "CATALOG_INVALID_DEAL_PRICE",
           product,
           "Enabled offer has no positive offer price.",
-          { canonicalSize: canonical },
+          canonical ? { canonicalSize: canonical } : { dimensions: composite },
         ));
       }
     }
