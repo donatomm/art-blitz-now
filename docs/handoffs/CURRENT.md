@@ -2,7 +2,7 @@
 
 **Last reconciled:** 2026-08-22  
 **Verified GitHub head:** `ffe0b380166bd6b9bae7e3d89711a1078867e41d`  
-**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A milestones 1 and 2 are complete in the isolated local work area. Missing-payment-connection detection is complete. All further payment inspection is paused by Donato. The untouched production-source code-quality baseline is fully documented. No application repair, live change or outside-setting change has begun.
+**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A milestones 1, 2 and 3 are complete in the isolated local work area. The expected public-page contract now rejects unreachable one-level artwork and over-deep CMS addresses. Missing-payment-connection detection is complete. All further payment inspection is paused by Donato. The untouched production-source code-quality baseline is fully documented. No application repair, live change or outside-setting change has begun.
 
 ## Read in this order
 
@@ -30,8 +30,8 @@ A failure of any one is a P0 incident. A change-caused failure is also a P0 regr
 
 Execute only AP1A from `docs/superpowers/plans/2026-08-22-ap1a-local-safety-gate.md`:
 
-1. skip the paused payment-confirmation source guard;
-2. continue with the expected public-page contract using failing examples first;
+1. keep the payment-confirmation source guard paused;
+2. continue with the hosting-rule counterexample checker using failing examples first;
 3. complete the remaining non-payment local safety checkers and run them against the saved current-store version;
 4. preserve the honest red result;
 5. prepare, but do not activate, the release check;
