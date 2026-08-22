@@ -555,13 +555,13 @@ Grazie!`);
                 </div>
 
                 {/* Terms Acceptance Checkbox */}
-                <div className={`relative p-4 bg-card rounded-lg border-2 transition-colors duration-200 ${showTermsError ? 'border-destructive bg-destructive/5 pl-12' : 'border-gold/30'}`}>
-                  {showTermsError && (
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-destructive animate-bounce hidden sm:block" aria-hidden="true">
-                      <ArrowRight className="h-6 w-6" />
-                    </div>
-                  )}
+                <div className={`p-4 bg-card rounded-lg border-2 transition-colors duration-200 ${showTermsError ? 'border-destructive bg-destructive/5' : 'border-gold/30'}`}>
                   <div className="flex items-start gap-3">
+                    {showTermsError && (
+                      <div className="text-destructive animate-bounce hidden sm:block mt-1" aria-hidden="true">
+                        <ArrowRight className="h-5 w-5" />
+                      </div>
+                    )}
                     <Checkbox 
                       id="accetta-condizioni" 
                       checked={termsAccepted}
@@ -580,12 +580,11 @@ Grazie!`);
                       >
                         Termini e Condizioni di Vendita (PDF)
                       </a>
-                      {" "}e dichiari di essere consapevole che l'ordine comporta un obbligo di pagamento.
                     </label>
                   </div>
                   {showTermsError && (
                     <p className="text-destructive text-sm font-medium mt-3 ml-8">
-                      Per continuare devi accettare i Termini e Condizioni e l'obbligo di pagamento.
+                      Per continuare devi accettare i Termini e Condizioni.
                     </p>
                   )}
                 </div>
