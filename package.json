@@ -10,6 +10,8 @@
     "postbuild": "node scripts/postbuild-inject-head.cjs && node scripts/postbuild-css-alias.cjs && node scripts/postbuild-uuid-redirects.cjs && node scripts/postbuild-inline-ssg-data.cjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
+    "test:safety": "tsx --test safety/p0/*.test.ts",
+    "typecheck:safety": "tsc -p safety/tsconfig.json",
     "preview": "vite preview"
   },
   "dependencies": {
