@@ -8,6 +8,8 @@
 
 **Release reopening:** manual, controlled by Donato.
 
+**Execution ledger:** Change 1 is complete. GitHub branch `production` was created at `063cf2a3dbadd913e5e37c11703d52b52a82a340` and verified identical to the current `main`. The public domains remained on `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`. No Vercel setting has yet changed. See `docs/evidence/2026-08-23-stage0-change1-held-production-branch.md`.
+
 ## Quick orientation
 
 The 00:36 build is public and the shop is reachable, but it still has known search failures. Donato's intended product-page GUI adjustment caused several public builds to publish automatically while he refined it. That proves the release-control gap is active now.

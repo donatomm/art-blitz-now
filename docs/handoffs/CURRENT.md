@@ -5,7 +5,7 @@
 **Verified GitHub main head:** `063cf2a3dbadd913e5e37c11703d52b52a82a340`
 
 **Verified public build:** `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`, created 23 August 2026 at 00:36:13 Rome time
-**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A remains complete in the isolated local work area. Donato approved Stage 0 under the documented Donato-plus-Codex operating model, with no independent human engineer. The mandatory pre-execution stop caught Donato's intended product-page GUI adjustment before an older version could be held. Donato confirmed the scope, and the final GitHub source and 00:36 public build were rebaselined. The complete source comparison supports his description: only two Lovable planning files and `src/pages/Product.tsx` changed; the terms label, error arrow, red styling and helper sentence changed, while the required-checkbox decision, purchase handler, checkout function, validation and URLs did not. The current public discoverability result is 65 conditions: two route failures, 30 conflicting titles, 31 conflicting descriptions and two missing or invalid shared identity images. The current code-quality result remains exactly 67 errors and 7 warnings, with the application type check passing. Payment remains paused. No branch was created and no GitHub, Vercel, payment, data, domain, rollback, alert or indexing setting was changed by Codex.
+**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A remains complete in the isolated local work area. Donato approved Stage 0 under the documented Donato-plus-Codex operating model, with no independent human engineer. The current 00:36 public build has 65 discoverability conditions and the unchanged 67-error/7-warning code-quality baseline. Stage 0 Change 1 is now complete: GitHub branch `production` was created at exactly `063cf2a3dbadd913e5e37c11703d52b52a82a340` and proved identical to `main`, with no differing file. The public domains and latest deployment remained on `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`; the homepage, product page and `2x9060` remained available. No Vercel setting has changed. Payment remains paused, automatic rollback remains disabled and release reopening remains manual.
 
 ## Read in this order
 
@@ -24,6 +24,7 @@
 13. `docs/superpowers/plans/2026-08-23-stage1-route-and-article-continuity.md`: test-first Stage 1 implementation plan. It authorizes no implementation or publication.
 14. `docs/evidence/2026-08-23-stage0-stop-new-lovable-public-build.md`: preserved evidence of the successful mandatory stop when the public starting point changed.
 15. `docs/evidence/2026-08-23-live-rebaseline-after-intended-product-gui-change.md`: controlling current evidence for the final 00:36 public build, 65 search conditions, unchanged 67/7 code-quality baseline and exact GUI-only source comparison.
+16. `docs/evidence/2026-08-23-stage0-change1-held-production-branch.md`: exact Change 1 preconditions, GitHub branch creation result and post-action public-store proof.
 
 Read the handoff completely before acting. Use the action plan for execution detail and open the SEO brief when working on AP2/WS1 or checking its evidence.
 
@@ -45,12 +46,18 @@ Stop for Donato's review of:
 2. `docs/superpowers/plans/2026-08-23-stage1-route-and-article-continuity.md`;
 3. `docs/evidence/2026-08-23-live-rebaseline-after-lovable-catalogue-change.md`.
 
-The intended GUI change is confirmed, the fresh read-only rebaseline is complete and the exact Stage 0 package now uses GitHub `063cf2a3...` and Vercel build `dpl_TL2w...`.
+Change 1 is complete and verified. Stop for Donato's approval of exact Change 2:
 
-Before the first outside change, recheck once more that GitHub `main`, the public build and the absence of a `production` branch are unchanged. Then present exact Change 1 again: create GitHub branch `production` from `063cf2a3dbadd913e5e37c11703d52b52a82a340`, with no file change. Stop for Donato's greenlight before creating it. Afterward, verify the public domains still serve `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo` and pause again. Keep the Donato-plus-Codex safeguards, payment pause, manual reopening and disabled automatic rollback.
+- Vercel project: `art-blitz-now` only;
+- current effective public branch: `main`;
+- proposed public branch: `production`;
+- screen: `Settings` → `Environments` → `Production` → `Branch Tracking`;
+- do not change any other Vercel value.
+
+If Donato approves, first inspect the live screen. If the field is absent or not exactly `main`, stop without saving. If it matches, change only that field to `production`, save once, then prove the public domains still serve `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo` and pause. Keep the Donato-plus-Codex safeguards, payment pause, manual reopening and disabled automatic rollback.
 
 Do not start the Stage 1 application or hosting repair merely because Stage 0 is approved. Stage 1 requires its own execution approval after the release hold is proven. Do not activate monitoring, create alert accounts, send an alert, change payment, change production data, deploy to the public domains, request indexing, perform a checkout, purchase or refund, or enable automatic rollback. Keep release reopening manual and destructive image work paused.
 
 ## Bootstrap prompt
 
-> Continue the OctoWonders stabilization program from `/Users/donatomm/---OCTOPRO.PRO/OCTOWONDERS/art-blitz-now/docs/handoffs/CURRENT.md`. Follow its reading order and treat the full dated handoff as controlling. The verified current public starting point is GitHub `063cf2a3dbadd913e5e37c11703d52b52a82a340` and Vercel build `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`, created 23 August 2026 at 00:36 Rome time. Donato approved Stage 0 under a Donato-plus-Codex model and confirmed the product-page GUI change as intentional. The current read-only rebaseline contains 65 discoverability conditions and the unchanged 67-error/7-warning code-quality result. Recheck the exact public starting point, then present Change 1 and wait: create `production` at exactly `063cf2a3...`, with no file change. Keep payment and destructive image work paused, automatic rollback disabled and release reopening manual. Do not create the branch until Donato gives the specific greenlight after the presentation.
+> Continue the OctoWonders stabilization program from `/Users/donatomm/---OCTOPRO.PRO/OCTOWONDERS/art-blitz-now/docs/handoffs/CURRENT.md`. Follow its reading order and treat the full dated handoff as controlling. The verified current public starting point is GitHub `063cf2a3dbadd913e5e37c11703d52b52a82a340` and Vercel build `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`, created 23 August 2026 at 00:36 Rome time. Stage 0 Change 1 is complete: GitHub `production` exists at the exact same version as `main`, while the public domains remain unchanged. Present Change 2 and wait: in Vercel project `art-blitz-now`, change only Production Branch Tracking from `main` to `production`. Inspect the exact live value before saving and stop if it differs. Keep payment and destructive image work paused, automatic rollback disabled and release reopening manual. Do not change Vercel until Donato gives the specific greenlight after the presentation.
