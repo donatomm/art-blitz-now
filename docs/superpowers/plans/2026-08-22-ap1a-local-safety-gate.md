@@ -43,6 +43,10 @@ Task 5 is complete. The local checker reports both hosting contradictions presen
 
 Task 6 is complete against controlled healthy and broken folders. The implementation detects missing built pages; missing, duplicate and unexpected sitemap entries; duplicate or conflicting page identity; indexing exclusion; homepage HTML at an image address; truncated shared images; and missing shared images. The planned image check was strengthened so that a correct opening signature alone cannot make a truncated file pass. The worktree has no saved `dist` folder, so the current-store artifact has not yet been run through this checker. That run remains in the later approved build-and-gate task. This checker changes no page, sitemap or image.
 
+## Subsequent private-evidence result
+
+Task 7 is complete. The report writer keeps only approved evidence fields, redacts sensitive-looking values, truncates oversized values, restores `0700` access on the evidence folder and `0600` access on each evidence file, and keeps the folder out of Git. The source command deliberately omits the payment-confirmation inspection paused by Donato. It retains the approved missing-payment-connection check. The saved current-source run exited `1` with `P0 SAFETY: RED`: 0 availability findings, 2 discoverability findings and 9 transaction-readiness findings. The report contained 11 findings and matched none of the tested contact, card or secret patterns. The built-site command has not run because the worktree still has no built folder. No evidence file is committed.
+
 ## File structure
 
 | Path | Responsibility |
@@ -51,7 +55,7 @@ Task 6 is complete against controlled healthy and broken folders. The implementa
 | `safety/p0/types.ts` | Shared finding and report shapes. |
 | `safety/p0/dimensions.ts` | Treat reversed artwork sizes as one size. |
 | `safety/p0/catalog.ts` | Check product lifecycle, visible sizes, price and payment mapping. |
-| `safety/p0/transaction.ts` | Require real payment verification before showing success or clearing the cart. |
+| `safety/p0/transaction.ts` | Paused payment-confirmation check. Not created. |
 | `safety/p0/routes.ts` | Build the expected public page list. |
 | `safety/p0/hosting.ts` | Detect false-homepage and article-override rules. |
 | `safety/p0/html.ts` | Inspect one built page's public identity. |
@@ -826,7 +830,7 @@ git commit -m "test: inspect built page identity and assets"
 - Both gate commands exit `0` only when they find no P0 failure.
 - Evidence stores safe facts and codes, never complete source data or private details.
 
-- [ ] **Step 1: Write the failing report test**
+- [x] **Step 1: Write the failing report test**
 
 Create `safety/p0/report.test.ts`:
 
@@ -852,11 +856,11 @@ test("creates deterministic counts and writes valid JSON", () => {
 });
 ```
 
-- [ ] **Step 2: Observe the missing implementation**
+- [x] **Step 2: Observe the missing implementation**
 
 Run `npx tsx --test safety/p0/report.test.ts`. Expected: fail because `./report` does not exist.
 
-- [ ] **Step 3: Implement report creation and writing**
+- [x] **Step 3: Implement report creation and writing**
 
 Create `safety/p0/report.ts`:
 
@@ -885,7 +889,7 @@ export function printSummary(report: GateReport): void {
 }
 ```
 
-- [ ] **Step 4: Implement the source gate**
+- [x] **Step 4: Implement the source gate**
 
 Create `safety/p0/check-source.ts`:
 
@@ -897,7 +901,6 @@ import { validateCatalog, type ProductInput } from "./catalog";
 import { validateHostingRules, type HostingConfig } from "./hosting";
 import { makeReport, printSummary, writeReport } from "./report";
 import { buildRouteContract, type PageInput } from "./routes";
-import { validateTransactionSources } from "./transaction";
 
 const json = <T>(path: string): T => JSON.parse(readFileSync(resolve(path), "utf8")) as T;
 const products = json<ProductInput[]>("src/generated/products.json");
@@ -907,11 +910,7 @@ const routeResult = buildRouteContract(products, pages);
 const findings = [
   ...validateCatalog(products),
   ...routeResult.findings,
-  ...validateHostingRules(hosting),
-  ...validateTransactionSources({
-    successPage: readFileSync(resolve("src/pages/CheckoutSuccess.tsx"), "utf8"),
-    checkoutFunction: readFileSync(resolve("supabase/functions/create-checkout/index.ts"), "utf8")
-  })
+  ...validateHostingRules(hosting)
 ];
 const gitCommit = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 const report = makeReport("source", findings, { now: new Date(), gitCommit });
@@ -920,7 +919,7 @@ printSummary(report);
 process.exitCode = report.passed ? 0 : 1;
 ```
 
-- [ ] **Step 5: Implement the built-site gate**
+- [x] **Step 5: Implement the built-site gate**
 
 Create `safety/p0/check-artifact.ts`:
 
@@ -945,7 +944,7 @@ printSummary(report);
 process.exitCode = report.passed ? 0 : 1;
 ```
 
-- [ ] **Step 6: Ignore generated private evidence**
+- [x] **Step 6: Ignore generated private evidence**
 
 Add to `.gitignore`:
 
@@ -953,7 +952,7 @@ Add to `.gitignore`:
 .safety-evidence/
 ```
 
-- [ ] **Step 7: Add non-live commands**
+- [x] **Step 7: Add non-live commands**
 
 Add to `package.json` scripts without changing the existing production `build` command:
 
@@ -963,15 +962,15 @@ Add to `package.json` scripts without changing the existing production `build` c
 "p0:check:artifact": "tsx safety/p0/check-artifact.ts"
 ```
 
-- [ ] **Step 8: Verify unit checks**
+- [x] **Step 8: Verify unit checks**
 
-Run `npm run test:safety` and `npm run typecheck:safety`. Expected: both exit `0`; fifteen tests pass.
+Run `npm run test:safety` and `npm run typecheck:safety`. Observed: both exited `0`; the current set of 41 safety examples passed.
 
-- [ ] **Step 9: Prove today's snapshot stays red**
+- [x] **Step 9: Prove today's snapshot stays red**
 
 Run `npm run p0:check:source`. Expected: exit `1` and `P0 SAFETY: RED`. It must report at least the current missing payment mappings, the active artwork without a public address, the article override and the false-homepage rule. This is the correct result.
 
-- [ ] **Step 10: Commit locally**
+- [x] **Step 10: Commit locally**
 
 ```bash
 git add .gitignore package.json safety/p0/report.ts safety/p0/report.test.ts safety/p0/check-source.ts safety/p0/check-artifact.ts

@@ -2,7 +2,7 @@
 
 **Last reconciled:** 2026-08-22  
 **Verified GitHub head:** `ffe0b380166bd6b9bae7e3d89711a1078867e41d`  
-**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A milestones 1 through 5 are complete in the isolated local work area. The expected public-page contract rejects unreachable artwork and over-deep CMS addresses. The hosting checker reports the article redirect and broad homepage substitution rule in the saved current-store version. The built-site checker detects missing pages, page-identity conflicts, sitemap drift and missing or invalid shared images in controlled examples. The worktree has no saved built folder, so that checker has not yet run against the current-store artifact. Missing-payment-connection detection is complete. All further payment inspection is paused by Donato. The untouched production-source code-quality baseline is fully documented. No application repair, live change or outside-setting change has begun.
+**Status:** AP0 is complete and AP1 is approved under safeguards. AP1A milestones 1 through 6 are complete in the isolated local work area. The expected public-page contract rejects unreachable artwork and over-deep CMS addresses. The hosting checker reports the article redirect and broad homepage substitution rule in the saved current-store version. The built-site checker detects missing pages, page-identity conflicts, sitemap drift and missing or invalid shared images in controlled examples. Private evidence is restricted to approved fields and private file permissions. The saved-source gate is honestly red with 11 findings: 0 availability, 2 discoverability and 9 transaction readiness. The worktree has no saved built folder, so the artifact gate has not yet run. Missing-payment-connection detection is complete. All further payment inspection is paused by Donato. The untouched production-source code-quality baseline is fully documented. No application repair, live change or outside-setting change has begun.
 
 ## Read in this order
 
@@ -31,7 +31,7 @@ A failure of any one is a P0 incident. A change-caused failure is also a P0 regr
 Execute only AP1A from `docs/superpowers/plans/2026-08-22-ap1a-local-safety-gate.md`:
 
 1. keep the payment-confirmation source guard paused;
-2. after Donato's next greenlight, continue with redacted local evidence and gate commands using a failing example first;
+2. after Donato's next greenlight, build only from the committed local snapshot and rehearse both local gates;
 3. complete the remaining non-payment local safety checkers and run them against the saved current-store version;
 4. preserve the honest red result;
 5. prepare, but do not activate, the release check;
