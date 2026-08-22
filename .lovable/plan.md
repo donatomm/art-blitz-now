@@ -36,4 +36,4 @@ Nothing else needs to change: the size label, price, deal price and Stripe id on
 - Editing `default_prices` changes the crossed-out reference price shown next to offers for that SKU; it does not change what a customer pays (the sale price lives on the product size).
 - If the value is set below the current 129 sale price, the offer display logic hides the strikethrough.
 - Regenerating the static snapshot pulls in every other change made in the database since the last deploy — expected, but worth knowing.
-- Renaming the storage image is irreversible; it must be copy-then-verify-then-delete, following the verify-before-delete rule.
+- No URLs are changed, so existing image links, product routes, and cached references remain valid.
