@@ -35,6 +35,10 @@ Donato approved only the missing-payment-connection detection completed in Task 
 
 Task 4 review found that the proposed shared address pattern would accept product addresses containing `/` and CMS page addresses deeper than the router supports. The implemented contract allows one segment for an artwork and at most two segments for a CMS page. Controlled broken examples cover both unreachable-address conditions. This changes only the local safety checker, not store routing.
 
+## Subsequent hosting-check result
+
+Task 5 is complete. The local checker reports both hosting contradictions present in the saved current-store version: the required article is redirected to the blog, and a broad fallback can substitute homepage HTML for unrelated addresses. The checker does not change or repair the hosting rules. Its result is local evidence, not a live-production test.
+
 ## File structure
 
 | Path | Responsibility |
@@ -516,7 +520,7 @@ git commit -m "test: define expected public routes"
 - Produces: `validateHostingRules(config: HostingConfig): P0Finding[]`.
 - Reports the article override and false-homepage catch-all already observed. It does not repair them.
 
-- [ ] **Step 1: Write failing hosting tests**
+- [x] **Step 1: Write failing hosting tests**
 
 Create `safety/p0/hosting.test.ts`:
 
@@ -543,11 +547,11 @@ test("reports article override and broad homepage substitution", () => {
 });
 ```
 
-- [ ] **Step 2: Observe the missing implementation**
+- [x] **Step 2: Observe the missing implementation**
 
 Run `npx tsx --test safety/p0/hosting.test.ts`. Expected: fail because `./hosting` does not exist.
 
-- [ ] **Step 3: Implement the hosting checker**
+- [x] **Step 3: Implement the hosting checker**
 
 Create `safety/p0/hosting.ts`:
 
@@ -587,9 +591,9 @@ export function validateHostingRules(config: HostingConfig): P0Finding[] {
 }
 ```
 
-- [ ] **Step 4: Verify and commit locally**
+- [x] **Step 4: Verify and commit locally**
 
-Run `npm run test:safety` and `npm run typecheck:safety`. Expected: both exit `0`; ten tests pass.
+Run `npm run test:safety` and `npm run typecheck:safety`. Observed: both exited `0`; the current set of 20 safety examples passed.
 
 ```bash
 git add safety/p0/hosting.ts safety/p0/hosting.test.ts
