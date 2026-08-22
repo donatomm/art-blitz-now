@@ -2,13 +2,15 @@
 
 **Last reconciled:** 2026-08-22  
 **Verified GitHub head:** `ffe0b380166bd6b9bae7e3d89711a1078867e41d`  
-**Status:** Planning and read-only evidence are current. Stabilization implementation has not begun.
+**Status:** AP0 is complete and AP1 is approved under safeguards. A proper local clone now exists on `codex/ap1-safety-foundation`. The AP1A local-safety plan is ready. No application implementation, live change or outside-setting change has begun.
 
 ## Read in this order
 
 1. `docs/handoffs/2026-08-21-stabilization-handoff.md`: controlling authority, evidence ledger, decisions, stop-ship conditions and acceptance questions.
 2. `docs/2026-08-22-stabilization-action-plan.md`: executable program order, benefits, safety checks, canaries, incident response and rollback policy.
 3. `docs/2026-08-21-seo-differential-repair-brief.md`: detailed SEO differential, counterexamples, AEO/GEO baseline and SSG/sitemap repair contract.
+4. `docs/2026-08-22-ap0-authority-and-p0-safety-foundation-approval-package.md`: approved AP0 evidence, ownership, safeguards and outside-change boundary.
+5. `docs/superpowers/plans/2026-08-22-ap1a-local-safety-gate.md`: exact AP1A local implementation plan.
 
 Read the handoff completely before acting. Use the action plan for execution detail and open the SEO brief when working on AP2/WS1 or checking its evidence.
 
@@ -24,17 +26,16 @@ A failure of any one is a P0 incident. A change-caused failure is also a P0 regr
 
 ## Exact next task
 
-Complete AP0's authority and P0 safety-foundation approval package:
+Execute only AP1A from `docs/superpowers/plans/2026-08-22-ap1a-local-safety-gate.md`:
 
-1. confirm the proper Git clone, current GitHub head and exact Vercel production deployment provenance;
-2. prepare the first current-store safety-check evidence brief;
-3. specify current-production canaries for all three P0 outcomes and the automatic incident workflow;
-4. identify approvals and credentials required for the independent monitor, Meta WhatsApp and Resend without exposing secrets;
-5. define and rehearse rollback eligibility against the current healthy deployment without executing a production rollback;
-6. stop and present a plain-English approval package.
+1. build and prove the local safety checker using failing examples first;
+2. run it against the saved current-store version and preserve the honest red result;
+3. prepare, but do not activate, the release check;
+4. write the separate plain-English AP1B outside-change package;
+5. stop before pushing, publishing or changing any outside account or setting.
 
-Do not start with blog work or sitemap implementation. Do not edit application code, deploy, request indexing, validate GSC fixes, mutate production data, perform a purchase/refund or change external settings during this next task.
+Do not start the blog, sitemap, payment, image or other application repairs. Do not deploy, request indexing, mutate production data, perform a checkout, purchase or refund, send an alert, activate monitoring or enable automatic rollback.
 
 ## Bootstrap prompt
 
-> Continue the OctoWonders stabilization program. Start at `/Users/donatomm/---OCTOPRO.PRO/OCTOWONDERS/FULL-CODE-OCTOWONDERS.COM/docs/handoffs/CURRENT.md`, then follow its required reading order. Treat the full dated handoff as controlling. Execute only its “Immediate next task” and the action plan's “Exact next task.” Preserve the working store and the three equal P0 outcomes. Do not edit application code or external state. Stop with a plain-English AP0 approval package, including evidence, counterexamples, unknowns and any contradiction.
+> Continue the OctoWonders stabilization program from `/Users/donatomm/---OCTOPRO.PRO/OCTOWONDERS/art-blitz-now/docs/handoffs/CURRENT.md`. Follow its reading order and treat the full dated handoff as controlling. Donato approved AP1 under the recorded safeguards. Execute only AP1A's local safety-gate plan. Keep automatic rollback disabled. Do not push, publish or change an outside account or setting. Stop with the AP1A evidence and the plain-English AP1B outside-change approval package.
