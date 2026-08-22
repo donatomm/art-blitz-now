@@ -6,7 +6,7 @@ This document records the untouched starting-code result from the current produc
 
 These are 74 checker findings, not 74 confirmed customer-facing bugs. The checker reports a mixture of possible runtime hazards, missing future safeguards, development-only warnings and formatting rules with no runtime effect.
 
-No final P0 to P3 priority is assigned here. Donato's severity framework is still incomplete. Each group instead records the causal question needed for later prioritization: if this is left alone, what specific trigger could turn it into a malfunction, what would be affected, and what evidence or counterexample limits that claim?
+No final P0 to P2 priority is assigned here. Donato's approved framework is recorded in `docs/2026-08-22-bug-fixing-guidelines.md`. Each group instead records the causal question needed for later prioritization: if this is left alone, what specific trigger could turn it into a malfunction, what would be affected, and what evidence or counterexample limits that claim? The listed conditions are starting probes, not an exhaustive safety checklist.
 
 Headline evidence:
 
@@ -574,7 +574,7 @@ Not proven:
 - That replacing every unspecified type with a declared type would make runtime data safe.
 - That either conditional screen-state trigger occurs in current customer traffic.
 - That the current database contains the malformed values required by the data-shape failure paths.
-- Any final P0, P1, P2 or P3 ranking. That awaits Donato's completed severity standard and targeted rehearsals.
+- Any final P0, P1 or P2 ranking. That awaits application of Donato's approved framework and targeted rehearsals.
 
 ## Reproduction record
 
@@ -594,12 +594,12 @@ Observed results:
 
 ## Follow-up required before prioritization
 
-1. Donato completes and approves the severity standard.
-2. Rehearse the identifier-to-slug product redirect locally to determine whether the router reuses the same screen and triggers the conditional-helper failure.
-3. Rehearse a product card changing from missing slug to present slug within one mounted position.
-4. Inspect current committed catalogue data for malformed or empty size collections through the AP1A catalogue validator, without changing data.
-5. Test the sitemap and crawler metadata checkers against controlled malformed examples.
-6. Review the separate full-request-body logging concern without exposing or collecting customer data.
-7. Prioritize root patterns, not raw checker counts. In particular, the three ProductCard entries are one code pattern and the seven MCP declaration entries are one style pattern.
+1. Rehearse the identifier-to-slug product redirect locally to determine whether the router reuses the same screen and triggers the conditional-helper failure.
+2. Rehearse a product card changing from missing slug to present slug within one mounted position.
+3. Inspect current committed catalogue data for malformed or empty size collections through the AP1A catalogue validator, without changing data.
+4. Test the sitemap and crawler metadata checkers against controlled malformed examples.
+5. Review the separate full-request-body logging concern without exposing or collecting customer data.
+6. Prioritize root patterns, not raw checker counts. In particular, the three ProductCard entries are one code pattern and the seven MCP declaration entries are one style pattern.
+7. Continue searching for unlisted triggers and alternate failure paths. Passing the recorded probes does not establish safety.
 
 No repair, bulk formatting, dependency change, production action or external-setting change is authorized by this document.

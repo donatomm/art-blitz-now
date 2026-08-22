@@ -11,7 +11,8 @@
 3. `docs/2026-08-21-seo-differential-repair-brief.md`: detailed SEO differential, counterexamples, AEO/GEO baseline and SSG/sitemap repair contract.
 4. `docs/2026-08-22-ap0-authority-and-p0-safety-foundation-approval-package.md`: approved AP0 evidence, ownership, safeguards and outside-change boundary.
 5. `docs/superpowers/plans/2026-08-22-ap1a-local-safety-gate.md`: exact AP1A local implementation plan.
-6. `docs/2026-08-22-current-production-code-quality-findings.md`: complete 67-error and 7-warning inventory, causal analysis, counterexamples and prioritization unknowns.
+6. `docs/2026-08-22-bug-fixing-guidelines.md`: Donato's approved severity framework, non-exhaustive review posture and current condition register.
+7. `docs/2026-08-22-current-production-code-quality-findings.md`: complete 67-error and 7-warning inventory, causal analysis, counterexamples and prioritization unknowns.
 
 Read the handoff completely before acting. Use the action plan for execution detail and open the SEO brief when working on AP2/WS1 or checking its evidence.
 
