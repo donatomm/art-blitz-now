@@ -47,6 +47,10 @@ Task 6 is complete against controlled healthy and broken folders. The implementa
 
 Task 7 is complete. The report writer keeps only approved evidence fields, redacts sensitive-looking values, truncates oversized values, restores `0700` access on the evidence folder and `0600` access on each evidence file, and keeps the folder out of Git. The source command deliberately omits the payment-confirmation inspection paused by Donato. It retains the approved missing-payment-connection check. The saved current-source run exited `1` with `P0 SAFETY: RED`: 0 availability findings, 2 discoverability findings and 9 transaction-readiness findings. The report contained 11 findings and matched none of the tested contact, card or secret patterns. The built-site command has not run because the worktree still has no built folder. No evidence file is committed.
 
+## Subsequent complete local rehearsal result
+
+Task 8 is complete. All 41 controlled examples passed and the safety-file agreement check exited `0`. The saved-data build exited `0` and produced 83 files without refreshing catalogue or page data. The source gate exited `1` with the same 11 red findings. The artifact gate exited `1` with 87 discoverability findings: 32 duplicate title conditions, 32 duplicate description conditions, 21 duplicate primary-heading conditions and 2 missing shared images. No expected built route or sitemap address was missing, duplicated or unexpected. The private evidence scan found none of the tested contact, card or secret patterns. Build warnings were recorded separately in `docs/evidence/2026-08-22-ap1a-local-gate-rehearsal.md`; none was repaired or automatically classified by appearance alone. Local rehearsal is not production proof.
+
 ## File structure
 
 | Path | Responsibility |
@@ -991,7 +995,7 @@ git commit -m "feat: report source and artifact P0 evidence"
 - Consumes all AP1A local checks.
 - Produces one plain-English evidence note with exact observed results and no private data.
 
-- [ ] **Step 1: Run unit and agreement checks**
+- [x] **Step 1: Run unit and agreement checks**
 
 Run:
 
@@ -1000,17 +1004,17 @@ npm run test:safety
 npm run typecheck:safety
 ```
 
-Expected: both exit `0`. Record the exact passing test count.
+Observed: both exited `0`; 41 controlled examples passed.
 
-- [ ] **Step 2: Build from the committed snapshot**
+- [x] **Step 2: Build from the committed snapshot**
 
-Run `npm run build:committed`. Expected: exit `0` and create `dist/`. Record warnings separately. Never call this production proof.
+Run `npm run build:committed`. Observed: exit `0`; `dist/` contained 83 files. Warnings are recorded in the rehearsal evidence note. This is not production proof.
 
-- [ ] **Step 3: Run both gates**
+- [x] **Step 3: Run both gates**
 
-Run `npm run p0:check:source`, then `npm run p0:check:artifact`. Expected on commit `ffe0b380166bd6b9bae7e3d89711a1078867e41d`: both exit `1`; both evidence files exist and accurately identify current red conditions. A red store result is not a failed checker.
+Run `npm run p0:check:source`, then `npm run p0:check:artifact`. Observed on local safety commit `ad5356a370960af623146803aa898522b7378f42`, whose application files remain unchanged from `ffe0b380166bd6b9bae7e3d89711a1078867e41d`: both exited `1`; both private evidence files exist and identify current red conditions. A red store result is not a failed checker.
 
-- [ ] **Step 4: Check evidence redaction**
+- [x] **Step 4: Check evidence redaction**
 
 Run:
 
@@ -1018,9 +1022,9 @@ Run:
 rg -n "[A-Za-z0-9._%+-]+@gmail\\.com|\\b39[0-9]{9,12}\\b|STRIPE_SECRET_KEY|SERVICE_ROLE|ACCESS_TOKEN" .safety-evidence
 ```
 
-Expected: no matches. Never print an `.env` file.
+Observed: exit `1`, meaning no matches. No `.env` file was read or printed.
 
-- [ ] **Step 5: Write the observed evidence note**
+- [x] **Step 5: Write the observed evidence note**
 
 Create `docs/evidence/2026-08-22-ap1a-local-gate-rehearsal.md`. Start with `# AP1A local safety-gate rehearsal`, followed by `## Result`, `## Checks run`, `## Changes not made` and `## Next approval boundary`.
 
@@ -1030,7 +1034,7 @@ Under `## Changes not made`, record that nothing was pushed or published; no Git
 
 Under `## Next approval boundary`, state that the exact outside release protection and watcher connections must be presented to Donato before applying them.
 
-- [ ] **Step 6: Review and commit locally**
+- [x] **Step 6: Review and commit locally**
 
 Run `git diff --check`, `git status --short` and `git log --oneline --decorate -8`. Expected: formatting exits `0`; only the evidence note is uncommitted.
 
