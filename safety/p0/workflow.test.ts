@@ -15,8 +15,16 @@ interface WorkflowJob {
   steps?: WorkflowStep[];
 }
 
+interface WorkflowTrigger {
+  branches?: string[];
+}
+
 interface Workflow {
-  on?: Record<string, unknown>;
+  on?: {
+    pull_request?: WorkflowTrigger;
+    push?: WorkflowTrigger;
+    workflow_dispatch?: Record<string, unknown> | null;
+  };
   permissions?: Record<string, unknown>;
   jobs?: Record<string, WorkflowJob>;
 }
@@ -34,7 +42,6 @@ test("defines separate repair-admission and absolute live-store results", () => 
   assert.deepEqual(workflow.permissions, { contents: "read" });
   assert.equal(workflow.jobs?.repair_admission?.name, "P0 Repair Admission");
   assert.equal(workflow.jobs?.live_store_safety?.name, "P0 Live Store Safety");
-  assert.equal(workflow.jobs?.repair_admission?.if, "github.event_name == 'pull_request'");
 
   const repairCommands = (workflow.jobs?.repair_admission?.steps ?? [])
     .flatMap((step) => step.run ? [step.run] : [])
@@ -46,6 +53,19 @@ test("defines separate repair-admission and absolute live-store results", () => 
     .join("\n");
   assert.match(liveCommands, /npm run p0:check:source/);
   assert.match(liveCommands, /npm run p0:check:artifact/);
+});
+
+test("routes repair admission to main proposals and live safety to production proposals and updates", () => {
+  assert.deepEqual(workflow.on?.pull_request?.branches, ["main", "production"]);
+  assert.deepEqual(workflow.on?.push?.branches, ["production"]);
+  assert.equal(
+    workflow.jobs?.repair_admission?.if,
+    "github.event_name == 'pull_request' && github.base_ref == 'main'",
+  );
+  assert.equal(
+    workflow.jobs?.live_store_safety?.if,
+    "github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'production')",
+  );
 });
 
 test("keeps every checkout and command unable to publish or alert", () => {
