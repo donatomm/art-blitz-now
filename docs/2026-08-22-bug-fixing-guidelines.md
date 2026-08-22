@@ -2,17 +2,11 @@
 
 ## Quick orientation
 
-This document records Donato's approved bug-fixing and severity framework. It is a decision aid for independent judgment, not an exhaustive checklist.
+This document records Donato's approved bug-fixing and severity framework. Donato's Vision, SEO Recap and Review principles appear exactly once below, verbatim. The later sections add priority interpretation and current evidence without summarizing or restating those principles.
 
-The current MVP works and must be preserved. Detection is aggressive. Changes are conservative. Known conditions are starting probes only. Passing every recorded probe does not establish that the shop is safe, and a failure mechanism does not become less important because it is absent from this document.
-
-## Donato's framework, preserved verbatim
-
-The wording below is preserved as supplied. Typographical and grammatical irregularities are not silently corrected.
+## Vision, SEO Recap and Review principles, verbatim
 
 ```text
-BUG FIXING GUIDELINES
-
 Vision
 We have an MVP in production that works, although it is not well designed.
 We have  rewriting it until after the GTM and automated distribution experiments. SEO is particularly important because it directly affects those experiments.
@@ -25,6 +19,7 @@ SEO Recap
 Fix the ticking bombs first
 FIx anything that makes current SEO work as a SHOPIY-grade SEO and better. Remember that SEO issues may derive from how content is written where and how. Flag those and let Donato fix his crap :)
 
+
 Review principles
 - Judge issues by their credible consequences, not by how strange or poorly written the code looks or merely because it is old or unusual.
 - Assume Lovable may have created unexpected implementations or hidden dependencies.
@@ -32,7 +27,13 @@ Review principles
 - Stay aware for unidentified bugs
 
 We’ll use an agressive detection method, but a very conservative action
+```
 
+## Severity framework, verbatim
+
+The wording below is preserved as supplied. Typographical and grammatical irregularities are not silently corrected.
+
+```text
 P0
 P0 includes the most dangerous bugs for production and SEO continuity robustness. The ticking bombs.
 What under a credible condition, it could cause a malfunction, failure, or crash
@@ -59,19 +60,17 @@ If you find another possible bug, suspicious behavior, or old code that may not 
 
 These notes resolve ambiguities without replacing Donato's framework.
 
-### Consequence controls severity
+### P0 and P1 boundary
 
-The broad P0 reference to a possible malfunction is read together with the consequences that follow it. A malfunction is P0 when a credible trigger can cause a blocking customer break, a major SEO or indexability discontinuity, catastrophic fragility in a key pillar, or important image loss. A non-blocking incorrect behavior belongs in P1. Poor form without credible operational danger belongs in P2.
+The first broad sentence under P0 is read together with the P0 consequences that follow it. This prevents that sentence from absorbing the non-blocking cases expressly assigned to P1 and the non-credible cases expressly assigned to P2.
 
 ### Suspicion starts investigation, not repair
 
-Suspicious, old or poorly understood code enters a P1 investigation queue so it is not ignored. That temporary placement is not a confirmed severity judgment and does not authorize a fix. Investigation must look for hidden dependencies, triggering conditions and counterexamples. The item is then confirmed as P0 or P1, moved to P2, or left explicitly unknown.
+Suspicious, old or poorly understood code enters a P1 investigation queue so it is not ignored. That temporary placement is not a confirmed severity judgment and does not authorize a fix. Investigation establishes the relevant triggering conditions and counterexamples. The item is then confirmed as P0 or P1, moved to P2, or left explicitly unknown.
 
 ### SEO is judged by observable outcomes
 
-"SHOPIY-grade SEO and better" is treated as direction, not a vendor checklist. The controlling SEO evidence and acceptance conditions remain crawlability, indexability, unique public-page identity, correct canonical addresses, meaningful public content, structured product information, sitemap consistency, important image availability and loading performance that affects customers or discovery.
-
-Content can be the source of an SEO failure. When the software is functioning but wording, content selection or placement is the cause, record that cause and give it to Donato. Do not disguise a content repair as a software rewrite.
+The commerce-platform comparison is treated as direction, not a vendor checklist. The controlling SEO evidence and acceptance conditions remain crawlability, indexability, unique public-page identity, correct canonical addresses, meaningful public content, structured product information, sitemap consistency, important image availability and loading performance that affects customers or discovery.
 
 ## No checklist closure
 
@@ -79,10 +78,9 @@ No finite list of known bugs, conditions, tests or examples proves the product s
 
 - A passing check is evidence only for the exact condition it exercises.
 - Known conditions are examples that improve attention. They do not define the boundary of examination.
-- Review remains open to unidentified triggers, hidden dependencies, shared failure points, provider changes, data changes, timing, state transitions and alternate customer or crawler paths.
+- Review remains open to unlisted causal paths, shared failure points, provider changes, data changes, timing, state transitions and alternate customer or crawler paths.
 - Classification remains revisable when new evidence changes the credible consequence.
 - Every conclusion must state residual unknowns and at least one plausible counterexample or unexamined path.
-- A repair must remain minimal even when investigation reveals broader poor design. Broader redesign stays deferred unless the discovered consequence independently justifies it.
 
 The reviewer does not finish by checking every known item. The reviewer asks what could still produce the same business harm if every known item passed.
 
@@ -129,9 +127,8 @@ When a priority is assigned, the record should explain in plain English:
 2. the credible trigger, malfunction and consequence;
 3. the protected outcome affected, if any;
 4. evidence supporting the path and evidence limiting it;
-5. hidden dependencies or alternate paths examined;
-6. residual unknowns and why they do or do not prevent classification;
-7. why the smallest proposed action is safer than leaving the condition alone.
+5. alternate paths examined;
+6. residual unknowns and why they do or do not prevent classification.
 
 These are prompts for reasoning, not boxes whose completion proves safety.
 
