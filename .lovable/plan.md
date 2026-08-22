@@ -7,7 +7,7 @@ Make the existing T&C checkbox impossible to miss on a failed buy attempt by add
 In `src/pages/Product.tsx`, the terms acceptance block (around the existing checkbox and error message) will gain an error-state visual:
 - A red outline / tinted background around the whole checkbox row when `showTermsError` is true.
 - A left-pointing arrow icon positioned to the left of the checkbox, visible only in the error state.
-- Bold red helper text reading "Campo obbligatorio per procedere" placed directly under the checkbox label when the error is active.
+
 - The existing error paragraph below the checkbox is preserved.
 
 ## Files to modify
