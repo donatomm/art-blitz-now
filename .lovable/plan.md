@@ -20,19 +20,20 @@ You renamed the irregular size on OCTOBLUE SUCKERS from `2x90x60` to `2x9060` in
 
 1. Update the `default_prices` row `2x90x60` to `2x9060` (keeping the 299 value, or a value you specify) so the listing price matches again — one DB update, no code change.
 2. Redeploy so the prebuild step regenerates `src/generated/staticProducts.ts` from the live database and the public pages pick up `2x9060` and price 129.
-3. Optional: rename the mockroom image to the new convention and update the size's `mock_room_url`.
+
+**Constraint:** No URLs will be changed. The mockroom image filename stays exactly as it is, and no storage paths or page routes are touched.
 
 Nothing else needs to change: the size label, price, deal price and Stripe id on the product itself are already consistent, and `normalizeDimension()` handles `2x9060` without confusing it with other sizes.
 
 ## Confirmations I need
 
 - Should the default price for `2x9060` stay 299, or be a different number?
-- Do you want the mockroom image renamed, or leave the filename alone?
 - Do you want me to run `docs/SAFETY-CHECK.md` before touching anything?
+- Confirm: leave the mockroom image URL exactly as-is (`octoblue-double-suckers-2x60x90.webp`).
 
 ## Risks
 
 - Editing `default_prices` changes the crossed-out reference price shown next to offers for that SKU; it does not change what a customer pays (the sale price lives on the product size).
 - If the value is set below the current 129 sale price, the offer display logic hides the strikethrough.
 - Regenerating the static snapshot pulls in every other change made in the database since the last deploy — expected, but worth knowing.
-- Renaming the storage image is irreversible; it must be copy-then-verify-then-delete, following the verify-before-delete rule.
+- No URLs are changed, so existing image links, product routes, and cached references remain valid.
