@@ -584,7 +584,7 @@ Grazie!`);
                   </div>
                   {showTermsError && (
                     <p className="text-destructive text-sm font-medium mt-3 ml-8">
-                      Per continuare devi accettare i Termini e Condizioni.
+                      La legge dice che devi prima fare questo click ...
                     </p>
                   )}
                 </div>
