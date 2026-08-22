@@ -28,8 +28,8 @@ Nothing else needs to change: the size label, price, deal price and Stripe id on
 ## Confirmations I need
 
 - Should the default price for `2x9060` stay 299, or be a different number?
-- Do you want the mockroom image renamed, or leave the filename alone?
 - Do you want me to run `docs/SAFETY-CHECK.md` before touching anything?
+- Confirm: leave the mockroom image URL exactly as-is (`octoblue-double-suckers-2x60x90.webp`).
 
 ## Risks
 
