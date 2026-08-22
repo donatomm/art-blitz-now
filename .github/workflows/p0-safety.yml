@@ -1,0 +1,66 @@
+name: P0 Store Safety
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  p0_store_safety:
+    name: P0 Store Safety Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Read the proposed change
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use the project's Node version
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install locked packages
+        run: npm ci
+
+      - name: Prove the safety checker
+        run: npm run test:safety
+
+      - name: Check safety-file agreement
+        run: npm run typecheck:safety
+
+      - name: Build only from the committed snapshot
+        run: npm run build:committed
+
+      - name: Check saved catalogue and hosting rules
+        id: source_gate
+        continue-on-error: true
+        run: npm run p0:check:source
+
+      - name: Check built pages, sitemap and shared images
+        id: artifact_gate
+        continue-on-error: true
+        run: npm run p0:check:artifact
+
+      - name: Preserve redacted evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p0-safety-evidence
+          path: .safety-evidence/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Stop an unsafe release
+        if: always()
+        env:
+          SOURCE_RESULT: ${{ steps.source_gate.outcome }}
+          ARTIFACT_RESULT: ${{ steps.artifact_gate.outcome }}
+        run: |
+          test "$SOURCE_RESULT" = "success"
+          test "$ARTIFACT_RESULT" = "success"
