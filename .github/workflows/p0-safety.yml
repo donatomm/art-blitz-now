@@ -95,7 +95,7 @@ jobs:
 
   live_store_safety:
     name: P0 Live Store Safety
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'production')
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'production')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

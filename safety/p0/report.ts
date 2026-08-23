@@ -17,6 +17,7 @@ const SAFE_EVIDENCE_KEYS = new Set([
 ]);
 
 const SENSITIVE_VALUE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}|(?:\+?\d[\s().-]*){9,}|(?:sk|rk)_(?:live|test)_[a-z0-9]+|service[_-]?role|access[_-]?token|secret[_-]?key/i;
+const SAFE_IDENTITY_HASH = /^[a-f0-9]{64}$/;
 
 function safeValue(value: string | number | boolean | null): string | number | boolean | null {
   if (typeof value !== "string") return value;
@@ -30,7 +31,12 @@ function safeEvidence(
 ): Record<string, string | number | boolean | null> {
   const safe: Record<string, string | number | boolean | null> = {};
   for (const [key, value] of Object.entries(evidence)) {
-    if (SAFE_EVIDENCE_KEYS.has(key)) safe[key] = safeValue(value);
+    if (!SAFE_EVIDENCE_KEYS.has(key)) continue;
+    safe[key] = key === "identityHash"
+      && typeof value === "string"
+      && SAFE_IDENTITY_HASH.test(value)
+      ? value
+      : safeValue(value);
   }
   return safe;
 }

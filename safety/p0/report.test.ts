@@ -59,6 +59,22 @@ test("discards unexpected evidence fields and redacts sensitive values", () => {
   }
 });
 
+test("preserves privacy-safe identity hashes that contain a phone-like digit run", () => {
+  const identityHash = `${"a".repeat(20)}123456789${"b".repeat(35)}`;
+  const report = makeReport("artifact", [{
+    ...finding,
+    evidence: {
+      identityHash,
+      productName: "+39 123 456 7890",
+    },
+  }], options);
+
+  assert.deepEqual(report.findings[0].evidence, {
+    identityHash,
+    productName: "[REDACTED]",
+  });
+});
+
 test("restores private permissions when rewriting evidence", () => {
   const dir = mkdtempSync(join(tmpdir(), "octowonders-permissions-"));
   const evidenceDir = join(dir, "evidence");

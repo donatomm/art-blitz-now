@@ -55,7 +55,7 @@ test("defines separate repair-admission and absolute live-store results", () => 
   assert.match(liveCommands, /npm run p0:check:artifact/);
 });
 
-test("routes repair admission to main proposals and live safety to production proposals and updates", () => {
+test("routes repair admission to main proposals and live safety to production proposals, updates, and manual runs", () => {
   assert.deepEqual(workflow.on?.pull_request?.branches, ["main", "production"]);
   assert.deepEqual(workflow.on?.push?.branches, ["production"]);
   assert.equal(
@@ -64,7 +64,7 @@ test("routes repair admission to main proposals and live safety to production pr
   );
   assert.equal(
     workflow.jobs?.live_store_safety?.if,
-    "github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'production')",
+    "github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'production')",
   );
 });
 
