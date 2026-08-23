@@ -1,0 +1,153 @@
+name: P0 Store Safety
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, production]
+  push:
+    branches: [production]
+
+permissions:
+  contents: read
+
+jobs:
+  repair_admission:
+    name: P0 Repair Admission
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Read the proposed repair
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use the project's Node version
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install the proposed repair's locked packages
+        run: npm ci
+
+      - name: Prove the proposed safety judge
+        run: npm run test:safety
+
+      - name: Check proposed safety-file agreement
+        run: npm run typecheck:safety
+
+      - name: Build the proposed repair from its committed snapshot
+        run: npm run build:committed
+
+      - name: Measure proposed saved catalogue and hosting rules
+        continue-on-error: true
+        run: npm run p0:check:source
+
+      - name: Measure proposed built pages, sitemap and shared images
+        continue-on-error: true
+        run: npm run p0:check:artifact
+
+      - name: Read the accepted starting point
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .repair-baseline
+          persist-credentials: false
+
+      - name: Install the starting point's locked packages
+        working-directory: .repair-baseline
+        run: npm ci
+
+      - name: Build the starting point from its committed snapshot
+        working-directory: .repair-baseline
+        run: npm run build:committed
+
+      - name: Measure starting saved catalogue and hosting rules
+        working-directory: .repair-baseline
+        continue-on-error: true
+        run: npm run p0:check:source
+
+      - name: Measure starting built pages, sitemap and shared images
+        working-directory: .repair-baseline
+        continue-on-error: true
+        run: npm run p0:check:artifact
+
+      - name: Admit only a real repair without a new P0 condition
+        if: always()
+        run: >
+          npm run p0:check:repair --
+          .repair-baseline/.safety-evidence/p0-source.json
+          .repair-baseline/.safety-evidence/p0-artifact.json
+          .safety-evidence/p0-source.json
+          .safety-evidence/p0-artifact.json
+
+      - name: Preserve redacted repair evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p0-repair-evidence-${{ github.event.pull_request.number }}-${{ github.run_attempt }}
+          path: |
+            .repair-baseline/.safety-evidence/
+            .safety-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+
+  live_store_safety:
+    name: P0 Live Store Safety
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Read the proposed live version
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use the project's Node version
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install locked packages
+        run: npm ci
+
+      - name: Prove the safety judge
+        run: npm run test:safety
+
+      - name: Check safety-file agreement
+        run: npm run typecheck:safety
+
+      - name: Build only from the committed snapshot
+        run: npm run build:committed
+
+      - name: Check saved catalogue and hosting rules
+        id: source_gate
+        continue-on-error: true
+        run: npm run p0:check:source
+
+      - name: Check built pages, sitemap and shared images
+        id: artifact_gate
+        continue-on-error: true
+        run: npm run p0:check:artifact
+
+      - name: Preserve redacted live-store evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p0-live-store-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: .safety-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Keep public publishing closed while any P0 condition remains
+        if: always()
+        env:
+          SOURCE_RESULT: ${{ steps.source_gate.outcome }}
+          ARTIFACT_RESULT: ${{ steps.artifact_gate.outcome }}
+        run: |
+          test "$SOURCE_RESULT" = "success"
+          test "$ARTIFACT_RESULT" = "success"
