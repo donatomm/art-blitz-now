@@ -83,3 +83,14 @@ test("keeps every checkout and command unable to publish or alert", () => {
     /git\s+push|vercel|deploy|curl|repository_dispatch|workflow_run|checkly|whatsapp|resend|stripe|supabase/i,
   );
 });
+
+test("uploads private evidence from hidden evidence directories", () => {
+  const uploads = Object.values(workflow.jobs ?? {})
+    .flatMap((job) => job.steps ?? [])
+    .filter((step) => step.uses === "actions/upload-artifact@v4");
+
+  assert.equal(uploads.length, 2);
+  for (const upload of uploads) {
+    assert.equal(upload.with?.["include-hidden-files"], true);
+  }
+});

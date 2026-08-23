@@ -90,6 +90,7 @@ jobs:
           path: |
             .repair-baseline/.safety-evidence/
             .safety-evidence/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
 
@@ -138,6 +139,7 @@ jobs:
         with:
           name: p0-live-store-evidence-${{ github.sha }}-${{ github.run_attempt }}
           path: .safety-evidence/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
 
