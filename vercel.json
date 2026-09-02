@@ -1,12 +1,7 @@
 {
   "buildCommand": "npm run build",
   "redirects": [
-    {
-      "source": "/storie-fatti-scientifici-polpo",
-      "destination": "/blog",
-      "permanent": true
-    },
-    { "source": "/Octopus-Facts", "destination": "/blog", "permanent": true },
+    { "source": "/Octopus-Facts", "destination": "/storie-fatti-scientifici-polpo", "permanent": true },
     
     { "source": "/FAQs", "destination": "/faqs", "permanent": true },
 
@@ -23,6 +18,7 @@
     { "source": "/pricing-policy", "destination": "/pricing-policy/index.html" },
     { "source": "/resi-rimborsi", "destination": "/resi-rimborsi/index.html" },
     { "source": "/blog", "destination": "/blog/index.html" },
+    { "source": "/storie-fatti-scientifici-polpo", "destination": "/storie-fatti-scientifici-polpo/index.html" },
     { "source": "/privacy", "destination": "/privacy/index.html" },
     { "source": "/terms", "destination": "/terms/index.html" },
     { "source": "/ordine-personalizzato", "destination": "/ordine-personalizzato/index.html" },
@@ -30,11 +26,10 @@
     { "source": "/colors", "destination": "/colors/index.html" },
     { "source": "/faqs", "destination": "/faqs/index.html" },
     { "source": "/cookies", "destination": "/cookies/index.html" },
-
-    {
-      "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots|artist|contact|shipping|resi-e-rimborsi|Octopus-Facts).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/checkout/success", "destination": "/checkout/success/index.html" },
+    { "source": "/image-rename", "destination": "/image-rename/index.html" },
+    { "source": "/image-rename-tool", "destination": "/image-rename-tool/index.html" },
+    { "source": "/.lovable/oauth/consent", "destination": "/.lovable/oauth/consent/index.html" }
   ],
   "headers": [
     {

@@ -47,7 +47,7 @@ const sitemapLocations = (xml: string): string[] =>
   [...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)]
     .map((match) => match[1].replaceAll("&amp;", "&").trim());
 
-export function validateArtifact(distDir: string, routes: RouteContractEntry[]): P0Finding[] {
+export function validateSeoArtifact(distDir: string, routes: RouteContractEntry[]): P0Finding[] {
   const findings: P0Finding[] = [];
 
   for (const route of routes) {
@@ -73,8 +73,18 @@ export function validateArtifact(distDir: string, routes: RouteContractEntry[]):
       "Built sitemap is missing.",
     ));
   } else {
+    const sitemap = readFileSync(sitemapFile, "utf8");
+    const hasUrlset = /<urlset\b[^>]*>/i.test(sitemap) && /<\/urlset>\s*$/i.test(sitemap);
+    if (!hasUrlset) {
+      findings.push(finding(
+        "SITEMAP_MALFORMED",
+        "discoverable",
+        "/sitemap.xml",
+        "Built sitemap does not contain one complete urlset document.",
+      ));
+    }
     const counts = new Map<string, number>();
-    for (const location of sitemapLocations(readFileSync(sitemapFile, "utf8"))) {
+    for (const location of sitemapLocations(sitemap)) {
       counts.set(location, (counts.get(location) ?? 0) + 1);
     }
     for (const route of routes) {
@@ -107,6 +117,12 @@ export function validateArtifact(distDir: string, routes: RouteContractEntry[]):
       ));
     }
   }
+
+  return findings;
+}
+
+export function validateArtifact(distDir: string, routes: RouteContractEntry[]): P0Finding[] {
+  const findings = validateSeoArtifact(distDir, routes);
 
   for (const asset of CRITICAL_ASSETS) {
     const file = join(distDir, asset.slice(1));

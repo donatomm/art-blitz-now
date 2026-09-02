@@ -61,7 +61,7 @@ test("reports multiple primary headings", () => {
   assert.ok(codesFor(identity(healthyHead, "<h1>One</h1><h1>Two</h1>")).includes("HTML_H1_COUNT"));
 });
 
-test("does not promote repeated identical identity text to P0", () => {
+test("reports repeated identical titles and descriptions because each route must emit one of each", () => {
   const head = [
     healthyHead,
     "<title>Art</title>",
@@ -69,8 +69,8 @@ test("does not promote repeated identical identity text to P0", () => {
   ].join("");
   const findings = inspectHtml(identity(head, "<h1>Art</h1><h1>Art</h1>"), route);
 
-  assert.equal(findings.some((finding) => finding.code === "HTML_TITLE_COUNT"), false);
-  assert.equal(findings.some((finding) => finding.code === "HTML_DESCRIPTION_COUNT"), false);
+  assert.equal(findings.some((finding) => finding.code === "HTML_TITLE_COUNT"), true);
+  assert.equal(findings.some((finding) => finding.code === "HTML_DESCRIPTION_COUNT"), true);
   assert.equal(findings.some((finding) => finding.code === "HTML_H1_COUNT"), false);
 });
 

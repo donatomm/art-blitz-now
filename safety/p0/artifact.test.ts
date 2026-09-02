@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { validateArtifact } from "./artifact";
+import { validateArtifact, validateSeoArtifact } from "./artifact";
 
 const routes = [
   { path: "/", canonical: "https://octowonders.com/", kind: "home" as const },
@@ -42,6 +42,14 @@ const codesFor = (dir: string): string[] => validateArtifact(dir, routes).map((f
 
 test("accepts complete pages, sitemap and supported shared images", () => {
   assert.deepEqual(validateArtifact(createArtifact(), routes), []);
+});
+
+test("accepts complete page and sitemap structure independently of deferred shared images", () => {
+  const dir = createArtifact();
+  rmSync(join(dir, "logo.png"));
+  rmSync(join(dir, "artworks", "octoheaded.jpg"));
+
+  assert.deepEqual(validateSeoArtifact(dir, routes), []);
 });
 
 test("reports an expected built page that is absent", () => {
@@ -91,6 +99,18 @@ test("reports a missing sitemap", () => {
   const dir = mkdtempSync(join(tmpdir(), "octowonders-no-sitemap-"));
 
   assert.ok(codesFor(dir).includes("SITEMAP_MISSING"));
+});
+
+test("reports malformed sitemap markup even when every expected address appears", () => {
+  const dir = createArtifact();
+  writeFileSync(
+    join(dir, "sitemap.xml"),
+    "<loc>https://octowonders.com/</loc><loc>https://octowonders.com/blog</loc>",
+  );
+
+  assert.ok(validateSeoArtifact(dir, routes).some(
+    (finding) => finding.code === "SITEMAP_MALFORMED",
+  ));
 });
 
 test("reports homepage HTML stored at the shared logo address", () => {

@@ -52,19 +52,19 @@ export function inspectHtml(html: string, route: RouteContractEntry): P0Finding[
   const robots = matches(source, /<meta\b[^>]*name\s*=\s*["']robots["'][^>]*>/gi);
   const findings: P0Finding[] = [];
 
-  if (titles.length === 0 || distinct(titles).length > 1) {
+  if (titles.length !== 1) {
     findings.push(htmlFinding(
       "HTML_TITLE_COUNT",
       route,
-      "Document has no title or has conflicting titles.",
+      "Document must have exactly one title.",
       identityEvidence(titles),
     ));
   }
-  if (descriptions.length === 0 || distinct(descriptions).length > 1) {
+  if (descriptions.length !== 1) {
     findings.push(htmlFinding(
       "HTML_DESCRIPTION_COUNT",
       route,
-      "Document has no description or has conflicting descriptions.",
+      "Document must have exactly one description.",
       identityEvidence(descriptions),
     ));
   }
