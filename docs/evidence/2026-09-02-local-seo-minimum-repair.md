@@ -2,7 +2,7 @@
 
 ## Boundary
 
-Donato approved local-only, test-first implementation of the minimum hosting repair, single-title/single-description mechanism and fail-closed SSG/sitemap validation. This work changed no outside setting and made no commit, push, pull request, Preview or production deployment.
+Donato approved local-only, test-first implementation of the minimum hosting repair, single-title/single-description mechanism and fail-closed SSG/sitemap validation. The implementation itself changed no outside setting. At later explicit approval boundaries, it was committed, pushed to its GitHub repair branch and verified on the automatically created Vercel Preview. No pull request, merge or production deployment occurred.
 
 The intermittent refresh-cleared navigation 404, cart, checkout/payment behavior, automation, shared identity images, full SSG rewrite, full sitemap redesign and broad cleanup remained excluded.
 
@@ -39,8 +39,33 @@ Each new behavior was observed failing before implementation:
 
 Known pre-existing build warnings remain: React SSR `useLayoutEffect` warnings, missing `svgo` optimization support for `placeholder.svg`, a large client chunk, the NotFound import warning and vite-react-ssg's delayed forced exit. None was changed because it is outside this minimum repair.
 
-## Commit and approval boundary
+## Immutable Preview verification
 
-The verified repair and evidence were recorded in one local commit on `codex/ap1a-local-safety-gate`. The branch is one commit ahead of its remote counterpart. Nothing was pushed, no pull request or Vercel Preview was created, and production was not affected.
+Donato specifically approved pushing GitHub branch `codex/ap1a-local-safety-gate` and allowing its automatic Vercel Preview. The normal, non-force push advanced the remote branch from `db3bc316c46a926e57637230d397029a26dc140f` to repair commit `8547d8f74e7688e62ccf486c91acdf3701aa5cb1`.
 
-A read-only Vercel recheck confirmed that the Vercel Production environment still tracks GitHub `production`. Vercel Preview Branch Tracking is enabled for all unassigned GitHub branches and has no domain attached. Therefore, pushing the repair branch will automatically create a Vercel Preview but will not update the public shop. The next possible action is the combined GitHub branch push and its automatic Vercel Preview, requiring fresh approval. Pull request and production remain separate later approval boundaries.
+Vercel created Preview deployment `dpl_EWG7648S9wZUaWhPjuAUfqbh5FLA` from that exact GitHub branch and commit. It reached `READY` with Preview target and no public domain attached.
+
+Authenticated HTTP and browser checks against the immutable Preview proved:
+
+- homepage, intended article and checked product returned `200` and rendered their expected content;
+- `/Octopus-Facts` made one redirect to `/storie-fatti-scientifici-polpo`;
+- the intended article returned its own content and canonical rather than `/blog`;
+- an unknown page, `/sitemap.json`, `/logo.png` and `/artworks/octoheaded.jpg` returned real `404` responses rather than homepage HTML;
+- `/sitemap.xml` returned `200` XML with 32 addresses, 32 unique addresses and the intended article present;
+- homepage, article and checked product raw HTML each contained exactly one title, one description and one canonical, with server-rendered content.
+
+The two shared identity images remain deliberately deferred. Their real `404` responses confirm that the false-homepage substitution was removed; they are not evidence that the image work is complete.
+
+## Current approval boundary
+
+GitHub branch heads after the push are:
+
+- GitHub `main`: `0c850417164622de7cf1b7aeace7831bc1d85c79`;
+- GitHub `production`: `063cf2a3dbadd913e5e37c11703d52b52a82a340`;
+- GitHub `codex/ap1a-local-safety-gate`: `8547d8f74e7688e62ccf486c91acdf3701aa5cb1`.
+
+The repair branch is one repair commit ahead of GitHub `main` and one merge-history commit behind it. GitHub's comparison reports one proposed commit and the 17 intended repair/evidence files.
+
+The Vercel Production environment still serves `dpl_DsY7SnNTgskyZShXrXLUdmfSr7kg`, sourced from commit `063cf2a3dbadd913e5e37c11703d52b52a82a340`, with `octowonders.com`, `www.octowonders.com` and the existing production aliases unchanged. Production did not move when the Preview was created.
+
+The next possible outside action is creating a GitHub pull request from `codex/ap1a-local-safety-gate` into GitHub `main`. It requires Donato's fresh approval. Creating it would request review and run checks; it would not publish to the public shop because Vercel Production tracks GitHub `production`. Merging that pull request, opening the later release pull request from GitHub `main` to GitHub `production`, merging into GitHub `production`, and public verification are separate approval boundaries. Payment remains paused, automatic rollback remains disabled and release reopening remains manual.

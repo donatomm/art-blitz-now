@@ -435,3 +435,31 @@ Local outcomes:
 The repair and evidence were recorded in one local commit on `codex/ap1a-local-safety-gate`; the branch is one commit ahead of its remote counterpart. No push, pull request, Preview, production deployment, image change or outside-setting change occurred.
 
 A read-only Vercel recheck confirmed that the Vercel Production environment still tracks GitHub `production`. Vercel Preview Branch Tracking is enabled for all unassigned GitHub branches and has no domain attached. Pushing the repair branch will therefore create an automatic Vercel Preview but will not update the public shop. The next possible action is this combined GitHub branch push and automatic Vercel Preview, requiring fresh approval. Pull request and production remain separate later approval boundaries. Payment remains paused, automatic rollback remains disabled and release reopening remains manual.
+
+## 20. 2026-09-02 repair branch pushed and Preview verified
+
+Donato specifically approved the combined GitHub repair-branch push and its automatic Vercel Preview. Commit `8547d8f74e7688e62ccf486c91acdf3701aa5cb1`, `fix: contain critical SEO publishing failures`, was pushed normally to GitHub branch `codex/ap1a-local-safety-gate`. No force push occurred and no pull request was created.
+
+Vercel automatically built Preview `dpl_EWG7648S9wZUaWhPjuAUfqbh5FLA` from that exact branch and commit. The deployment is `READY`, has Preview target and has no public domain attached.
+
+The immutable Preview passed the bounded live checks:
+
+- homepage, intended article and checked product returned `200` and rendered;
+- `/Octopus-Facts` redirected exactly once to `/storie-fatti-scientifici-polpo`;
+- the article had its own content, title and canonical rather than `/blog` identity;
+- unknown page and sitemap-like paths returned real `404` responses;
+- `/logo.png` and `/artworks/octoheaded.jpg` returned real `404` responses instead of homepage HTML, while the deferred missing-image findings remain open;
+- sitemap returned `200` XML with 32 unique addresses and included the article;
+- homepage, article and checked product each had exactly one title, one description and one canonical in raw server-rendered HTML.
+
+After Preview creation, Vercel Production remained on `dpl_DsY7SnNTgskyZShXrXLUdmfSr7kg`, sourced from `063cf2a3dbadd913e5e37c11703d52b52a82a340`. Its public aliases, including `octowonders.com` and `www.octowonders.com`, remained attached. The recovery deployment remains `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo`.
+
+Current GitHub branch heads are:
+
+- `main`: `0c850417164622de7cf1b7aeace7831bc1d85c79`;
+- `production`: `063cf2a3dbadd913e5e37c11703d52b52a82a340`;
+- `codex/ap1a-local-safety-gate`: `8547d8f74e7688e62ccf486c91acdf3701aa5cb1`.
+
+GitHub compares the repair branch to `main` as one intended repair commit ahead and one prior merge-history commit behind. The proposed change set contains the 17 recorded repair and evidence files.
+
+The exact next possible outside action is creating a GitHub pull request from `codex/ap1a-local-safety-gate` into GitHub `main`. This requires fresh specific approval. Creating the pull request will not publish the public shop. Merging it is a separate approval boundary. The later controlled release from GitHub `main` to GitHub `production`, its merge, the Vercel Production build and public verification each remain unapproved. Do not use Admin `Sync & Deploy` or `vercel --prod`. Payment remains paused, automatic rollback remains disabled and release reopening remains manual.
