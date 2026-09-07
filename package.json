@@ -7,7 +7,7 @@
     "prebuild:products": "tsx scripts/prebuild.ts",
     "dev": "vite",
     "build": "npm run prebuild:products && vite-react-ssg build",
-    "postbuild": "node scripts/postbuild-inject-head.cjs && node scripts/postbuild-css-alias.cjs && node scripts/postbuild-uuid-redirects.cjs && node scripts/postbuild-inline-ssg-data.cjs",
+    "postbuild": "node scripts/postbuild-inject-head.cjs && node scripts/postbuild-css-alias.cjs && node scripts/postbuild-uuid-redirects.cjs && node scripts/postbuild-inline-ssg-data.cjs && npm run p0:check:build-seo",
     "build:dev": "vite build --mode development",
     "build:committed": "vite-react-ssg build && npm run postbuild",
     "lint": "eslint .",
@@ -15,6 +15,7 @@
     "typecheck:safety": "tsc -p safety/tsconfig.json",
     "p0:check:source": "tsx safety/p0/check-source.ts",
     "p0:check:artifact": "tsx safety/p0/check-artifact.ts",
+    "p0:check:build-seo": "tsx safety/p0/check-build-seo.ts",
     "p0:check:repair": "tsx safety/p0/check-repair.ts",
     "preview": "vite preview"
   },

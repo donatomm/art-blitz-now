@@ -1,4 +1,14 @@
-# OctoWonders Current Handoff
+# OctoWonders current handoff
+
+**Current as of 2026-09-02:** Start at `/Users/donatomm/---OCTOPRO.PRO/OCTOWONDERS/CONTINUITY.md`, then follow its mandatory reading order through `docs/handoffs/2026-08-27-continuity-package.md`.
+
+The dated package is the current overlay, including its 2026-08-29 price-only production rebuild and remeasurement records and its 2026-09-02 minimum SEO repair and verified Preview. The current public deployment remains `dpl_DsY7SnNTgskyZShXrXLUdmfSr7kg`; `dpl_TL2wWwETpnj44kzsc6NxeV9AhVAo` remains the recovery deployment. The repair evidence is in `docs/evidence/2026-09-02-local-seo-minimum-repair.md`. Commit `8547d8f74e7688e62ccf486c91acdf3701aa5cb1` is pushed to GitHub branch `codex/ap1a-local-safety-gate`. Its automatic Vercel Preview, `dpl_EWG7648S9wZUaWhPjuAUfqbh5FLA`, is READY and passed the recorded route, identity, sitemap and render checks. Vercel Production still tracks GitHub `production`; the Preview has no public domain attached. The next possible outside action is creating a GitHub pull request from `codex/ap1a-local-safety-gate` into GitHub `main`, requiring fresh approval. No merge or production publication is approved. The 2026-08-23 material below is retained as history. Its statement that Stage 0 Change 2 is pending is obsolete. Later completed work, current branch protection, the safe release procedure, the 20-hour technical-SEO scope and all newer exclusions are recorded in the 2026-08-27 package. Apply the original controlling handoff's authority order, with Donato's newest explicit instruction first.
+
+Do not act from this pointer alone. Reading does not authorize store-code edits, deployments, indexing actions, production-data mutations, payment actions or outside-setting changes.
+
+---
+
+# Historical handoff retained from 2026-08-23
 
 **Last reconciled:** 2026-08-23
 
