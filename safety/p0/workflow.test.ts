@@ -7,12 +7,15 @@ interface WorkflowStep {
   uses?: string;
   run?: string;
   with?: Record<string, unknown>;
+  env?: Record<string, string>;
 }
 
 interface WorkflowJob {
   name?: string;
   if?: string;
   steps?: WorkflowStep[];
+  needs?: string;
+  services?: Record<string, { image?: string; env?: Record<string, string> }>;
 }
 
 interface WorkflowTrigger {
@@ -78,10 +81,30 @@ test("keeps every checkout and command unable to publish or alert", () => {
   }
 
   const commands = steps.flatMap((step) => step.run ? [step.run] : []).join("\n");
+  // This exact path is SQL input to the disposable Postgres test, not a CLI.
+  const executableCommands = commands.replaceAll(
+    "-f supabase/migrations/20260925093000_confirmed_orders.sql",
+    "-f LOCAL_RECEIPT_MIGRATION",
+  );
   assert.doesNotMatch(
-    commands,
+    executableCommands,
     /git\s+push|vercel|deploy|curl|repository_dispatch|workflow_run|checkly|whatsapp|resend|stripe|supabase/i,
   );
+});
+
+test("payment database tests stay local and block both release gates on failure", () => {
+  const job = workflow.jobs?.payment_infrastructure;
+  assert.equal(job?.services?.postgres?.image, "postgres:16");
+  const databaseSteps = job?.steps?.filter(step => step.run?.includes("psql")) ?? [];
+  assert.equal(databaseSteps.length, 1);
+  assert.deepEqual(databaseSteps[0].env, {
+    PGHOST: "localhost", PGPORT: "5432", PGUSER: "postgres",
+    PGPASSWORD: "local-ci-fixture", PGDATABASE: "postgres",
+  });
+  assert.equal(job?.services?.postgres?.env?.POSTGRES_PASSWORD, "local-ci-fixture");
+  assert.equal(job?.steps?.find(step => step.uses === "actions/setup-node@v4")?.with?.["node-version"], "20");
+  assert.equal(workflow.jobs?.repair_admission?.needs, "payment_infrastructure");
+  assert.equal(workflow.jobs?.live_store_safety?.needs, "payment_infrastructure");
 });
 
 test("uploads private evidence from hidden evidence directories", () => {

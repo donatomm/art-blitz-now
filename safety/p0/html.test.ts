@@ -15,6 +15,11 @@ const healthyHead = [
   "<title>Art</title>",
   '<meta name="description" content="One">',
   '<link rel="canonical" href="https://octowonders.com/product/art">',
+  '<meta property="og:title" content="Art">',
+  '<meta property="og:description" content="One">',
+  '<meta property="og:type" content="product">',
+  '<meta property="og:image" content="https://octowonders.com/images/art.jpg">',
+  '<meta property="og:url" content="https://octowonders.com/product/art">',
 ].join("");
 
 const codesFor = (html: string): string[] => inspectHtml(html, route).map((finding) => finding.code);
@@ -31,6 +36,15 @@ test("ignores tag-like text inside scripts and styles", () => {
   ].join("");
 
   assert.deepEqual(inspectHtml(identity(rawText), route), []);
+});
+
+test("accepts a quoted Open Graph description containing a newline", () => {
+  const head = healthyHead.replace(
+    '<meta property="og:description" content="One">',
+    '<meta property="og:description" content="One\nline">',
+  );
+
+  assert.deepEqual(inspectHtml(identity(head), route), []);
 });
 
 test("reports duplicate document titles", () => {
@@ -78,4 +92,19 @@ test("reports an intended public route marked not for indexing", () => {
   const head = `${healthyHead}<meta name="robots" content="noindex, follow">`;
 
   assert.ok(codesFor(identity(head)).includes("HTML_NOINDEX"));
+});
+
+test("reports an incomplete required Open Graph identity", () => {
+  const head = healthyHead.replace(/<meta property="og:url"[^>]*>/, "");
+
+  assert.ok(codesFor(identity(head)).includes("HTML_OG_REQUIRED"));
+});
+
+test("reports incomplete metadata for the default Open Graph image", () => {
+  const head = healthyHead.replace(
+    "https://octowonders.com/images/art.jpg",
+    "https://octowonders.com/artworks/octoheaded.jpg",
+  );
+
+  assert.ok(codesFor(identity(head)).includes("HTML_OG_IMAGE_METADATA"));
 });

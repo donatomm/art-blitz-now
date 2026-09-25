@@ -11,7 +11,7 @@ const routes = [
 ];
 
 const healthyHtml = (title: string, canonical: string): string =>
-  `<!doctype html><html><head><title>${title}</title><meta name="description" content="Good"><link rel="canonical" href="${canonical}"></head><body><h1>${title}</h1></body></html>`;
+  `<!doctype html><html><head><title>${title}</title><meta name="description" content="Good"><link rel="canonical" href="${canonical}"><meta property="og:title" content="${title}"><meta property="og:description" content="Good"><meta property="og:type" content="website"><meta property="og:image" content="https://octowonders.com/images/test.jpg"><meta property="og:url" content="${canonical}"></head><body><h1>${title}</h1></body></html>`;
 
 const png = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",

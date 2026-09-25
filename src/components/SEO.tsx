@@ -20,6 +20,7 @@ interface SEOProps {
 
 const BASE_URL = 'https://octowonders.com';
 const DEFAULT_IMAGE = `${BASE_URL}/artworks/octoheaded.jpg`;
+const DEFAULT_IMAGE_ALT = 'Opera OctoWonders esposta in un ambiente contemporaneo';
 const SITE_NAME = 'OctoWonders';
 const BRAND_NAME = 'OctoWonders by Marco De Francesco';
 
@@ -128,6 +129,7 @@ export const SEO = ({
   // Image URL
   const metaImage = image || DEFAULT_IMAGE;
   const absoluteImage = metaImage.startsWith('http') ? metaImage : `${BASE_URL}${metaImage}`;
+  const usesDefaultImage = absoluteImage === DEFAULT_IMAGE;
 
   // Canonical URL - always absolute, strip query/hash, trailing slash for homepage
   const canonicalUrl = url 
@@ -157,6 +159,11 @@ export const SEO = ({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />
       <meta property="og:image" content={absoluteImage} />
+      {usesDefaultImage && <meta property="og:image:secure_url" content={DEFAULT_IMAGE} />}
+      {usesDefaultImage && <meta property="og:image:type" content="image/jpeg" />}
+      {usesDefaultImage && <meta property="og:image:width" content="1200" />}
+      {usesDefaultImage && <meta property="og:image:height" content="630" />}
+      {usesDefaultImage && <meta property="og:image:alt" content={DEFAULT_IMAGE_ALT} />}
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content={type === 'product' ? 'product' : 'website'} />
       <meta property="og:site_name" content={SITE_NAME} />
@@ -167,6 +174,7 @@ export const SEO = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={metaDescription} />
       <meta name="twitter:image" content={absoluteImage} />
+      {usesDefaultImage && <meta name="twitter:image:alt" content={DEFAULT_IMAGE_ALT} />}
 
       {/* JSON-LD Structured Data */}
       <script type="application/ld+json">

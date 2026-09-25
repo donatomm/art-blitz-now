@@ -11,8 +11,51 @@ permissions:
   contents: read
 
 jobs:
+  payment_infrastructure:
+    name: Payment Infrastructure Safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: local-ci-fixture
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.6.5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check payment server types
+        run: npm run typecheck:payments
+      - name: Test signed payment callbacks without provider access
+        run: npm run test:payments:runtime
+      - name: Test receipt persistence and permissions in the disposable database
+        env:
+          PGHOST: localhost
+          PGPORT: "5432"
+          PGUSER: postgres
+          PGPASSWORD: local-ci-fixture
+          PGDATABASE: postgres
+        run: >-
+          psql -v ON_ERROR_STOP=1
+          -c 'CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE service_role NOLOGIN BYPASSRLS; ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role;'
+          -f supabase/migrations/20260925093000_confirmed_orders.sql
+          -f safety/payments/confirmed-orders.sql
+
   repair_admission:
     name: P0 Repair Admission
+    needs: payment_infrastructure
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -96,6 +139,7 @@ jobs:
 
   live_store_safety:
     name: P0 Live Store Safety
+    needs: payment_infrastructure
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'production')
     runs-on: ubuntu-latest
     timeout-minutes: 20
