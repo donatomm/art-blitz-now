@@ -1,10 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { checkoutOrigin, checkoutRequest, selectedPrice } from "../_shared/checkoutPolicy.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 const logStep = (step: string, details?: any) => {
@@ -34,6 +36,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  if (req.method !== "POST") return new Response(null, { status: 405, headers: corsHeaders });
 
   try {
     logStep("Function started");
@@ -44,7 +47,7 @@ serve(async (req) => {
 
     // Parse request body
     const body = await req.json();
-    logStep("Request body", body);
+    checkoutRequest(body);
 
     // Determine if this is a cart request or legacy single-item request
     const isCartRequest = Array.isArray(body.items);
@@ -56,8 +59,12 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-    const origin = req.headers.get("origin") || "https://octowonders.lovable.app";
+    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil", timeout: 10000, maxNetworkRetries: 1 });
+    const mode = Deno.env.get("STRIPE_MODE") ?? "";
+    const origin = checkoutOrigin(req.headers.get("origin"), mode, Deno.env.get("CHECKOUT_ALLOWED_ORIGINS"));
+    if (!stripeKey.startsWith(mode === "live" ? "sk_live_" : "sk_test_")) {
+      throw new Error("Payment environment mismatch");
+    }
 
     // Calculate days remaining until December 14, 2025
     const deadline = new Date('2025-12-14T23:59:59');
@@ -113,9 +120,7 @@ serve(async (req) => {
         }
 
         // Use deal_price if offer is enabled
-        const effectivePrice = (selectedSize.deal_label_enabled && selectedSize.deal_price && selectedSize.deal_price > 0)
-          ? selectedSize.deal_price
-          : selectedSize.price;
+        const effectivePrice = selectedPrice(product, selectedSize);
 
         if (!effectivePrice || effectivePrice <= 0) {
           throw new Error(`Invalid price for "${product.name}" - ${cartItem.size_dimensions}`);
@@ -148,6 +153,7 @@ serve(async (req) => {
               name: `★ ${product.name.toUpperCase()} ★ ${selectedSize.dimensions} cm`,
               description,
               images,
+              metadata: { artwork_id: product.id, size_dimensions: selectedSize.dimensions },
             },
             unit_amount: Math.round(effectivePrice * 100),
           },
@@ -160,7 +166,6 @@ serve(async (req) => {
       metadata = {
         type: "cart",
         item_count: cartRequest.items.length.toString(),
-        items_summary: cartRequest.items.map(i => `${i.product_id}:${i.size_dimensions}:${i.quantity}`).join("|"),
       };
 
     } else {
@@ -199,16 +204,13 @@ serve(async (req) => {
       }
 
       const selectedSize = sizes[size_index];
-      logStep("Size selected", selectedSize);
 
       if (!selectedSize.stripe_product_id) {
         throw new Error("Stripe Product ID not configured for this size. Please add it in the Admin Panel.");
       }
 
       // Use deal_price if offer is enabled
-      const effectivePrice = (selectedSize.deal_label_enabled && selectedSize.deal_price && selectedSize.deal_price > 0)
-        ? selectedSize.deal_price
-        : selectedSize.price;
+      const effectivePrice = selectedPrice(product, selectedSize);
 
       if (!effectivePrice || effectivePrice <= 0) {
         throw new Error("Invalid price for selected size");
@@ -242,6 +244,7 @@ serve(async (req) => {
             name: `★ ${product.name.toUpperCase()} ★ ${selectedSize.dimensions} cm`,
             description,
             images,
+            metadata: { artwork_id: product.id, size_dimensions: selectedSize.dimensions },
           },
           unit_amount: Math.round(effectivePrice * 100),
         },
@@ -263,12 +266,12 @@ serve(async (req) => {
       const customers = await stripe.customers.list({ email: customerEmail, limit: 1 });
       if (customers.data.length > 0) {
         customerId = customers.data[0].id;
-        logStep("Existing customer found", { customerId });
+        logStep("Existing customer found");
       }
     }
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       customer_email: customerId ? undefined : customerEmail,
       line_items: lineItems,
@@ -278,19 +281,24 @@ serve(async (req) => {
       shipping_address_collection: {
         allowed_countries: ["IT"],
       },
-      metadata,
-    });
+      metadata: { ...metadata, integration: "octowonders-v1" },
+    };
+    // One browser request + exact server-priced payload maps to one session.
+    // A retry with a changed price creates a different key, never a stale charge.
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(sessionParams)));
+    const payloadHash = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
+    const session = await stripe.checkout.sessions.create(sessionParams, body.request_id
+      ? { idempotencyKey: `ow:${mode}:${body.request_id}:${payloadHash}` } : undefined);
 
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    logStep("Checkout session created");
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return new Response(JSON.stringify({ url: session.url, session_id: session.id }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" },
       status: 200,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    logStep("ERROR", { type: error instanceof Error ? error.name : "UnknownError" });
+    return new Response(JSON.stringify({ error: "Impossibile avviare il pagamento. Riprova o contattaci." }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

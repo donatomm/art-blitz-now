@@ -1,46 +1,92 @@
-import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Home, ShoppingBag } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, Loader2, AlertCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useStaticSiteSettings } from "@/hooks/useStaticSiteSettings";
+import { supabase } from "@/integrations/supabase/client";
+import { isPaidReceipt } from "@/lib/checkoutReceipt";
 
 const CheckoutSuccess = () => {
-  const { clearCart } = useCart();
+  const { completeCheckout, isCartLoaded } = useCart();
+  const [params] = useSearchParams();
+  const sessionId = params.get("session_id") || "";
+  const [status, setStatus] = useState<"checking" | "paid" | "pending" | "expired" | "error" | "missing">("checking");
+  const [retry, setRetry] = useState(0);
+  const [confirmedSessionId, setConfirmedSessionId] = useState("");
   const settings = useStaticSiteSettings();
   const whatsappNumber = settings.hellobar_whatsapp_number || '393666295174';
   const contactEmail = settings.hellobar_contact_email || 'info@octowonders.com';
 
-  // Clear cart on successful checkout
   useEffect(() => {
-    clearCart();
-  }, [clearCart]);
+    if (!/^cs_(test_|live_)?[A-Za-z0-9]{6,}$/.test(sessionId)) {
+      setStatus("missing");
+      return;
+    }
+    let cancelled = false;
+    setStatus("checking");
+    void (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("verify-checkout", {
+          body: { session_id: sessionId }, signal: AbortSignal.timeout(15000),
+        });
+        if (cancelled) return;
+        if (error || data?.error) throw new Error("Confirmation unavailable");
+        if (isPaidReceipt(data, sessionId)) {
+          setConfirmedSessionId(sessionId);
+          setStatus("paid");
+        }
+        else if (data?.status === "pending" || data?.status === "expired") setStatus(data.status);
+        else setStatus("error");
+      } catch {
+        if (!cancelled) setStatus("error");
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [sessionId, retry]);
+
+  useEffect(() => {
+    if (status === "paid" && confirmedSessionId === sessionId && isCartLoaded) completeCheckout(sessionId);
+  }, [status, sessionId, confirmedSessionId, completeCheckout, isCartLoaded]);
+
+  const messages = {
+    checking: ["Verifica del pagamento", "Stiamo verificando il pagamento e registrando il tuo ordine."],
+    paid: ["Grazie per il tuo ordine!", "Il pagamento è stato verificato e il tuo ordine è stato registrato."],
+    pending: ["Pagamento in attesa", "Il pagamento non è ancora confermato. Il tuo carrello è stato conservato."],
+    expired: ["Sessione di pagamento scaduta", "Questo pagamento non è stato confermato. Puoi ripartire dal carrello."],
+    error: ["Conferma temporaneamente non disponibile", "Non possiamo ancora confermare il pagamento. Non ripetere l'acquisto: riprova la verifica o contattaci. Il carrello è stato conservato."],
+    missing: ["Nessun pagamento da verificare", "Questo indirizzo non contiene un riferimento di pagamento valido. Il tuo carrello è stato conservato."],
+  } as const;
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO title="Ordine Completato" description="Grazie per il tuo ordine su OctoWonders." noindex={true} />
+      <SEO title="Verifica ordine" description="Verifica del pagamento e dell'ordine su OctoWonders." noindex={true} />
       <Navigation />
 
       <div className="container mx-auto px-4 pt-32 pb-12">
         <div className="max-w-lg mx-auto text-center space-y-6">
           <div className="flex justify-center">
-            <CheckCircle className="h-20 w-20 text-green-500" />
+            {status === "paid" ? <CheckCircle className="h-20 w-20 text-green-500" /> :
+              status === "checking" ? <Loader2 className="h-20 w-20 animate-spin" /> :
+              <AlertCircle className="h-20 w-20 text-muted-foreground" />}
           </div>
 
-          <h1 className="text-3xl font-bold text-foreground">Grazie per il tuo ordine!</h1>
+          <h1 className="text-3xl font-bold text-foreground">{messages[status][0]}</h1>
 
-          <p className="text-muted-foreground text-lg">
-            Il pagamento è stato elaborato con successo. Riceverai una email di conferma a breve.
+          <p className="text-muted-foreground text-lg" role="status" aria-live="polite">
+            {messages[status][1]}
           </p>
+          {(status === "pending" || status === "error") &&
+            <Button onClick={() => setRetry(value => value + 1)}>Verifica di nuovo</Button>}
 
-          <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+          {status === "paid" && <div className="bg-card border border-border rounded-lg p-6 space-y-4">
             <h2 className="font-semibold text-foreground">Prossimi passi:</h2>
             <ul className="text-left text-muted-foreground space-y-2">
               <li className="flex items-start gap-2">
                 <span className="text-gold">•</span>
-                <span>Riceverai un'email di conferma con i dettagli dell'ordine</span>
+                <span>Il tuo ordine è registrato. Per informazioni puoi contattarci qui sotto.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-gold">•</span>
@@ -48,10 +94,10 @@ const CheckoutSuccess = () => {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-gold">•</span>
-                <span>Riceverai il tracking della spedizione via email</span>
+                <span>Conserva il riferimento del pagamento presente nell'indirizzo di questa pagina.</span>
               </li>
             </ul>
-          </div>
+          </div>}
 
           {/* WhatsApp VIP Section */}
           <div className="bg-gradient-to-br from-green-50 to-green-100/50 border-2 border-green-500/30 rounded-lg p-6 space-y-3">

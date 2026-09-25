@@ -6,6 +6,7 @@ import { Minus, Plus, Trash2, ShoppingCart, Loader2, ArrowLeft } from "lucide-re
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { prepareCheckoutWindow, navigateToCheckout, closeCheckoutWindow } from "@/lib/openCheckout";
+import { checkoutRequestId, rememberCheckout } from "@/lib/checkoutAttempt";
 
 import { useToast } from "@/hooks/use-toast";
 
@@ -65,12 +66,16 @@ const CartDrawer = () => {
       }));
 
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { items: cartItems },
+        body: { items: cartItems, request_id: checkoutRequestId(cartItems) },
       });
 
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (!data?.url) throw new Error("No checkout URL received");
+      if (typeof data.session_id === "string") {
+        rememberCheckout(data.session_id, validItems.map(({ productId, sizeDimensions, quantity }) =>
+          ({ productId, sizeDimensions, quantity })));
+      }
 
       navigateToCheckout(checkoutTarget, data.url);
     } catch (error) {

@@ -17,6 +17,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { prepareCheckoutWindow, navigateToCheckout, closeCheckoutWindow } from "@/lib/openCheckout";
+import { checkoutRequestId, rememberCheckout } from "@/lib/checkoutAttempt";
 
 import { useToast } from "@/hooks/use-toast";
 import { TreePine } from "lucide-react";
@@ -261,12 +262,14 @@ Grazie!`);
       } = await supabase.functions.invoke('create-checkout', {
         body: {
           product_id: product.id,
-          size_index: sizeData.originalIndex // Use original index from full sizes array
+          size_index: sizeData.originalIndex, // Use original index from full sizes array
+          request_id: checkoutRequestId({ product_id: product.id, size_index: sizeData.originalIndex })
         }
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (!data?.url) throw new Error("No checkout URL received");
+      if (typeof data.session_id === "string") rememberCheckout(data.session_id, []);
 
       navigateToCheckout(checkoutTarget, data.url);
     } catch (error) {

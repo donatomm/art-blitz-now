@@ -6,6 +6,12 @@ verify_jwt = false
 [functions.create-checkout]
 verify_jwt = false
 
+[functions.verify-checkout]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
 [functions.sitemap]
 verify_jwt = false
 
