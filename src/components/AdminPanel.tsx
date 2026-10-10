@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon, Save, Rocket, Eye } from "lucide-react";
+import { Settings, Plus, Trash2, GripVertical, Download, Edit, Loader2, Upload, FileUp, AlertCircle, CheckCircle, ImageIcon, Save, Rocket, Eye, ArrowUpToLine } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -854,6 +854,13 @@ const AdminPanel = () => {
     
     handleProductsChange(updated);
   };
+  const handleMoveToTop = (productId: string) => {
+    const sorted = [...products].sort((a, b) => a.display_order - b.display_order);
+    const target = sorted.find(p => p.id === productId);
+    if (!target) return;
+    const reordered = [target, ...sorted.filter(p => p.id !== productId)];
+    handleProductsChange(reordered.map((product, i) => ({ ...product, display_order: i })));
+  };
   const updateEditSize = (sizeIndex: number, field: keyof ProductSize, value: string | number | boolean) => {
     if (!editProduct) return;
     const newSizes = [...editProduct.sizes];
@@ -1159,6 +1166,28 @@ const AdminPanel = () => {
                 </Button>
               </div>
 
+              <div className="flex items-center justify-between gap-2 p-2 border rounded-md">
+                <div>
+                  <p className="text-sm font-medium">Layout galleria</p>
+                  <p className="text-xs text-muted-foreground">Mosaico = sfalsato · Dritte = righe nell'ordine esatto</p>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className={galleryLayout === "masonry" ? "font-semibold" : "text-muted-foreground"}>Mosaico</span>
+                  <Switch
+                    checked={galleryLayout === "grid"}
+                    onCheckedChange={async (checked) => {
+                      try {
+                        await updateSetting.mutateAsync({ key: "gallery_layout", value: checked ? "grid" : "masonry" });
+                        toast({ title: "Layout salvato", description: "Visibile sul sito dopo Sync & Deploy." });
+                      } catch {
+                        toast({ title: "Errore", description: "Impossibile salvare il layout.", variant: "destructive" });
+                      }
+                    }}
+                  />
+                  <span className={galleryLayout === "grid" ? "font-semibold" : "text-muted-foreground"}>Dritte</span>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 {[...products].sort((a, b) => a.display_order - b.display_order).map((product, index) => <div key={product.id} className={`flex items-center gap-2 p-2 bg-muted rounded-md ${!product.is_active ? 'opacity-50' : ''}`}>
                       <div className="flex flex-col gap-1">
@@ -1169,6 +1198,9 @@ const AdminPanel = () => {
                           <GripVertical className="h-3 w-3 -rotate-90" />
                         </Button>
                       </div>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" title="Porta in cima" onClick={() => handleMoveToTop(product.id)} disabled={index === 0}>
+                        <ArrowUpToLine className="h-4 w-4" />
+                      </Button>
                       <img src={product.image_url} alt={product.name} className="w-12 h-12 object-cover rounded" />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{product.name}</p>
