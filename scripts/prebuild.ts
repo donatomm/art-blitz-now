@@ -137,6 +137,9 @@ async function fetchSiteSettings() {
     hellobar_popup_content: settings.hellobar_popup_content || "",
     hellobar_whatsapp_number: settings.hellobar_whatsapp_number || "393666295174",
     hellobar_contact_email: settings.hellobar_contact_email || "me@octowonders.com",
+
+    // Gallery layout: "masonry" (Mosaico, default) or "grid" (Dritte)
+    gallery_layout: settings.gallery_layout === "grid" ? "grid" : "masonry",
   };
 }
 
@@ -246,6 +249,9 @@ export interface StaticSiteSettings {
   hellobar_popup_content: string;
   hellobar_whatsapp_number: string;
   hellobar_contact_email: string;
+  
+  // Gallery layout
+  gallery_layout?: 'masonry' | 'grid';
   
   // Build metadata
   build_timestamp: string;

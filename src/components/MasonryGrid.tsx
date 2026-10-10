@@ -7,6 +7,8 @@ interface MasonryGridProps {
   onBuyClick: (product: Product) => void;
   editMode?: boolean;
   onProductUpdate?: (product: Product) => void;
+  /** "masonry" = Mosaico (default), "grid" = Dritte (straight rows, exact order) */
+  layout?: "masonry" | "grid";
 }
 
 const MasonryGrid = ({
@@ -14,8 +16,26 @@ const MasonryGrid = ({
   onBuyClick,
   editMode = false,
   onProductUpdate,
+  layout = "masonry",
 }: MasonryGridProps) => {
   const sortedProducts = [...products].sort((a, b) => a.display_order - b.display_order);
+
+  if (layout === "grid") {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1 items-start">
+        {sortedProducts.map((product) => (
+          <div key={product.id}>
+            <ProductCard
+              product={product}
+              onBuyClick={onBuyClick}
+              editMode={editMode}
+              onProductUpdate={onProductUpdate}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   // Responsive breakpoints for column count
   const breakpointColumns = {

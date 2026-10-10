@@ -50,6 +50,7 @@ export const useStaticSiteSettings = (): StaticSiteSettings => {
         hellobar_popup_content: getSetting(settings, 'hellobar_popup_content', ''),
         hellobar_whatsapp_number: getSetting(settings, 'hellobar_whatsapp_number', ''),
         hellobar_contact_email: getSetting(settings, 'hellobar_contact_email', ''),
+        gallery_layout: getSetting(settings, 'gallery_layout', 'masonry') === 'grid' ? 'grid' : 'masonry',
         build_timestamp: new Date().toISOString(),
       } as StaticSiteSettings;
     },
