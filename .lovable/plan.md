@@ -13,8 +13,9 @@
 5. **The live site only changes after a deploy.** Saving changes the database straight away. octowonders.com only shows the new order after "Sync & Deploy", plus up to about 15 minutes of caching.
 
 ## What I'll build (nothing changes until you approve)
+- **Step 1. Full safety check first.** I'll go through every section of your safety checklist (static pages, SEO, speed, images and the rest) for these changes and show you the results before I change anything. If anything comes back risky, I'll stop and ask you.
 - **A. "Porta in cima" button** next to each product in the admin list. It moves that artwork to position 1 and pushes everything else down by one. This is the fastest way to get new releases to the top.
-- **D. Gallery layout switch** in the admin panel: "Mosaico" (today's staggered look, the default) or "Righe ordinate" (straight rows that read left to right, top to bottom, in your exact order). Like prices, the switch shows on octowonders.com after "Sync & Deploy".
+- **D. "Mosaico / Dritte" switch** in the admin panel. "Mosaico" is today's staggered look and stays the default. "Dritte" lays the tiles out in straight rows that read left to right, top to bottom, in your exact order. Like prices, the switch shows on octowonders.com after "Sync & Deploy".
 
 Not included, as you chose: new products starting at the top (B) and safer arrows (C).
 
