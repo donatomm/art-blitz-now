@@ -618,6 +618,9 @@ const AdminPanel = () => {
 
   // Only fetch products when authenticated - prevents API call for visitors
   const { data: products = [], refetch } = useProducts({ enabled: isAuthenticated });
+  const { data: layoutSettings } = useSiteSettings();
+  const updateSetting = useUpdateSiteSetting();
+  const galleryLayout = getSettingValue<string>(layoutSettings, "gallery_layout", "masonry") === "grid" ? "grid" : "masonry";
   const updateProduct = useUpdateProduct();
   const createProduct = useCreateProduct();
   const deleteProduct = useDeleteProduct();
