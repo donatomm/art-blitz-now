@@ -40,6 +40,9 @@ export interface StaticSiteSettings {
   hellobar_whatsapp_number: string;
   hellobar_contact_email: string;
   
+  // Gallery layout
+  gallery_layout?: 'masonry' | 'grid';
+  
   // Build metadata
   build_timestamp: string;
 }

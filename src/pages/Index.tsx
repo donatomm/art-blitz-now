@@ -102,6 +102,7 @@ const Index = () => {
         <MasonryGrid 
           products={products.filter(p => p.is_active)} 
           onBuyClick={handleBuyClick} 
+          layout={staticSettings.gallery_layout === 'grid' ? 'grid' : 'masonry'}
         />
       </main>
 
