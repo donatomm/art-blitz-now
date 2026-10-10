@@ -1,8 +1,12 @@
 {
   "buildCommand": "npm run build",
   "redirects": [
+    {
+      "source": "/storie-fatti-scientifici-polpo",
+      "destination": "/blog",
+      "permanent": true
+    },
     { "source": "/Octopus-Facts", "destination": "/blog", "permanent": true },
-    { "source": "/storie-fatti-scientifici-polpo", "destination": "/blog", "permanent": true },
     
     { "source": "/FAQs", "destination": "/faqs", "permanent": true },
 
@@ -26,10 +30,11 @@
     { "source": "/colors", "destination": "/colors/index.html" },
     { "source": "/faqs", "destination": "/faqs/index.html" },
     { "source": "/cookies", "destination": "/cookies/index.html" },
-    { "source": "/checkout/success", "destination": "/checkout/success/index.html" },
-    { "source": "/image-rename", "destination": "/image-rename/index.html" },
-    { "source": "/image-rename-tool", "destination": "/image-rename-tool/index.html" },
-    { "source": "/.lovable/oauth/consent", "destination": "/.lovable/oauth/consent/index.html" }
+
+    {
+      "source": "/((?!api|_next|static|favicon.ico|artworks|images|mockrooms|docs|screenshots|artist|contact|shipping|resi-e-rimborsi|Octopus-Facts).*)",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
