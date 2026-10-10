@@ -4,7 +4,6 @@
     { "source": "/Octopus-Facts", "destination": "/blog", "permanent": true },
     { "source": "/storie-fatti-scientifici-polpo", "destination": "/blog", "permanent": true },
     
-    
     { "source": "/FAQs", "destination": "/faqs", "permanent": true },
 
     { "source": "/artist", "destination": "/artista", "permanent": true },
