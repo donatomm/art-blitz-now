@@ -1,2 +1,2 @@
-- [ ] Test: add x-octo-marker to trigger-deploy corsHeaders + deploy
+- [x] Test: add x-octo-marker to trigger-deploy corsHeaders + deploy
 - [ ] Diagnose user-reported deploy problem ("no va bene il deploy")
