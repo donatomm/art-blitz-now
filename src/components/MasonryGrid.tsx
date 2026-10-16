@@ -22,7 +22,7 @@ const MasonryGrid = ({
 
   if (layout === "grid") {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1 items-start">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 items-start">
         {sortedProducts.map((product) => (
           <div key={product.id}>
             <ProductCard
@@ -39,8 +39,8 @@ const MasonryGrid = ({
 
   // Responsive breakpoints for column count
   const breakpointColumns = {
-    default: 4,
-    1280: 4,  // xl
+    default: 3,
+    1280: 3,  // xl
     1024: 3,  // lg
     640: 2,   // sm
     0: 1      // mobile
