@@ -15,29 +15,83 @@ interface ArtworkLightboxProps {
 
 interface Slide {
   url: string;
-  caption: string;
   isArtwork: boolean;
+  sizeLabel: string;
 }
 
-const HINT_KEY = "artworkLightboxHintShown";
+const formatSize = (dims: string) => {
+  const parts = dims.split(/[x×]/i).map((p) => p.trim()).filter(Boolean);
+  return parts.length >= 2 ? `${parts.join(" × ")} cm` : dims.trim();
+};
+
+const HAND_PATH =
+  "M38 70 L38 16 A6 6 0 0 1 50 16 L50 56 L50 52 A6 6 0 0 1 62 52 L62 58 L62 57 A6 6 0 0 1 74 57 L74 63 L74 63 A5.5 5.5 0 0 1 85 63 L85 86 C85 101 76 112 61 112 L51 112 C41 112 35 107 29 99 L14 79 A6 6 0 0 1 23 70 L38 85 Z";
+
+const HINT_CSS = `
+@keyframes awlh-hand{0%{transform:translateX(0)}16.6%{transform:translateX(-40px)}33.3%{transform:translateX(40px)}50%,100%{transform:translateX(0)}}
+@keyframes awlh-left{0%,16.5%{opacity:1}16.6%,100%{opacity:0}}
+@keyframes awlh-right{0%,16.5%{opacity:0}16.6%,49.9%{opacity:1}50%,100%{opacity:0}}
+@keyframes awlh-in{0%,49.9%{opacity:0;transform:translate(0,0)}50%{opacity:1;transform:translate(0,0)}75%{opacity:1;transform:translate(var(--dx),var(--dy))}75.1%,100%{opacity:0}}
+@keyframes awlh-out{0%,74.9%{opacity:0;transform:translate(0,0)}75%{opacity:1;transform:translate(0,0)}100%{opacity:1;transform:translate(var(--dx),var(--dy))}}
+.awlh-hand{animation:awlh-hand 3s ease-in-out forwards}
+.awlh-left{animation:awlh-left 3s linear forwards}
+.awlh-right{animation:awlh-right 3s linear forwards}
+.awlh-in{animation:awlh-in 3s ease-in-out forwards}
+.awlh-out{animation:awlh-out 3s ease-in-out forwards}
+@media (prefers-reduced-motion: reduce){
+.awlh-hand,.awlh-left,.awlh-right,.awlh-in,.awlh-out{animation:none}
+.awlh-right,.awlh-in{opacity:0}
+}`;
+
+const Arrow = ({ d }: { d: string }) => (
+  <>
+    <path d={d} fill="none" stroke="#111" strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" />
+    <path d={d} fill="none" stroke="#FFD900" strokeWidth={4.5} strokeLinecap="round" strokeLinejoin="round" />
+  </>
+);
+
+// Fingertip at (44,10) in hand coords; hand drawn at (50,60) inside a 200x200 box -> fingertip (94,70).
+const GestureHint = () => (
+  <svg width={200} height={200} viewBox="0 0 200 200" aria-hidden="true" style={{ overflow: "visible" }}>
+    <style>{HINT_CSS}</style>
+    <g className="awlh-hand">
+      <g className="awlh-left"><Arrow d="M124 40 L64 40 M76 30 L64 40 L76 50" /></g>
+      <g className="awlh-right"><Arrow d="M64 40 L124 40 M112 30 L124 40 L112 50" /></g>
+      <g transform="translate(50 60) scale(0.75)" style={{ transformOrigin: "44px 10px" }}>
+        <path d={HAND_PATH} fill="#fff" stroke="#111" strokeWidth={4} strokeLinejoin="round" />
+      </g>
+    </g>
+    {/* pinch: inward (move toward fingertip) */}
+    <g className="awlh-in" style={{ ["--dx" as string]: "-10px", ["--dy" as string]: "10px" }}>
+      <Arrow d="M140 24 L112 52 M112 38 L112 52 L126 52" />
+    </g>
+    <g className="awlh-in" style={{ ["--dx" as string]: "10px", ["--dy" as string]: "-10px" }}>
+      <Arrow d="M48 116 L76 88 M76 102 L76 88 L62 88" />
+    </g>
+    {/* spread: outward (move apart) */}
+    <g className="awlh-out" style={{ ["--dx" as string]: "10px", ["--dy" as string]: "-10px" }}>
+      <Arrow d="M112 52 L140 24 M126 24 L140 24 L140 38" />
+    </g>
+    <g className="awlh-out" style={{ ["--dx" as string]: "-10px", ["--dy" as string]: "10px" }}>
+      <Arrow d="M76 88 L48 116 M48 102 L48 116 L62 116" />
+    </g>
+  </svg>
+);
 // Termly's cookie banner defaults to z-index 9999 — the viewer must sit above it.
 const LIGHTBOX_Z = 100000;
 
 const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: ArtworkLightboxProps) => {
   const slides = useMemo<Slide[]>(() => {
     const out: Slide[] = [];
-    const seen = new Set<string>();
     const art = (product.image_url || "").trim();
-    if (art) {
-      seen.add(art);
-      out.push({ url: art, caption: "Opera", isArtwork: true });
-    }
-    for (const s of product.sizes) {
+    if (art) out.push({ url: art, isArtwork: true, sizeLabel: "" });
+    // Same filter and order as the mock room carousel on the product page
+    for (const s of product.sizes || []) {
+      if (!(s.price > 0)) continue;
+      if (!s.dimensions || s.dimensions.trim() === "" || s.dimensions === "0") continue;
       const u = (s.mock_room_url || "").trim();
-      if (!u || seen.has(u)) continue;
-      seen.add(u);
-      const label = (s.mock_room_label || s.dimensions || "").trim();
-      out.push({ url: u, caption: label ? `In ambiente · ${label}` : "In ambiente", isArtwork: false });
+      if (!u) continue;
+      out.push({ url: u, isArtwork: false, sizeLabel: formatSize(s.dimensions) });
     }
     return out;
   }, [product]);
@@ -59,21 +113,24 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     }
   }, [open, initialIndex, slides.length]);
 
-  // First-time hint per browser session
+  // Wordless gesture hint: phones, artwork slide, every open
+  const hintArtwork = open && isMobile && !!slides[Math.min(initialIndex, Math.max(slides.length - 1, 0))]?.isArtwork;
   useEffect(() => {
-    if (!open) return;
-    let shown = false;
-    try {
-      shown = sessionStorage.getItem(HINT_KEY) === "1";
-      if (!shown) sessionStorage.setItem(HINT_KEY, "1");
-    } catch {
-      /* ignore */
+    if (!hintArtwork) {
+      setShowHint(false);
+      return;
     }
-    if (shown) return;
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     setShowHint(true);
-    const t = setTimeout(() => setShowHint(false), 2500);
-    return () => clearTimeout(t);
-  }, [open]);
+    const stop = () => setShowHint(false);
+    const t = setTimeout(stop, reduced ? 2000 : 3000);
+    const evs = ["touchstart", "pointerdown", "mousedown", "wheel", "keydown"] as const;
+    evs.forEach((e) => window.addEventListener(e, stop, { capture: true, passive: true }));
+    return () => {
+      clearTimeout(t);
+      evs.forEach((e) => window.removeEventListener(e, stop, { capture: true }));
+    };
+  }, [hintArtwork]);
 
   // Measure image area (callback ref: element mounts inside the portal)
   const roRef = useRef<ResizeObserver | null>(null);
@@ -256,8 +313,8 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
                 onClick={() => go(-1)}
                 className={`group absolute left-1 md:left-3 top-1/2 -translate-y-1/2 z-20 ${roundBtn}`}
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white group-hover:bg-black/70">
-                  <ChevronLeft className="h-6 w-6" />
+                <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white" style={{ background: "#FFD900", boxShadow: "0 2px 8px rgba(0,0,0,.45)" }}>
+                  <ChevronLeft className="h-6 w-6" color="#111" strokeWidth={3} />
                 </span>
               </button>
               <button
@@ -266,17 +323,33 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
                 onClick={() => go(1)}
                 className={`group absolute right-1 md:right-3 top-1/2 -translate-y-1/2 z-20 ${roundBtn}`}
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white group-hover:bg-black/70">
-                  <ChevronRight className="h-6 w-6" />
+                <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white" style={{ background: "#FFD900", boxShadow: "0 2px 8px rgba(0,0,0,.45)" }}>
+                  <ChevronRight className="h-6 w-6" color="#111" strokeWidth={3} />
                 </span>
               </button>
             </>
           )}
 
-          {/* Caption + dots over a soft gradient */}
+          {/* Size label on room photos */}
+          {slide && !slide.isArtwork && slide.sizeLabel && box && ready && !zoomed && (
+            <span
+              className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-full text-white"
+              style={{
+                top: Math.max(0, (box.h - fitH) / 2) + 12,
+                left: "50%",
+                fontSize: 13,
+                letterSpacing: "0.04em",
+                background: "rgba(0,0,0,.55)",
+                padding: "4px 12px",
+              }}
+            >
+              {slide.sizeLabel}
+            </span>
+          )}
+
+          {/* Dots */}
           {slide && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/70 via-black/30 to-transparent pt-12 pb-4 flex flex-col items-center gap-2">
-              <span className="text-sm text-white drop-shadow">{slide.caption}</span>
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 pb-4 flex flex-col items-center gap-2">
               {count > 1 && (
                 <div className="pointer-events-auto flex items-center">
                   {slides.map((s, i) => (
@@ -298,17 +371,12 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
             </div>
           )}
 
-          {/* First-time hint */}
-          <div
-            aria-hidden={!showHint}
-            className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-6 transition-opacity duration-500 ${showHint ? "opacity-100" : "opacity-0"}`}
-          >
-            <span className="max-w-sm rounded-lg bg-black/70 px-4 py-3 text-center text-sm text-white">
-              {isMobile
-                ? "Trascina per esplorare · Pizzica per vedere tutta l'opera · Scorri le foto con le frecce"
-                : "Rotellina o doppio clic per ingrandire · Frecce per le foto in ambiente"}
-            </span>
-          </div>
+          {/* Gesture hint (phones, artwork slide) */}
+          {showHint && slide?.isArtwork && (
+            <div aria-hidden className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+              <GestureHint />
+            </div>
+          )}
 
           {/* Close */}
           <DialogPrimitive.Close

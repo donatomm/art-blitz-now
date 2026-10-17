@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { prepareCheckoutWindow, navigateToCheckout, closeCheckoutWindow } from "@/lib/openCheckout";
 
@@ -61,7 +60,7 @@ const Product = () => {
 
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
-  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const {
@@ -293,17 +292,6 @@ Grazie!`);
   const minPrice = activePrices.length > 0 ? Math.min(...activePrices) : 0;
   
   return <div className="min-h-screen bg-background">
-      {/* Fullscreen Image Modal */}
-      <Dialog open={!!fullscreenImage} onOpenChange={() => setFullscreenImage(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
-          <img
-            src={fullscreenImage || ''}
-            alt={`${product?.name} - Vista ingrandita mockup ambiente`}
-            className="w-full h-full object-contain cursor-zoom-out"
-            onClick={() => setFullscreenImage(null)}
-          />
-        </DialogContent>
-      </Dialog>
       <SEO 
         title={(product as any).seo_title || product.name}
         description={(product as any).seo_description || product.description || `${product.name} - ${product.medium}. Stampa su tela di alta qualità. Da €${minPrice}. Spedizione gratuita in Italia.`}
@@ -393,7 +381,7 @@ Grazie!`);
                           src={room.image}
                           alt={`${product?.name} - ${room.displayLabel} - Anteprima stampa in ambiente`}
                           className="w-full h-full object-contain cursor-zoom-in"
-                          onClick={() => setFullscreenImage(room.image)}
+                          onClick={() => { setLightboxIndex(finalMockRooms.indexOf(room) + 1); setLightboxOpen(true); }}
                         />
                       ) : (
                         <div className="text-center text-muted-foreground p-4">
@@ -495,14 +483,14 @@ Grazie!`);
         {/* Product Info Row - Artwork left, Info right */}
         <div className="flex flex-col md:flex-row gap-6 items-start md:pl-[68px]">
           {/* Artwork - Preview */}
-          <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[300px] mx-auto md:mx-0 flex-shrink-0" role="button" tabIndex={0} aria-label="Ingrandisci" onClick={() => setLightboxOpen(true)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setLightboxOpen(true); } }}>
+          <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[300px] mx-auto md:mx-0 flex-shrink-0" role="button" tabIndex={0} aria-label="Ingrandisci" onClick={() => { setLightboxIndex(0); setLightboxOpen(true); }} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setLightboxIndex(0); setLightboxOpen(true); } }}>
             <img src={product.image_url} alt={`${product.name} - ${product.medium} - Stampa d'arte su tela`} className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-125" />
           </div>
           <ArtworkLightbox
             product={product}
             open={lightboxOpen}
             onOpenChange={setLightboxOpen}
-            initialIndex={0}
+            initialIndex={lightboxIndex}
           />
 
           {/* Right Column - Info */}
