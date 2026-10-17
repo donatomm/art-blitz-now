@@ -156,7 +156,31 @@ const ProductCard = ({
         <ArtworkLightbox product={product} open={lightboxOpen} onOpenChange={setLightboxOpen} />
       )}
       <div className="px-2 py-2 bg-card/95 backdrop-blur-sm">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+        {!editMode && (
+          <div className="md:hidden flex flex-wrap items-center gap-y-1 text-xs">
+            {isComingSoon ? (
+              <span className="whitespace-nowrap font-semibold text-foreground">{product.name}</span>
+            ) : (
+              <>
+                <Link to={`/product/${product.slug}`} className="whitespace-nowrap font-semibold text-foreground">
+                  {product.name}
+                </Link>
+                {cheapest && (
+                  <Link to={`/product/${product.slug}`} className="whitespace-nowrap text-muted-foreground">
+                    {"\u00A0| Da €"}{cheapest.price} [{cheapest.dimensions}]
+                  </Link>
+                )}
+                <span className="whitespace-nowrap text-muted-foreground">
+                  {"\u00A0- "}
+                  <Link to="/ordine-personalizzato" className="text-primary underline underline-offset-2">
+                    Personalizza
+                  </Link>
+                </span>
+              </>
+            )}
+          </div>
+        )}
+        <div className={`${editMode ? "flex" : "hidden md:flex"} flex-wrap items-center gap-x-2 gap-y-1 text-xs`}>
           {renderEditableField("name", product.name, "font-semibold text-foreground")}
           <span className="text-muted-foreground">|</span>
           {renderEditableField("medium", product.medium, "text-muted-foreground")}
