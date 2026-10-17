@@ -135,9 +135,13 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
 
   // Measure image area (callback ref: element mounts inside the portal)
   const roRef = useRef<ResizeObserver | null>(null);
+  const detachTouch = useRef<(() => void) | null>(null);
+  const touchHandlers = useRef<{ start: (e: TouchEvent) => void; end: (e: TouchEvent) => void } | null>(null);
   const setArea = useCallback((el: HTMLDivElement | null) => {
     roRef.current?.disconnect();
     roRef.current = null;
+    detachTouch.current?.();
+    detachTouch.current = null;
     areaRef.current = el;
     if (!el) return;
     const measure = () =>
@@ -150,6 +154,16 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     roRef.current = ro;
+    // Observe-only native listeners in capture phase: they see every tap before the zoom
+    // library, at any zoom level. They never call preventDefault or stopPropagation.
+    const ts = (e: TouchEvent) => touchHandlers.current?.start(e);
+    const te = (e: TouchEvent) => touchHandlers.current?.end(e);
+    el.addEventListener("touchstart", ts, { capture: true, passive: true });
+    el.addEventListener("touchend", te, { capture: true, passive: true });
+    detachTouch.current = () => {
+      el.removeEventListener("touchstart", ts, { capture: true });
+      el.removeEventListener("touchend", te, { capture: true });
+    };
   }, []);
 
   useEffect(() => {
@@ -201,7 +215,7 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     ref.setTransform(x, y, 2.5, 200);
   };
 
-  const onTouchStart = (e: React.TouchEvent) => {
+  const onTouchStart = (e: TouchEvent) => {
     if (e.touches.length !== 1) {
       touchStart.current = null;
       lastTap.current = null;
@@ -209,10 +223,10 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     }
     touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
   };
-  const onTouchEnd = (e: React.TouchEvent) => {
+  const onTouchEnd = (e: TouchEvent) => {
     const start = touchStart.current;
     touchStart.current = null;
-    if (!start) return;
+    if (!start || !e.changedTouches[0]) return;
     lastTouchAt.current = Date.now();
     const cx = e.changedTouches[0].clientX;
     const cy = e.changedTouches[0].clientY;
@@ -224,7 +238,8 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
       const now = Date.now();
       if (prev && now - prev.t < 300 && Math.abs(cx - prev.x) < 30 && Math.abs(cy - prev.y) < 30) {
         lastTap.current = null;
-        toggleZoomAt(cx, cy);
+        // Next frame: runs after the zoom library's own end-of-touch step, so it can't cancel us
+        requestAnimationFrame(() => toggleZoomAt(cx, cy));
       } else {
         lastTap.current = { x: cx, y: cy, t: now };
       }
@@ -234,6 +249,7 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     if (zoomed) return;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
   };
+  touchHandlers.current = { start: onTouchStart, end: onTouchEnd };
   const onDoubleClick = (e: React.MouseEvent) => {
     if (Date.now() - lastTouchAt.current < 800) return; // already handled as touch
     if ((e.target as HTMLElement).closest("button")) return;
@@ -275,8 +291,6 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
               if (e.target === e.currentTarget) close();
             }}
             onDoubleClick={onDoubleClick}
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
           >
             {slide && (
               // Hidden loader to learn natural size
