@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { TransformWrapper, TransformComponent, type ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
 import { Dialog, DialogPortal, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { Product } from "@/types/product";
@@ -156,20 +156,67 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length !== 1 || zoomed) {
-      touchStart.current = null;
+  // Double tap / double click: at scale 1 -> 2.5x centred on the point; above 1 -> back to whole
+  const toggleZoomAt = (clientX: number, clientY: number) => {
+    const ref = tfRef.current;
+    const area = areaRef.current;
+    if (!ref || !area) return;
+    const { scale, positionX, positionY } = ref.state;
+    if (scale > 1.01) {
+      ref.resetTransform(200);
       return;
     }
-    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    const rect = area.getBoundingClientRect();
+    const px = clientX - rect.left;
+    const py = clientY - rect.top;
+    const k = 2.5 / scale;
+    let x = px - (px - positionX) * k;
+    let y = py - (py - positionY) * k;
+    // Keep the zoomed image covering the area where possible
+    const w = area.clientWidth * 2.5;
+    const h = area.clientHeight * 2.5;
+    x = Math.min(0, Math.max(area.clientWidth - w, x));
+    y = Math.min(0, Math.max(area.clientHeight - h, y));
+    ref.setTransform(x, y, 2.5, 200);
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) {
+      touchStart.current = null;
+      lastTap.current = null;
+      return;
+    }
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
   };
   const onTouchEnd = (e: React.TouchEvent) => {
     const start = touchStart.current;
     touchStart.current = null;
-    if (!start || zoomed) return;
-    const dx = e.changedTouches[0].clientX - start.x;
-    const dy = e.changedTouches[0].clientY - start.y;
+    if (!start) return;
+    lastTouchAt.current = Date.now();
+    const cx = e.changedTouches[0].clientX;
+    const cy = e.changedTouches[0].clientY;
+    const dx = cx - start.x;
+    const dy = cy - start.y;
+    // Tap (no movement): check for double tap
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10 && Date.now() - start.t < 300) {
+      const prev = lastTap.current;
+      const now = Date.now();
+      if (prev && now - prev.t < 300 && Math.abs(cx - prev.x) < 30 && Math.abs(cy - prev.y) < 30) {
+        lastTap.current = null;
+        toggleZoomAt(cx, cy);
+      } else {
+        lastTap.current = { x: cx, y: cy, t: now };
+      }
+      return;
+    }
+    lastTap.current = null;
+    if (zoomed) return;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+  };
+  const onDoubleClick = (e: React.MouseEvent) => {
+    if (Date.now() - lastTouchAt.current < 800) return; // already handled as touch
+    if ((e.target as HTMLElement).closest("button")) return;
+    toggleZoomAt(e.clientX, e.clientY);
   };
 
   const close = () => onOpenChange(false);
@@ -179,17 +226,12 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
   // Displayed (contain) size of the image; scale 1 = whole image visible
   let fitW = 0;
   let fitH = 0;
-  let coverScale = 1;
   if (box && natural && natural.w > 0 && natural.h > 0) {
     const fit = Math.min(box.w / natural.w, box.h / natural.h);
     fitW = natural.w * fit;
     fitH = natural.h * fit;
-    coverScale = Math.max(box.w / natural.w, box.h / natural.h) / fit;
   }
   const ready = fitW > 0 && fitH > 0;
-  const startCover = isMobile && !!slide?.isArtwork && ready;
-  const initialScale = startCover ? coverScale : 1;
-  const maxScale = Math.max(5, initialScale * 3);
 
   const roundBtn =
     "flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white";
@@ -211,6 +253,7 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
             onClick={(e) => {
               if (e.target === e.currentTarget) close();
             }}
+            onDoubleClick={onDoubleClick}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
@@ -230,15 +273,16 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
 
             {slide && box && ready && (
               <TransformWrapper
+                ref={tfRef}
                 key={`${index}-${open}-${isMobile}-${Math.round(box.w)}x${Math.round(box.h)}`}
-                initialScale={initialScale}
+                initialScale={1}
                 minScale={1}
-                maxScale={maxScale}
+                maxScale={5}
                 centerOnInit
                 limitToBounds
-                doubleClick={{ mode: "toggle", step: 2 }}
+                doubleClick={{ disabled: true }}
                 wheel={{ step: 0.15 }}
-                panning={{ disabled: !zoomed && !startCover, velocityDisabled: true }}
+                panning={{ disabled: !zoomed, velocityDisabled: true }}
                 onInit={(ref) => setZoomed(ref.state.scale > 1.01)}
                 onTransform={(_, state) => setZoomed(state.scale > 1.01)}
               >
