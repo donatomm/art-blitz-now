@@ -30,20 +30,25 @@ const ProductCard = ({
   // Fetch default prices for strikethrough display
   const { data: defaultPriceMap } = useDefaultPrices();
 
-  // Build size prices string with deal indication
-  const sizePrices = product.sizes
+  // Shown price per size, with deal indication (same rule for both views)
+  const shownSizes = product.sizes
     .filter((s) => s.price > 0)
     .map((s) => {
       const hasOffer = !!(s.deal_label_enabled && s.deal_price && s.deal_price > 0);
       const defaultPrice = getDefaultPrice(defaultPriceMap, s.dimensions);
       const displayDefaultPrice = defaultPrice ?? s.price;
-      
-      if (hasOffer && displayDefaultPrice > (s.deal_price || 0)) {
-        return `${s.dimensions} €${s.deal_price}`;
-      }
-      return `${s.dimensions} €${s.price}`;
-    })
-    .join(" | ");
+      const shownPrice = hasOffer && displayDefaultPrice > (s.deal_price || 0) ? (s.deal_price as number) : s.price;
+      return { dimensions: s.dimensions, price: shownPrice };
+    });
+
+  // Build size prices string with deal indication
+  const sizePrices = shownSizes.map((s) => `${s.dimensions} €${s.price}`).join(" | ");
+
+  // Cheapest size (ties keep the first in saved order) for the phone line
+  const cheapest = shownSizes.reduce<{ dimensions: string; price: number } | null>(
+    (min, s) => (min === null || s.price < min.price ? s : min),
+    null
+  );
 
   const handleEditStart = (field: string, value: string) => {
     if (!editMode) return;
