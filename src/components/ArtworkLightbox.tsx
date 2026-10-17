@@ -200,7 +200,7 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
                 wheel={{ step: 0.15 }}
                 panning={{ disabled: !zoomed && !startCover, velocityDisabled: true }}
                 onInit={(ref) => setZoomed(ref.state.scale > 1.01)}
-                onTransformed={(_, state) => setZoomed(state.scale > 1.01)}
+                onTransform={(_, state) => setZoomed(state.scale > 1.01)}
               >
                 {({ zoomIn, zoomOut }) => (
                   <>
