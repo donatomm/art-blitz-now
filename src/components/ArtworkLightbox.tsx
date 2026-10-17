@@ -28,19 +28,10 @@ const HAND_PATH =
   "M38 70 L38 16 A6 6 0 0 1 50 16 L50 56 L50 52 A6 6 0 0 1 62 52 L62 58 L62 57 A6 6 0 0 1 74 57 L74 63 L74 63 A5.5 5.5 0 0 1 85 63 L85 86 C85 101 76 112 61 112 L51 112 C41 112 35 107 29 99 L14 79 A6 6 0 0 1 23 70 L38 85 Z";
 
 const HINT_CSS = `
-@keyframes awlh-hand{0%{transform:translateX(0)}16.6%{transform:translateX(-40px)}33.3%{transform:translateX(40px)}50%,100%{transform:translateX(0)}}
-@keyframes awlh-left{0%,16.5%{opacity:1}16.6%,100%{opacity:0}}
-@keyframes awlh-right{0%,16.5%{opacity:0}16.6%,49.9%{opacity:1}50%,100%{opacity:0}}
-@keyframes awlh-in{0%,49.9%{opacity:0;transform:translate(0,0)}50%{opacity:1;transform:translate(0,0)}75%{opacity:1;transform:translate(var(--dx),var(--dy))}75.1%,100%{opacity:0}}
-@keyframes awlh-out{0%,74.9%{opacity:0;transform:translate(0,0)}75%{opacity:1;transform:translate(0,0)}100%{opacity:1;transform:translate(var(--dx),var(--dy))}}
-.awlh-hand{animation:awlh-hand 3s ease-in-out forwards}
-.awlh-left{animation:awlh-left 3s linear forwards}
-.awlh-right{animation:awlh-right 3s linear forwards}
-.awlh-in{animation:awlh-in 3s ease-in-out forwards}
-.awlh-out{animation:awlh-out 3s ease-in-out forwards}
+@keyframes awlh-out{0%{transform:translate(0,0)}80%,100%{transform:translate(var(--dx),var(--dy))}}
+.awlh-out{animation:awlh-out 1.5s ease-in-out 2 forwards}
 @media (prefers-reduced-motion: reduce){
-.awlh-hand,.awlh-left,.awlh-right,.awlh-in,.awlh-out{animation:none}
-.awlh-right,.awlh-in{opacity:0}
+.awlh-out{animation:none}
 }`;
 
 const Arrow = ({ d }: { d: string }) => (
@@ -51,28 +42,17 @@ const Arrow = ({ d }: { d: string }) => (
 );
 
 // Fingertip at (44,10) in hand coords; hand drawn at (50,60) inside a 200x200 box -> fingertip (94,70).
+// Hand stays still; the two diagonal arrows point outward and move apart (twice).
 const GestureHint = () => (
   <svg width={200} height={200} viewBox="0 0 200 200" aria-hidden="true" style={{ overflow: "visible" }}>
     <style>{HINT_CSS}</style>
-    <g className="awlh-hand">
-      <g className="awlh-left"><Arrow d="M124 40 L64 40 M76 30 L64 40 L76 50" /></g>
-      <g className="awlh-right"><Arrow d="M64 40 L124 40 M112 30 L124 40 L112 50" /></g>
-      <g transform="translate(50 60) scale(0.75)" style={{ transformOrigin: "44px 10px" }}>
-        <path d={HAND_PATH} fill="#fff" stroke="#111" strokeWidth={4} strokeLinejoin="round" />
-      </g>
+    <g transform="translate(50 60) scale(0.75)">
+      <path d={HAND_PATH} fill="#fff" stroke="#111" strokeWidth={4} strokeLinejoin="round" />
     </g>
-    {/* pinch: inward (move toward fingertip) */}
-    <g className="awlh-in" style={{ ["--dx" as string]: "-10px", ["--dy" as string]: "10px" }}>
-      <Arrow d="M140 24 L112 52 M112 38 L112 52 L126 52" />
-    </g>
-    <g className="awlh-in" style={{ ["--dx" as string]: "10px", ["--dy" as string]: "-10px" }}>
-      <Arrow d="M48 116 L76 88 M76 102 L76 88 L62 88" />
-    </g>
-    {/* spread: outward (move apart) */}
-    <g className="awlh-out" style={{ ["--dx" as string]: "10px", ["--dy" as string]: "-10px" }}>
+    <g className="awlh-out" style={{ ["--dx" as string]: "12px", ["--dy" as string]: "-12px" }}>
       <Arrow d="M112 52 L140 24 M126 24 L140 24 L140 38" />
     </g>
-    <g className="awlh-out" style={{ ["--dx" as string]: "-10px", ["--dy" as string]: "10px" }}>
+    <g className="awlh-out" style={{ ["--dx" as string]: "-12px", ["--dy" as string]: "12px" }}>
       <Arrow d="M76 88 L48 116 M48 102 L48 116 L62 116" />
     </g>
   </svg>
