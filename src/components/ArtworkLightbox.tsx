@@ -106,7 +106,50 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
   const lastTap = useRef<{ x: number; y: number; t: number } | null>(null);
   const lastTouchAt = useRef(0);
   const tfRef = useRef<ReactZoomPanPinchRef | null>(null);
+  // Back gesture closes the viewer: one same-address history entry while open
+  const onOpenChangeRef = useRef(onOpenChange);
+  onOpenChangeRef.current = onOpenChange;
+  const pushedRef = useRef(false);
+  const ignorePopRef = useRef(false);
 
+  useEffect(() => {
+    // Capture phase on window runs before the router's listener; we stop the events we own
+    const onPop = (e: PopStateEvent) => {
+      if (ignorePopRef.current) {
+        ignorePopRef.current = false;
+        e.stopImmediatePropagation();
+        return;
+      }
+      const st = window.history.state as { awlb?: boolean } | null;
+      if (pushedRef.current && !st?.awlb) {
+        pushedRef.current = false;
+        e.stopImmediatePropagation();
+        onOpenChangeRef.current(false);
+      }
+    };
+    window.addEventListener("popstate", onPop, true);
+    return () => window.removeEventListener("popstate", onPop, true);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const base = window.history.state;
+    window.history.pushState(
+      { ...(base && typeof base === "object" ? base : {}), awlb: true },
+      "",
+      window.location.href,
+    );
+    pushedRef.current = true;
+    return () => {
+      if (!pushedRef.current) return;
+      pushedRef.current = false;
+      const st = window.history.state as { awlb?: boolean } | null;
+      if (st?.awlb) {
+        ignorePopRef.current = true;
+        window.history.back();
+      }
+    };
+  }, [open]);
 
   useEffect(() => {
     if (open) {
