@@ -23,7 +23,7 @@
 |----------|--------|-----------------|
 | Does this change the `<SEO>` component or meta tags? | | If yes: verify title < 60 chars, description < 160 chars |
 | Does this affect structured data (JSON-LD)? | | If yes: validate with Google Rich Results Test |
-| Does this change any URLs or slugs? | | If yes: add 301 redirects in `vercel.json` |
+| Does this change any URLs or slugs? | | If yes: stop and tell Donato that old addresses need forwarding |
 | Does this affect `robots.txt` or `sitemap.xml`? | | If yes: verify crawlability of important pages |
 | Does this change canonical URLs? | | If yes: ensure no duplicate content issues |
 
@@ -118,7 +118,7 @@ useEffect(() => {
 | Question | Yes/No | Action Required |
 |----------|--------|-----------------|
 | Does this modify `package.json` scripts? | | If yes: verify build chain still works |
-| Does this change `vercel.json` config? | | If yes: test redirects/rewrites locally first |
+| Does this change hosting or deployment settings? | | If yes: stop and tell Donato |
 | Does this affect build output structure? | | If yes: verify postbuild scripts still work |
 
 ---
@@ -143,7 +143,7 @@ useEffect(() => {
 | Does this add new tables? | | If yes: include in migration with RLS |
 | Does this modify edge functions? | | If yes: test error handling, auth, and CORS headers |
 | Does this require authentication that isn't implemented? | | If yes: implement auth BEFORE the feature |
-| Does this add or modify redirects? | | If yes: check for conflicts between vercel.json and routes.tsx |
+| Does this add or modify redirects? | | If yes: stop and tell Donato |
 | Could this cause redirect chains (A→B→C)? | | If yes: simplify to direct redirect (A→C) |
 | Does DB data need to change for this to work? | | If yes: remind user to trigger rebuild after DB change |
 
@@ -191,7 +191,6 @@ These files have outsized impact on SSG/SEO/Performance:
 | `src/pages/Index.tsx` | Main entry point, LCP-critical |
 | `src/components/RootLayout.tsx` | Wraps entire app, context providers |
 | `src/routes.tsx` | SSG route generation |
-| `vercel.json` | Build config, redirects, caching |
 | `package.json` | Build scripts (read-only reminder) |
 | `src/hooks/useStatic*.ts` | Static data for SSG |
 | `src/contexts/CartContext.tsx` | SSG-safe context pattern example |
@@ -226,7 +225,7 @@ Before implementing, run Pre-Implementation Safety Check:
 3. LCP impact? (API calls, render blocking, images, bundle size)
 4. Execution path? (what RUNS vs what RENDERS)
 5. Browser APIs? (localStorage, window, hydration safety)
-6. Build process? (scripts, vercel.json, redirects, dependencies)
+6. Build process? (scripts, hosting settings, redirects, dependencies)
 7. Database/Backend? (RLS, edge functions, CORS, redirects)
 ```
 
