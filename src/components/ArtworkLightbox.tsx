@@ -52,7 +52,7 @@ const Arrow = ({ d }: { d: string }) => (
 
 // Fingertip at (44,10) in hand coords; hand drawn at (50,60) inside a 200x200 box -> fingertip (94,70).
 const GestureHint = () => (
-  <svg width={180} height={180} viewBox="0 0 200 200" aria-hidden="true" style={{ overflow: "visible" }}>
+  <svg width={200} height={200} viewBox="0 0 200 200" aria-hidden="true" style={{ overflow: "visible" }}>
     <style>{HINT_CSS}</style>
     <g className="awlh-hand">
       <g className="awlh-left"><Arrow d="M124 40 L64 40 M76 30 L64 40 L76 50" /></g>
