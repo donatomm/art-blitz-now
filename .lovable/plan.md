@@ -4,22 +4,25 @@ Only file changed: `src/components/ProductCard.tsx`. No new files, no database, 
 
 ## What visitors will see
 
-Phones (narrower than 768 px), example OCTIFIED:
+Phones (narrower than 768 px), example OCTIFIED — one line:
 
 ```text
-OCTIFIED
-Da €93 [120x60]  Personalizza >>
+OCTIFIED | Da €93 [120x60] - Personalizza
 ```
 
 Computers: the card text stays exactly as today (name | medium | sizes | ACQUISTA).
 
 ## Rules
 
-- Line 1: product name, same style as today, links to the product page.
-- Line 2: "Da €[price] [size]" links to the product page; "Personalizza >>" is a separate link to `/ordine-personalizzato`. Three separate links, none inside another.
+- "OCTIFIED": product name in bold, links to the product page.
+- " | Da €93 [120x60]": cheapest size, links to the product page.
+- " - ": plain text.
+- "Personalizza": underlined, styled as a link, links to `/ordine-personalizzato`. No ">>".
+- Three separate links, none inside another.
+- Wrapping: the row wraps, each piece (name, price part, "- Personalizza") has `whitespace-nowrap`, so a piece is never split in the middle.
 - Cheapest size: same rule the card uses today. For each size with a price above 0, the shown price is the offer price when the offer is on and lower than the reference price, otherwise the normal price. The lowest shown price wins; the size is written as saved in the Admin Panel. Ties keep the first one in the saved order.
-- If no size has a price, line 2 shows only "Personalizza >>".
-- "Coming soon" cards: line 1 only, no links (as today the picture is not a link either).
+- If no size has a price: only the name and " - Personalizza".
+- "Coming soon" cards: name only, no links (as today the picture is not a link either).
 - NEW badge, OFFERTA badge, magnifier: unchanged.
 - Admin edit mode on: the card shows today's text on every screen; the phone version is not drawn.
 
