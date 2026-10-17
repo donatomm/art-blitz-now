@@ -24,6 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import RelatedProducts from "@/components/RelatedProducts";
+import ArtworkLightbox from "@/components/ArtworkLightbox";
 
 const CART_ENABLED = import.meta.env.VITE_ENABLE_CART === 'true';
 
@@ -61,6 +62,7 @@ const Product = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const {
     toast
@@ -493,9 +495,19 @@ Grazie!`);
         {/* Product Info Row - Artwork left, Info right */}
         <div className="flex flex-col md:flex-row gap-6 items-start md:pl-[68px]">
           {/* Artwork - Preview */}
-          <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[300px] mx-auto md:mx-0 flex-shrink-0">
+          <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer w-[300px] mx-auto md:mx-0 flex-shrink-0" role="button" tabIndex={0} aria-label="Ingrandisci" onClick={() => setLightboxOpen(true)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setLightboxOpen(true); } }}>
             <img src={product.image_url} alt={`${product.name} - ${product.medium} - Stampa d'arte su tela`} className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-125" />
           </div>
+          <ArtworkLightbox
+            product={product}
+            open={lightboxOpen}
+            onOpenChange={setLightboxOpen}
+            initialIndex={0}
+            onChooseFormat={() => {
+              setLightboxOpen(false);
+              setTimeout(() => document.getElementById('acquista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
+            }}
+          />
 
           {/* Right Column - Info */}
           <div className="space-y-6">
