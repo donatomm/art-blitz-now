@@ -135,9 +135,13 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
 
   // Measure image area (callback ref: element mounts inside the portal)
   const roRef = useRef<ResizeObserver | null>(null);
+  const detachTouch = useRef<(() => void) | null>(null);
+  const touchHandlers = useRef<{ start: (e: TouchEvent) => void; end: (e: TouchEvent) => void } | null>(null);
   const setArea = useCallback((el: HTMLDivElement | null) => {
     roRef.current?.disconnect();
     roRef.current = null;
+    detachTouch.current?.();
+    detachTouch.current = null;
     areaRef.current = el;
     if (!el) return;
     const measure = () =>
@@ -150,6 +154,16 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     roRef.current = ro;
+    // Observe-only native listeners in capture phase: they see every tap before the zoom
+    // library, at any zoom level. They never call preventDefault or stopPropagation.
+    const ts = (e: TouchEvent) => touchHandlers.current?.start(e);
+    const te = (e: TouchEvent) => touchHandlers.current?.end(e);
+    el.addEventListener("touchstart", ts, { capture: true, passive: true });
+    el.addEventListener("touchend", te, { capture: true, passive: true });
+    detachTouch.current = () => {
+      el.removeEventListener("touchstart", ts, { capture: true });
+      el.removeEventListener("touchend", te, { capture: true });
+    };
   }, []);
 
   useEffect(() => {
