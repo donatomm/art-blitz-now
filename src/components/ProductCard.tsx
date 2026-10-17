@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, X } from "lucide-react";
+import { Check, X, ZoomIn } from "lucide-react";
+import ArtworkLightbox from "@/components/ArtworkLightbox";
 import { useDefaultPrices, getDefaultPrice } from "@/hooks/useDefaultPrices";
 
 interface ProductCardProps {
@@ -24,6 +25,7 @@ const ProductCard = ({
 
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   
   // Fetch default prices for strikethrough display
   const { data: defaultPriceMap } = useDefaultPrices();
@@ -116,6 +118,22 @@ const ProductCard = ({
             Click to edit image
           </span>
         </div>}
+      {!editMode && !isComingSoon && (
+        <button
+          type="button"
+          aria-label="Ingrandisci"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setLightboxOpen(true);
+          }}
+          className="absolute bottom-1 right-1 z-10 flex h-11 w-11 items-center justify-center"
+        >
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white shadow-md">
+            <ZoomIn className="h-5 w-5" />
+          </span>
+        </button>
+      )}
     </>
   );
 
