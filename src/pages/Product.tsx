@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { prepareCheckoutWindow, navigateToCheckout, closeCheckoutWindow } from "@/lib/openCheckout";
 
