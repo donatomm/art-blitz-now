@@ -147,6 +147,9 @@ const ProductCard = ({
           {imageContent}
         </Link>
       )}
+      {!editMode && !isComingSoon && lightboxOpen && (
+        <ArtworkLightbox product={product} open={lightboxOpen} onOpenChange={setLightboxOpen} />
+      )}
       <div className="px-2 py-2 bg-card/95 backdrop-blur-sm">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
           {renderEditableField("name", product.name, "font-semibold text-foreground")}
