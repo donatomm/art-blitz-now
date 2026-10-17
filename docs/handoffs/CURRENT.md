@@ -1,3 +1,6 @@
+> **WARNING, 2026-10-17: THIS FILE IS SEPTEMBER HISTORY. DO NOT ACT ON IT.**
+> The facts below are out of date. The store has published from the `main` branch since 2026-10-11, and the live build is no longer the one named below. The next step named below (a pull request from a Codex branch) is cancelled. The September SEO work is on hold. Read this file only if the owner asks for the September history.
+
 # OctoWonders current handoff
 
 **Current as of 2026-09-02:** Start at `/Users/donatomm/---OCTOPRO.PRO/OCTOWONDERS/CONTINUITY.md`, then follow its mandatory reading order through `docs/handoffs/2026-08-27-continuity-package.md`.
