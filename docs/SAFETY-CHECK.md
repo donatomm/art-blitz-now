@@ -144,7 +144,6 @@ useEffect(() => {
 | Does this modify edge functions? | | If yes: test error handling, auth, and CORS headers |
 | Does this require authentication that isn't implemented? | | If yes: implement auth BEFORE the feature |
 | Does this add or modify redirects? | | If yes: stop and tell Donato |
-| Could this cause redirect chains (A→B→C)? | | If yes: simplify to direct redirect (A→C) |
 | Does DB data need to change for this to work? | | If yes: remind user to trigger rebuild after DB change |
 
 ---
