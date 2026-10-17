@@ -215,7 +215,7 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     ref.setTransform(x, y, 2.5, 200);
   };
 
-  const onTouchStart = (e: React.TouchEvent) => {
+  const onTouchStart = (e: TouchEvent) => {
     if (e.touches.length !== 1) {
       touchStart.current = null;
       lastTap.current = null;
@@ -223,10 +223,10 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     }
     touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
   };
-  const onTouchEnd = (e: React.TouchEvent) => {
+  const onTouchEnd = (e: TouchEvent) => {
     const start = touchStart.current;
     touchStart.current = null;
-    if (!start) return;
+    if (!start || !e.changedTouches[0]) return;
     lastTouchAt.current = Date.now();
     const cx = e.changedTouches[0].clientX;
     const cy = e.changedTouches[0].clientY;
@@ -238,7 +238,8 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
       const now = Date.now();
       if (prev && now - prev.t < 300 && Math.abs(cx - prev.x) < 30 && Math.abs(cy - prev.y) < 30) {
         lastTap.current = null;
-        toggleZoomAt(cx, cy);
+        // Next frame: runs after the zoom library's own end-of-touch step, so it can't cancel us
+        requestAnimationFrame(() => toggleZoomAt(cx, cy));
       } else {
         lastTap.current = { x: cx, y: cy, t: now };
       }
@@ -248,6 +249,7 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     if (zoomed) return;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
   };
+  touchHandlers.current = { start: onTouchStart, end: onTouchEnd };
   const onDoubleClick = (e: React.MouseEvent) => {
     if (Date.now() - lastTouchAt.current < 800) return; // already handled as touch
     if ((e.target as HTMLElement).closest("button")) return;
@@ -289,8 +291,6 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
               if (e.target === e.currentTarget) close();
             }}
             onDoubleClick={onDoubleClick}
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
           >
             {slide && (
               // Hidden loader to learn natural size
