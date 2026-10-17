@@ -4,6 +4,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
 import { Dialog, DialogPortal, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { Product } from "@/types/product";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ArtworkLightboxProps {
   product: Product;
@@ -19,6 +20,8 @@ interface Slide {
 }
 
 const HINT_KEY = "artworkLightboxHintShown";
+// Termly's cookie banner defaults to z-index 9999 — the viewer must sit above it.
+const LIGHTBOX_Z = 100000;
 
 const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: ArtworkLightboxProps) => {
   const slides = useMemo<Slide[]>(() => {
@@ -39,23 +42,15 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     return out;
   }, [product]);
 
+  const isMobile = useIsMobile();
   const [index, setIndex] = useState(initialIndex);
   const [zoomed, setZoomed] = useState(false);
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches,
-  );
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
   const [natural, setNatural] = useState<{ w: number; h: number } | null>(null);
   const [showHint, setShowHint] = useState(false);
   const areaRef = useRef<HTMLDivElement | null>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const on = () => setIsMobile(mq.matches);
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, []);
 
   useEffect(() => {
     if (open) {
@@ -165,9 +160,10 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
-        <DialogOverlay className="bg-black" />
+        <DialogOverlay className="bg-black" style={{ zIndex: LIGHTBOX_Z }} />
         <DialogPrimitive.Content
-          className="fixed inset-0 z-50 bg-black outline-none"
+          className="fixed inset-0 bg-black outline-none"
+          style={{ zIndex: LIGHTBOX_Z + 1 }}
           aria-describedby={undefined}
         >
           <DialogTitle className="sr-only">{alt}</DialogTitle>
