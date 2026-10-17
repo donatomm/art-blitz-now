@@ -96,7 +96,7 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0, onChoo
                 maxScale={5}
                 doubleClick={{ mode: "toggle", step: 2 }}
                 panning={{ disabled: !zoomed }}
-                onTransformed={(_, state) => setZoomed(state.scale > 1.01)}
+                onTransform={(_, state) => setZoomed(state.scale > 1.01)}
               >
                 <TransformComponent
                   wrapperClass="!w-full !h-full"
