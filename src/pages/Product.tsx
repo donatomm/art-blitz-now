@@ -503,10 +503,6 @@ Grazie!`);
             open={lightboxOpen}
             onOpenChange={setLightboxOpen}
             initialIndex={0}
-            onChooseFormat={() => {
-              setLightboxOpen(false);
-              setTimeout(() => document.getElementById('acquista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
-            }}
           />
 
           {/* Right Column - Info */}
