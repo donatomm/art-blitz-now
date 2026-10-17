@@ -83,7 +83,10 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
   const [natural, setNatural] = useState<{ w: number; h: number } | null>(null);
   const [showHint, setShowHint] = useState(false);
   const areaRef = useRef<HTMLDivElement | null>(null);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
+  const lastTap = useRef<{ x: number; y: number; t: number } | null>(null);
+  const lastTouchAt = useRef(0);
+  const tfRef = useRef<ReactZoomPanPinchRef | null>(null);
 
 
   useEffect(() => {
