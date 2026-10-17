@@ -1,21 +1,21 @@
-# Two fixes for the artwork viewer
+# Fix: second double tap while zoomed does nothing (iPhone)
 
-Only `src/components/ArtworkLightbox.tsx` changes. No other file, no database, no new packages. Everything else stays exactly as today (zoom, double tap, yellow arrows, dots, X, z-index, `useIsMobile`, no browser code during render).
+Only `src/components/ArtworkLightbox.tsx` changes. No other file, no database, no new packages. Everything else stays as today.
 
-Before starting: do you want me to run the full safety check (docs/SAFETY-CHECK.md)? If you approve without saying anything, I will run it before changing the code.
+Before starting: do you want me to run the full safety check (docs/SAFETY-CHECK.md)? If you approve without saying anything, I will run it first.
 
-## 1. Gesture hint: 4 seconds, two parts
-- Same conditions as today: phones only, artwork slide only, every time the viewer opens, stops at once on any touch, click, wheel or key press. Timer goes from 3 s to 4 s.
-- Part 1 (0 to 2 s), swipe: the hand slides 40 px left, then 40 px right. A horizontal yellow arrow sits above the fingertip and moves with the hand, pointing the way the hand is moving (flips direction at the turn). Diagonal arrows hidden.
-- Part 2 (2 to 4 s), pinch: exactly as today. Hand still in the centre, the two diagonal yellow arrows point outward and move apart, twice. Horizontal arrow hidden.
-- The switch between parts is done with CSS animation timing only (no extra timers), so it stays safe for pre-rendering.
-- Reduced motion: hand with horizontal arrow still for 2 s, then hand with diagonal arrows still for 2 s (total 4 s).
+## About the suspected cause
+I read the zoom library's code. It does not block the tap's start and end events, only the finger-move events while panning. So the taps should still reach our double-tap code. Your suspected cause is **not confirmed**. A more likely cause: when the finger lifts, the library runs its own end-of-pan step ("snap back inside the edges"). That step can cancel our "return to whole" animation as soon as it starts, so nothing seems to happen. This is still unconfirmed, so step 1 checks it.
 
-## 2. Size label on room photos
-- Add a 1.5 px solid white border.
-- Unchanged: dark background, white text, position, font size, padding, hidden while zoomed in.
+## Steps
+1. **Reproduce first:** in a phone-emulated test browser with real touch events, double tap to zoom in, then double tap again. Check whether our double-tap code runs and what the zoom level is afterwards. This shows which cause is real.
+2. **Fix (the same fix works for both causes):**
+   - Detect taps with our own listener on the picture area. It runs before the zoom library sees the touch, so it never misses a tap at any zoom level.
+   - When a double tap is detected while zoomed, return to whole on the next screen frame, after the library's end-of-pan step, so nothing cancels it.
+   - Zooming in (scale 1 to 2.5x where tapped) works the same way.
+3. **Unchanged:** one-finger panning while zoomed, swipe changes slide only at scale 1, pinch, double click on computers, arrows, dots, X, hint, size label, z-index, `useIsMobile`, and no browser code during render (still safe for pre-rendering).
 
 ## Check
 - Run the same pre-render step Vercel runs.
-- Phone-sized test in the browser: hint shows swipe then pinch, stops on touch; size label shows the white border and hides when zoomed.
-- Real phone gestures and reduced-motion on your device: please try in the preview.
+- Phone-emulated test: double tap zooms in, a second double tap returns to whole (repeated several times), one-finger drag pans while zoomed, a swipe at scale 1 changes slide, and a swipe while zoomed does not.
+- Final check on your real iPhone in the preview.
