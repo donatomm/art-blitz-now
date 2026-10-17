@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
@@ -80,17 +80,24 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     return () => clearTimeout(t);
   }, [open]);
 
-  // Measure image area
-  useLayoutEffect(() => {
-    if (!open) return;
-    const el = areaRef.current;
+  // Measure image area (callback ref: element mounts inside the portal)
+  const roRef = useRef<ResizeObserver | null>(null);
+  const setArea = useCallback((el: HTMLDivElement | null) => {
+    roRef.current?.disconnect();
+    roRef.current = null;
+    areaRef.current = el;
     if (!el) return;
-    const measure = () => setBox({ w: el.clientWidth, h: el.clientHeight });
+    const measure = () =>
+      setBox((prev) =>
+        prev && prev.w === el.clientWidth && prev.h === el.clientHeight
+          ? prev
+          : { w: el.clientWidth, h: el.clientHeight },
+      );
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
-    return () => ro.disconnect();
-  });
+    roRef.current = ro;
+  }, []);
 
   useEffect(() => {
     setNatural(null);
@@ -166,7 +173,7 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
           <DialogTitle className="sr-only">{alt}</DialogTitle>
 
           <div
-            ref={areaRef}
+            ref={setArea}
             className="absolute inset-0 overflow-hidden"
             onClick={(e) => {
               if (e.target === e.currentTarget) close();
