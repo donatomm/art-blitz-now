@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { TransformWrapper, TransformComponent, type ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
 import { Dialog, DialogPortal, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { Product } from "@/types/product";
@@ -28,19 +28,10 @@ const HAND_PATH =
   "M38 70 L38 16 A6 6 0 0 1 50 16 L50 56 L50 52 A6 6 0 0 1 62 52 L62 58 L62 57 A6 6 0 0 1 74 57 L74 63 L74 63 A5.5 5.5 0 0 1 85 63 L85 86 C85 101 76 112 61 112 L51 112 C41 112 35 107 29 99 L14 79 A6 6 0 0 1 23 70 L38 85 Z";
 
 const HINT_CSS = `
-@keyframes awlh-hand{0%{transform:translateX(0)}16.6%{transform:translateX(-40px)}33.3%{transform:translateX(40px)}50%,100%{transform:translateX(0)}}
-@keyframes awlh-left{0%,16.5%{opacity:1}16.6%,100%{opacity:0}}
-@keyframes awlh-right{0%,16.5%{opacity:0}16.6%,49.9%{opacity:1}50%,100%{opacity:0}}
-@keyframes awlh-in{0%,49.9%{opacity:0;transform:translate(0,0)}50%{opacity:1;transform:translate(0,0)}75%{opacity:1;transform:translate(var(--dx),var(--dy))}75.1%,100%{opacity:0}}
-@keyframes awlh-out{0%,74.9%{opacity:0;transform:translate(0,0)}75%{opacity:1;transform:translate(0,0)}100%{opacity:1;transform:translate(var(--dx),var(--dy))}}
-.awlh-hand{animation:awlh-hand 3s ease-in-out forwards}
-.awlh-left{animation:awlh-left 3s linear forwards}
-.awlh-right{animation:awlh-right 3s linear forwards}
-.awlh-in{animation:awlh-in 3s ease-in-out forwards}
-.awlh-out{animation:awlh-out 3s ease-in-out forwards}
+@keyframes awlh-out{0%{transform:translate(0,0)}80%,100%{transform:translate(var(--dx),var(--dy))}}
+.awlh-out{animation:awlh-out 1.5s ease-in-out 2 forwards}
 @media (prefers-reduced-motion: reduce){
-.awlh-hand,.awlh-left,.awlh-right,.awlh-in,.awlh-out{animation:none}
-.awlh-right,.awlh-in{opacity:0}
+.awlh-out{animation:none}
 }`;
 
 const Arrow = ({ d }: { d: string }) => (
@@ -51,28 +42,17 @@ const Arrow = ({ d }: { d: string }) => (
 );
 
 // Fingertip at (44,10) in hand coords; hand drawn at (50,60) inside a 200x200 box -> fingertip (94,70).
+// Hand stays still; the two diagonal arrows point outward and move apart (twice).
 const GestureHint = () => (
   <svg width={200} height={200} viewBox="0 0 200 200" aria-hidden="true" style={{ overflow: "visible" }}>
     <style>{HINT_CSS}</style>
-    <g className="awlh-hand">
-      <g className="awlh-left"><Arrow d="M124 40 L64 40 M76 30 L64 40 L76 50" /></g>
-      <g className="awlh-right"><Arrow d="M64 40 L124 40 M112 30 L124 40 L112 50" /></g>
-      <g transform="translate(50 60) scale(0.75)" style={{ transformOrigin: "44px 10px" }}>
-        <path d={HAND_PATH} fill="#fff" stroke="#111" strokeWidth={4} strokeLinejoin="round" />
-      </g>
+    <g transform="translate(50 60) scale(0.75)">
+      <path d={HAND_PATH} fill="#fff" stroke="#111" strokeWidth={4} strokeLinejoin="round" />
     </g>
-    {/* pinch: inward (move toward fingertip) */}
-    <g className="awlh-in" style={{ ["--dx" as string]: "-10px", ["--dy" as string]: "10px" }}>
-      <Arrow d="M140 24 L112 52 M112 38 L112 52 L126 52" />
-    </g>
-    <g className="awlh-in" style={{ ["--dx" as string]: "10px", ["--dy" as string]: "-10px" }}>
-      <Arrow d="M48 116 L76 88 M76 102 L76 88 L62 88" />
-    </g>
-    {/* spread: outward (move apart) */}
-    <g className="awlh-out" style={{ ["--dx" as string]: "10px", ["--dy" as string]: "-10px" }}>
+    <g className="awlh-out" style={{ ["--dx" as string]: "12px", ["--dy" as string]: "-12px" }}>
       <Arrow d="M112 52 L140 24 M126 24 L140 24 L140 38" />
     </g>
-    <g className="awlh-out" style={{ ["--dx" as string]: "-10px", ["--dy" as string]: "10px" }}>
+    <g className="awlh-out" style={{ ["--dx" as string]: "-12px", ["--dy" as string]: "12px" }}>
       <Arrow d="M76 88 L48 116 M48 102 L48 116 L62 116" />
     </g>
   </svg>
@@ -103,7 +83,10 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
   const [natural, setNatural] = useState<{ w: number; h: number } | null>(null);
   const [showHint, setShowHint] = useState(false);
   const areaRef = useRef<HTMLDivElement | null>(null);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
+  const lastTap = useRef<{ x: number; y: number; t: number } | null>(null);
+  const lastTouchAt = useRef(0);
+  const tfRef = useRef<ReactZoomPanPinchRef | null>(null);
 
 
   useEffect(() => {
@@ -176,20 +159,67 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length !== 1 || zoomed) {
-      touchStart.current = null;
+  // Double tap / double click: at scale 1 -> 2.5x centred on the point; above 1 -> back to whole
+  const toggleZoomAt = (clientX: number, clientY: number) => {
+    const ref = tfRef.current;
+    const area = areaRef.current;
+    if (!ref || !area) return;
+    const { scale, positionX, positionY } = ref.state;
+    if (scale > 1.01) {
+      ref.resetTransform(200);
       return;
     }
-    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    const rect = area.getBoundingClientRect();
+    const px = clientX - rect.left;
+    const py = clientY - rect.top;
+    const k = 2.5 / scale;
+    let x = px - (px - positionX) * k;
+    let y = py - (py - positionY) * k;
+    // Keep the zoomed image covering the area where possible
+    const w = area.clientWidth * 2.5;
+    const h = area.clientHeight * 2.5;
+    x = Math.min(0, Math.max(area.clientWidth - w, x));
+    y = Math.min(0, Math.max(area.clientHeight - h, y));
+    ref.setTransform(x, y, 2.5, 200);
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) {
+      touchStart.current = null;
+      lastTap.current = null;
+      return;
+    }
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
   };
   const onTouchEnd = (e: React.TouchEvent) => {
     const start = touchStart.current;
     touchStart.current = null;
-    if (!start || zoomed) return;
-    const dx = e.changedTouches[0].clientX - start.x;
-    const dy = e.changedTouches[0].clientY - start.y;
+    if (!start) return;
+    lastTouchAt.current = Date.now();
+    const cx = e.changedTouches[0].clientX;
+    const cy = e.changedTouches[0].clientY;
+    const dx = cx - start.x;
+    const dy = cy - start.y;
+    // Tap (no movement): check for double tap
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10 && Date.now() - start.t < 300) {
+      const prev = lastTap.current;
+      const now = Date.now();
+      if (prev && now - prev.t < 300 && Math.abs(cx - prev.x) < 30 && Math.abs(cy - prev.y) < 30) {
+        lastTap.current = null;
+        toggleZoomAt(cx, cy);
+      } else {
+        lastTap.current = { x: cx, y: cy, t: now };
+      }
+      return;
+    }
+    lastTap.current = null;
+    if (zoomed) return;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+  };
+  const onDoubleClick = (e: React.MouseEvent) => {
+    if (Date.now() - lastTouchAt.current < 800) return; // already handled as touch
+    if ((e.target as HTMLElement).closest("button")) return;
+    toggleZoomAt(e.clientX, e.clientY);
   };
 
   const close = () => onOpenChange(false);
@@ -199,17 +229,12 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
   // Displayed (contain) size of the image; scale 1 = whole image visible
   let fitW = 0;
   let fitH = 0;
-  let coverScale = 1;
   if (box && natural && natural.w > 0 && natural.h > 0) {
     const fit = Math.min(box.w / natural.w, box.h / natural.h);
     fitW = natural.w * fit;
     fitH = natural.h * fit;
-    coverScale = Math.max(box.w / natural.w, box.h / natural.h) / fit;
   }
   const ready = fitW > 0 && fitH > 0;
-  const startCover = isMobile && !!slide?.isArtwork && ready;
-  const initialScale = startCover ? coverScale : 1;
-  const maxScale = Math.max(5, initialScale * 3);
 
   const roundBtn =
     "flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white";
@@ -231,6 +256,7 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
             onClick={(e) => {
               if (e.target === e.currentTarget) close();
             }}
+            onDoubleClick={onDoubleClick}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
@@ -250,15 +276,16 @@ const ArtworkLightbox = ({ product, open, onOpenChange, initialIndex = 0 }: Artw
 
             {slide && box && ready && (
               <TransformWrapper
+                ref={tfRef}
                 key={`${index}-${open}-${isMobile}-${Math.round(box.w)}x${Math.round(box.h)}`}
-                initialScale={initialScale}
+                initialScale={1}
                 minScale={1}
-                maxScale={maxScale}
+                maxScale={5}
                 centerOnInit
                 limitToBounds
-                doubleClick={{ mode: "toggle", step: 2 }}
+                doubleClick={{ disabled: true }}
                 wheel={{ step: 0.15 }}
-                panning={{ disabled: !zoomed && !startCover, velocityDisabled: true }}
+                panning={{ disabled: !zoomed, velocityDisabled: true }}
                 onInit={(ref) => setZoomed(ref.state.scale > 1.01)}
                 onTransform={(_, state) => setZoomed(state.scale > 1.01)}
               >
