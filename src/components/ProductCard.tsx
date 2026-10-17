@@ -170,12 +170,6 @@ const ProductCard = ({
                     {"\u00A0| Da €"}{cheapest.price} [{cheapest.dimensions}]
                   </Link>
                 )}
-                <span className="whitespace-nowrap text-muted-foreground">
-                  {"\u00A0- "}
-                  <Link to="/ordine-personalizzato" className="text-primary underline underline-offset-2">
-                    Personalizza
-                  </Link>
-                </span>
               </>
             )}
           </div>
