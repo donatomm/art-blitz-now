@@ -47,7 +47,7 @@ const Hero = ({
         <div style={{ height: "var(--header-height, 80px)" }} />
 
         {/* Hero Text Area */}
-        <div className="flex h-[calc(65vh-20px)] min-h-[400px] flex-col items-center justify-center px-4 text-center">
+        <div className="flex flex-col items-center justify-center px-4 text-center py-4 md:h-[calc(65vh-20px)] md:min-h-[400px] md:py-0">
           <div className="bg-blue-500/50 px-8 py-6 rounded-lg border border-white/10">
             <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl md:text-6xl lg:text-7xl whitespace-pre-line">
               {title}
