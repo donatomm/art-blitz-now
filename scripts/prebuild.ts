@@ -107,7 +107,7 @@ async function fetchSiteSettings() {
     // Hero settings
     hero_title: settings.hero_title || "Opere magnetiche. Uniche. Non per tutti.",
     hero_subtitle: settings.hero_subtitle || "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.",
-    hero_cta_text: settings.hero_cta_text || "ESPLORA LA COLLEZIONE",
+    hero_cta_text: settings.hero_cta_text ?? "ESPLORA LA COLLEZIONE",
     hero_image: settings.hero_image || "",
     trust_bar_items: Array.isArray(settings.trust_bar_items) ? settings.trust_bar_items : [],
     
