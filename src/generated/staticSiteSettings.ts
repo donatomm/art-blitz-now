@@ -49,12 +49,11 @@ export interface StaticSiteSettings {
 
 export const staticSiteSettings: StaticSiteSettings = {
   "hero_title": "Opere magnetiche. Uniche. Non per tutti.",
-  "hero_subtitle": "Trasforma la tua parete in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.",
-  "hero_cta_text": "ESPLORA LA COLLEZIONE",
+  "hero_subtitle": "Trasforma il tuo spazio in un'esperienza visiva che cattura lo sguardo e non lo lascia andare.",
+  "hero_cta_text": "",
   "hero_image": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/hero/herolast-1786051125722.webp",
   "trust_bar_items": [
-    "Stampe Professionali Su Tela",
-    "Tecnologia di stampa HP Latex™ ",
+    "Stampe Professionali con Tecnologia HP Latex™",
     "Colori Brillanti Resistenti Alla Luce",
     "Pronte da Appendere"
   ],
@@ -71,7 +70,7 @@ export const staticSiteSettings: StaticSiteSettings = {
     },
     {
       "href": "/blog",
-      "label": "🟢 Polpo: Scienza e Storie incredibili",
+      "label": "Storie e fatti incredibili",
       "order": 2
     },
     {
@@ -91,7 +90,7 @@ export const staticSiteSettings: StaticSiteSettings = {
     },
     {
       "href": "/ordine-personalizzato",
-      "label": "Ordini Speciali",
+      "label": "🟢 Ordini Speciali",
       "order": 6
     }
   ],
@@ -112,7 +111,8 @@ export const staticSiteSettings: StaticSiteSettings = {
   "hellobar_popup_content": "📦 Spedizione Gratuita\n\nLa spedizione gratuita è valida per:\n\n𝙄𝙩𝙖𝙡𝙞𝙖 𝙋𝙚𝙣𝙞𝙣𝙨𝙪𝙡𝙖𝙧𝙚 𝙚 𝙎𝙞𝙘𝙞𝙡𝙞𝙖\n\nSardegna e isole: €17\n\nPer spedizioni in altri paesi EU , i costi di produzione sono significativamente più alti (diverso fornitore) \n\nPaesi inclusi: DE, AT, CH, LU, GB, IE, FR, BE, ES, SE, DK, FI, NL, PL, PT, CZ, HU, SK.\n\nEXPRESS 24h. Contattami per un preventivo personalizzato.\n\nPer spedizioni negli USA/Canada vengono usati un corriere e un laboratorio di stampa locali.  ",
   "hellobar_whatsapp_number": "3936662951754",
   "hellobar_contact_email": "macudici@gmail.com",
-  "build_timestamp": "2026-08-06T21:23:56.899Z"
+  "gallery_layout": "masonry",
+  "build_timestamp": "2026-10-18T02:02:27.496Z"
 };
 
 export default staticSiteSettings;

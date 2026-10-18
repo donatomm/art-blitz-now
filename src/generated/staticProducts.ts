@@ -8,20 +8,92 @@ import { Product } from '@/types/product';
 
 export const staticProducts: Product[] = [
   {
-    "id": "5ccae818-f26c-48dc-a1c1-e2bd5adeb2d5",
-    "name": "Octocubist - NOT FOR SALE YET",
-    "medium": "Stampa su Tela",
-    "image_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/artworks/octopus-rag.webp",
-    "sizes": [],
+    "id": "6e42fe3b-3e05-4d27-b13f-7590fa939b1a",
+    "name": "OctoCubist",
+    "medium": "An Octopus with blues self-morphs into surreal cubism to mimic ancient roman riles in roman bath",
+    "image_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/artworks/octopus-rag-lowres.webp",
+    "sizes": [
+      {
+        "dimensions": "80x80",
+        "price": 90,
+        "stripe_product_id": "prod_VPYIw1WswSDexH",
+        "deal_label_enabled": false,
+        "deal_label_text": "",
+        "deal_price": 66,
+        "mock_room_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/mockrooms/octocubist-80x80.webp",
+        "mock_room_label": ""
+      },
+      {
+        "dimensions": "60x60",
+        "price": 75,
+        "stripe_product_id": "prod_VPYIw1WswSDexH",
+        "deal_label_enabled": false,
+        "deal_label_text": "",
+        "deal_price": 0,
+        "mock_room_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/mockrooms/octocubist-60x60.webp",
+        "mock_room_label": ""
+      }
+    ],
     "display_order": 0,
-    "created_at": "2026-03-18T04:01:00.396052+00:00",
-    "updated_at": "2026-05-03T16:47:14.742242+00:00",
+    "created_at": "2026-03-26T15:34:56.90811+00:00",
+    "updated_at": "2026-10-10T23:55:59.744742+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
-    "description": "TEMP",
+    "description": "An Octopus with blues self-morph into surreal cubism to mimic ancient roman riles in roman baths",
     "mock_rooms": [],
     "is_active": true,
-    "slug": null,
+    "slug": "octocubist",
+    "is_new": true,
+    "tags": [],
+    "seo_title": null,
+    "seo_description": null
+  },
+  {
+    "id": "7aa95c08-32b8-4a98-939f-be1ab1d8cba2",
+    "name": "OCTIFIED",
+    "medium": "From an AI Hallucination to Mutation . . Stampa su Tela",
+    "image_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/artworks/octomutation.webp",
+    "sizes": [
+      {
+        "dimensions": "90x60",
+        "price": 0,
+        "stripe_product_id": "prod_VRxSxE40972f8Q",
+        "deal_label_enabled": false,
+        "deal_label_text": "",
+        "deal_price": 0,
+        "mock_room_url": "",
+        "mock_room_label": ""
+      },
+      {
+        "dimensions": "120x60",
+        "price": 93,
+        "stripe_product_id": "prod_VRxSxE40972f8Q",
+        "deal_label_enabled": false,
+        "deal_label_text": "",
+        "deal_price": 0,
+        "mock_room_url": "",
+        "mock_room_label": ""
+      },
+      {
+        "dimensions": "120x80",
+        "price": 114,
+        "stripe_product_id": "prod_VRxSxE40972f8Q",
+        "deal_label_enabled": false,
+        "deal_label_text": "",
+        "deal_price": 0,
+        "mock_room_url": "",
+        "mock_room_label": ""
+      }
+    ],
+    "display_order": 1,
+    "created_at": "2026-10-10T21:07:56.007155+00:00",
+    "updated_at": "2026-10-16T05:27:57.037625+00:00",
+    "deal_label_enabled": false,
+    "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
+    "description": "Nobody could explain this phenomenon. One hypothesis is that it happens where you always think about octopi.",
+    "mock_rooms": [],
+    "is_active": true,
+    "slug": "octomutation",
     "is_new": true,
     "tags": [],
     "seo_title": null,
@@ -35,7 +107,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "75x100",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TZjGEhUvQNBbJV",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -45,7 +117,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "40x60",
-        "price": 45,
+        "price": 59,
         "stripe_product_id": "prod_TZjGEhUvQNBbJV",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -55,7 +127,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "50x75",
-        "price": 49,
+        "price": 61,
         "stripe_product_id": "prod_TZjGEhUvQNBbJV",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -65,7 +137,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "80x120",
-        "price": 0,
+        "price": 114,
         "stripe_product_id": "prod_TZjGEhUvQNBbJV",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -74,9 +146,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 1,
+    "display_order": 2,
     "created_at": "2025-12-05T01:36:51.407563+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:47.589714+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Entra qualcuno in quella stanza e si ferma. \"Che diavolo...?\" Poi si avvicina. Poi non riesce a distogliere lo sguardo. Centinaia di ventose in rosso incandescente, turchese profondo, giallo solare creano un mondo che pulsa, che respira, che vive. Questo è per spazi dove succede qualcosa. Per persone che non vogliono il solito. Per chi cerca arte che faccia sentire qualcosa di vero. Per chi ama vibranti forme e vividi toni che assieme rendono uno spazio indimenticabile.",
@@ -98,7 +170,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "80x80",
-        "price": 89,
+        "price": 90,
         "stripe_product_id": "prod_TZjA5LNcHO0inH",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -108,7 +180,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "60x60",
-        "price": 78,
+        "price": 75,
         "stripe_product_id": "prod_TZjA5LNcHO0inH",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -118,7 +190,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "40x40",
-        "price": 35,
+        "price": 43,
         "stripe_product_id": "prod_TZjA5LNcHO0inH",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -127,9 +199,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 2,
+    "display_order": 3,
     "created_at": "2025-12-05T01:36:51.407563+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:47.698372+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Il banco di sardine si dissolve in un vortice di colore. Sei occhi restano, fissi, ipnotici — come se avessero visto qualcosa che tu non puoi vedere. Sardinopsis: dal greco \"visione di sardine.\" O forse è la sardina che ha visioni. In ogni caso, quella stanza non sarà mai più la stessa.",
@@ -151,7 +223,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "120x80",
-        "price": 0,
+        "price": 114,
         "stripe_product_id": "prod_SN6VpEHGFDiS0A",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -161,7 +233,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "100x75",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_SN6VpEHGFDiS0A",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -171,8 +243,8 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "90x60",
-        "price": 65,
-        "stripe_product_id": "",
+        "price": 95,
+        "stripe_product_id": "prod_SN6VpEHGFDiS0A",
         "deal_label_enabled": false,
         "deal_label_text": "",
         "deal_price": 65,
@@ -180,9 +252,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 3,
+    "display_order": 5,
     "created_at": "2025-12-04T23:50:22.241323+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-16T04:00:47.990386+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Un'esplosione solare. Cerchi concentrici di arancio bruciato e giallo vivo creano un alveare che pulsa sulla tela. OctosuckersTM isola il dettaglio per farne un mondo: Octo è l'origine marina, Suckers sono le ventose che, moltiplicate all'infinito, diventano pura astrazione. Una presa visiva che non lascia scampo. Per chi vuole accendere la stanza con un'energia calda e magnetica.",
@@ -204,7 +276,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "75x100",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TbV0O8SJbwZmYm",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -214,7 +286,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "80x120",
-        "price": 0,
+        "price": 114,
         "stripe_product_id": "prod_TbV0O8SJbwZmYm",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -224,7 +296,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "40x60",
-        "price": 45,
+        "price": 59,
         "stripe_product_id": "prod_TbV0O8SJbwZmYm",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -233,9 +305,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 4,
+    "display_order": 6,
     "created_at": "2025-12-14T16:20:23.681793+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:48.048664+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Uno studio di forme morbide in un mondo spigoloso. OctoCups Kandirosae rappresenta il lato gentile della natura selvaggia. Le texture sono ricche, quasi tattili: sembra di poter toccare la superficie vellutata di queste strutture cellulari. I colori caldi e freddi si intrecciano senza scontrarsi, creando un equilibrio perfetto. È l'opera ideale per chi vuole \"accendere una stanza\" non con un lampo accecante, ma con il calore costante e avvolgente di una vita che pulsa sottovoce.",
@@ -257,7 +329,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "80x80",
-        "price": 89,
+        "price": 90,
         "stripe_product_id": "prod_TZisgTDWonkFqY",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -267,7 +339,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "60x60",
-        "price": 78,
+        "price": 75,
         "stripe_product_id": "prod_TZisgTDWonkFqY",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -277,7 +349,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "40x40",
-        "price": 35,
+        "price": 43,
         "stripe_product_id": "prod_TZisgTDWonkFqY",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -286,9 +358,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 5,
+    "display_order": 7,
     "created_at": "2025-12-04T23:50:22.241323+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:48.173685+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Entra qualcuno in quella stanza e si ferma. \"Che diavolo...?\" Poi si avvicina. Poi non riesce a distogliere lo sguardo. Centinaia di ventose pulsano in un'armatura di blu elettrico, incastonando uno sguardo d'ambra che ti fissa. Da lontano, Octoblues è uno shock di profondità abissale. Ma fai un passo avanti e la \"luce liquida\" svela il suo segreto: le superfici esplodono in migliaia di micro-spirali e vortici frattali. Non è solo colore, è materia viva. Un'opera che seduce due volte: prima con la potenza dell'insieme, poi con la scoperta di un dettaglio infinito. Per spazi che chiedono il silenzio magnetico e l'eleganza del <em>mare profondo.</em>\n\nCredits to an original picture \"I'm blue\" by Klaus Wiese (@wiese) on 500px - I was Inspired by it, edited digitally with several morphological changes\n",
@@ -315,7 +387,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "40x60",
-        "price": 45,
+        "price": 59,
         "stripe_product_id": "prod_SN6UBo0q3KWrUe",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -325,7 +397,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "75x100",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_SN6UBo0q3KWrUe",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -335,7 +407,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "80x120",
-        "price": 0,
+        "price": 114,
         "stripe_product_id": "prod_SN6UBo0q3KWrUe",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -344,9 +416,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 6,
+    "display_order": 8,
     "created_at": "2025-12-04T23:50:22.241323+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:48.650966+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Architettura di luce su nero assoluto. I contorni della creatura sono invertiti come in un negativo fotografico: invece della materia, vediamo uno scheletro luminoso, una trina complessa che sembra fatta di vetro soffiato o energia pura. È l'essenza spettrale (Ghost) dell'ottopode (Octo), spogliata di tutto il peso della realtà. Un pezzo dal design minimale e dall'impatto magnetico. Per spazi moderni che cercano un punto focale di eleganza oscura.",
@@ -368,7 +440,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "60x40",
-        "price": 45,
+        "price": 59,
         "stripe_product_id": "prod_TZjKjUgo3xCvbK",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -378,7 +450,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "100x75",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TZjKjUgo3xCvbK",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -388,7 +460,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "120x80",
-        "price": 0,
+        "price": 114,
         "stripe_product_id": "prod_TZjKjUgo3xCvbK",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -397,9 +469,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 7,
+    "display_order": 9,
     "created_at": "2025-12-07T15:54:17.29366+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:48.783804+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Due braccia si cercano. Una brucia di rossi e aranci, l'altra splende di oro e crema. Si incontrano in un fiume blu che le divide e le unisce. Zoensis — dal greco zoe, vita: perché qui c'è movimento, tensione, qualcosa che pulsa. Octo come le otto braccia del polpo, Cups dall'inglese suction cups: ventose. Per chi ama vibranti forme e vividi toni che assieme rendono uno spazio indimenticabile.",
@@ -421,7 +493,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "100x75",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TefKwgzZVvw3f3",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -430,8 +502,8 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       },
       {
-        "dimensions": "2x90x60",
-        "price": 129,
+        "dimensions": "2x9060",
+        "price": 0,
         "stripe_product_id": "prod_TefKwgzZVvw3f3",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -441,7 +513,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "90x60",
-        "price": 65,
+        "price": 95,
         "stripe_product_id": "prod_TefKwgzZVvw3f3",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -451,7 +523,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "60x40",
-        "price": 45,
+        "price": 59,
         "stripe_product_id": "prod_TefKwgzZVvw3f3",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -461,7 +533,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "100x50",
-        "price": 75,
+        "price": 85,
         "stripe_product_id": "prod_TefKwgzZVvw3f3",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -470,16 +542,16 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 8,
+    "display_order": 10,
     "created_at": "2025-12-23T02:47:11.068905+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:48.901706+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Il calore è stato aspirato via. Rimane solo una frequenza blu, elettrica e glaciale. Non è acqua, è azoto liquido.\n\nLa scelta monocromatica è spietata: costringe l'occhio a concentrarsi puramente sulla struttura. Le forme circolari perdono ogni riferimento organico terrestre e diventano sensori bioluminescenti attivi nel buio più profondo dell'abisso. La luce sembra fredda, chimica, spettrale.\n\nC'è una purezza clinica qui. Se l'opera arancione era carne viva, questa è pura stasi criogenica.\n\nUn incubo di ghiaccio di un'eleganza letale.",
     "mock_rooms": [],
     "is_active": true,
     "slug": "polpo-octopus-blue-wow-stampa-tela",
-    "is_new": true,
+    "is_new": false,
     "tags": [
       "polpo"
     ],
@@ -494,7 +566,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "60x60",
-        "price": 78,
+        "price": 75,
         "stripe_product_id": "prod_TZjJKkuNZZBoYU",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -504,7 +576,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "80x80",
-        "price": 89,
+        "price": 90,
         "stripe_product_id": "prod_TZjJKkuNZZBoYU",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -513,9 +585,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 9,
+    "display_order": 11,
     "created_at": "2025-12-05T15:37:55.778141+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:49.021971+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Quattro dimensioni, un unico sguardo che emerge dall'acqua. La materia ribolle come in un Van Gogh sottomarino, si dissolve nel tratto nervoso di una matita, si leviga in pittura digitale e infine diventa icona pop. Anchoios eleva l'umile acciuga (Anchovy) alla solennità del mito greco. Non è un semplice ritratto ittico, è la dimostrazione che la realtà cambia in base alla lente con cui la osservi. Per spazi che non si accontentano di una sola risposta.",
@@ -537,7 +609,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "60x90",
-        "price": 65,
+        "price": 95,
         "stripe_product_id": "prod_TaoJEnwwCLUvG4",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -547,7 +619,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "75x100",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TaoJEnwwCLUvG4",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -556,9 +628,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 10,
+    "display_order": 12,
     "created_at": "2025-12-12T20:22:19.422258+00:00",
-    "updated_at": "2026-05-16T08:19:51.594391+00:00",
+    "updated_at": "2026-10-10T23:55:49.146101+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "La grandezza nel minuscolo. Trotella Microstigma celebra la complessità nascosta della natura, immaginando una trota la cui pelle è una mappa di infinite possibilità. Da lontano colpisce l'energia della forma e il guizzo dei colori vivaci; ma è nell'approccio ravvicinato che l'opera mantiene la sua promessa, svelando una ricchezza di texture e simboli che ipnotizzano lo spettatore. Sontuosa e giocosa al tempo stesso, trasforma un soggetto naturale in un'icona di stile contemporaneo.",
@@ -589,7 +661,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "80x80",
-        "price": 89,
+        "price": 90,
         "stripe_product_id": "prod_SN6YQSCjPVJXcL",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -599,7 +671,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "60x60",
-        "price": 78,
+        "price": 75,
         "stripe_product_id": "prod_SN6YQSCjPVJXcL",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -609,7 +681,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "40x40",
-        "price": 35,
+        "price": 43,
         "stripe_product_id": "prod_SN6YQSCjPVJXcL",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -618,9 +690,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 11,
+    "display_order": 13,
     "created_at": "2025-12-05T01:36:51.407563+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:49.248218+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Inchiostro nero su macchie di ruggine e malva. Un caos di tentacoli che trova pace in una composizione circolare. Octopot LinnearisTM nasce da un momento di vita vera nel Golfo Paradiso: il polpo, pescato dal caro amico Enrico \"Pencho\", è stato immortalato dall'artista direttamente nella pentola (Pot) prima di diventare cena. Qui la scienza di Linneo cede il passo al tratto grafico (Linnearis): una nuova classificazione basata non sulla biologia, ma sulla linea pura. Per chi sa che la vera bellezza, a volte, va cercata in cucina prima che in un museo.",
@@ -642,7 +714,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "60x90",
-        "price": 65,
+        "price": 95,
         "stripe_product_id": "prod_TaYTf1yGBxi3Zf",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -652,7 +724,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "75x100",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TaYTf1yGBxi3Zf",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -662,7 +734,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "80x120",
-        "price": 0,
+        "price": 114,
         "stripe_product_id": "prod_TaYTf1yGBxi3Zf",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -671,9 +743,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 12,
+    "display_order": 14,
     "created_at": "2025-12-12T03:19:09.091382+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:49.339734+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Il taglio è verticale, quasi ascetico.\nL’acciuga emerge come una preghiera marina interrotta a metà, con quell’occhio rotondo che sembra chiedere: “Allora? Hai finito di guardarmi dall’alto?”\nPer spazi living che amano il profumo del mare e il design non convenzionale.\n",
@@ -695,7 +767,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "75x50",
-        "price": 49,
+        "price": 61,
         "stripe_product_id": "prod_SN6WkCnJLEhf0r",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -705,7 +777,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "90x60",
-        "price": 65,
+        "price": 95,
         "stripe_product_id": "prod_SN6WkCnJLEhf0r",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -714,9 +786,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 13,
+    "display_order": 15,
     "created_at": "2025-12-05T01:36:51.407563+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:49.441368+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Una danza geometrica di elementi che si muovono in un caos calmo di viola, ocra e blu. Alcuni giurano che c'e' un'immagine nascosta tra le forme astratte che omaggiano il maestro Kandinsky, un muso familiare — di razza carlino — nascosto in piena vista al centro della composizione. L'autore \"né conferma né smentisce\". Per chi ama l'arte che coinvolge, che mai stanca e che nasconde segreti tra le righe del colore.",
@@ -732,34 +804,54 @@ export const staticProducts: Product[] = [
   },
   {
     "id": "7adf11a4-bca3-4f08-a0a4-6287753f89f1",
-    "name": "OLIM QUIDAM PISCIULI - SEMISVENUTO",
+    "name": "OLIM QUIDAM PISCIULI",
     "medium": "Magic",
     "image_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/artworks/1765968730527-w029s2.gif",
     "sizes": [
       {
-        "dimensions": "40x40",
-        "price": 35,
+        "dimensions": "40x30",
+        "price": 39,
         "stripe_product_id": "",
         "deal_label_enabled": false,
         "deal_label_text": "",
         "deal_price": 29,
-        "mock_room_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/mockrooms/1765968706610-egzxa.gif",
+        "mock_room_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/mockrooms/olim-quidam-pisciculi-40x30jpegjpg.webp",
         "mock_room_label": ""
       },
       {
-        "dimensions": "40x40",
-        "price": 35,
+        "dimensions": "60x40",
+        "price": 39,
         "stripe_product_id": "",
         "deal_label_enabled": false,
         "deal_label_text": "",
         "deal_price": 29,
-        "mock_room_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/mockrooms/1765968950140-2ifgtc.gif",
+        "mock_room_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/mockrooms/olim-quidam-pisciculi-90x60jpeg-1788988848447.webp",
+        "mock_room_label": ""
+      },
+      {
+        "dimensions": "90x60",
+        "price": 85,
+        "stripe_product_id": "",
+        "deal_label_enabled": false,
+        "deal_label_text": "",
+        "deal_price": 0,
+        "mock_room_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/mockrooms/olim-quidam-pisciculi-60x40.webp",
+        "mock_room_label": ""
+      },
+      {
+        "dimensions": "100x75",
+        "price": 93,
+        "stripe_product_id": "",
+        "deal_label_enabled": false,
+        "deal_label_text": "",
+        "deal_price": 0,
+        "mock_room_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/mockrooms/olim-quidam-pisciculi-100x75jpegjpg-1788988976718.webp",
         "mock_room_label": ""
       }
     ],
-    "display_order": 14,
+    "display_order": 16,
     "created_at": "2025-12-17T10:52:24.242141+00:00",
-    "updated_at": "2026-05-04T19:26:25.152386+00:00",
+    "updated_at": "2026-10-10T23:55:49.548901+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Singolare creatura ittica che inganna con colori photomatocri fluttuanti. Scaglie prismatiche a metasuperficie che pulsano come se respirassero luce. Un endoscheletro in lega a memoria stocastica e muscoli di mio-polimeri elettroattivi che rendono il gesto pinnante con micro-ritardi voluti. I sensi sono tarati sul “qui ed adesso\" ma \"anche domani va bene, anzi meglio”. Sente il sale, la corrente, e soprattutto le intenzioni, grazie a recettori chemo-oneirici che confondono profumo, ricordo e flash di sogni bucolic-ovino-centrici. Non si alimenta in senso proprio, osmotizza a caso particolato di corno-letame vitalizzato. Ogni tanto entra in stato lanoso, rallenta, si lascia portare dal nanofluido neo-plankton a nanosfere. Sembra sognante, verdi prati mai visti ed anemoni eccitavolandrici. Per stanza sobrie, che non cercano emozioni, almeno nel senso proprio del archetermine",
@@ -779,7 +871,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "75x100",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TaoLG0PLQdBjrK",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -789,7 +881,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "50x75",
-        "price": 49,
+        "price": 61,
         "stripe_product_id": "prod_TaoLG0PLQdBjrK",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -798,9 +890,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 15,
+    "display_order": 17,
     "created_at": "2025-12-12T20:22:19.422258+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:49.740574+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Vibrazioni di viola e terra bruciata. Un occhio vigile che affiora da una nebbia astratta. Anchoio TemporalisTM non è un semplice ritratto, ma un istante sospeso. Il nome unisce l'affermazione di sé (Ancho-Io) alla dimensione del tempo (Temporalis): è l'attimo esatto in cui la creatura rompe la superficie per diventare eterna. Una pittura che sa di salsedine e memoria. Per chi ama la bellezza imperfetta e le sfumature profonde dell'anima.",
@@ -820,9 +912,9 @@ export const staticProducts: Product[] = [
     "medium": "Stampa su Tela",
     "image_url": "",
     "sizes": [],
-    "display_order": 16,
+    "display_order": 18,
     "created_at": "2025-12-25T10:19:57.649716+00:00",
-    "updated_at": "2026-03-18T04:01:28.557597+00:00",
+    "updated_at": "2026-10-10T23:55:50.067516+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "",
@@ -844,7 +936,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "100x75",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -854,7 +946,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "90x60",
-        "price": 65,
+        "price": 95,
         "stripe_product_id": "",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -864,7 +956,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "60x40",
-        "price": 45,
+        "price": 59,
         "stripe_product_id": "",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -873,14 +965,14 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 17,
+    "display_order": 19,
     "created_at": "2025-12-17T09:15:26.028393+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:50.280986+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Un mio scarabocchio che nel tempo è maturato in un felice? pescetto fatto di rossi, gialli e blu che brillano come gemme  in un universo liquido. \n\nl titolo è una promessa solenne: \"Olim quidam pisciculi...\" (Latino per \"C'era una volta un pesciolino...\"). Evoca pergamene, lentezza, il latino dei classici. Ti aspetti un'illustrazione antica, sbiadita dal tempo.\n\nL'immagine, invece, è uno shock elettrico che tradisce quella aspettativa.\n\nIl \"mosaico\" non è fatto di pietre antiche, ma di frammenti digitali saturi. I colori non sono pigmenti, sono radiazioni al neon. La citazione alla vetrata sacra o allo smalto cloisonné viene hackerata da un'estetica aggressiva, quasi algoritmica.\nÈ il passato che viene riscritto dal futuro. Lo sfondo \"alla Van Gogh\" non è olio su tela, ma una turbolenza di dati.\n\nPer spazi dove serve leggerezza senza essere banali.",
     "mock_rooms": [],
-    "is_active": true,
+    "is_active": false,
     "slug": "pesce-pescetto-astratto-colori-brillanti-stampa-tela-canvas",
     "is_new": false,
     "tags": [
@@ -897,7 +989,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "100x75",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TflwU9vyeImNxB",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -907,7 +999,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "60x60",
-        "price": 78,
+        "price": 75,
         "stripe_product_id": "prod_TflwU9vyeImNxB",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -917,7 +1009,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "80x80",
-        "price": 89,
+        "price": 90,
         "stripe_product_id": "prod_TflwU9vyeImNxB",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -927,7 +1019,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "120x60",
-        "price": 91,
+        "price": 99,
         "stripe_product_id": "prod_TflwU9vyeImNxB",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -937,7 +1029,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "90x60",
-        "price": 65,
+        "price": 95,
         "stripe_product_id": "prod_TflwU9vyeImNxB",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -946,9 +1038,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 18,
+    "display_order": 20,
     "created_at": "2025-12-26T02:02:47.528847+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:50.397754+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Qui l'effetto è quello delle superfici cangianti, tipo metallo surriscaldato o benzina sull'asfalto, ma elevato all'ennesima potenza. I colori sono profondi e metallici: oro antico, viola elettrico e verde che si mescolano in modo fluido.\n\nC'è una complessità che ti attira dentro: ogni elemento ha il suo riflesso unico, come se fosse una lente che distorce la luce. È visivamente ricca, ipnotica e molto moderna.",
@@ -970,7 +1062,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "40x40",
-        "price": 35,
+        "price": 43,
         "stripe_product_id": "prod_TaoHu7GDGYyYHS",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -980,7 +1072,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "60x60",
-        "price": 78,
+        "price": 75,
         "stripe_product_id": "prod_TaoHu7GDGYyYHS",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -990,8 +1082,8 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "80x80",
-        "price": 89,
-        "stripe_product_id": "",
+        "price": 90,
+        "stripe_product_id": "prod_TaoHu7GDGYyYHS",
         "deal_label_enabled": false,
         "deal_label_text": "",
         "deal_price": 66,
@@ -999,9 +1091,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 19,
+    "display_order": 21,
     "created_at": "2025-12-14T21:42:45.760494+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-16T04:00:07.920789+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Gloria e dramma scolpiti in un solo istante. Il corpo e le braccia si trasformano convulsamente nello spazio con una forza primordiale. Colto in un movimento ascensionale. Dietro di lui una luce potente—come in un'eruzione sottomarina—retroillumina la scena, creando un'aura di salvezza dal dramma. La creatura ne assorbe la violenza cromatica, riflettendo sulla sua pelle corazzata il caos di blu elettrici e aranci incandescenti che ribollono intorno a lui. Per chi cerca un'arte che sia allo stesso tempo sofferta rinascita e un'esplosione di vitalità ed energia moderna.",
@@ -1023,7 +1115,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "40x60",
-        "price": 45,
+        "price": 59,
         "stripe_product_id": "prod_TfogJScVkkYCsS",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -1033,7 +1125,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "75x50",
-        "price": 49,
+        "price": 61,
         "stripe_product_id": "prod_TfogJScVkkYCsS",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -1042,9 +1134,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 20,
+    "display_order": 22,
     "created_at": "2025-12-26T04:51:17.426863+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:50.609628+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "E questo?  Un tessuto vegetale al microscopio? Una foto satellitare? Una vecchia spugna da cucina? Ha importanza? Un reticolo fittissimo, quasi un tessuto biologico. Il verde acido e il giallo dominano, creando una sensazione vegetale, ma elettrica. Ispira azione o riflessione?",
@@ -1066,7 +1158,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "60x40",
-        "price": 45,
+        "price": 59,
         "stripe_product_id": "prod_TasQoVuecXHepn",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -1076,7 +1168,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "75x50",
-        "price": 49,
+        "price": 61,
         "stripe_product_id": "prod_TasQoVuecXHepn",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -1086,7 +1178,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "100x75",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TasQoVuecXHepn",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -1095,9 +1187,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 21,
+    "display_order": 23,
     "created_at": "2025-12-13T00:29:05.900864+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:50.71755+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Un'esplosione di colore che sfida la quiete dell'acqua. In Salmotrutta Solaris, il soggetto non è solo il pesce, ma la luce stessa. Pennellate dense e vorticose, che ricordano i cieli di Van Gogh, creano un ambiente dinamico dove l'acqua sembra ribollire di vita. Il pesce, decorato come un gioiello antico con pattern cellulari, diventa il punto focale di un contrasto vibrante tra il calore dell'oro solare e la freschezza dei toni marini. Un pezzo audace che trasforma qualsiasi parete in una dichiarazione di pura energia visiva.",
@@ -1119,7 +1211,7 @@ export const staticProducts: Product[] = [
     "sizes": [
       {
         "dimensions": "60x90",
-        "price": 65,
+        "price": 95,
         "stripe_product_id": "prod_TaoIZUbj0UGBwR",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -1129,7 +1221,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "75x100",
-        "price": 91,
+        "price": 93,
         "stripe_product_id": "prod_TaoIZUbj0UGBwR",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -1139,7 +1231,7 @@ export const staticProducts: Product[] = [
       },
       {
         "dimensions": "80x120",
-        "price": 0,
+        "price": 114,
         "stripe_product_id": "prod_TaoIZUbj0UGBwR",
         "deal_label_enabled": false,
         "deal_label_text": "",
@@ -1148,9 +1240,9 @@ export const staticProducts: Product[] = [
         "mock_room_label": ""
       }
     ],
-    "display_order": 22,
+    "display_order": 24,
     "created_at": "2025-12-12T20:22:19.422258+00:00",
-    "updated_at": "2026-05-17T23:54:24.858414+00:00",
+    "updated_at": "2026-10-10T23:55:50.823717+00:00",
     "deal_label_enabled": false,
     "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
     "description": "Un'apparizione che emerge dal bianco. In Salmotrutta Temporalis, il soggetto sembra quasi un'incisione antica che prende vita attraverso il colore. Il nome Temporalis suggerisce una connessione con il tempo profondo: la trota non è solo un animale, ma un testimone silenzioso che attraversa le ere. Le macchie sulla sua pelle sembrano pietre preziose incastonate in un corpo che scivola via, inafferrabile ed eterno, tra le nuvole di un fiume immaginario.",
@@ -1163,37 +1255,6 @@ export const staticProducts: Product[] = [
     ],
     "seo_title": "Salmotrutta Temporalis — Quadro Pesci Trota Salmonata",
     "seo_description": "Salmotrutta Temporalis: quadro pesci con trota salmonata in chiave temporale, stampa su tela canvas. Arte marina moderna d'autore."
-  },
-  {
-    "id": "6e42fe3b-3e05-4d27-b13f-7590fa939b1a",
-    "name": "Octocubist",
-    "medium": "Trasformations to Mimic Roman Tiles in roman Bath",
-    "image_url": "https://xqubydbsoucrwqhddodw.supabase.co/storage/v1/object/public/product-images/artworks/octopus-rag-lowres.webp",
-    "sizes": [
-      {
-        "dimensions": "80x80",
-        "price": 89,
-        "stripe_product_id": "",
-        "deal_label_enabled": false,
-        "deal_label_text": "",
-        "deal_price": 66,
-        "mock_room_url": "",
-        "mock_room_label": ""
-      }
-    ],
-    "display_order": 23,
-    "created_at": "2026-03-26T15:34:56.90811+00:00",
-    "updated_at": "2026-05-04T19:26:26.442193+00:00",
-    "deal_label_enabled": false,
-    "deal_label_text": "OFFERTA DEL GIORNO, scade h20:00",
-    "description": "",
-    "mock_rooms": [],
-    "is_active": true,
-    "slug": "octocubist",
-    "is_new": true,
-    "tags": [],
-    "seo_title": null,
-    "seo_description": null
   }
 ];
 
