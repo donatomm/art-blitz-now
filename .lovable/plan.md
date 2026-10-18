@@ -1,35 +1,40 @@
-# Hide the hero button on phones
+# Keep an empty hero button text empty in the pre-built homepage
 
-Only file changed: `src/components/Hero.tsx`. No new files, no database, no packages, no SEO tags touched.
+Only file changed: `scripts/prebuild.ts`, line 110. No new files, no database, no packages, no other line.
+
+## Change
+
+Before:
+```text
+hero_cta_text: settings.hero_cta_text || "ESPLORA LA COLLEZIONE",
+```
+After:
+```text
+hero_cta_text: settings.hero_cta_text ?? "ESPLORA LA COLLEZIONE",
+```
 
 ## What visitors will see
 
-- Phone (narrower than 768 px): the hero shows the title and subtitle only. No "ESPLORA LA COLLEZIONE" button.
-- Computer (768 px and wider): the button looks and works exactly as it does today — same text, same green pill, same scroll to the gallery.
-- The button text itself is not touched anywhere: Admin Panel and database keep it as is.
+- Admin Panel text empty: the pre-built homepage has no button, so no flash of the button before live settings load. (The hero already shows the button only when the text is not empty.)
+- Admin Panel text filled: unchanged, the saved text shows.
+- Setting missing entirely: fallback "ESPLORA LA COLLEZIONE", as today.
 
-## How
-
-- In `Hero.tsx`, the button's class list gains `hidden md:inline-block`. Everything else on the button (text, `onClick`, colours, hover scale, padding, rounded shape) stays byte-for-byte the same.
-- `hidden` removes the button on phones, `md:inline-block` puts it back on computers. The choice is made by CSS alone, so the pre-built pages never ask the screen how wide it is.
-- The spacer, the title, the subtitle, the trust bar and the click handler are untouched.
+All other `||` lines in prebuild.ts stay as they are.
 
 ## Safety check (docs/SAFETY-CHECK.md)
 
 | Area | Status | Notes | Risk |
 |------|--------|-------|------|
-| SSG | OK | CSS-only choice; no browser APIs, no screen check in JavaScript, so server render and first client render match | None |
-| SEO | OK | No meta tags, slugs, sitemap, robots or canonicals touched. One internal scroll action is no longer offered on phones; no URL changes | Low |
-| LCP/Performance | OK | Removes one element on phones; no new network requests, nothing added before paint | None |
-| Build | OK | `vercel.json`, `package.json` and build scripts untouched | None |
-| Database | OK | Nothing changes; hero text still comes from the same settings | None |
-| Admin INP | OK | Not an admin file; Admin Panel untouched | None |
+| SSG | OK | Only changes a value in pre-built settings; pre-built and live now match | None |
+| SEO | OK | No meta, slugs, sitemap, robots, canonicals | None |
+| LCP/Performance | OK | Removes a flashing element | None |
+| Build | OK | Same script, same output files; `vercel.json` untouched | Low |
+| Database | OK | Read only, as today | None |
+| Admin INP | OK | Admin untouched | None |
 
 ## Testing
 
-Playwright in a phone-sized browser (390 px): the button is not present on the page, and the title and subtitle still show. Playwright at 1280 px: the button is present with the same text and still scrolls to the gallery when clicked. Build passes.
-
-Live after your Sync & Deploy.
+Run the prebuild script locally and confirm the generated settings file holds the saved text (empty if empty). The generated file may change as a normal result of that run; I will not keep that change unless you ask. Live after your Sync & Deploy.
 
 ## Before I build
 
