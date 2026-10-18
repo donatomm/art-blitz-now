@@ -1,35 +1,36 @@
-# Remove "- Personalizza" from the phone line
+# Hide the hero button on phones
 
-Only file changed: `src/components/ProductCard.tsx`. No new files, no database, no packages, no SEO tags touched.
+Only file changed: `src/components/Hero.tsx`. No new files, no database, no packages, no SEO tags touched.
 
 ## What visitors will see
 
-Phones (narrower than 768 px), example OCTIFIED:
-
-```text
-OCTIFIED | Da €93 [120x60]
-```
-
-- No size with a price: only the name.
-- "Coming soon" cards: name only (unchanged).
-- Computers and admin edit mode: unchanged.
+- Phone (narrower than 768 px): the hero shows the title and subtitle only. No "ESPLORA LA COLLEZIONE" button.
+- Computer (768 px and wider): the button looks and works exactly as it does today — same text, same green pill, same scroll to the gallery.
+- The button text itself is not touched anywhere: Admin Panel and database keep it as is.
 
 ## How
 
-- In the phone block, delete the `<span>` holding " - " and the "Personalizza" link to `/ordine-personalizzato`.
-- Name link and " | Da €… […]" link stay exactly as built (same cheapest-size rule, same `whitespace-nowrap` wrapping).
+- In `Hero.tsx`, the button's class list gains `hidden md:inline-block`. Everything else on the button (text, `onClick`, colours, hover scale, padding, rounded shape) stays byte-for-byte the same.
+- `hidden` removes the button on phones, `md:inline-block` puts it back on computers. The choice is made by CSS alone, so the pre-built pages never ask the screen how wide it is.
+- The spacer, the title, the subtitle, the trust bar and the click handler are untouched.
 
 ## Safety check (docs/SAFETY-CHECK.md)
 
 | Area | Status | Notes | Risk |
 |------|--------|-------|------|
-| SSG | OK | CSS-only choice kept; no browser APIs | None |
-| SEO | OK | Removes one internal link from cards; no meta, slugs, sitemap or redirects touched; the page itself is untouched | Low |
-| LCP/Performance | OK | Less text | None |
-| Build | OK | `vercel.json` untouched | None |
-| Database | OK | Nothing changes | None |
-| Admin INP | OK | Edit mode unchanged | None |
+| SSG | OK | CSS-only choice; no browser APIs, no screen check in JavaScript, so server render and first client render match | None |
+| SEO | OK | No meta tags, slugs, sitemap, robots or canonicals touched. One internal scroll action is no longer offered on phones; no URL changes | Low |
+| LCP/Performance | OK | Removes one element on phones; no new network requests, nothing added before paint | None |
+| Build | OK | `vercel.json`, `package.json` and build scripts untouched | None |
+| Database | OK | Nothing changes; hero text still comes from the same settings | None |
+| Admin INP | OK | Not an admin file; Admin Panel untouched | None |
 
 ## Testing
 
-Playwright at 390 px: OCTIFIED card text is exactly "OCTIFIED | Da €93 [120x60]", no "Personalizza". At 1280 px: card identical to today. Live after your Sync & Deploy.
+Playwright in a phone-sized browser (390 px): the button is not present on the page, and the title and subtitle still show. Playwright at 1280 px: the button is present with the same text and still scrolls to the gallery when clicked. Build passes.
+
+Live after your Sync & Deploy.
+
+## Before I build
+
+DO YOU WANT TO RUN A FULL SAFETY CHECK?
