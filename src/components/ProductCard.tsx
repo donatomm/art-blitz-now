@@ -41,8 +41,9 @@ const ProductCard = ({
       return { dimensions: s.dimensions, price: shownPrice };
     });
 
-  // Build size prices string with deal indication
-  const sizePrices = shownSizes.map((s) => `${s.dimensions} €${s.price}`).join(" | ");
+  // Computer row: sorted COPY (cheapest first, stable); original list untouched
+  const sortedShownSizes = [...shownSizes].sort((a, b) => a.price - b.price);
+  const sizePrices = sortedShownSizes.map((s) => `${s.dimensions} €${s.price}`).join(" | ");
 
   // Cheapest size (ties keep the first in saved order) for the phone line
   const cheapest = shownSizes.reduce<{ dimensions: string; price: number } | null>(
@@ -176,22 +177,16 @@ const ProductCard = ({
         )}
         <div className={`${editMode ? "flex" : "hidden md:flex"} flex-wrap items-center gap-x-2 gap-y-1 text-xs`}>
           {renderEditableField("name", product.name, "font-semibold text-foreground")}
-          <span className="text-muted-foreground">|</span>
-          {renderEditableField("medium", product.medium, "text-muted-foreground")}
-          {!isComingSoon && (
+          {editMode && (
+            <>
+              <span className="text-muted-foreground">|</span>
+              {renderEditableField("medium", product.medium, "text-muted-foreground")}
+            </>
+          )}
+          {!isComingSoon && sizePrices && (
             <>
               <span className="text-muted-foreground">|</span>
               <span className="text-muted-foreground mx-px">{sizePrices}</span>
-              <span className="text-muted-foreground">|</span>
-              <Link to={`/product/${product.slug}#acquista`}>
-                <Button 
-                  variant="cta"
-                  size="sm" 
-                  className="h-6 px-2 text-xs"
-                >
-                  ACQUISTA
-                </Button>
-              </Link>
             </>
           )}
         </div>
